@@ -18,6 +18,7 @@ Diario delle decisioni e di quello che sappiamo sull'ambiente di lavoro. Aggiorn
 | 13/11 | C4: contromosse red vs blue, tutto in italiano, partenza diretta con Black Hat, titolo con immagine FLUX e nomi del team. |
 | 13/11 | Un'altra sessione ha aperto `c5-agentic-city/` (direzione: niente webapp, agenti + ESP32 + droni; Worker Cloudflare nuovo, **non `mbl-privato`**). |
 | 13/11 | `jrpg/` rinominata `c4-jrpg/` (resta un redirect in `jrpg/index.html`). Brainstorming su C1, C2, C5 in [`brainstorming.md`](brainstorming.md). |
+| 13/11 | Lanciati i subagent. Partiti subito: `c1-feed-simulato` e la base `shared/iot-agents` (contratto in `shared/iot-agents/CONTRATTO.md`). Dopo la base partono `c2-cer-quartiere` (scelta la comunità energetica: usa solo luce e temperatura) e `c5-regia-evento` (grande evento + guasto metro; cartella separata da `c5-agentic-city`). LLM non ancora scelto: adattatore con modalità `mock` predefinita. |
 | — | Tower defense per C4: previsto dopo, non iniziato. |
 
 ## Punti di forza del team
