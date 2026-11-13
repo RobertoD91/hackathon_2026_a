@@ -1,16 +1,74 @@
 {
   "nota": "Incroci semaforizzati del gemello (rete OSM) e corrispondenza con i semafori fisici del plastico. 'principale' = vie della testa A del semaforo fisico, tutte le altre vanno sulla testa B.",
   "plastico": [
-    {"id": "mergellina", "tls": "GS_3551145010", "nome": "Viale Gramsci / via Campanella", "principale": ["Viale Antonio Gramsci"]},
-    {"id": "chiaia_sanpasquale", "tls": "3468033710", "nome": "Riviera di Chiaia / via San Pasquale", "principale": ["Riviera di Chiaia"]},
-    {"id": "chiaia_portico", "tls": "3551574882", "nome": "Riviera di Chiaia / via Santa Maria in Portico", "principale": ["Riviera di Chiaia"]},
-    {"id": "vittoria_acton", "tls": "joinedS_3455594757_cluster_1242030781_1242030803_9642806063_9642806064", "nome": "Galleria della Vittoria / via Acton", "principale": ["Via Ferdinando Acton", "Via Ammiraglio Ferdinando Acton"]}
+    {
+      "id": "mergellina",
+      "tls": "GS_3551145010",
+      "nome": "Viale Gramsci / via Campanella",
+      "principale": [
+        "Viale Antonio Gramsci"
+      ]
+    },
+    {
+      "id": "chiaia_sanpasquale",
+      "tls": "3468033710",
+      "nome": "Riviera di Chiaia / via San Pasquale",
+      "principale": [
+        "Riviera di Chiaia"
+      ]
+    },
+    {
+      "id": "chiaia_portico",
+      "tls": "3551574882",
+      "nome": "Riviera di Chiaia / via Santa Maria in Portico",
+      "principale": [
+        "Riviera di Chiaia"
+      ]
+    },
+    {
+      "id": "vittoria_acton",
+      "tls": "joinedS_3455594757_cluster_1242030781_1242030803_9642806063_9642806064",
+      "nome": "Galleria della Vittoria / via Acton",
+      "principale": [
+        "Galleria della Vittoria"
+      ]
+    }
   ],
   "corridoi": {
-    "lungomare": ["Via Francesco Caracciolo", "Riviera di Chiaia", "Via Partenope", "Via Nazario Sauro", "Via Chiatamone"],
-    "porto": ["Via Ferdinando Acton", "Via Ammiraglio Ferdinando Acton", "Via Cristoforo Colombo", "Via Alcide De Gasperi", "Galleria della Vittoria", "Piazza Municipio"],
-    "uscita_ovest": ["Viale Antonio Gramsci", "Via Piedigrotta", "Via Tommaso Campanella", "Via Mergellina", "Piazza Sannazaro"],
-    "collina": ["Corso Vittorio Emanuele", "Via del Parco Margherita", "Parco Grifeo", "Piazzetta Cariati"],
-    "centro": ["Via Toledo", "Via San Pasquale a Chiaia", "Via Santa Maria in Portico", "Via Domenico Morelli", "Via Giorgio Arcoleo"]
+    "lungomare": [
+      "Via Francesco Caracciolo",
+      "Riviera di Chiaia",
+      "Via Partenope",
+      "Via Nazario Sauro",
+      "Via Chiatamone"
+    ],
+    "porto": [
+      "Via Ferdinando Acton",
+      "Via Ammiraglio Ferdinando Acton",
+      "Via Cristoforo Colombo",
+      "Via Alcide De Gasperi",
+      "Galleria della Vittoria",
+      "Piazza Municipio"
+    ],
+    "uscita_ovest": [
+      "Viale Antonio Gramsci",
+      "Via Piedigrotta",
+      "Via Tommaso Campanella",
+      "Via Mergellina",
+      "Piazza Sannazaro"
+    ],
+    "collina": [
+      "Corso Vittorio Emanuele",
+      "Via del Parco Margherita",
+      "Parco Grifeo",
+      "Piazzetta Cariati"
+    ],
+    "centro": [
+      "Via Toledo",
+      "Via San Pasquale a Chiaia",
+      "Via Santa Maria in Portico",
+      "Via Domenico Morelli",
+      "Via Giorgio Arcoleo"
+    ]
   }
 }

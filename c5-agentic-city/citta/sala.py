@@ -70,7 +70,7 @@ class Sala:
         for _, m in sorted(self.bus.trattenuti("napoli/folla/+").items()):
             r = min(1.2, m["persone"] / m["capienza"])
             col = COLORI_LIVELLO.get(m["livello"], "white")
-            barra = f"[{col}]" + "█" * int(r * 20) + "[/]" + "·" * max(0, 20 - int(r * 20))
+            barra = f"[{col}]" + "█" * int(r * 12) + "[/]" + "·" * max(0, 12 - int(r * 12))
             fonti = " [dim]📡[/]" if "drone" in m.get("fonti", []) else ""
             t.add_row(m["nome"][:26], f"{m['persone']:,}".replace(",", "."), barra, f"[{col}]{m['livello']}[/]{fonti}")
         return Panel(t, title="Folla per zona", border_style="yellow")
@@ -111,7 +111,7 @@ class Sala:
 
     def _dialogo_pannello(self, righe: int) -> Panel:
         with self.lock:
-            ultimi = list(self.dialogo)[-righe:]
+            ultimi = list(self.dialogo)[-righe:][::-1]  # i più recenti in alto
         testo = Text()
         for m in ultimi:
             da = m.get("da", "?")
@@ -123,7 +123,7 @@ class Sala:
             if m.get("fonte") and m["fonte"] != "regole":
                 testo.append(f"  [{m['fonte']}]", style="dim italic")
             testo.append("\n")
-        return Panel(testo, title="Cosa si dicono gli agenti", border_style="magenta")
+        return Panel(testo, title="Cosa si dicono gli agenti (i più recenti in alto)", border_style="magenta")
 
     def _regia(self) -> Panel:
         parti = []

@@ -128,15 +128,15 @@
       "flussi": [
         {
           "verso": "rotonda_diaz",
-          "quota": 0.5
+          "quota": 0.55
         },
         {
           "verso": "mergellina",
-          "quota": 0.3
+          "quota": 0.37
         },
         {
           "verso": "castel_ovo",
-          "quota": 0.2
+          "quota": 0.08
         }
       ]
     },

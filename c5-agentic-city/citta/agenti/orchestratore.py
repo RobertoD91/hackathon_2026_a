@@ -208,7 +208,7 @@ class Orchestratore(Agente):
             elif agente == "drone" and a.get("zona"):
                 self.drone_chiesto[a["zona"]] = self.t
                 self.bus.pubblica("napoli/drone/richieste", {"zona": a["zona"], "motivo": a.get("testo", ""),
-                                                             "ora": self.ora, "decisione": d["id"]})
+                                                             "ora": self.ora, "decisione": d["id"]}, trattieni=True)
                 self.di("Pilota drone", f"Puoi fare un volo di verifica? {a.get('testo', '')}")
             elif agente == "avviso" and a.get("testo"):
                 self.bus.pubblica("napoli/avvisi", {"ora": self.ora, "per": "tutti", "zona": a.get("zona", ""),

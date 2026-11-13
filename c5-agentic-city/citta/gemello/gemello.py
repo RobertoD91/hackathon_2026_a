@@ -265,6 +265,7 @@ class Gemello(threading.Thread):
                                  quota_assistiti=self.quota_assistiti, gui=self.gui, net=net, incroci=self.incroci)
             plastico = {p["tls"]: (p["id"], set(p["principale"]), p["nome"]) for p in self.incroci["plastico"]}
             ultimo_stato: dict[str, dict] = {}
+            ultimo_battito = 0.0
             self.pronto.set()
             t0_reale = time.monotonic()
             try:
@@ -274,11 +275,16 @@ class Gemello(threading.Thread):
                     self._aggiungi_extra([oggi, agenti], t)
                     oggi.passo()
                     t = agenti.passo()
+                    # Stato dei semafori del plastico: a ogni cambio e comunque ogni 2 secondi reali
+                    # (battito: se gli ESP32 non ricevono nulla per 5 s passano ai "riflessi").
+                    battito = time.monotonic() - ultimo_battito > 2
+                    if battito:
+                        ultimo_battito = time.monotonic()
                     for tls, (pid, principali, nome) in plastico.items():
                         if tls not in agenti.semafori:
                             continue
                         stato = agenti.stato_testa(tls, principali)
-                        if stato != ultimo_stato.get(pid):
+                        if battito or stato != ultimo_stato.get(pid):
                             ultimo_stato[pid] = stato
                             self.bus.pubblica(f"napoli/semafori/{pid}/stato", {**stato, "nome": nome}, trattieni=True)
                     if int(t) % 60 == 0:

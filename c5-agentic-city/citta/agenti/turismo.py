@@ -40,6 +40,7 @@ class AgenteTurismo(Agente):
         self.folla: dict[str, dict] = {}
         self.offerte: list[dict] = []
         self.ultimo_avviso: dict[str, int] = {}
+        self.in_arrivo: dict[str, int] = {}  # persone già indirizzate, non ancora contate dall'agente Folla
 
     def avvio(self) -> None:
         self.ascolta("napoli/folla/+")
@@ -49,6 +50,7 @@ class AgenteTurismo(Agente):
     def gestisci(self, topic: str, m: dict) -> None:
         if topic.startswith("napoli/folla/"):
             self.folla[m["zona"]] = m
+            self.in_arrivo.pop(m["zona"], None)  # la nuova stima le include già
         elif topic == "napoli/imprese/offerte":
             self.offerte = m.get("offerte", [])
         elif topic == "napoli/agenti/turismo/comandi" and m.get("azione") == "ridistribuisci":
@@ -57,7 +59,8 @@ class AgenteTurismo(Agente):
     def alternativa(self, da_zona: str) -> tuple[str, dict | None] | None:
         candidate = []
         for zona, f in self.folla.items():
-            if zona == da_zona or f["livello"] in ("alto", "critico"):
+            if zona == da_zona or f["livello"] in ("alto", "critico") or \
+                    (f["persone"] + self.in_arrivo.get(zona, 0)) > 0.7 * f["capienza"]:
                 continue
             if not any(l["zona"] == zona for l in self.luoghi):
                 continue
@@ -95,6 +98,12 @@ class AgenteTurismo(Agente):
                 "offerta": offerta, "motivo": motivo}
         avviso, fonte = self.ragiona(SISTEMA, json.dumps(dati, ensure_ascii=False), SCHEMA, regole)
         persone = int(f_da["persone"] * ADESIONE.get(f_da["livello"], 0.05))
+        # Non riempiamo la zona di arrivo: al massimo fino al 70% della sua capienza.
+        spazio = int(0.7 * f_verso["capienza"] - f_verso["persone"] - self.in_arrivo.get(verso, 0))
+        persone = max(0, min(persone, spazio))
+        if persone < 100:
+            return
+        self.in_arrivo[verso] = self.in_arrivo.get(verso, 0) + persone
         self.bus.pubblica("napoli/avvisi", {"ora": self.ora, "per": "turisti", "zona": da_zona, "verso": verso,
                                             "testo": avviso["testo"], "offerta": offerta, "fonte": fonte})
         self.bus.pubblica("napoli/turismo/spostamenti", {"da": da_zona, "verso": verso, "persone": persone, "ora": self.ora})

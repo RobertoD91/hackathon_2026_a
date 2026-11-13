@@ -83,7 +83,7 @@ class AgenteImprese(Agente):
                                 testo=f"Alle {ora_da_secondi(fascia)} siamo pieni. Alle {ora_da_secondi(alternativa)} c'è posto per {persone}"
                                       + (f", e vi facciamo il {sconto}% di sconto" if sconto else ""))
         self.bus.pubblica(f"napoli/imprese/{imp['id']}/risposte", risposta)
-        self.di(chi, f"{imp['nome']}: {risposta['testo']}")
+        self.di(chi, risposta["testo"], da=imp["nome"])
 
     def conferma(self, id_impresa: str, ora: str, persone: int) -> None:
         """Usata dall'assistente quando l'utente accetta una controproposta."""

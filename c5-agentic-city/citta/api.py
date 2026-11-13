@@ -4,6 +4,9 @@ POST /chiedi       {"utente": "+39...", "testo": "..."}  → {"risposta": "..."}
 GET  /notifiche?utente=+39...                            → {"notifiche": [...]}  (avvisi proattivi)
 GET  /stato                                              → stato della città (folla, meteo, KPI, semafori)
 POST /evento       {"evento": "...", "veicoli": 20}       → come un pulsante del plastico
+GET  /drone/richieste                                    → ultima richiesta di volo dell'orchestratore
+POST /drone        {"zona": "...", "persone_stimate": N, "note": "..."} → osservazione del drone
+POST /operatore    {"decisione": "D3", "esito": "approva"|"blocca"}   → risposta dell'operatore
 
 Se è impostata la variabile C5_API_TOKEN serve l'header "Authorization: Bearer <token>".
 """
@@ -54,6 +57,8 @@ def avvia_api(assistenti, bus, porta: int = 8080, host: str = "0.0.0.0") -> Thre
                 stato["semafori"] = {t.split("/")[2]: m for t, m in bus.trattenuti("napoli/semafori/+/stato").items()}
                 stato["piano_semafori"] = bus.ultimo("napoli/semafori/piano")
                 self._rispondi(200, stato)
+            elif url.path == "/drone/richieste":
+                self._rispondi(200, {"richiesta": bus.ultimo("napoli/drone/richieste")})
             elif url.path == "/notifiche":
                 utente = parse_qs(url.query).get("utente", [""])[0]
                 self._rispondi(200, {"notifiche": assistenti.notifiche(utente)})
@@ -72,6 +77,15 @@ def avvia_api(assistenti, bus, porta: int = 8080, host: str = "0.0.0.0") -> Thre
                 self._rispondi(200, {"risposta": assistenti.chiedi(utente, testo)})
             elif self.path == "/evento":
                 bus.pubblica("napoli/eventi/manuale", dati)
+                self._rispondi(200, {"ok": True})
+            elif self.path == "/drone":
+                if not dati.get("zona") or dati.get("persone_stimate") is None:
+                    self._rispondi(400, {"errore": "servono zona e persone_stimate"})
+                    return
+                bus.pubblica("napoli/drone/osservazioni", dati)
+                self._rispondi(200, {"ok": True})
+            elif self.path == "/operatore":
+                bus.pubblica("napoli/operatore/comandi", dati)
                 self._rispondi(200, {"ok": True})
             else:
                 self._rispondi(404, {"errore": "percorso sconosciuto"})

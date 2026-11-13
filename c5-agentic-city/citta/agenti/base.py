@@ -53,9 +53,9 @@ class Agente(threading.Thread):
     def ora(self) -> str:
         return ora_da_secondi(self.t)
 
-    def di(self, a: str, testo: str, **extra) -> None:
+    def di(self, a: str, testo: str, da: str | None = None, **extra) -> None:
         self.bus.pubblica("napoli/agenti/dialogo",
-                          {"ora": self.ora, "da": self.etichetta, "a": a, "testo": testo, **extra})
+                          {"ora": self.ora, "da": da or self.etichetta, "a": a, "testo": testo, **extra})
 
     def ragiona(self, sistema: str, richiesta: str, schema: dict, regole: Callable[[], dict]) -> tuple[dict, str]:
         """Restituisce (decisione, fonte) dove fonte è il nome del provider LLM o "regole"."""

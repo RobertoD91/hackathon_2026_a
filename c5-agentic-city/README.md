@@ -145,38 +145,116 @@ c5-agentic-city/
 
 ## Fonti dati
 
-**Reali:**
-- **Open-Meteo** (meteo, mare, qualità dell'aria) per l'agente Meteo&Mare.
-- **OpenStreetMap** per la rete stradale del gemello.
-- **Comune di Napoli open data**:
-  - visitatori di Castel dell'Ovo, Maschio Angioino, PAN e altri, usati per la domanda turistica di base;
-  - parcheggi ANM.
-- **EAV** (Cumana, Circumflegrea) da dati.gov.it.
+**Usate davvero nel codice:**
+- **OpenStreetMap**: rete stradale del gemello (`dati/lungomare.net.xml`, generata con `netconvert` da un estratto dell'API OSM).
+- **Open-Meteo**: vento, raffiche, onda e temperatura per l'agente Meteo&Mare, con `--meteo reale`. In modalità `scenario` si usano valori fissi, così la demo è stabile.
 
-**Simulati, con le ipotesi dichiarate in `dati/scenario_regata.json`:**
+**Trovate e raggiungibili, da integrare se c'è tempo:**
+- Open data del Comune di Napoli (dati.comune.napoli.it):
+  - visitatori di Castel dell'Ovo, Maschio Angioino, PAN, Pausilypon e altri;
+  - parcheggi ANM 2025;
+  - incidenti stradali.
+- EAV (Cumana, Circumflegrea) su dati.gov.it: linee, corse, stazioni.
+- ISTAT ed Eurostat (presenze turistiche), OpenSky (voli su Capodichino).
+
+**Simulati, con le ipotesi dichiarate in `dati/scenario_regata.json` (campo `ipotesi`):**
 - orari e passeggeri delle navi;
 - presenze da rete mobile (il tipo di dato degli sponsor);
 - flussi della regata e della partita;
-- disponibilità delle imprese.
+- traffico di fondo;
+- disponibilità delle imprese, che sono di fantasia.
+
+## Risultati del gemello
+
+Giornata 13:00–20:30, circa 10.000 veicoli, identici nelle due simulazioni, sulla rete vera del lungomare.
+
+| | Semafori fissi (oggi) | Semafori guidati dagli agenti | Differenza |
+|---|---|---|---|
+| Ore perse in coda (veicoli fermi) | 387,6 h | 328,9 h | **−15,1%** |
+| Durata media del viaggio | 432 s | 408 s | **−5,5%** |
+| CO₂ | 10,47 t | 10,01 t | **−4,3%** |
+
+*(Solo controllo adattivo con il piano normale, `python -m citta.gemello.gemello 0`. La giornata con gli agenti che cambiano il piano è in `avvia.py --velocita 0 --senza-sala`.)*
+
+Una scoperta da raccontare: abbiamo provato a dare il 20% di consigli di percorso "ingenui" ai guidatori (`--quota-assistiti 0.2`). Le ore perse sono calate solo del **10,5%** invece del 15%, perché le auto deviate intasano i vicoli del centro. **I consigli non coordinati spostano il problema: per questo serve un orchestratore.**
 
 ## Come si avvia
-
-Da completare man mano che arrivano i pezzi.
 
 ```bash
 cd c5-agentic-city
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
-python avvia.py --llm regole            # tutto in un processo, senza chiavi
 ```
+
+```bash
+python avvia.py --llm regole              # tutto in un processo, senza chiavi, sala a schermo intero
+```
+
+| Opzione | Cosa fa |
+|---|---|
+| `--llm claude` / `codex` / `regole` | provider degli agenti. `auto` (default) usa Claude se c'è `ANTHROPIC_API_KEY`, altrimenti Codex se c'è la CLI, altrimenti le regole |
+| `--velocita 20` | secondi simulati per secondo reale. Con 20, la giornata di 7,5 ore dura circa 22 minuti; con 0 va al massimo |
+| `--inizio 13:45 --fine 15:30` | finestra della demo |
+| `--broker localhost` | bus MQTT (serve Mosquitto) per gli ESP32 del plastico |
+| `--gui` | apre `sumo-gui` sulla simulazione con agenti, da mettere sul secondo schermo |
+| `--approvazione` | le decisioni dell'orchestratore aspettano l'operatore (`strumenti/operatore.py approva D3`) |
+| `--meteo reale` | dati di oggi da Open-Meteo |
+| `--senza-sala` | stampa il dialogo tra agenti a righe |
+| `--api-porta 8080` | API per OpenClaw, la chat e il drone (0 = spenta) |
+
+Variabili per l'LLM:
+- Claude: `ANTHROPIC_API_KEY`, `C5_MODELLO` (default `claude-opus-5-5`), `C5_EFFORT` (default `low`).
+- Codex: `C5_CODEX_ARGS`.
+
+Altri strumenti, mentre `avvia.py` è acceso:
+
+```bash
+python strumenti/chat.py --utente Marta                     # chat con l'assistente personale
+```
+
+```bash
+python strumenti/drone_osserva.py ascolta                   # il pilota riceve le richieste di volo
+```
+
+```bash
+python strumenti/drone_osserva.py foto --zona castel_ovo --file frame.jpg --scala 100
+```
+
+```bash
+python strumenti/operatore.py evento pullman --veicoli 25   # come il pulsante sul plastico
+```
+
+```bash
+python -m citta.sala --broker localhost                     # sala su un altro PC (con MQTT)
+```
+
+## La demo (4 minuti)
+
+1. **Il gancio** (30 s): *"Napoli 2027, America's Cup. Un sabato con due navi, la regata e la partita. Oggi ogni servizio fa da sé: noi li facciamo parlare."*
+2. **La sala** (60 s): `avvia.py --inizio 13:40 --velocita 15`.
+   - Eventi annuncia la regata, Traffico dà priorità al lungomare e i semafori del plastico cambiano.
+   - Folla vede Castel dell'Ovo che si riempie e l'orchestratore chiede il drone.
+3. **Il drone** (45 s): il pilota fa un volo sul plastico e manda il frame. Il modello conta, la stima si aggiorna e l'orchestratore sposta la folla con un'offerta della friggitoria o del bar al Vomero.
+4. **La giuria gioca** (60 s): il QR apre WhatsApp. *"Siamo 4 croceristi, vogliamo una pizza vicino al Castel dell'Ovo alle 13:30."*
+   - L'assistente negozia con la pizzeria: "pieni, alle 14:00 sì".
+   - Il giurato risponde "ok" e la prenotazione è confermata.
+5. **I numeri** (30 s): il pannello KPI con e senza agenti, poi la scoperta sui consigli non coordinati.
+6. **Il riflesso** (15 s): si stacca il portatile. I semafori del plastico passano al ciclo locale coordinato in ESP-NOW: *"se cade la rete la città non si ferma"*.
 
 ## Stato
 
 - [x] Brief, scenario e architettura
 - [x] Rete stradale SUMO del lungomare da OSM
-- [ ] Bus, agenti, orchestratore
-- [ ] Gemello SUMO con KPI con e senza agenti
-- [ ] Assistente personale + API per OpenClaw
-- [ ] Sala operativa
-- [ ] Firmware ESP32 (semaforo, sensore)
-- [ ] Strumento drone
+- [x] Bus (memoria e MQTT), agenti, orchestratore con ripiego a regole
+- [x] Gemello SUMO con KPI con e senza agenti
+- [x] Assistenti personali con negoziazione con le imprese, API HTTP, skill OpenClaw
+- [x] Sala operativa in console
+- [x] Strumento drone (stima manuale o conteggio da foto con Claude)
+- [x] Firmware ESP32 (semaforo con riflessi ESP-NOW, sensore di passaggio)
+
+Da fare:
+- [ ] Provare con un LLM vero: Claude (chiave del team) e Codex (verificare i flag di `codex exec`).
+- [ ] Provare il firmware su hardware e la skill su OpenClaw.
+- [ ] Costruire il plastico.
+- [ ] Integrare i dati del Comune.
+- [ ] Preparare il video di riserva del drone.
