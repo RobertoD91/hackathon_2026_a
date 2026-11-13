@@ -8,6 +8,7 @@ Progetto per [The Big Hack 2026](https://go.codemotion.com/big-hack-hackathon-20
 - Francesca Morra
 - Giovanni Di Stazio
 - Pasquale Criscuolo
+- Mario Varlese
 
 ## Challenge
 
