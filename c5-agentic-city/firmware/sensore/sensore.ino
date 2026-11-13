@@ -9,7 +9,7 @@
 // Con il modulo 5G/4G del team si può usare TinyGSM al posto del Wi-Fi (stesso MQTT):
 // è il racconto giusto per Fastweb + Vodafone ("sensori della città sulla rete mobile").
 //
-// Librerie: PubSubClient. NON ANCORA COMPILATO NÉ PROVATO SU HARDWARE.
+// Librerie: PubSubClient. Compila con il core esp32 3.3.12; NON ANCORA PROVATO SU HARDWARE.
 
 #include <WiFi.h>
 #include <PubSubClient.h>

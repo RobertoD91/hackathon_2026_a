@@ -10,7 +10,7 @@
 // da 5 V con resistenze già montate). Pulsante opzionale: "arriva un pullman turistico".
 //
 // Librerie: PubSubClient (Nick O'Leary), ArduinoJson (Benoit Blanchon) 7.x.
-// NON ANCORA COMPILATO NÉ PROVATO SU HARDWARE: da verificare in sede.
+// Compila con il core esp32 3.3.12; NON ANCORA PROVATO SU HARDWARE.
 
 #include <WiFi.h>
 #include <esp_now.h>

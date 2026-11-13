@@ -1,6 +1,6 @@
 # Firmware ESP32 del plastico
 
-> Gli sketch **non sono ancora stati compilati né provati su hardware**: vanno verificati in sede.
+> Gli sketch **compilano** (arduino-cli, core esp32 3.3.12, ArduinoJson 7.4.3, PubSubClient) ma **non sono ancora stati provati su hardware**.
 
 ## `semaforo/`
 

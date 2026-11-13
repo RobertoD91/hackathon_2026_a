@@ -174,7 +174,9 @@ Giornata 13:00–20:30, circa 10.000 veicoli, identici nelle due simulazioni, su
 | Durata media del viaggio | 432 s | 408 s | **−5,5%** |
 | CO₂ | 10,47 t | 10,01 t | **−4,3%** |
 
-*(Solo controllo adattivo con il piano normale, `python -m citta.gemello.gemello 0`. La giornata con gli agenti che cambiano il piano è in `avvia.py --velocita 0 --senza-sala`.)*
+*(Controllo adattivo con il piano normale: `python -m citta.gemello.gemello 0`.)*
+
+Con tutti gli agenti accesi (`avvia.py --llm regole --velocita 0 --senza-sala`), l'agente Traffico cambia i pesi dei corridoi durante la giornata. Il risultato è **−12,4%** di ore perse, −5,1% di durata e −4,3% di CO₂. Le priorità per corridoio, così come sono tarate oggi nelle regole, **tolgono qualcosa** rispetto al controllo adattivo neutro: aiutano il corridoio scelto ma allungano le code sulle traverse. **Da tarare**: pesi più bassi (massimo 1,5), oppure priorità solo sugli incroci del corridoio. Un numero onesto vale più di uno gonfiato: in giuria lo diciamo.
 
 Una scoperta da raccontare: abbiamo provato a dare il 20% di consigli di percorso "ingenui" ai guidatori (`--quota-assistiti 0.2`). Le ore perse sono calate solo del **10,5%** invece del 15%, perché le auto deviate intasano i vicoli del centro. **I consigli non coordinati spostano il problema: per questo serve un orchestratore.**
 
@@ -250,9 +252,10 @@ python -m citta.sala --broker localhost                     # sala su un altro P
 - [x] Assistenti personali con negoziazione con le imprese, API HTTP, skill OpenClaw
 - [x] Sala operativa in console
 - [x] Strumento drone (stima manuale o conteggio da foto con Claude)
-- [x] Firmware ESP32 (semaforo con riflessi ESP-NOW, sensore di passaggio)
+- [x] Firmware ESP32 (semaforo con riflessi ESP-NOW, sensore di passaggio): compila, da provare su hardware
 
 Da fare:
+- [ ] Tarare i pesi dei corridoi dell'agente Traffico (oggi −12,4% contro −15,1% del piano neutro).
 - [ ] Provare con un LLM vero: Claude (chiave del team) e Codex (verificare i flag di `codex exec`).
 - [ ] Provare il firmware su hardware e la skill su OpenClaw.
 - [ ] Costruire il plastico.
