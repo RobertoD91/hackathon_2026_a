@@ -1,0 +1,56 @@
+{
+  "_nota": "Annunci di prova per la demo. Marchio e prodotto sono di fantasia; immagini generate con FLUX.",
+  "annunci": [
+    {
+      "id": "ad-a",
+      "nome": "A · Offerta Black Friday",
+      "marchio": "Passo Verde",
+      "titolo": "Sneakers Passo Verde -30%",
+      "testo": "Leggere, comode e fatte con plastica riciclata. Solo fino a lunedì -30% su tutta la collezione 👟 Spedizione e resi gratuiti.",
+      "cta": "Acquista ora",
+      "piattaforma": "instagram",
+      "obiettivo": "conversioni",
+      "posizionamento": "feed",
+      "settore": "moda",
+      "target": { "etaMin": 18, "etaMax": 44, "genere": "tutti", "area": "italia" },
+      "dataInizio": "2026-11-23",
+      "immagine": "esempi/img/a-offerta.webp",
+      "descrizioneImmagine": "ragazza sorridente che cammina in una strada soleggiata con le sneakers bianche e verdi",
+      "imageStats": { "luminosita": 0.561, "contrasto": 0.241, "saturazione": 0.352, "colori": 0.439 }
+    },
+    {
+      "id": "ad-b",
+      "nome": "B · Storia sostenibile",
+      "marchio": "Passo Verde",
+      "titolo": "Ogni passo conta",
+      "testo": "Abbiamo passato due anni a cercare il modo giusto per fare una scarpa che rispetti il pianeta. Ogni paio di Passo Verde nasce da sei bottiglie di plastica recuperate dal mare, una suola in gomma naturale e colle all'acqua. La produciamo in Italia, in un piccolo laboratorio marchigiano, con un'attenzione maniacale ai dettagli. Perché camminare bene non dovrebbe costare caro alla Terra.",
+      "cta": "Scopri di più",
+      "piattaforma": "instagram",
+      "obiettivo": "conversioni",
+      "posizionamento": "feed",
+      "settore": "moda",
+      "target": { "etaMin": 18, "etaMax": 44, "genere": "tutti", "area": "italia" },
+      "dataInizio": "2026-11-23",
+      "immagine": "esempi/img/b-storia.webp",
+      "descrizioneImmagine": "still life del prodotto: una scarpa su muschio e pietre",
+      "imageStats": { "luminosita": 0.291, "contrasto": 0.24, "saturazione": 0.648, "colori": 0.199 }
+    },
+    {
+      "id": "ad-c",
+      "nome": "C · Minimal",
+      "marchio": "Passo Verde",
+      "titolo": "Passo Verde.",
+      "testo": "La nuova collezione è qui.",
+      "cta": "Nessuna",
+      "piattaforma": "instagram",
+      "obiettivo": "conversioni",
+      "posizionamento": "feed",
+      "settore": "moda",
+      "target": { "etaMin": 18, "etaMax": 44, "genere": "tutti", "area": "italia" },
+      "dataInizio": "2026-11-23",
+      "immagine": "esempi/img/c-minimal.webp",
+      "descrizioneImmagine": "un paio di sneakers bianche su fondo grigio scuro, foto di prodotto",
+      "imageStats": { "luminosita": 0.262, "contrasto": 0.264, "saturazione": 0.197, "colori": 0.042 }
+    }
+  ]
+}

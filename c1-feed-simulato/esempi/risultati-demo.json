@@ -1,0 +1,9 @@
+{
+  "_nota": "Risultati INVENTATI per provare la pagina di verifica. Non sono dati reali: in sede si sostituiscono con quelli forniti da Bhblasted.",
+  "vincitore": "ad-a",
+  "annunci": {
+    "ad-a": { "ctr": 1.10, "cpm": 8.90, "ctrSegmenti": { "18-24|F": 1.45, "18-24|M": 1.05, "25-34|F": 1.30, "25-34|M": 0.95 } },
+    "ad-b": { "ctr": 0.55, "cpm": 9.40 },
+    "ad-c": { "ctr": 0.35, "cpm": 10.20 }
+  }
+}

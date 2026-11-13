@@ -25,6 +25,7 @@ Testo integrale delle 5 challenge, agenda e regole: [`docs/hackathon.md`](docs/h
 **Una cartella per soluzione, con il prefisso della challenge** (`c1-…`, `c2-…`, `c4-…`, `c5-…`). Per una challenge possono esserci più soluzioni in cartelle diverse. Ogni cartella ha un `README.md` con brief, scelte, come avviarla e stato. Il codice condiviso tra più soluzioni (es. la base IoT + agenti per C2 e C5) va in `shared/`.
 
 Soluzioni esistenti:
+- `c1-feed-simulato/`: C1 Bhblasted, pubblico sintetico che prevede vincitore, CTR per segmento e fascia di CPM (online, modalità mock).
 - `c4-jrpg/`: C4 Consorzio Clara, JRPG a turni red team vs blue team (giocabile). Un tower defense per C4 è previsto più avanti. `jrpg/index.html` è solo un redirect al vecchio URL.
 - `c5-agentic-city/`: C5 Fastweb + Vodafone, "Napoli Agentic City". Brief e decisioni nel suo README. Non è una webapp: agenti + sensori IoT (ESP32, modulo 5G) + droni. Per un proxy/worker serve un Worker Cloudflare nuovo: **non usare `mbl-privato`**.
 
@@ -47,3 +48,11 @@ Fork di [Monster Tamer](https://github.com/devshareacademy/monster-tamer) (Phase
 - Titolo: sfondo `assets/images/hackathon/title.jpg` (generato con FLUX), titolo e crediti del team disegnati come testo in `title-scene.js` (`TEAM_MEMBERS`).
 - Gli asset di terze parti non sono ridistribuibili (vedi `c4-jrpg/README.md`): da sostituire con asset CC0 o nostri prima della consegna.
 - Test manuale rapido di una battaglia: in console `game` non è globale; per i test con Playwright si può intercettare `src/main.js` aggiungendo `window.__game = game` e avviare `BATTLE_SCENE` con `{ playerMonsters, enemyMonsters }` presi da `game.cache.json.get('MONSTERS')`.
+
+## `c1-feed-simulato/`
+
+Challenge 01 Bhblasted: pubblico sintetico che prevede vincitore, CTR per segmento, fascia di CPM e perché. Node ≥ 20, nessuna dipendenza npm, nessuna build.
+- Avvio: `node c1-feed-simulato/server.js` (porta 8702, serve anche i file statici) oppure statico da GitHub Pages / `python3 -m http.server` dalla root (simulazione nel browser). Test: `node c1-feed-simulato/test/smoke.mjs`. CLI: `node c1-feed-simulato/cli.js <annunci.json|csv> [--risultati r.json] [--llm]`.
+- Il motore `src/core/` è fatto di moduli ES condivisi tra Node e browser: annunci e import JSON/CSV (`ads.js`) → pubblico sintetico (`audience.js`) → caratteristiche dell'annuncio (`features.js`) → punteggio euristico deterministico con i motivi (`heuristic.js`) → `simulate.js` → calibrazione in CTR (`calibration.js`), CPM a regole (`cpm.js`), previsione (`predict.js`), verifica (`backtest.js`).
+- I dati sono in `data/*.json`, tutti indicativi da tarare in sede. L'LLM è facoltativo e solo lato server (`src/llm/`, `LLM_PROVIDER=mock|anthropic|openai-compatible`, come `shared/iot-agents/CONTRATTO.md` §4): corregge un campione di persone per segmento e scrive i commenti. Con l'LLM fa una chiamata per annuncio × segmento, con cache.
+- UI: `index.html`, `app.js`, `style.css`. `server.js` valorizza il meta `c1-backend` per attivare le API; taratura e risultati si salvano in localStorage. `esempi/risultati-demo.json` contiene risultati **inventati**, solo per provare la pagina di verifica.
