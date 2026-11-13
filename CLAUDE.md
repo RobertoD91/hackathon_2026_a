@@ -25,6 +25,7 @@ Testo integrale delle 5 challenge, agenda e regole: [`docs/hackathon.md`](docs/h
 **Una cartella per soluzione, con il prefisso della challenge** (`c1-…`, `c2-…`, `c4-…`, `c5-…`). Per una challenge possono esserci più soluzioni in cartelle diverse. Ogni cartella ha un `README.md` con brief, scelte, come avviarla e stato. Il codice condiviso tra più soluzioni (es. la base IoT + agenti per C2 e C5) va in `shared/`.
 
 Soluzioni esistenti:
+- `shared/iot-agents/`: base comune IoT + agenti (Node, HTTP + SSE), usata da C2. C5 (`c5-agentic-city`) ha un suo stack Python/MQTT.
 - `c1-feed-simulato/`: C1 Bhblasted, pubblico sintetico che prevede vincitore, CTR per segmento e fascia di CPM (online, modalità mock).
 - `c4-jrpg/`: C4 Consorzio Clara, JRPG a turni red team vs blue team (giocabile). Un tower defense per C4 è previsto più avanti. `jrpg/index.html` è solo un redirect al vecchio URL.
 - `c5-agentic-city/`: C5 Fastweb + Vodafone, "Napoli Agentic City". Brief e decisioni nel suo README. Non è una webapp: agenti + sensori IoT (ESP32, modulo 5G) + droni. Per un proxy/worker serve un Worker Cloudflare nuovo: **non usare `mbl-privato`**.
@@ -56,3 +57,12 @@ Challenge 01 Bhblasted: pubblico sintetico che prevede vincitore, CTR per segmen
 - Il motore `src/core/` è fatto di moduli ES condivisi tra Node e browser: annunci e import JSON/CSV (`ads.js`) → pubblico sintetico (`audience.js`) → caratteristiche dell'annuncio (`features.js`) → punteggio euristico deterministico con i motivi (`heuristic.js`) → `simulate.js` → calibrazione in CTR (`calibration.js`), CPM a regole (`cpm.js`), previsione (`predict.js`), verifica (`backtest.js`).
 - I dati sono in `data/*.json`, tutti indicativi da tarare in sede. L'LLM è facoltativo e solo lato server (`src/llm/`, `LLM_PROVIDER=mock|anthropic|openai-compatible`, come `shared/iot-agents/CONTRATTO.md` §4): corregge un campione di persone per segmento e scrive i commenti. Con l'LLM fa una chiamata per annuncio × segmento, con cache.
 - UI: `index.html`, `app.js`, `style.css`. `server.js` valorizza il meta `c1-backend` per attivare le API; taratura e risultati si salvano in localStorage. `esempi/risultati-demo.json` contiene risultati **inventati**, solo per provare la pagina di verifica.
+
+## `shared/iot-agents/`
+
+Base comune IoT + agenti (contratto: `shared/iot-agents/CONTRATTO.md`, uso e API: `shared/iot-agents/README.md`). Node ≥ 20, ES modules, nessuna dipendenza.
+- Esempio: `node shared/iot-agents/example/server.js` → http://localhost:8701/ (hub + agenti + simulatore). Test: `node --test shared/iot-agents/test/`.
+- API: `createHub({ port, staticDir, agents, llm })` (con HTTP) o `createCore(...)` (senza HTTP, anche nel browser); agenti = classe `Agent` con `name`, `subscribes`, `onEvent(event, ctx)`, `onChat` per l'orchestratore; `ctx` offre `state`, `llm`, `publish`, `decide`, `send`, `notify`, `metric`. Nel browser `connectHub({ simConfig, demoAgents })` dà la stessa interfaccia in live e in demo (Pages).
+- Le soluzioni copiano `example/`, importano `../shared/iot-agents/src/index.js`, hanno un proprio `package.json` con `"type": "module"`. Gli agenti devono essere isomorfi (niente `node:*`) per girare anche nella demo su Pages. Il hub serve i file statici con gli stessi percorsi della repo.
+- LLM: `LLM_PROVIDER=mock` predefinito; `anthropic` o `openai-compatible` con variabili d'ambiente, mai chiavi nei file. Il testo deterministico va sempre passato come `fallback`.
+- Firmware ESP32 in `shared/iot-agents/firmware/esp32-sensor/` (`config.h` non versionato; non ancora compilato su scheda vera). Ponte OpenClaw simulato: `node shared/iot-agents/tools/openclaw-bridge-sim.js`.

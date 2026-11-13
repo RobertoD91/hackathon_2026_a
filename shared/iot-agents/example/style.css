@@ -90,7 +90,7 @@ code { font-size: 0.9em; background: var(--surface-2); padding: 1px 5px; border-
 
 .demo-note { background: var(--surface); border: 1px solid var(--warning); border-left-width: 4px; border-radius: var(--radius); padding: 10px 14px; margin: 0 0 16px; font-size: 13px; color: var(--text-2); }
 
-.kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
 .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; box-shadow: var(--shadow); min-width: 0; }
 .kpi-label { font-size: 12px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kpi-value { font-size: 26px; font-weight: 600; margin-top: 2px; }
