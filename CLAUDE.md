@@ -26,6 +26,8 @@ Prototipi previsti, ognuno in una sottocartella:
 1. `jrpg/`: JRPG a turni red team vs blue team (in corso).
 2. Tower defense (dopo il JRPG, non ancora iniziato).
 
+**Challenge 05 Fastweb + Vodafone, "Napoli Agentic City: la città che Ci pensa"** (lavorata in parallelo in `c5-agentic-city/`): sistema di agenti AI specializzati per servizio (mobilità, turismo, servizi pubblici, ambiente) coordinati da un orchestratore, su uno scenario e un target scelti da noi. Serve una demo in cui si vede che gli agenti si coordinano e reagiscono ai cambiamenti, con benefici misurabili. Brief completo e decisioni in `c5-agentic-city/README.md`. Non è una webapp: agenti + sensori IoT (ESP32) + droni. Per un proxy/worker serve un Worker nuovo: **non usare `mbl-privato`**.
+
 ## Hosting
 
 GitHub Pages pubblica la root di `master` tramite il workflow `.github/workflows/pages.yml` (a ogni push su master; dominio personalizzato dell'account): https://robertodisanto.it/hackathon_2026_a/ (ogni prototipo in `/<sottocartella>/`). `index.html` in root è la pagina con i link ai prototipi: aggiornala quando ne aggiungi uno. `.nojekyll` disattiva Jekyll. Nei prototipi usa **solo percorsi relativi** (il sito non è servito dalla root del dominio) e attenzione a maiuscole/minuscole nei nomi dei file.
