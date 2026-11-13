@@ -3,7 +3,7 @@
 Gioco educativo su networking e cybersecurity per la challenge **Consorzio Clara (Cisco Networking Academy)**.
 JRPG a turni giocabile nel browser: le unità del **blue team** (difese) combattono contro le minacce del **red team** (attacchi).
 
-Online: https://robertod91.github.io/hackathon_2026_a/jrpg/
+Online: https://robertodisanto.it/hackathon_2026_a/jrpg/
 
 ## Base di partenza
 

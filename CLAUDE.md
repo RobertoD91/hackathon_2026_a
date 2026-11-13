@@ -28,7 +28,7 @@ Prototipi previsti, ognuno in una sottocartella:
 
 ## Hosting
 
-GitHub Pages pubblica la root di `master`: https://robertod91.github.io/hackathon_2026_a/ (ogni prototipo in `/<sottocartella>/`). `index.html` in root è la pagina con i link ai prototipi: aggiornala quando ne aggiungi uno. `.nojekyll` disattiva Jekyll. Nei prototipi usa **solo percorsi relativi** (il sito non è servito dalla root del dominio) e attenzione a maiuscole/minuscole nei nomi dei file.
+GitHub Pages pubblica la root di `master` tramite il workflow `.github/workflows/pages.yml` (a ogni push su master; dominio personalizzato dell'account): https://robertodisanto.it/hackathon_2026_a/ (ogni prototipo in `/<sottocartella>/`). `index.html` in root è la pagina con i link ai prototipi: aggiornala quando ne aggiungi uno. `.nojekyll` disattiva Jekyll. Nei prototipi usa **solo percorsi relativi** (il sito non è servito dalla root del dominio) e attenzione a maiuscole/minuscole nei nomi dei file.
 
 ## `jrpg/`
 

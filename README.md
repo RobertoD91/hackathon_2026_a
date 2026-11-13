@@ -16,9 +16,9 @@ Progetto per [The Big Hack 2026](https://go.codemotion.com/big-hack-hackathon-20
 
 ## Prototipi
 
-Online su GitHub Pages: https://robertod91.github.io/hackathon_2026_a/
+Online su GitHub Pages: https://robertodisanto.it/hackathon_2026_a/
 
-- [`jrpg/`](jrpg/): JRPG a turni red team vs blue team ([gioca](https://robertod91.github.io/hackathon_2026_a/jrpg/)).
+- [`jrpg/`](jrpg/): JRPG a turni red team vs blue team ([gioca](https://robertodisanto.it/hackathon_2026_a/jrpg/)).
 - Tower defense: in arrivo.
 
 ## Come avviare in locale
