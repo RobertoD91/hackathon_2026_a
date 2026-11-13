@@ -71,6 +71,22 @@ export class Orchestrator extends Agent {
         actions: [{ type: 'notify', channel: 'whatsapp', to: GRUPPO }],
         reasoning: `Messaggio da ${event.source}: "${text}".${fallback || ctx.llm.isMock ? ' Testo deterministico (nessun LLM).' : ' Testo riformulato dall\'LLM.'}`,
       });
+    } else if (payload.tipo === 'affollamento') {
+      const alt = payload.alternativa;
+      const base =
+        `${payload.luogo} adesso è molto affollato (circa ${payload.persone} persone).` +
+        (alt ? ` Se puoi, vai a ${alt.nome}: è a ${alt.km} km ed è più tranquillo.` : ' Se puoi, rimanda di un\'ora.');
+      const { text: messaggio, fallback } = await ctx.llm.complete({
+        system: SYSTEM,
+        prompt: `Riscrivi questo consiglio per turisti e cittadini, breve e cordiale, mantenendo luoghi e numeri:\n${base}`,
+        fallback: base,
+      });
+      ctx.notify('whatsapp', 'turisti', messaggio);
+      ctx.decide(`Consiglio anti-folla inviato per ${payload.luogo}`, {
+        level: 'info',
+        actions: [{ type: 'notify', channel: 'whatsapp', to: 'turisti' }],
+        reasoning: `Messaggio da ${event.source}: "${text}".${fallback || ctx.llm.isMock ? ' Testo deterministico (nessun LLM).' : " Testo riformulato dall'LLM."}`,
+      });
     } else if (payload.tipo === 'caldo_rientrato') {
       ctx.notify('dashboard', 'operatore', `Zona ${payload.zona}: temperatura tornata nella norma.`);
     }

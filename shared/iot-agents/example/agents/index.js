@@ -4,10 +4,11 @@
 import { ClimaAgent } from './clima.js';
 import { IlluminazioneAgent } from './illuminazione.js';
 import { Orchestrator } from './orchestrator.js';
+import { FollaAgent } from './folla.js';
 
 /** Crea istanze nuove a ogni chiamata (ogni hub ha i suoi agenti). */
 export function createAgents() {
-  return [new ClimaAgent(), new IlluminazioneAgent(), new Orchestrator()];
+  return [new ClimaAgent(), new IlluminazioneAgent(), new FollaAgent(), new Orchestrator()];
 }
 
-export { ClimaAgent, IlluminazioneAgent, Orchestrator };
+export { ClimaAgent, IlluminazioneAgent, FollaAgent, Orchestrator };

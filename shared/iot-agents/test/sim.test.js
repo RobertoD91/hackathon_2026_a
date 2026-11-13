@@ -130,7 +130,7 @@ test('configurazione non valida: errori chiari', () => {
 test('configurazione dell\'esempio valida', async () => {
   const conf = JSON.parse(await readFile(new URL('../example/sim-config.json', import.meta.url), 'utf8'));
   const sim = createSimulator(conf);
-  assert.equal(sim.devices.length, 4);
+  assert.equal(sim.devices.length, 11);
   for (const r of sim.sample()) assert.equal(validateReading(r).ok, true);
 });
 

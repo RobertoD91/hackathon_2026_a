@@ -65,6 +65,8 @@ Online (dopo il push): https://robertodisanto.it/hackathon_2026_a/shared/iot-age
 | `sim/sim-core.js` | motore del simulatore | Node e browser |
 | `sim/simulate.js` | simulatore da riga di comando, `runSimulator`, `attachSimulator` | Node |
 | `example/` | demo minima da copiare (porta 8701) | — |
+| `example/mappa.js`, `example/luoghi.js` | mappa "Napoli in tempo reale" stile [Seoul Real-Time City Data](https://data.seoul.go.kr/SeoulRtd/): 10 luoghi, 4 livelli di affollamento o di caldo, vista mappa/lista, ricerca, filtro per categoria, scheda di dettaglio, cerchio che pulsa sul luogo più critico di ogni categoria. Leaflet 1.9.4 da cdnjs, tessere OpenStreetMap. Luoghi e capienze (indicative) in `luoghi.js`; l'affollamento arriva dalla lettura `people_count` dei sensori della zona | browser |
+| `example/agents/folla.js` | agente folla: livello per luogo, quando un luogo diventa "Affollato" propone all'orchestratore l'alternativa tranquilla più vicina (notifica WhatsApp ai turisti) | Node e browser |
 | `firmware/esp32-sensor/` | sketch ESP32 ([README](firmware/esp32-sensor/README.md)) | ESP32 |
 | `tools/openclaw-bridge-sim.js` | simulazione del ponte OpenClaw | Node |
 | `test/` | test `node:test` | Node |

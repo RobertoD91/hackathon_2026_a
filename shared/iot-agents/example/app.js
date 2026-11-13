@@ -5,6 +5,7 @@
 
 import { connectHub, formatClock } from '../src/client.js';
 import { readingLabel, formatReading, formatNumber, formatTime, escapeHtml, sparklineSvg } from '../src/ui-helpers.js';
+import { createMappa } from './mappa.js';
 
 const $ = (id) => document.getElementById(id);
 const CHAT_FROM = `dashboard-${Math.random().toString(36).slice(2, 6)}`;
@@ -49,6 +50,7 @@ async function start() {
   model.clock = { sim: initial.simTime, real: initial.now, speed: initial.speed || 1 };
   for (const c of initial.chats || []) addChatPair(c.data);
 
+  mappa = createMappa($('citymap'));
   renderScenarioButtons();
   renderAll();
   hub.on('*', onEvent);
@@ -124,6 +126,7 @@ function setMetric(m) {
 
 // ------------------------------------------------------------------ rendering
 
+let mappa = null;
 const dirty = new Set();
 function schedule(part) {
   dirty.add(part);
@@ -134,7 +137,10 @@ function flush() {
   dirty.clear();
 }
 const RENDER = {
-  devices: renderDevices,
+  devices: () => {
+    renderDevices();
+    mappa?.update(model.devices);
+  },
   kpis: renderKpis,
   decisions: renderDecisions,
   notifications: renderNotifications,

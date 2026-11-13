@@ -1,5 +1,5 @@
 {
-  "name": "esempio-quartiere",
+  "name": "esempio-napoli",
   "seed": 42,
   "intervalSec": 3,
   "speed": 60,
@@ -9,25 +9,175 @@
   "devices": [
     {
       "id": "sim-plebiscito",
-      "location": { "lat": 40.8359, "lon": 14.2488, "zone": "plebiscito" },
+      "location": {
+        "lat": 40.8359,
+        "lon": 14.2488,
+        "zone": "plebiscito"
+      },
       "readings": {
-        "temperature_c": { "kind": "daily", "min": 13, "max": 19, "peakHour": 14, "noise": 0.15,
-          "effects": { "ondata_calore": { "add": 14, "rampSec": 15 } } },
-        "humidity_pct": { "kind": "daily", "min": 55, "max": 80, "peakHour": 5, "noise": 1, "round": 0 },
-        "light_lux": { "kind": "daylight", "max": 40000, "min": 3, "sunrise": 6.8, "sunset": 16.9, "noise": 300, "round": 0,
-          "effects": { "nuvole": { "multiply": 0.008, "rampSec": 6 } } },
-        "button": { "kind": "bool", "p": 0.002, "effects": { "pulsante": { "set": true } } }
+        "temperature_c": {
+          "kind": "daily",
+          "min": 13,
+          "max": 19,
+          "peakHour": 14,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 14,
+              "rampSec": 15
+            }
+          }
+        },
+        "humidity_pct": {
+          "kind": "daily",
+          "min": 55,
+          "max": 80,
+          "peakHour": 5,
+          "noise": 1,
+          "round": 0
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 40000,
+          "min": 3,
+          "sunrise": 6.8,
+          "sunset": 16.9,
+          "noise": 300,
+          "round": 0,
+          "effects": {
+            "nuvole": {
+              "multiply": 0.008,
+              "rampSec": 6
+            }
+          }
+        },
+        "button": {
+          "kind": "bool",
+          "p": 0.002,
+          "effects": {
+            "pulsante": {
+              "set": true
+            }
+          }
+        },
+        "people_count": {
+          "kind": "profile",
+          "points": [
+            [
+              0,
+              100
+            ],
+            [
+              9,
+              600
+            ],
+            [
+              12,
+              1500
+            ],
+            [
+              15,
+              1600
+            ],
+            [
+              17,
+              2300
+            ],
+            [
+              18,
+              2700
+            ],
+            [
+              20,
+              2000
+            ],
+            [
+              23,
+              400
+            ]
+          ],
+          "noise": 40,
+          "round": 0,
+          "effects": {
+            "crociere": {
+              "add": 900,
+              "rampSec": 15
+            }
+          }
+        }
       }
     },
     {
       "id": "sim-sanita",
-      "location": { "lat": 40.8606, "lon": 14.2497, "zone": "sanita" },
+      "location": {
+        "lat": 40.8606,
+        "lon": 14.2497,
+        "zone": "sanita"
+      },
       "readings": {
-        "temperature_c": { "kind": "daily", "min": 13.5, "max": 19.5, "peakHour": 14, "noise": 0.15,
-          "effects": { "ondata_calore": { "add": 13, "rampSec": 20 } } },
-        "humidity_pct": { "kind": "daily", "min": 58, "max": 82, "peakHour": 5, "noise": 1, "round": 0 },
-        "light_lux": { "kind": "daylight", "max": 30000, "min": 2, "sunrise": 6.8, "sunset": 16.9, "noise": 250, "round": 0,
-          "effects": { "nuvole": { "multiply": 0.01, "rampSec": 8 } } }
+        "temperature_c": {
+          "kind": "daily",
+          "min": 13.5,
+          "max": 19.5,
+          "peakHour": 14,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 13,
+              "rampSec": 20
+            }
+          }
+        },
+        "humidity_pct": {
+          "kind": "daily",
+          "min": 58,
+          "max": 82,
+          "peakHour": 5,
+          "noise": 1,
+          "round": 0
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 30000,
+          "min": 2,
+          "sunrise": 6.8,
+          "sunset": 16.9,
+          "noise": 250,
+          "round": 0,
+          "effects": {
+            "nuvole": {
+              "multiply": 0.01,
+              "rampSec": 8
+            }
+          }
+        },
+        "people_count": {
+          "kind": "profile",
+          "points": [
+            [
+              0,
+              100
+            ],
+            [
+              10,
+              700
+            ],
+            [
+              15,
+              800
+            ],
+            [
+              18,
+              900
+            ],
+            [
+              23,
+              200
+            ]
+          ],
+          "noise": 40,
+          "round": 0
+        }
       }
     },
     {
@@ -35,23 +185,629 @@
       "count": 2,
       "jitterM": 250,
       "vary": 0.05,
-      "location": { "lat": 40.844, "lon": 14.229, "zone": "vomero" },
+      "location": {
+        "lat": 40.844,
+        "lon": 14.229,
+        "zone": "vomero"
+      },
       "readings": {
-        "temperature_c": { "kind": "daily", "min": 11, "max": 17, "peakHour": 14, "noise": 0.15,
-          "effects": { "ondata_calore": { "add": 9, "rampSec": 20 } } },
-        "humidity_pct": { "kind": "daily", "min": 50, "max": 75, "peakHour": 5, "noise": 1, "round": 0 },
-        "light_lux": { "kind": "daylight", "max": 45000, "min": 2, "sunrise": 6.8, "sunset": 16.9, "noise": 300, "round": 0,
-          "effects": { "nuvole": { "multiply": 0.3, "rampSec": 8 } } }
+        "temperature_c": {
+          "kind": "daily",
+          "min": 11,
+          "max": 17,
+          "peakHour": 14,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 9,
+              "rampSec": 20
+            }
+          }
+        },
+        "humidity_pct": {
+          "kind": "daily",
+          "min": 50,
+          "max": 75,
+          "peakHour": 5,
+          "noise": 1,
+          "round": 0
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 45000,
+          "min": 2,
+          "sunrise": 6.8,
+          "sunset": 16.9,
+          "noise": 300,
+          "round": 0,
+          "effects": {
+            "nuvole": {
+              "multiply": 0.3,
+              "rampSec": 8
+            }
+          }
+        },
+        "people_count": {
+          "kind": "profile",
+          "points": [
+            [
+              0,
+              100
+            ],
+            [
+              11,
+              800
+            ],
+            [
+              15,
+              850
+            ],
+            [
+              18,
+              1100
+            ],
+            [
+              20,
+              1000
+            ],
+            [
+              23,
+              300
+            ]
+          ],
+          "noise": 25,
+          "round": 0
+        }
+      }
+    },
+    {
+      "id": "sim-centro-storico",
+      "location": {
+        "lat": 40.8484,
+        "lon": 14.2558,
+        "zone": "centro_storico"
+      },
+      "readings": {
+        "temperature_c": {
+          "kind": "daily",
+          "min": 13,
+          "max": 19,
+          "peakHour": 14,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 12,
+              "rampSec": 15
+            }
+          }
+        },
+        "humidity_pct": {
+          "kind": "daily",
+          "min": 55,
+          "max": 80,
+          "peakHour": 5,
+          "noise": 1,
+          "round": 0
+        },
+        "people_count": {
+          "kind": "profile",
+          "points": [
+            [
+              0,
+              200
+            ],
+            [
+              10,
+              2000
+            ],
+            [
+              13,
+              3000
+            ],
+            [
+              16,
+              3600
+            ],
+            [
+              18,
+              4000
+            ],
+            [
+              21,
+              3000
+            ],
+            [
+              23,
+              800
+            ]
+          ],
+          "noise": 40,
+          "round": 0,
+          "effects": {
+            "crociere": {
+              "add": 700,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "sim-lungomare",
+      "location": {
+        "lat": 40.8329,
+        "lon": 14.2349,
+        "zone": "lungomare"
+      },
+      "readings": {
+        "temperature_c": {
+          "kind": "daily",
+          "min": 13,
+          "max": 19,
+          "peakHour": 14,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 12,
+              "rampSec": 15
+            }
+          }
+        },
+        "humidity_pct": {
+          "kind": "daily",
+          "min": 55,
+          "max": 80,
+          "peakHour": 5,
+          "noise": 1,
+          "round": 0
+        },
+        "people_count": {
+          "kind": "profile",
+          "points": [
+            [
+              0,
+              150
+            ],
+            [
+              8,
+              800
+            ],
+            [
+              12,
+              1500
+            ],
+            [
+              15,
+              1800
+            ],
+            [
+              17,
+              3200
+            ],
+            [
+              18,
+              3800
+            ],
+            [
+              20,
+              3000
+            ],
+            [
+              23,
+              700
+            ]
+          ],
+          "noise": 40,
+          "round": 0
+        }
+      }
+    },
+    {
+      "id": "sim-mergellina",
+      "location": {
+        "lat": 40.8288,
+        "lon": 14.2183,
+        "zone": "mergellina"
+      },
+      "readings": {
+        "temperature_c": {
+          "kind": "daily",
+          "min": 13,
+          "max": 19,
+          "peakHour": 14,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 12,
+              "rampSec": 15
+            }
+          }
+        },
+        "humidity_pct": {
+          "kind": "daily",
+          "min": 55,
+          "max": 80,
+          "peakHour": 5,
+          "noise": 1,
+          "round": 0
+        },
+        "people_count": {
+          "kind": "profile",
+          "points": [
+            [
+              0,
+              100
+            ],
+            [
+              12,
+              600
+            ],
+            [
+              15,
+              700
+            ],
+            [
+              18,
+              1400
+            ],
+            [
+              21,
+              1600
+            ],
+            [
+              23,
+              400
+            ]
+          ],
+          "noise": 40,
+          "round": 0,
+          "effects": {
+            "partita": {
+              "add": 1300,
+              "rampSec": 20
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "sim-beverello",
+      "location": {
+        "lat": 40.8383,
+        "lon": 14.2537,
+        "zone": "beverello"
+      },
+      "readings": {
+        "temperature_c": {
+          "kind": "daily",
+          "min": 13,
+          "max": 19,
+          "peakHour": 14,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 12,
+              "rampSec": 15
+            }
+          }
+        },
+        "humidity_pct": {
+          "kind": "daily",
+          "min": 55,
+          "max": 80,
+          "peakHour": 5,
+          "noise": 1,
+          "round": 0
+        },
+        "people_count": {
+          "kind": "profile",
+          "points": [
+            [
+              0,
+              50
+            ],
+            [
+              7,
+              900
+            ],
+            [
+              9,
+              1800
+            ],
+            [
+              15,
+              1300
+            ],
+            [
+              17,
+              1700
+            ],
+            [
+              19,
+              1000
+            ],
+            [
+              23,
+              100
+            ]
+          ],
+          "noise": 40,
+          "round": 0,
+          "effects": {
+            "crociere": {
+              "add": 2600,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "sim-castel-ovo",
+      "location": {
+        "lat": 40.828,
+        "lon": 14.2476,
+        "zone": "castel_ovo"
+      },
+      "readings": {
+        "temperature_c": {
+          "kind": "daily",
+          "min": 13,
+          "max": 19,
+          "peakHour": 14,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 12,
+              "rampSec": 15
+            }
+          }
+        },
+        "humidity_pct": {
+          "kind": "daily",
+          "min": 55,
+          "max": 80,
+          "peakHour": 5,
+          "noise": 1,
+          "round": 0
+        },
+        "people_count": {
+          "kind": "profile",
+          "points": [
+            [
+              0,
+              0
+            ],
+            [
+              9,
+              300
+            ],
+            [
+              12,
+              900
+            ],
+            [
+              15,
+              1000
+            ],
+            [
+              17,
+              700
+            ],
+            [
+              19,
+              200
+            ],
+            [
+              23,
+              0
+            ]
+          ],
+          "noise": 25,
+          "round": 0,
+          "effects": {
+            "crociere": {
+              "add": 500,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "sim-garibaldi",
+      "location": {
+        "lat": 40.853,
+        "lon": 14.2725,
+        "zone": "garibaldi"
+      },
+      "readings": {
+        "temperature_c": {
+          "kind": "daily",
+          "min": 13,
+          "max": 19,
+          "peakHour": 14,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 12,
+              "rampSec": 15
+            }
+          }
+        },
+        "humidity_pct": {
+          "kind": "daily",
+          "min": 55,
+          "max": 80,
+          "peakHour": 5,
+          "noise": 1,
+          "round": 0
+        },
+        "people_count": {
+          "kind": "profile",
+          "points": [
+            [
+              0,
+              300
+            ],
+            [
+              7,
+              3000
+            ],
+            [
+              9,
+              4200
+            ],
+            [
+              13,
+              3000
+            ],
+            [
+              17,
+              4500
+            ],
+            [
+              19,
+              3800
+            ],
+            [
+              22,
+              1200
+            ]
+          ],
+          "noise": 60,
+          "round": 0,
+          "effects": {
+            "partita": {
+              "add": 1500,
+              "rampSec": 20
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "sim-maradona",
+      "location": {
+        "lat": 40.828,
+        "lon": 14.193,
+        "zone": "maradona"
+      },
+      "readings": {
+        "temperature_c": {
+          "kind": "daily",
+          "min": 13,
+          "max": 19,
+          "peakHour": 14,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 12,
+              "rampSec": 15
+            }
+          }
+        },
+        "humidity_pct": {
+          "kind": "daily",
+          "min": 55,
+          "max": 80,
+          "peakHour": 5,
+          "noise": 1,
+          "round": 0
+        },
+        "people_count": {
+          "kind": "profile",
+          "points": [
+            [
+              0,
+              40
+            ],
+            [
+              23,
+              40
+            ]
+          ],
+          "noise": 30,
+          "round": 0,
+          "effects": {
+            "partita": {
+              "add": 11500,
+              "rampSec": 20
+            }
+          }
+        }
       }
     }
   ],
   "timeline": [
-    { "at": 20, "name": "ondata_calore", "params": { "fonte": "timeline" }, "duration": 50 },
-    { "at": 85, "name": "nuvole", "params": { "fonte": "timeline" }, "duration": 25 }
+    {
+      "at": 20,
+      "name": "ondata_calore",
+      "params": {
+        "fonte": "timeline"
+      },
+      "duration": 50
+    },
+    {
+      "at": 85,
+      "name": "nuvole",
+      "params": {
+        "fonte": "timeline"
+      },
+      "duration": 25
+    },
+    {
+      "at": 110,
+      "name": "crociere",
+      "params": {
+        "fonte": "timeline"
+      },
+      "duration": 45
+    },
+    {
+      "at": 140,
+      "name": "partita",
+      "params": {
+        "fonte": "timeline"
+      },
+      "duration": 35
+    }
   ],
   "scenarios": [
-    { "name": "ondata_calore", "label": "Ondata di calore", "description": "+9/+14 °C in 15-20 s", "params": {}, "duration": 60 },
-    { "name": "nuvole", "label": "Nuvole sul centro", "description": "la luce crolla a Plebiscito e Sanità", "params": {}, "duration": 40 },
-    { "name": "pulsante", "label": "Premi il pulsante", "description": "il sensore di Plebiscito invia button: true", "params": {}, "duration": 4 }
+    {
+      "name": "ondata_calore",
+      "label": "Ondata di calore",
+      "description": "+9/+14 °C in 15-20 s",
+      "params": {},
+      "duration": 60
+    },
+    {
+      "name": "nuvole",
+      "label": "Nuvole sul centro",
+      "description": "la luce crolla a Plebiscito e Sanità",
+      "params": {},
+      "duration": 40
+    },
+    {
+      "name": "pulsante",
+      "label": "Premi il pulsante",
+      "description": "il sensore di Plebiscito invia button: true",
+      "params": {},
+      "duration": 4
+    },
+    {
+      "name": "crociere",
+      "label": "Arrivo navi da crociera",
+      "description": "+2.600 persone al Beverello, più gente a Plebiscito, centro storico e Castel dell'Ovo",
+      "params": {},
+      "duration": 60
+    },
+    {
+      "name": "partita",
+      "label": "Partita al Maradona",
+      "description": "lo stadio si riempie, più gente a Mergellina e alla stazione Garibaldi",
+      "params": {},
+      "duration": 60
+    }
   ]
 }
