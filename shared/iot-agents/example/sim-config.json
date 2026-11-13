@@ -1,0 +1,57 @@
+{
+  "name": "esempio-quartiere",
+  "seed": 42,
+  "intervalSec": 3,
+  "speed": 60,
+  "start": "15:00",
+  "timezone": "Europe/Rome",
+  "loopSec": 180,
+  "devices": [
+    {
+      "id": "sim-plebiscito",
+      "location": { "lat": 40.8359, "lon": 14.2488, "zone": "plebiscito" },
+      "readings": {
+        "temperature_c": { "kind": "daily", "min": 13, "max": 19, "peakHour": 14, "noise": 0.15,
+          "effects": { "ondata_calore": { "add": 14, "rampSec": 15 } } },
+        "humidity_pct": { "kind": "daily", "min": 55, "max": 80, "peakHour": 5, "noise": 1, "round": 0 },
+        "light_lux": { "kind": "daylight", "max": 40000, "min": 3, "sunrise": 6.8, "sunset": 16.9, "noise": 300, "round": 0,
+          "effects": { "nuvole": { "multiply": 0.008, "rampSec": 6 } } },
+        "button": { "kind": "bool", "p": 0.002, "effects": { "pulsante": { "set": true } } }
+      }
+    },
+    {
+      "id": "sim-sanita",
+      "location": { "lat": 40.8606, "lon": 14.2497, "zone": "sanita" },
+      "readings": {
+        "temperature_c": { "kind": "daily", "min": 13.5, "max": 19.5, "peakHour": 14, "noise": 0.15,
+          "effects": { "ondata_calore": { "add": 13, "rampSec": 20 } } },
+        "humidity_pct": { "kind": "daily", "min": 58, "max": 82, "peakHour": 5, "noise": 1, "round": 0 },
+        "light_lux": { "kind": "daylight", "max": 30000, "min": 2, "sunrise": 6.8, "sunset": 16.9, "noise": 250, "round": 0,
+          "effects": { "nuvole": { "multiply": 0.01, "rampSec": 8 } } }
+      }
+    },
+    {
+      "id": "sim-vomero",
+      "count": 2,
+      "jitterM": 250,
+      "vary": 0.05,
+      "location": { "lat": 40.844, "lon": 14.229, "zone": "vomero" },
+      "readings": {
+        "temperature_c": { "kind": "daily", "min": 11, "max": 17, "peakHour": 14, "noise": 0.15,
+          "effects": { "ondata_calore": { "add": 9, "rampSec": 20 } } },
+        "humidity_pct": { "kind": "daily", "min": 50, "max": 75, "peakHour": 5, "noise": 1, "round": 0 },
+        "light_lux": { "kind": "daylight", "max": 45000, "min": 2, "sunrise": 6.8, "sunset": 16.9, "noise": 300, "round": 0,
+          "effects": { "nuvole": { "multiply": 0.3, "rampSec": 8 } } }
+      }
+    }
+  ],
+  "timeline": [
+    { "at": 20, "name": "ondata_calore", "params": { "fonte": "timeline" }, "duration": 50 },
+    { "at": 85, "name": "nuvole", "params": { "fonte": "timeline" }, "duration": 25 }
+  ],
+  "scenarios": [
+    { "name": "ondata_calore", "label": "Ondata di calore", "description": "+9/+14 °C in 15-20 s", "params": {}, "duration": 60 },
+    { "name": "nuvole", "label": "Nuvole sul centro", "description": "la luce crolla a Plebiscito e Sanità", "params": {}, "duration": 40 },
+    { "name": "pulsante", "label": "Premi il pulsante", "description": "il sensore di Plebiscito invia button: true", "params": {}, "duration": 4 }
+  ]
+}

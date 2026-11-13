@@ -1,0 +1,15 @@
+{
+  "name": "iot-agents",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Base comune IoT + agenti per le soluzioni C2 e C5 (The Big Hack 2026). Nessuna dipendenza.",
+  "type": "module",
+  "main": "src/index.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "example": "node example/server.js",
+    "sim": "node sim/simulate.js --config example/sim-config.json --target http://localhost:8701",
+    "bridge": "node tools/openclaw-bridge-sim.js"
+  }
+}
