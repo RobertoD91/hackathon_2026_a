@@ -27,6 +27,7 @@ Testo integrale delle 5 challenge, agenda e regole: [`docs/hackathon.md`](docs/h
 Soluzioni esistenti:
 - `shared/iot-agents/`: base comune IoT + agenti (Node, HTTP + SSE), usata da C2. C5 (`c5-agentic-city`) ha un suo stack Python/MQTT.
 - `c1-feed-simulato/`: C1 Bhblasted, pubblico sintetico che prevede vincitore, CTR per segmento e fascia di CPM (online, modalità mock).
+- `c2-cer-quartiere/`: C2 Meditech / Federico II, comunità energetica rinnovabile di quartiere sopra `shared/iot-agents` (porta 8703; online in modalità demo). Avvio `node c2-cer-quartiere/server.js`, test `cd c2-cer-quartiere && npm test`, KPI di una giornata `npm run giornata`. Parametri con fonti e stato (verificato/indicativo) in `model/parametri.js`, quartiere in `model/quartiere.js`, ottimizzatore in `model/ottimizzatore.js`; la dashboard riceve il dettaglio dall'evento personalizzato `cer.stato` (via SSE, non in `/api/state`).
 - `c4-jrpg/`: C4 Consorzio Clara, JRPG a turni red team vs blue team (giocabile). Un tower defense per C4 è previsto più avanti. `jrpg/index.html` è solo un redirect al vecchio URL.
 - `c5-agentic-city/`: C5 Fastweb + Vodafone, "Napoli Agentic City". Brief e decisioni nel suo README. Non è una webapp: agenti + sensori IoT (ESP32, modulo 5G) + droni. Per un proxy/worker serve un Worker Cloudflare nuovo: **non usare `mbl-privato`**.
 

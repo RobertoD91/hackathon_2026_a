@@ -20,6 +20,7 @@ Diario delle decisioni e di quello che sappiamo sull'ambiente di lavoro. Aggiorn
 | 13/11 | `jrpg/` rinominata `c4-jrpg/` (resta un redirect in `jrpg/index.html`). Brainstorming su C1, C2, C5 in [`brainstorming.md`](brainstorming.md). |
 | 13/11 | Lanciati i subagent. Partiti subito: `c1-feed-simulato` e la base `shared/iot-agents` (contratto in `shared/iot-agents/CONTRATTO.md`). Dopo la base partono `c2-cer-quartiere` (scelta la comunità energetica: usa solo luce e temperatura) e `c5-regia-evento` (grande evento + guasto metro; cartella separata da `c5-agentic-city`). LLM non ancora scelto: adattatore con modalità `mock` predefinita. |
 | 13/11 | `c1-feed-simulato` integrato e online. **C5 resta interamente a `c5-agentic-city`** (l'altra sessione: Python/MQTT, gemello SUMO, semafori ESP32, OpenClaw): niente `c5-regia-evento` per non duplicare. `shared/iot-agents` serve quindi a C2. |
+| 13/11 | `shared/iot-agents` completata (50 test) e `c2-cer-quartiere` integrata: su una giornata simulata gli agenti portano la quota di energia condivisa dal 51% all'86% circa. Parametri economici indicativi da verificare (`c2-cer-quartiere/model/parametri.js`). |
 | — | Tower defense per C4: previsto dopo, non iniziato. |
 
 ## Punti di forza del team

@@ -1,0 +1,13 @@
+{
+  "name": "c2-cer-quartiere",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CER di quartiere con agenti AI (The Big Hack 2026, Challenge 02). Nessuna dipendenza: usa shared/iot-agents.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test \"test/*.test.js\"",
+    "giornata": "node test/giornata.js"
+  }
+}
