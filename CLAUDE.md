@@ -13,6 +13,8 @@ Repo del team per **The Big Hack 2026** (Codemotion, 40ª edizione di Futuro Rem
 
 Team (dal 13/11 sera): **Roberto D'Isanto e Mario Varlese**. Francesca Morra, Giovanni Di Stazio e Pasquale Criscuolo sono in un altro gruppo: hanno forkato questa repo e lavorano su challenge diverse (collaboriamo, ma i loro sviluppi stanno nel loro fork).
 
+**Priorità del nostro team:** C5 Fastweb + Vodafone è la challenge **principale**, C2 Meditech quella **di riserva**, C1 Bhblasted molto improbabile. C4 (`c4-jrpg/`) ora è dell'altro gruppo: la cartella resta qui com'è, non va più modificata.
+
 Vincoli che contano per le scelte tecniche:
 - **Consegna: domenica 15/11 ore 12:00.** Sabato si lavora 11:00–20:30, domenica dalle 8:30. Privilegia soluzioni che arrivano a una demo funzionante, non architetture complete.
 - **Criteri della giuria:** utilità/valore, aderenza alla challenge, chiarezza e completezza del progetto, design/UX, creatività/innovazione. La UX della demo pesa quanto il backend.

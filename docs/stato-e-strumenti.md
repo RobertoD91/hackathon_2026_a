@@ -24,7 +24,8 @@ Diario delle decisioni e di quello che sappiamo sull'ambiente di lavoro. Aggiorn
 | 13/11 | Esempio IoT: mappa "Napoli in tempo reale" stile Seoul RTD e agente folla. |
 | 13/11 sera | **Il team si divide:** qui restano Roberto D'Isanto e Mario Varlese; Francesca, Giovanni e Pasquale hanno forkato la repo e lavorano su challenge diverse. |
 | 13/11 sera | Avviati: ricerca e verifica delle fonti dati pubbliche di Napoli (catalogo in `docs/fonti-dati-napoli.md`), versione fattoria della mappa, firmware del badge WHY2025 con MQTT verso `cloud.robertodisanto.it` (+ ponte MQTT → hub, valutazione Tasmota), Docker del broker MQTT in `cloud/mqtt/`. |
-| — | Tower defense per C4: previsto dopo, non iniziato. |
+| 13/11 sera | Priorità: **C5 principale**, C2 di riserva, C1 molto improbabile. C4 passa all'altro gruppo; le cartelle restano come sono. |
+| — | Tower defense per C4: non più nostro (altro gruppo). |
 
 ## Punti di forza del team
 
