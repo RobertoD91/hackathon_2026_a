@@ -1,50 +1,108 @@
 [
   {
     "id": 1,
-    "name": "phishing",
-    "animationName": "ICE_SHARD",
-    "audioKey": "ICE"
+    "name": "Blocca IP",
+    "animationName": "SLASH",
+    "audioKey": "CLAW",
+    "counters": "NETWORK",
+    "tip": "Bloccare gli IP della botnet ferma il traffico malevolo prima che arrivi al server."
   },
   {
     "id": 2,
-    "name": "port scan",
-    "animationName": "SLASH",
-    "audioKey": "CLAW"
+    "name": "Rate limit",
+    "animationName": "ICE_SHARD",
+    "audioKey": "ICE",
+    "counters": "NETWORK",
+    "tip": "Limitare le richieste al secondo impedisce a un DDoS di saturare il servizio."
   },
   {
     "id": 3,
-    "name": "sql inject",
-    "animationName": "SLASH",
-    "audioKey": "CLAW"
+    "name": "MFA",
+    "animationName": "ICE_SHARD",
+    "audioKey": "ICE",
+    "counters": "SOCIAL",
+    "tip": "Con l'autenticazione a più fattori una password rubata col phishing non basta per entrare."
   },
   {
     "id": 4,
-    "name": "cryptolock",
-    "animationName": "ICE_SHARD",
-    "audioKey": "ICE"
+    "name": "Patch",
+    "animationName": "SLASH",
+    "audioKey": "CLAW",
+    "counters": "MALWARE",
+    "tip": "Aggiornare il software chiude le vulnerabilità che il malware usa per entrare."
   },
   {
     "id": 5,
-    "name": "patch",
+    "name": "Quarantena",
     "animationName": "ICE_SHARD",
-    "audioKey": "ICE"
+    "audioKey": "ICE",
+    "counters": "MALWARE",
+    "tip": "L'EDR isola il file infetto prima che cifri il resto del sistema."
   },
   {
     "id": 6,
-    "name": "block ip",
+    "name": "Backup",
     "animationName": "SLASH",
-    "audioKey": "CLAW"
+    "audioKey": "CLAW",
+    "counters": "MALWARE",
+    "tip": "Con un backup offline ripristini i dati senza pagare nessun riscatto."
   },
   {
     "id": 7,
-    "name": "mfa",
-    "animationName": "ICE_SHARD",
-    "audioKey": "ICE"
+    "name": "Filtro spam",
+    "animationName": "SLASH",
+    "audioKey": "CLAW",
+    "counters": "SOCIAL",
+    "tip": "Il filtro antispam blocca le email truffa prima che arrivino nella casella."
   },
   {
     "id": 8,
-    "name": "ids alert",
+    "name": "Formazione",
+    "animationName": "ICE_SHARD",
+    "audioKey": "ICE",
+    "counters": "SOCIAL",
+    "tip": "Chi è formato riconosce mittenti sospetti e link falsi: il phishing perde forza."
+  },
+  {
+    "id": 9,
+    "name": "Email falsa",
+    "animationName": "ICE_SHARD",
+    "audioKey": "ICE",
+    "description": "Phishing: un'email che imita la tua banca per farti inserire la password su un sito falso."
+  },
+  {
+    "id": 10,
+    "name": "Finto CEO",
     "animationName": "SLASH",
-    "audioKey": "CLAW"
+    "audioKey": "CLAW",
+    "description": "Spear phishing: il truffatore si finge il tuo capo e chiede un bonifico urgente."
+  },
+  {
+    "id": 11,
+    "name": "DDoS",
+    "animationName": "SLASH",
+    "audioKey": "CLAW",
+    "description": "DDoS: migliaia di dispositivi infetti inondano il server di richieste finché non risponde più."
+  },
+  {
+    "id": 12,
+    "name": "Port scan",
+    "animationName": "ICE_SHARD",
+    "audioKey": "ICE",
+    "description": "Port scan: l'attaccante cerca porte aperte sul server per trovare servizi vulnerabili."
+  },
+  {
+    "id": 13,
+    "name": "Cifra file",
+    "animationName": "ICE_SHARD",
+    "audioKey": "ICE",
+    "description": "Ransomware: i file vengono cifrati e per riaverli ti chiedono un riscatto in criptovaluta."
+  },
+  {
+    "id": 14,
+    "name": "Exploit",
+    "animationName": "SLASH",
+    "audioKey": "CLAW",
+    "description": "Exploit: il malware sfrutta una vulnerabilità di un software non aggiornato per entrare."
   }
 ]

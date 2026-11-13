@@ -14,7 +14,22 @@ Differenze rispetto all'originale:
 - asset grafici e audio inclusi nella repo (l'originale li scarica da uno zip separato), musica convertita da WAV a MP3;
 - `Ignivolt.png` rinominato in `ignivolt.png` (su Linux/GitHub Pages i nomi dei file distinguono maiuscole e minuscole);
 - chiave di salvataggio in `localStorage` rinominata in `CYBER_JRPG_DATA`;
-- nomi di mostri e mosse a tema cyber (`assets/data/monsters.json`, `assets/data/attacks.json`).
+- unità e mosse a tema cyber (`assets/data/monsters.json`, `assets/data/attacks.json`) con sistema di contromosse (`src/battle/cyber-types.js`);
+- tutto in italiano: dialoghi, cartelli, oggetti, menu (`src/common/labels-it.js`);
+- niente introduzione: si parte con il blue team (Firewall, EDR) e l'hacker Black Hat a destra del punto di partenza;
+- schermata del titolo con immagine dell'hackathon e i nomi del team.
+
+## Come si gioca
+
+Parla con **Black Hat** (a destra del punto di partenza, premi Spazio davanti a lui): schiera Phisher, Botnet e Ransomware.
+
+| Minaccia (red team) | Tipo | Contromosse efficaci (blue team) |
+|---|---|---|
+| Phisher | ingegneria sociale | MFA, Filtro spam, Formazione |
+| Botnet | rete | Blocca IP, Rate limit |
+| Ransomware | malware | Patch, Quarantena, Backup |
+
+La contromossa giusta fa danno doppio e spiega perché funziona; quella sbagliata fa metà danno e suggerisce cosa usare. Firewall ed EDR hanno mosse diverse: usa **Cambia** per scegliere l'unità adatta.
 
 ## Avvio in locale
 

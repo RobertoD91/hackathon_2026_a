@@ -69,8 +69,42 @@ const initialState = {
     menuColor: 0,
   },
   gameStarted: false,
+  // il giocatore parte già con il blue team in squadra (niente introduzione)
   monsters: {
-    inParty: [],
+    inParty: [
+      {
+        id: 'blue-firewall',
+        monsterId: 1,
+        name: 'Firewall',
+        assetKey: 'AQUAVALOR',
+        assetFrame: 0,
+        currentHp: 40,
+        maxHp: 40,
+        attackIds: [1, 2, 3, 4],
+        baseAttack: 5,
+        currentAttack: 5,
+        currentLevel: 5,
+        baseExp: 60,
+        currentExp: 125,
+        team: 'BLUE',
+      },
+      {
+        id: 'blue-edr',
+        monsterId: 2,
+        name: 'EDR',
+        assetKey: 'FROSTSABER',
+        assetFrame: 0,
+        currentHp: 40,
+        maxHp: 40,
+        attackIds: [5, 6, 7, 8],
+        baseAttack: 5,
+        currentAttack: 5,
+        currentLevel: 5,
+        baseExp: 60,
+        currentExp: 125,
+        team: 'BLUE',
+      },
+    ],
   },
   inventory: [
     {
@@ -87,7 +121,8 @@ const initialState = {
     },
   ],
   itemsPickedUp: [],
-  viewedEvents: [],
+  // eventi 1 e 2 di main_1 = cutscene introduttive originali, saltate
+  viewedEvents: [1, 2],
   flags: [],
   defeatedNpcs: [],
 };
@@ -119,7 +154,7 @@ class DataManager extends Phaser.Events.EventEmitter {
     super();
     this.#store = new Phaser.Data.DataManager(this);
     // initialize state with initial values
-    this.#updateDataManger(initialState);
+    this.#updateDataManger(structuredClone(initialState));
   }
 
   /** @type {Phaser.Data.DataManager} */
@@ -183,7 +218,7 @@ class DataManager extends Phaser.Events.EventEmitter {
     existingData.player.location = { ...initialState.player.location };
     existingData.gameStarted = initialState.gameStarted;
     existingData.monsters = {
-      inParty: [...initialState.monsters.inParty],
+      inParty: structuredClone(initialState.monsters.inParty),
     };
     existingData.inventory = initialState.inventory;
     existingData.itemsPickedUp = [...initialState.itemsPickedUp];

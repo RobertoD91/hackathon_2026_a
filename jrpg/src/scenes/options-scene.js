@@ -24,13 +24,13 @@ const OPTIONS_TEXT_STYLE = {
 };
 
 const OPTION_MENU_OPTION_INFO_MSG = Object.freeze({
-  TEXT_SPEED: 'Choose one of three text display speeds.',
-  BATTLE_SCENE: 'Choose to display battle animations and effects or not.',
-  BATTLE_STYLE: 'Choose to allow your monster to be recalled between rounds.',
-  SOUND: 'Choose to enable or disable the sound.',
-  VOLUME: 'Choose the volume of the music and sound effects of the game.',
-  MENU_COLOR: 'Choose one of the three menu color options.',
-  CONFIRM: 'Save your changes and go back to the main menu.',
+  TEXT_SPEED: 'Scegli la velocità del testo.',
+  BATTLE_SCENE: 'Mostra o nascondi le animazioni in battaglia.',
+  BATTLE_STYLE: 'Permetti di cambiare unità tra un turno e l\'altro.',
+  SOUND: 'Attiva o disattiva il suono.',
+  VOLUME: 'Regola il volume di musica ed effetti.',
+  MENU_COLOR: 'Scegli il colore dei menu.',
+  CONFIRM: 'Salva le modifiche e torna al menu principale.',
 });
 
 const TEXT_FONT_COLORS = Object.freeze({
@@ -126,13 +126,13 @@ export class OptionsScene extends BaseScene {
     this.#mainContainer.setX(100).setY(20);
 
     // create main option sections
-    this.add.text(width / 2, 40, 'Options', OPTIONS_TEXT_STYLE).setOrigin(0.5);
+    this.add.text(width / 2, 40, 'Opzioni', OPTIONS_TEXT_STYLE).setOrigin(0.5);
     const menuOptionsPosition = {
       x: 25,
       yStart: 55,
       yIncrement: 55,
     };
-    const menuOptions = ['Text Speed', 'Battle Scene', 'Battle Style', 'Sound', 'Volume', 'Menu Color', 'Close'];
+    const menuOptions = ['Testo', 'Animazioni', 'Stile', 'Suono', 'Volume', 'Colore menu', 'Chiudi'];
     menuOptions.forEach((option, index) => {
       const x = menuOptionsPosition.x;
       const y = menuOptionsPosition.yStart + menuOptionsPosition.yIncrement * index;
@@ -142,9 +142,9 @@ export class OptionsScene extends BaseScene {
 
     // create text speed options
     this.#textSpeedOptionTextGameObjects = this.add.group([
-      this.add.text(420, 75, 'Slow', OPTIONS_TEXT_STYLE),
-      this.add.text(590, 75, 'Mid', OPTIONS_TEXT_STYLE),
-      this.add.text(760, 75, 'Fast', OPTIONS_TEXT_STYLE),
+      this.add.text(420, 75, 'Lento', OPTIONS_TEXT_STYLE),
+      this.add.text(590, 75, 'Medio', OPTIONS_TEXT_STYLE),
+      this.add.text(760, 75, 'Veloce', OPTIONS_TEXT_STYLE),
     ]);
 
     // create battle scene options
@@ -155,8 +155,8 @@ export class OptionsScene extends BaseScene {
 
     // create battle style options
     this.#battleStyleOptionTextGameObjects = this.add.group([
-      this.add.text(420, 185, 'Set', OPTIONS_TEXT_STYLE),
-      this.add.text(590, 185, 'Shift', OPTIONS_TEXT_STYLE),
+      this.add.text(420, 185, 'Fisso', OPTIONS_TEXT_STYLE),
+      this.add.text(590, 185, 'Cambio', OPTIONS_TEXT_STYLE),
     ]);
 
     // create sound options

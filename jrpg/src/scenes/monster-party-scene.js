@@ -256,10 +256,10 @@ export class MonsterPartyScene extends BaseScene {
    */
   #updateInfoContainerText() {
     if (this.#selectedPartyMonsterIndex === -1) {
-      this.#infoTextGameObject.setText('Go back to previous menu');
+      this.#infoTextGameObject.setText('Torna al menu precedente');
       return;
     }
-    this.#infoTextGameObject.setText('Choose a monster');
+    this.#infoTextGameObject.setText('Scegli un\'unità');
   }
 
   /**
@@ -350,7 +350,7 @@ export class MonsterPartyScene extends BaseScene {
       !wasMonsterSelected
     ) {
       // if active monster was knocked out, return early since we need to pick a new monster for battle
-      this.#infoTextGameObject.setText('You must select a new monster for battle.');
+      this.#infoTextGameObject.setText('Devi scegliere una nuova unità per la battaglia.');
       this.#waitingForInput = true;
       this.#menu.hide();
       return;
@@ -439,7 +439,7 @@ export class MonsterPartyScene extends BaseScene {
   #handleHealItemUsed(amount) {
     // validate that the monster is not fainted
     if (this.#monsters[this.#selectedPartyMonsterIndex].currentHp === 0) {
-      this.#infoTextGameObject.setText('Cannot heal fainted monster');
+      this.#infoTextGameObject.setText('Non puoi ripristinare un\'unità offline');
       this.#waitingForInput = true;
       this.#menu.hide();
       return;
@@ -450,7 +450,7 @@ export class MonsterPartyScene extends BaseScene {
       this.#monsters[this.#selectedPartyMonsterIndex].currentHp ===
       this.#monsters[this.#selectedPartyMonsterIndex].maxHp
     ) {
-      this.#infoTextGameObject.setText('Monster is already fully healed');
+      this.#infoTextGameObject.setText('L\'unità è già al massimo');
       this.#waitingForInput = true;
       this.#menu.hide();
       return;
@@ -464,7 +464,7 @@ export class MonsterPartyScene extends BaseScene {
     ) {
       this.#monsters[this.#selectedPartyMonsterIndex].currentHp = this.#monsters[this.#selectedPartyMonsterIndex].maxHp;
     }
-    this.#infoTextGameObject.setText(`Healed monster by ${amount} HP`);
+    this.#infoTextGameObject.setText(`Ripristinati ${amount} HP`);
     this.#healthBars[this.#selectedPartyMonsterIndex].setMeterPercentageAnimated(
       this.#monsters[this.#selectedPartyMonsterIndex].currentHp / this.#monsters[this.#selectedPartyMonsterIndex].maxHp,
       {
@@ -489,7 +489,7 @@ export class MonsterPartyScene extends BaseScene {
   #handleMonsterSelectedForSwitch() {
     // validate that the monster is not fainted
     if (this.#monsters[this.#selectedPartyMonsterIndex].currentHp === 0) {
-      this.#infoTextGameObject.setText('Selected monster is not able to fight.');
+      this.#infoTextGameObject.setText('Questa unità non può combattere.');
       this.#waitingForInput = true;
       this.#menu.hide();
       return;
@@ -497,7 +497,7 @@ export class MonsterPartyScene extends BaseScene {
 
     // validate that the selected monster is not the current active monster in battle
     if (this.#sceneData.activeBattleMonsterPartyIndex === this.#selectedPartyMonsterIndex) {
-      this.#infoTextGameObject.setText('Selected monster is already battling');
+      this.#infoTextGameObject.setText('Questa unità è già in battaglia');
       this.#waitingForInput = true;
       this.#menu.hide();
       return;
@@ -553,7 +553,7 @@ export class MonsterPartyScene extends BaseScene {
 
       if (this.#menu.selectedMenuOption === MONSTER_PARTY_MENU_OPTIONS.RELEASE) {
         if (this.#monsters.length <= 1) {
-          this.#infoTextGameObject.setText('Cannot release last monster in party');
+          this.#infoTextGameObject.setText('Non puoi rilasciare l\'ultima unità del team');
           this.#waitingForInput = true;
           this.#menu.hide();
           return;
@@ -561,13 +561,13 @@ export class MonsterPartyScene extends BaseScene {
 
         this.#menu.hide();
         this.#confirmationMenu.show();
-        this.#infoTextGameObject.setText(`Release ${this.#monsters[this.#selectedPartyMonsterIndex].name}?`);
+        this.#infoTextGameObject.setText(`Rilasciare ${this.#monsters[this.#selectedPartyMonsterIndex].name}?`);
         return;
       }
 
       if (this.#menu.selectedMenuOption === MONSTER_PARTY_MENU_OPTIONS.MOVE) {
         if (this.#monsters.length <= 1) {
-          this.#infoTextGameObject.setText('Cannot move monster');
+          this.#infoTextGameObject.setText('Non puoi spostare questa unità');
           this.#waitingForInput = true;
           this.#menu.hide();
           return;
@@ -575,7 +575,7 @@ export class MonsterPartyScene extends BaseScene {
 
         this.#isMovingMonster = true;
         this.#monsterToBeMovedIndex = this.#selectedPartyMonsterIndex;
-        this.#infoTextGameObject.setText('Choose a monster to switch positions with');
+        this.#infoTextGameObject.setText('Scegli l\'unità con cui scambiarla');
         this.#menu.hide();
         return;
       }
@@ -612,7 +612,7 @@ export class MonsterPartyScene extends BaseScene {
         if (this.#menu.selectedMenuOption === MONSTER_PARTY_MENU_OPTIONS.RELEASE) {
           this._controls.lockInput = true;
           this.#infoTextGameObject.setText(
-            `You released ${this.#monsters[this.#selectedPartyMonsterIndex].name} into the wild.`
+            `Hai rilasciato ${this.#monsters[this.#selectedPartyMonsterIndex].name}.`
           );
           this.time.delayedCall(1000, () => {
             this.#removeMonster();

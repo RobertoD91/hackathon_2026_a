@@ -9,6 +9,7 @@ import { animateText } from '../../../utils/text-utils.js';
 import { dataManager } from '../../../utils/data-manager.js';
 import { SCENE_KEYS } from '../../../scenes/scene-keys.js';
 import { ITEM_CATEGORY } from '../../../types/typedef.js';
+import { menuLabel } from '../../../common/labels-it.js';
 
 const BATTLE_MENU_CURSOR_POS = Object.freeze({
   x: 42,
@@ -165,7 +166,7 @@ export class BattleMenu {
    */
   showMainBattleMenu() {
     this.#activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_MAIN;
-    this.#battleTextGameObjectLine1.setText('what should');
+    this.#battleTextGameObjectLine1.setText('cosa deve fare');
     this.#mainBattleMenuPhaserContainerGameObject.setAlpha(1);
     this.#battleTextGameObjectLine1.setAlpha(1);
     this.#battleTextGameObjectLine2.setAlpha(1);
@@ -222,6 +223,11 @@ export class BattleMenu {
   hideInputCursor() {
     this.#userInputCursorPhaserImageGameObject.setAlpha(0);
     this.#userInputCursorPhaserTween.pause();
+  }
+
+  /** @type {boolean} true quando il riquadro messaggi aspetta che il giocatore prema Spazio */
+  get isWaitingForPlayerInput() {
+    return this.#waitingForPlayerInput;
   }
 
   /**
@@ -360,7 +366,7 @@ export class BattleMenu {
    * @returns {void}
    */
   #createMainBattleMenu() {
-    this.#battleTextGameObjectLine1 = this.#scene.add.text(20, 468, 'what should', {
+    this.#battleTextGameObjectLine1 = this.#scene.add.text(20, 468, 'cosa deve fare', {
       ...BATTLE_UI_TEXT_STYLE,
       ...{
         wordWrap: {
@@ -371,7 +377,7 @@ export class BattleMenu {
     this.#battleTextGameObjectLine2 = this.#scene.add.text(
       20,
       512,
-      `${this.#activePlayerMonster.name} do next?`,
+      `${this.#activePlayerMonster.name}?`,
       BATTLE_UI_TEXT_STYLE
     );
 
@@ -382,10 +388,10 @@ export class BattleMenu {
 
     this.#mainBattleMenuPhaserContainerGameObject = this.#scene.add.container(520, 448, [
       this.#createMainInfoSubPane(),
-      this.#scene.add.text(55, 22, BATTLE_MENU_OPTIONS.FIGHT, BATTLE_UI_TEXT_STYLE),
-      this.#scene.add.text(240, 22, BATTLE_MENU_OPTIONS.SWITCH, BATTLE_UI_TEXT_STYLE),
-      this.#scene.add.text(55, 70, BATTLE_MENU_OPTIONS.ITEM, BATTLE_UI_TEXT_STYLE),
-      this.#scene.add.text(240, 70, BATTLE_MENU_OPTIONS.FLEE, BATTLE_UI_TEXT_STYLE),
+      this.#scene.add.text(55, 22, menuLabel(BATTLE_MENU_OPTIONS.FIGHT), BATTLE_UI_TEXT_STYLE),
+      this.#scene.add.text(240, 22, menuLabel(BATTLE_MENU_OPTIONS.SWITCH), BATTLE_UI_TEXT_STYLE),
+      this.#scene.add.text(55, 70, menuLabel(BATTLE_MENU_OPTIONS.ITEM), BATTLE_UI_TEXT_STYLE),
+      this.#scene.add.text(240, 70, menuLabel(BATTLE_MENU_OPTIONS.FLEE), BATTLE_UI_TEXT_STYLE),
       this.#mainBattleMenuCursorPhaserImageGameObject,
     ]);
 
@@ -797,6 +803,6 @@ export class BattleMenu {
 
     this.#wasItemUsed = true;
     this.#usedItem = data.item;
-    this.updateInfoPaneMessagesAndWaitForInput([`You used the following item: ${data.item.name}`]);
+    this.updateInfoPaneMessagesAndWaitForInput([`Hai usato: ${data.item.name}`]);
   }
 }

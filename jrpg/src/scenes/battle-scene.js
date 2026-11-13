@@ -17,6 +17,7 @@ import { playBackgroundMusic, playSoundFx } from '../utils/audio-utils.js';
 import { calculateExpGainedFromMonster, handleMonsterGainingExperience } from '../utils/leveling-utils.js';
 import { ITEM_CATEGORY } from '../types/typedef.js';
 import { exhaustiveGuard } from '../utils/guard.js';
+import { calculateDamage, getAttackEffectiveness } from '../battle/cyber-types.js';
 import { Ball } from '../battle/ball.js';
 import { sleep } from '../utils/time-utils.js';
 import { generateUuid } from '../utils/random.js';
@@ -233,6 +234,18 @@ export class BattleScene extends BaseScene {
       this.#battleMenu.handlePlayerInput('OK');
       return;
     }
+    // messaggi didattici (contromosse e spiegazioni degli attacchi) mostrati durante i turni
+    if (
+      wasSpaceKeyPressed &&
+      this.#battleMenu.isWaitingForPlayerInput &&
+      (this.#battleStateMachine.currentStateName === BATTLE_STATES.BATTLE ||
+        this.#battleStateMachine.currentStateName === BATTLE_STATES.USED_ITEM ||
+        this.#battleStateMachine.currentStateName === BATTLE_STATES.HEAL_ITEM_USED ||
+        this.#battleStateMachine.currentStateName === BATTLE_STATES.CAPTURE_ITEM_USED)
+    ) {
+      this.#battleMenu.handlePlayerInput('OK');
+      return;
+    }
     if (this.#battleStateMachine.currentStateName !== BATTLE_STATES.PLAYER_INPUT) {
       return;
     }
@@ -297,26 +310,29 @@ export class BattleScene extends BaseScene {
       return;
     }
 
+    const attack = this.#activePlayerMonster.attacks[this.#activePlayerAttackIndex];
+    const effectiveness = getAttackEffectiveness(attack, this.#activeEnemyMonster.type);
     this.#battleMenu.updateInfoPaneMessageNoInputRequired(
-      `${this.#activePlayerMonster.name} used ${this.#activePlayerMonster.attacks[this.#activePlayerAttackIndex].name}`,
+      `${this.#activePlayerMonster.name} usa ${attack.name}`,
       () => {
         // play attack animation based on the selected attack
         // when attack is finished, play damage animation and then update health bar
         this.time.delayedCall(500, () => {
           this.time.delayedCall(100, () => {
-            playSoundFx(this, this.#activePlayerMonster.attacks[this.#activePlayerAttackIndex].audioKey);
+            playSoundFx(this, attack.audioKey);
           });
-          this.#attackManager.playAttackAnimation(
-            this.#activePlayerMonster.attacks[this.#activePlayerAttackIndex].animationName,
-            ATTACK_TARGET.ENEMY,
-            () => {
-              this.#activeEnemyMonster.playTakeDamageAnimation(() => {
-                this.#activeEnemyMonster.takeDamage(this.#activePlayerMonster.baseAttack, () => {
+          this.#attackManager.playAttackAnimation(attack.animationName, ATTACK_TARGET.ENEMY, () => {
+            this.#activeEnemyMonster.playTakeDamageAnimation(() => {
+              const damage = calculateDamage(this.#activePlayerMonster.baseAttack, effectiveness.multiplier);
+              this.#activeEnemyMonster.takeDamage(damage, () => {
+                if (effectiveness.messages.length === 0) {
                   callback();
-                });
+                  return;
+                }
+                this.#showMessagesAndWaitForInput(effectiveness.messages, callback);
               });
-            }
-          );
+            });
+          });
         });
       }
     );
@@ -332,28 +348,28 @@ export class BattleScene extends BaseScene {
       return;
     }
 
+    const attack = this.#activeEnemyMonster.attacks[this.#activeEnemyAttackIndex];
     this.#battleMenu.updateInfoPaneMessageNoInputRequired(
-      `foe ${this.#activeEnemyMonster.name} used ${
-        this.#activeEnemyMonster.attacks[this.#activeEnemyAttackIndex].name
-      }`,
+      `${this.#activeEnemyMonster.name} nemico usa ${attack.name}`,
       () => {
         // play attack animation based on the selected attack
         // when attack is finished, play damage animation and then update health bar
         this.time.delayedCall(500, () => {
           this.time.delayedCall(100, () => {
-            playSoundFx(this, this.#activeEnemyMonster.attacks[this.#activeEnemyAttackIndex].audioKey);
+            playSoundFx(this, attack.audioKey);
           });
-          this.#attackManager.playAttackAnimation(
-            this.#activeEnemyMonster.attacks[this.#activeEnemyAttackIndex].animationName,
-            ATTACK_TARGET.PLAYER,
-            () => {
-              this.#activePlayerMonster.playTakeDamageAnimation(() => {
-                this.#activePlayerMonster.takeDamage(this.#activeEnemyMonster.baseAttack, () => {
+          this.#attackManager.playAttackAnimation(attack.animationName, ATTACK_TARGET.PLAYER, () => {
+            this.#activePlayerMonster.playTakeDamageAnimation(() => {
+              this.#activePlayerMonster.takeDamage(this.#activeEnemyMonster.baseAttack, () => {
+                if (!attack.description) {
                   callback();
-                });
+                  return;
+                }
+                // spiegazione didattica dell'attacco red team
+                this.#showMessagesAndWaitForInput([attack.description], callback);
               });
-            }
-          );
+            });
+          });
         });
       }
     );
@@ -373,7 +389,7 @@ export class BattleScene extends BaseScene {
     if (this.#monsterCaptured) {
       // enemy monster was captured
       this.#activeEnemyMonster.playDeathAnimation(() => {
-        this.#showMessagesAndWaitForInput([`You caught ${this.#activeEnemyMonster.name}.`], () => {
+        this.#showMessagesAndWaitForInput([`Hai catturato ${this.#activeEnemyMonster.name} nell'honeypot.`], () => {
           this.#battleStateMachine.setState(BATTLE_STATES.GAIN_EXPERIENCE);
         });
       });
@@ -390,8 +406,8 @@ export class BattleScene extends BaseScene {
       // play monster fainted animation and wait for animation to finish
       this.#activeEnemyMonster.playDeathAnimation(() => {
         const text = this.#isTrainerBattle
-          ? `${this.#activeEnemyMonster.name} has been knocked out.`
-          : `Wild ${this.#activeEnemyMonster.name} fainted.`;
+          ? `${this.#activeEnemyMonster.name} è stato neutralizzato.`
+          : `${this.#activeEnemyMonster.name} è stato neutralizzato.`;
         this.#showMessagesAndWaitForInput([text], () => {
           this.#battleStateMachine.setState(BATTLE_STATES.GAIN_EXPERIENCE);
         });
@@ -417,10 +433,10 @@ export class BattleScene extends BaseScene {
         // if not, player faints and battle is over
         if (!hasOtherActiveMonsters) {
           const text = this.#isTrainerBattle
-            ? `${this.#sceneData.npc.name} has won the battle!`
-            : 'You have no more monsters, escaping to safety...';
+            ? `${this.#sceneData.npc.name} ha vinto la battaglia!`
+            : 'Non hai più difese attive, ti ritiri al sicuro...';
 
-          this.#showMessagesAndWaitForInput([`${this.#activePlayerMonster.name} fainted.`, text], () => {
+          this.#showMessagesAndWaitForInput([`${this.#activePlayerMonster.name} è andato offline.`, text], () => {
             this.#playerKnockedOut = true;
             this.#battleStateMachine.setState(BATTLE_STATES.FINISHED);
           });
@@ -430,7 +446,7 @@ export class BattleScene extends BaseScene {
         // we have active monsters, so show message about monster fainting and then show monster party scene
         // so player can choose next monster
         this.#showMessagesAndWaitForInput(
-          [`${this.#activePlayerMonster.name} fainted.`, 'Choose another monster to continue the battle.'],
+          [`${this.#activePlayerMonster.name} è andato offline.`, "Scegli un'altra unità per continuare."],
           () => {
             this.#activeMonsterKnockedOut = true;
             this.#battleStateMachine.setState(BATTLE_STATES.SWITCH_MONSTER);
@@ -505,7 +521,7 @@ export class BattleScene extends BaseScene {
         await this.#enemyBattleNpc.playAppearAnimation();
 
         // wait for text animation to complete and move to next state
-        this.#showMessagesAndWaitForInput([`${this.#sceneData.npc.name} would like to battle!`], () => {
+        this.#showMessagesAndWaitForInput([`${this.#sceneData.npc.name} ti sfida!`], () => {
           // hide npc as they bring out their monster
           this.#enemyBattleNpc.hide();
           this.#battleStateMachine.setState(BATTLE_STATES.PRE_BATTLE_INFO);
@@ -527,8 +543,8 @@ export class BattleScene extends BaseScene {
           });
 
           const text = this.#isTrainerBattle
-            ? `${this.#sceneData.npc.name} brought out ${this.#activeEnemyMonster.name}.`
-            : `wild ${this.#activeEnemyMonster.name} appeared!`;
+            ? `${this.#sceneData.npc.name} lancia ${this.#activeEnemyMonster.name}!`
+            : `Minaccia rilevata: ${this.#activeEnemyMonster.name}!`;
           this.#showMessagesAndWaitForInput([text], () => {
             // wait for text animation to complete and move to next state
             this.#battleStateMachine.setState(BATTLE_STATES.BRING_OUT_MONSTER);
@@ -545,7 +561,7 @@ export class BattleScene extends BaseScene {
           this.#activePlayerMonster.playMonsterHealthBarAppearAnimation(() => {
             this.#availableMonstersUiContainerForPlayer.setAlpha(1);
           });
-          this.#battleMenu.updateInfoPaneMessageNoInputRequired(`go ${this.#activePlayerMonster.name}!`, () => {
+          this.#battleMenu.updateInfoPaneMessageNoInputRequired(`Vai, ${this.#activePlayerMonster.name}!`, () => {
             // wait for text animation to complete and move to next state
             this.time.delayedCall(1200, () => {
               if (this.#switchingActiveMonster && !this.#activeMonsterKnockedOut) {
@@ -660,7 +676,7 @@ export class BattleScene extends BaseScene {
         const randomNumber = Phaser.Math.Between(1, 10);
         if (randomNumber > 5) {
           // player has run away successfully
-          this.#showMessagesAndWaitForInput(['You got away safely!'], () => {
+          this.#showMessagesAndWaitForInput(['Sei fuggito senza danni!'], () => {
             this.time.delayedCall(200, () => {
               playSoundFx(this, AUDIO_ASSET_KEYS.FLEE);
               this.#battleStateMachine.setState(BATTLE_STATES.FINISHED);
@@ -669,7 +685,7 @@ export class BattleScene extends BaseScene {
           return;
         }
         // player failed to run away, allow enemy to take their turn
-        this.#showMessagesAndWaitForInput(['You failed to run away...'], () => {
+        this.#showMessagesAndWaitForInput(['Non riesci a fuggire...'], () => {
           this.time.delayedCall(200, () => {
             this.#battleStateMachine.setState(BATTLE_STATES.ENEMY_INPUT);
           });
@@ -708,7 +724,7 @@ export class BattleScene extends BaseScene {
           if (index === this.#activePlayerMonsterPartyIndex) {
             statChanges = this.#activePlayerMonster.updateMonsterExp(gainedExpForActiveMonster);
             monsterMessages.push(
-              `${this.#sceneData.playerMonsters[index].name} gained ${gainedExpForActiveMonster} exp.`
+              `${this.#sceneData.playerMonsters[index].name} guadagna ${gainedExpForActiveMonster} exp.`
             );
             if (statChanges.level !== 0) {
               didActiveMonsterLevelUp = true;
@@ -719,7 +735,7 @@ export class BattleScene extends BaseScene {
               gainedExpForInactiveMonster
             );
             monsterMessages.push(
-              `${this.#sceneData.playerMonsters[index].name} gained ${gainedExpForInactiveMonster} exp.`
+              `${this.#sceneData.playerMonsters[index].name} guadagna ${gainedExpForInactiveMonster} exp.`
             );
           }
           if (statChanges !== undefined && statChanges.level !== 0) {
@@ -802,7 +818,7 @@ export class BattleScene extends BaseScene {
           );
         });
         if (!hasOtherActiveMonsters) {
-          this.#showMessagesAndWaitForInput(['You have no other monsters able to fight in your party'], () => {
+          this.#showMessagesAndWaitForInput(['Non hai altre unità in grado di combattere.'], () => {
             this.#battleStateMachine.setState(BATTLE_STATES.PLAYER_INPUT);
           });
           return;
@@ -831,7 +847,7 @@ export class BattleScene extends BaseScene {
 
         // show text about bringing out next monster
         const nextMonster = this.#sceneData.enemyMonsters[this.#activeEnemyMonsterPartyIndex];
-        this.#showMessagesAndWaitForInput([`Foe is about to send in ${nextMonster.name}.`], () => {
+        this.#showMessagesAndWaitForInput([`Il nemico sta per lanciare ${nextMonster.name}.`], () => {
           this.#activeEnemyMonster.switchMonster(nextMonster);
           // have monster appear, and show updated health bar
           this.#activeEnemyMonster.playMonsterAppearAnimation(() => {
@@ -916,7 +932,7 @@ export class BattleScene extends BaseScene {
         await this.#activeEnemyMonster.playCatchAnimationFailed();
 
         // TODO: refactor to use async/await
-        this.#showMessagesAndWaitForInput(['The wild monster breaks free!'], () => {
+        this.#showMessagesAndWaitForInput(["La minaccia è sfuggita all'honeypot!"], () => {
           this.time.delayedCall(500, () => {
             this.#enemyAttack(() => {
               this.#battleStateMachine.setState(BATTLE_STATES.POST_ATTACK_CHECK);

@@ -5,6 +5,7 @@ import { DIRECTION } from '../../common/direction.js';
 import { DATA_MANAGER_STORE_KEYS, dataManager } from '../../utils/data-manager.js';
 import { exhaustiveGuard } from '../../utils/guard.js';
 import { MENU_COLOR } from './menu-config.js';
+import { menuLabel } from '../labels-it.js';
 
 /** @type {Phaser.Types.GameObjects.Text.TextStyle} */
 const MENU_TEXT_STYLE = {
@@ -60,7 +61,7 @@ export class Menu {
     // update menu container with menu options
     for (let i = 0; i < this.#availableMenuOptions.length; i += 1) {
       const y = 10 + 50 * i + this.#padding;
-      const textObj = this.#scene.add.text(40 + this.#padding, y, this.#availableMenuOptions[i], MENU_TEXT_STYLE);
+      const textObj = this.#scene.add.text(40 + this.#padding, y, menuLabel(this.#availableMenuOptions[i]), MENU_TEXT_STYLE);
       this.#menuOptionsTextGameObjects.push(textObj);
       this.#container.add(textObj);
     }

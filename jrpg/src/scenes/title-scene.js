@@ -13,12 +13,22 @@ import { playBackgroundMusic } from '../utils/audio-utils.js';
 /** @type {Phaser.Types.GameObjects.Text.TextStyle} */
 const MENU_TEXT_STYLE = Object.freeze({
   fontFamily: KENNEY_FUTURE_NARROW_FONT_NAME,
-  color: '#4D4A49',
+  color: '#ffffff',
   fontSize: '30px',
+  stroke: '#0b0b1e',
+  strokeThickness: 5,
 });
 
+const TEAM_MEMBERS = Object.freeze([
+  "Roberto D'Isanto",
+  'Francesca Morra',
+  'Giovanni Di Stazio',
+  'Pasquale Criscuolo',
+  'Mario Varlese',
+]);
+
 const PLAYER_INPUT_CURSOR_POSITION = Object.freeze({
-  x: 150,
+  x: 90,
   y: 41,
 });
 
@@ -70,15 +80,9 @@ export class TitleScene extends BaseScene {
     this.#isContinueButtonEnabled = dataManager.store.get(DATA_MANAGER_STORE_KEYS.GAME_STARTED) || false;
 
     // create title scene background
-    this.add.image(0, 0, TITLE_ASSET_KEYS.BACKGROUND).setOrigin(0).setScale(0.58);
-    this.add
-      .image(this.scale.width / 2, 150, TITLE_ASSET_KEYS.PANEL)
-      .setScale(0.25, 0.25)
-      .setAlpha(0.5);
-    this.add
-      .image(this.scale.width / 2, 150, TITLE_ASSET_KEYS.TITLE)
-      .setScale(0.55)
-      .setAlpha(0.5);
+    this.add.image(0, 0, TITLE_ASSET_KEYS.BACKGROUND).setOrigin(0).setDisplaySize(this.scale.width, this.scale.height);
+    this.#createTitle();
+    this.#createCredits();
 
     // create menu
     const menuBgWidth = 500;
@@ -88,14 +92,16 @@ export class TitleScene extends BaseScene {
       200,
       UI_ASSET_KEYS.MENU_BACKGROUND
     );
-    const newGameText = this.add.text(menuBgWidth / 2, 40, 'New Game', MENU_TEXT_STYLE).setOrigin(0.5);
-    const continueText = this.add.text(menuBgWidth / 2, 90, 'Continue', MENU_TEXT_STYLE).setOrigin(0.5);
+    const newGameText = this.add.text(menuBgWidth / 2, 40, 'Nuova partita', MENU_TEXT_STYLE).setOrigin(0.5);
+    const continueText = this.add.text(menuBgWidth / 2, 90, 'Continua', MENU_TEXT_STYLE).setOrigin(0.5);
     if (!this.#isContinueButtonEnabled) {
       continueText.setAlpha(0.5);
     }
-    const optionText = this.add.text(menuBgWidth / 2, 140, 'Options', MENU_TEXT_STYLE).setOrigin(0.5);
-    const menuContainer = this.add.container(0, 0, [menuBgContainer, newGameText, continueText, optionText]);
-    menuContainer.setPosition(this.scale.width / 2 - menuBgWidth / 2, 300);
+    const optionText = this.add.text(menuBgWidth / 2, 140, 'Opzioni', MENU_TEXT_STYLE).setOrigin(0.5);
+    // fondo scuro dietro al menu, per leggerlo sopra l'immagine
+    const menuShade = this.add.rectangle(8, 8, menuBgWidth - 16, 184, 0x0b0b1e, 0.65).setOrigin(0);
+    const menuContainer = this.add.container(0, 0, [menuShade, menuBgContainer, newGameText, continueText, optionText]);
+    menuContainer.setPosition(this.scale.width / 2 - menuBgWidth / 2, 270);
 
     // create cursors
     this.#mainMenuCursorPhaserImageGameObject = this.add
@@ -223,6 +229,62 @@ export class TitleScene extends BaseScene {
       default:
         exhaustiveGuard(direction);
     }
+  }
+
+  /**
+   * Titolo del gioco: "RED vs BLUE" + sottotitolo dell'hackathon.
+   * @returns {void}
+   */
+  #createTitle() {
+    const centerX = this.scale.width / 2;
+    const titleStyle = {
+      fontFamily: KENNEY_FUTURE_NARROW_FONT_NAME,
+      fontSize: '96px',
+      stroke: '#0b0b1e',
+      strokeThickness: 10,
+    };
+    const red = this.add.text(0, 0, 'RED', { ...titleStyle, color: '#ff3b3b' }).setOrigin(0, 0.5);
+    const vs = this.add.text(0, 0, ' vs ', { ...titleStyle, fontSize: '56px', color: '#ffffff' }).setOrigin(0, 0.5);
+    const blue = this.add.text(0, 0, 'BLUE', { ...titleStyle, color: '#3ba4ff' }).setOrigin(0, 0.5);
+    const totalWidth = red.width + vs.width + blue.width;
+    const startX = centerX - totalWidth / 2;
+    const titleY = 120;
+    red.setPosition(startX, titleY);
+    vs.setPosition(startX + red.width, titleY + 8);
+    blue.setPosition(startX + red.width + vs.width, titleY);
+
+    this.add
+      .text(centerX, 200, 'Cyber JRPG  ·  The Big Hack 2026  ·  Napoli', {
+        fontFamily: KENNEY_FUTURE_NARROW_FONT_NAME,
+        fontSize: '26px',
+        color: '#ffffff',
+        stroke: '#0b0b1e',
+        strokeThickness: 6,
+      })
+      .setOrigin(0.5);
+  }
+
+  /**
+   * Crediti del team in fondo alla schermata.
+   * @returns {void}
+   */
+  #createCredits() {
+    this.add
+      .text(
+        this.scale.width / 2,
+        this.scale.height - 42,
+        `Un gioco di\n${TEAM_MEMBERS.join('  ·  ')}`,
+        {
+          fontFamily: KENNEY_FUTURE_NARROW_FONT_NAME,
+          fontSize: '16px',
+          color: '#ffffff',
+          stroke: '#0b0b1e',
+          strokeThickness: 5,
+          align: 'center',
+          wordWrap: { width: this.scale.width - 40 },
+        }
+      )
+      .setOrigin(0.5);
   }
 
   #addInSocialLinks() {

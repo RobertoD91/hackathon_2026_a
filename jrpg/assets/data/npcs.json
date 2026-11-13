@@ -4,26 +4,21 @@
     "animationKeyPrefix": "NPC_1",
     "events": [
       {
-        "requires": ["LOOKING_FOR_PROFESSOR"],
+        "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["The professor next door was looking for you."]
+          "messages": [
+            "Le tue difese sembrano stanche. Facciamo un controllo."
+          ]
         }
       },
       {
-        "requires": ["FOUND_PROFESSOR"],
-        "type": "MESSAGE",
-        "data": {
-          "messages": ["You should take a quick rest."]
-        }
-      },
-      {
-        "requires": ["FOUND_PROFESSOR"],
+        "requires": [],
         "type": "HEAL",
         "data": {}
       },
       {
-        "requires": ["FOUND_PROFESSOR"],
+        "requires": [],
         "type": "SCENE_FADE_IN_AND_OUT",
         "data": {
           "fadeInDuration": 1000,
@@ -32,10 +27,12 @@
         }
       },
       {
-        "requires": ["FOUND_PROFESSOR"],
+        "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Oh good! You and your monsters are looking great!"]
+          "messages": [
+            "Sistemi aggiornati e unità ripristinate!"
+          ]
         }
       }
     ]
@@ -45,17 +42,12 @@
     "animationKeyPrefix": "NPC_3",
     "events": [
       {
-        "requires": ["LOOKING_FOR_PROFESSOR"],
+        "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["I last saw the professor heading out of town."]
-        }
-      },
-      {
-        "requires": ["FOUND_PROFESSOR"],
-        "type": "MESSAGE",
-        "data": {
-          "messages": ["Make sure you read the signposts for helpful tips!"]
+          "messages": [
+            "Leggi i cartelli: ci sono consigli utili sulla sicurezza."
+          ]
         }
       }
     ]
@@ -65,10 +57,46 @@
     "animationKeyPrefix": "NPC_1",
     "events": [
       {
-        "requires": [],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["You can save your game from the menu.", "To open the menu, press the ENTER key."]
+          "messages": [
+            "Ehi tu! Sono Black Hat, del red team.",
+            "Stanotte voglio bucare i server della Città della Scienza.",
+            "Vediamo se il tuo blue team regge!"
+          ]
+        }
+      },
+      {
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
+        "type": "BATTLE",
+        "data": {
+          "monsters": [
+            3,
+            4,
+            5
+          ],
+          "assetKey": "TRAINER_YOUTH_BOY",
+          "trainerName": "Black Hat",
+          "trainerLostMessages": [
+            "Le tue difese hanno retto...",
+            "Va bene, torno a studiare. Ma il red team non dorme mai!"
+          ]
+        }
+      },
+      {
+        "requires": [
+          "TRAINER_DEFEATED"
+        ],
+        "type": "MESSAGE",
+        "data": {
+          "messages": [
+            "Hai vinto tu. Ricorda: la sicurezza è fatta di persone, processi e tecnologia."
+          ]
         }
       }
     ]
@@ -78,27 +106,41 @@
     "animationKeyPrefix": "NPC_20",
     "events": [
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Hey! Let's battle!"]
+          "messages": [
+            "Ehi! Ti sfido!"
+          ]
         }
       },
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "BATTLE",
         "data": {
-          "monsters": [7],
+          "monsters": [
+            3
+          ],
           "assetKey": "TRAINER_YOUTH_GIRL",
-          "trainerName": "Jr. Trainer",
-          "trainerLostMessages": ["You defeated me!"]
+          "trainerName": "Script kiddie",
+          "trainerLostMessages": [
+            "Mi hai battuta!"
+          ]
         }
       },
       {
-        "requires": ["TRAINER_DEFEATED"],
+        "requires": [
+          "TRAINER_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["That was great battle!"]
+          "messages": [
+            "Bella sfida!"
+          ]
         }
       }
     ]
@@ -108,27 +150,41 @@
     "animationKeyPrefix": "NPC_19",
     "events": [
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Hey! Let's battle!"]
+          "messages": [
+            "Ehi! Ti sfido!"
+          ]
         }
       },
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "BATTLE",
         "data": {
-          "monsters": [6],
+          "monsters": [
+            4
+          ],
           "assetKey": "TRAINER_YOUTH_BOY",
-          "trainerName": "Jr. Trainer",
-          "trainerLostMessages": ["You are a strong trainer!"]
+          "trainerName": "Script kiddie",
+          "trainerLostMessages": [
+            "Sei forte!"
+          ]
         }
       },
       {
-        "requires": ["TRAINER_DEFEATED"],
+        "requires": [
+          "TRAINER_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["I'll have to get stronger."]
+          "messages": [
+            "Devo allenarmi di più."
+          ]
         }
       }
     ]
@@ -141,7 +197,9 @@
         "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["You should make sure to stock up on items."]
+          "messages": [
+            "Fai scorta di ripristini prima di partire."
+          ]
         }
       }
     ]
@@ -154,7 +212,9 @@
         "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["I would stay out of the spooky forest."]
+          "messages": [
+            "Io starei lontano dal bosco: è pieno di botnet."
+          ]
         }
       }
     ]
@@ -167,7 +227,9 @@
         "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Make sure you heal your team before you head out!"]
+          "messages": [
+            "Ripristina il tuo team prima di uscire!"
+          ]
         }
       }
     ]
@@ -177,27 +239,42 @@
     "animationKeyPrefix": "NPC_19",
     "events": [
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Hey! Let's battle!"]
+          "messages": [
+            "Ehi! Ti sfido!"
+          ]
         }
       },
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "BATTLE",
         "data": {
-          "monsters": [6, 7],
+          "monsters": [
+            4,
+            5
+          ],
           "assetKey": "TRAINER_YOUTH_BOY",
-          "trainerName": "Jr. Trainer",
-          "trainerLostMessages": ["I'll need to keep practicing."]
+          "trainerName": "Script kiddie",
+          "trainerLostMessages": [
+            "Devo esercitarmi ancora."
+          ]
         }
       },
       {
-        "requires": ["TRAINER_DEFEATED"],
+        "requires": [
+          "TRAINER_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["I'll need to train before we battle again!"]
+          "messages": [
+            "Mi allenerò prima della rivincita!"
+          ]
         }
       }
     ]
@@ -210,7 +287,9 @@
         "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Feel free to rest here."]
+          "messages": [
+            "Riposati pure qui."
+          ]
         }
       },
       {
@@ -231,7 +310,9 @@
         "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Oh good! You and your monsters are looking great!"]
+          "messages": [
+            "Perfetto! Il tuo team è di nuovo operativo!"
+          ]
         }
       }
     ]

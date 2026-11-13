@@ -209,7 +209,7 @@ export class PreloadScene extends BaseScene {
     });
 
     // ui components for title
-    this.load.image(TITLE_ASSET_KEYS.BACKGROUND, `${monsterTamerAssetPath}/ui/title/background.png`);
+    this.load.image(TITLE_ASSET_KEYS.BACKGROUND, 'assets/images/hackathon/title.jpg');
     this.load.image(TITLE_ASSET_KEYS.PANEL, `${monsterTamerAssetPath}/ui/title/title_background.png`);
     this.load.image(TITLE_ASSET_KEYS.TITLE, `${monsterTamerAssetPath}/ui/title/title_text.png`);
 

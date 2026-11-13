@@ -2,129 +2,103 @@
   {
     "id": "1",
     "monsterId": 1,
-    "name": "firewall",
-    "assetKey": "IGUANIGNITE",
+    "name": "Firewall",
+    "assetKey": "AQUAVALOR",
     "assetFrame": 0,
-    "currentHp": 25,
-    "maxHp": 25,
+    "currentHp": 40,
+    "maxHp": 40,
     "attackIds": [
-      6,
+      1,
+      2,
+      3,
+      4
+    ],
+    "baseAttack": 5,
+    "currentAttack": 5,
+    "currentLevel": 5,
+    "baseExp": 60,
+    "currentExp": 125,
+    "team": "BLUE"
+  },
+  {
+    "id": "2",
+    "monsterId": 2,
+    "name": "EDR",
+    "assetKey": "FROSTSABER",
+    "assetFrame": 0,
+    "currentHp": 40,
+    "maxHp": 40,
+    "attackIds": [
       5,
+      6,
       7,
       8
     ],
     "baseAttack": 5,
     "currentAttack": 5,
     "currentLevel": 5,
-    "baseExp": 50,
-    "currentExp": 125
-  },
-  {
-    "id": "2",
-    "monsterId": 2,
-    "name": "phisher",
-    "assetKey": "CARNODUSK",
-    "assetFrame": 0,
-    "currentHp": 25,
-    "maxHp": 25,
-    "attackIds": [
-      1,
-      2
-    ],
-    "baseAttack": 5,
-    "currentAttack": 5,
-    "currentLevel": 5,
-    "baseExp": 52,
-    "currentExp": 125
+    "baseExp": 60,
+    "currentExp": 125,
+    "team": "BLUE"
   },
   {
     "id": "3",
     "monsterId": 3,
-    "name": "botnet",
-    "assetKey": "IGNIVOLT",
+    "name": "Phisher",
+    "assetKey": "CARNODUSK",
     "assetFrame": 0,
     "currentHp": 25,
     "maxHp": 25,
     "attackIds": [
-      2,
-      4
-    ],
-    "baseAttack": 5,
-    "currentAttack": 5,
-    "currentLevel": 5,
-    "baseExp": 51,
-    "currentExp": 125
-  },
-  {
-    "id": "4",
-    "monsterId": 4,
-    "name": "ransomware",
-    "assetKey": "AQUAVALOR",
-    "assetFrame": 0,
-    "currentHp": 25,
-    "maxHp": 25,
-    "attackIds": [
-      4,
-      1
+      9,
+      10
     ],
     "baseAttack": 5,
     "currentAttack": 5,
     "currentLevel": 5,
     "baseExp": 50,
-    "currentExp": 125
+    "currentExp": 125,
+    "team": "RED",
+    "type": "SOCIAL"
   },
   {
-    "id": "5",
-    "monsterId": 5,
-    "name": "rootkit",
-    "assetKey": "FROSTSABER",
+    "id": "4",
+    "monsterId": 4,
+    "name": "Botnet",
+    "assetKey": "IGNIVOLT",
     "assetFrame": 0,
     "currentHp": 25,
     "maxHp": 25,
     "attackIds": [
-      3,
-      2
+      11,
+      12
     ],
     "baseAttack": 5,
     "currentAttack": 5,
     "currentLevel": 5,
-    "baseExp": 53,
-    "currentExp": 125
+    "baseExp": 50,
+    "currentExp": 125,
+    "team": "RED",
+    "type": "NETWORK"
   },
   {
-    "id": "6",
-    "monsterId": 3,
-    "name": "botnet",
-    "assetKey": "IGNIVOLT",
+    "id": "5",
+    "monsterId": 5,
+    "name": "Ransomware",
+    "assetKey": "IGUANIGNITE",
     "assetFrame": 0,
-    "currentHp": 15,
-    "maxHp": 15,
+    "currentHp": 25,
+    "maxHp": 25,
     "attackIds": [
-      2,
-      4
+      13,
+      14
     ],
-    "baseAttack": 3,
-    "currentAttack": 3,
-    "currentLevel": 3,
-    "baseExp": 40,
-    "currentExp": 27
-  },
-  {
-    "id": "7",
-    "monsterId": 2,
-    "name": "phisher",
-    "assetKey": "CARNODUSK",
-    "assetFrame": 0,
-    "currentHp": 15,
-    "maxHp": 15,
-    "attackIds": [
-      1,
-      2
-    ],
-    "baseAttack": 3,
-    "currentAttack": 3,
-    "currentLevel": 3,
-    "baseExp": 41,
-    "currentExp": 27
+    "baseAttack": 5,
+    "currentAttack": 5,
+    "currentLevel": 5,
+    "baseExp": 50,
+    "currentExp": 125,
+    "team": "RED",
+    "type": "MALWARE"
   }
 ]

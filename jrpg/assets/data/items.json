@@ -1,15 +1,15 @@
 [
   {
     "id": 1,
-    "name": "potion",
-    "description": "A basic healing item that will heal 30 HP from a single monster.",
+    "name": "ripristino",
+    "description": "Ripristina 30 HP di un'unità del blue team.",
     "category": "HEAL",
     "effect": "HEAL_30"
   },
   {
     "id": 2,
-    "name": "damaged ball",
-    "description": "A damaged ball that can be used for capturing monsters.",
+    "name": "honeypot",
+    "description": "Una trappola per catturare una minaccia del red team e studiarla.",
     "category": "CAPTURE",
     "effect": "CAPTURE_1"
   }

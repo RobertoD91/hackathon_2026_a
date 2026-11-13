@@ -34,6 +34,8 @@ import Phaser from '../lib/phaser.js';
  * @property {number} currentAttack the current attack value of this monster
  * @property {number} baseExp the base exp value of this monster
  * @property {number} currentExp the current exp this monster has
+ * @property {import('../battle/cyber-types.js').CyberType} [type] tipo cyber dell'unità (es. SOCIAL, NETWORK, MALWARE)
+ * @property {'RED' | 'BLUE'} [team] squadra: RED = attaccanti, BLUE = difensori
  */
 
 /**
@@ -50,6 +52,9 @@ import Phaser from '../lib/phaser.js';
  * @property {string} name the name of this attack
  * @property {import('../battle/attacks/attack-keys.js').AttackKeys} animationName the animation key that is tied to this attack, will be used to play the attack animation when attack is used.
  * @property {string} audioKey the unique key of the audio asset that is cached by phaser, will be passed to the phaser sound manager to play this audio object
+ * @property {import('../battle/cyber-types.js').CyberType} [counters] (blue team) tipo di minaccia contro cui la mossa è super efficace
+ * @property {string} [tip] (blue team) spiegazione mostrata quando la contromossa è quella giusta
+ * @property {string} [description] (red team) spiegazione dell'attacco mostrata quando il nemico lo usa
  */
 
 /**

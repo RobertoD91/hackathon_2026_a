@@ -2248,8 +2248,8 @@
                          "type":"npc",
                          "visible":true,
                          "width":64,
-                         "x":1344,
-                         "y":5312
+                         "x":1152,
+                         "y":4800
                         }],
                  "opacity":1,
                  "type":"objectgroup",

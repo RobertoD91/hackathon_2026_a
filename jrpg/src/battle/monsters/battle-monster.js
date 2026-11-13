@@ -84,6 +84,11 @@ export class BattleMonster {
     return [...this._monsterAttacks];
   }
 
+  /** @type {import('../cyber-types.js').CyberType | undefined} */
+  get type() {
+    return this._monsterDetails.type;
+  }
+
   /** @type {number} */
   get baseAttack() {
     return this._monsterDetails.currentAttack;
