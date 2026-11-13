@@ -3,7 +3,7 @@
 Gioco educativo su networking e cybersecurity per la challenge **Consorzio Clara (Cisco Networking Academy)**.
 JRPG a turni giocabile nel browser: le unità del **blue team** (difese) combattono contro le minacce del **red team** (attacchi).
 
-Online: https://robertodisanto.it/hackathon_2026_a/jrpg/
+Online: https://robertodisanto.it/hackathon_2026_a/c4-jrpg/
 
 ## Base di partenza
 
@@ -39,7 +39,7 @@ Non c'è build: serve solo un server web statico, avviato dalla **root della rep
 python3 -m http.server 8000
 ```
 
-Poi apri http://localhost:8000/jrpg/
+Poi apri http://localhost:8000/c4-jrpg/
 
 Phaser 3.60 e webfontloader sono caricati da CDN in `index.html`.
 

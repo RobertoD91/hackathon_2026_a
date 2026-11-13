@@ -18,26 +18,26 @@ Vincoli che contano per le scelte tecniche:
 - **Criteri della giuria:** utilità/valore, aderenza alla challenge, chiarezza e completezza del progetto, design/UX, creatività/innovazione. La UX della demo pesa quanto il backend.
 - Almeno 2 checkpoint con i mentor durante l'evento.
 
-## Challenge
+## Challenge e organizzazione della repo
 
-**Consorzio Clara (Cisco Networking Academy):** serious game educativo su networking e cybersecurity (web, mobile o chatbot). L'uso di strumenti Cisco (Packet Tracer, CML, Umbrella, Secure Endpoint, Meraki, Webex) è incoraggiato "dove possibile", non obbligatorio.
+Testo integrale delle 5 challenge, agenda e regole: [`docs/hackathon.md`](docs/hackathon.md). Decisioni prese, punti di forza del team e strumenti disponibili (FLUX, Cloudflare, Playwright...): [`docs/stato-e-strumenti.md`](docs/stato-e-strumenti.md). Idee per C1, C2, C5 e piano di lavoro con i subagent: [`docs/brainstorming.md`](docs/brainstorming.md). Tieni aggiornati questi file quando si decide qualcosa.
 
-Prototipi previsti, ognuno in una sottocartella:
-1. `jrpg/`: JRPG a turni red team vs blue team (in corso).
-2. Tower defense (dopo il JRPG, non ancora iniziato).
+**Una cartella per soluzione, con il prefisso della challenge** (`c1-…`, `c2-…`, `c4-…`, `c5-…`). Per una challenge possono esserci più soluzioni in cartelle diverse. Ogni cartella ha un `README.md` con brief, scelte, come avviarla e stato. Il codice condiviso tra più soluzioni (es. la base IoT + agenti per C2 e C5) va in `shared/`.
 
-**Challenge 05 Fastweb + Vodafone, "Napoli Agentic City: la città che Ci pensa"** (lavorata in parallelo in `c5-agentic-city/`): sistema di agenti AI specializzati per servizio (mobilità, turismo, servizi pubblici, ambiente) coordinati da un orchestratore, su uno scenario e un target scelti da noi. Serve una demo in cui si vede che gli agenti si coordinano e reagiscono ai cambiamenti, con benefici misurabili. Brief completo e decisioni in `c5-agentic-city/README.md`. Non è una webapp: agenti + sensori IoT (ESP32) + droni. Per un proxy/worker serve un Worker nuovo: **non usare `mbl-privato`**.
+Soluzioni esistenti:
+- `c4-jrpg/`: C4 Consorzio Clara, JRPG a turni red team vs blue team (giocabile). Un tower defense per C4 è previsto più avanti. `jrpg/index.html` è solo un redirect al vecchio URL.
+- `c5-agentic-city/`: C5 Fastweb + Vodafone, "Napoli Agentic City". Brief e decisioni nel suo README. Non è una webapp: agenti + sensori IoT (ESP32, modulo 5G) + droni. Per un proxy/worker serve un Worker Cloudflare nuovo: **non usare `mbl-privato`**.
 
 ## Hosting
 
 GitHub Pages pubblica la root di `master` tramite il workflow `.github/workflows/pages.yml` (a ogni push su master; dominio personalizzato dell'account): https://robertodisanto.it/hackathon_2026_a/ (ogni prototipo in `/<sottocartella>/`). `index.html` in root è la pagina con i link ai prototipi: aggiornala quando ne aggiungi uno. `.nojekyll` disattiva Jekyll. Nei prototipi usa **solo percorsi relativi** (il sito non è servito dalla root del dominio) e attenzione a maiuscole/minuscole nei nomi dei file.
 
-## `jrpg/`
+## `c4-jrpg/`
 
 Fork di [Monster Tamer](https://github.com/devshareacademy/monster-tamer) (Phaser 3.60 da CDN, JavaScript ES modules, nessuna build, nessun test).
 
-- Avvio: dalla root della repo `python3 -m http.server 8000` e apri http://localhost:8000/jrpg/
-- I contenuti sono dati, non codice: `jrpg/assets/data/*.json` (mostri, mosse, NPC/dialoghi, incontri, oggetti, mappe Tiled). Prima di toccare il codice controlla se basta cambiare i JSON.
+- Avvio: dalla root della repo `python3 -m http.server 8000` e apri http://localhost:8000/c4-jrpg/
+- I contenuti sono dati, non codice: `c4-jrpg/assets/data/*.json` (mostri, mosse, NPC/dialoghi, incontri, oggetti, mappe Tiled). Prima di toccare il codice controlla se basta cambiare i JSON.
 - Le mosse in `attacks.json` riusano le animazioni esistenti (`ICE_SHARD`, `SLASH` in `src/battle/attacks/`); una nuova animazione richiede codice in `src/battle/attacks/` e caricamento in `src/scenes/preload-scene.js`.
 - Flusso: `PreloadScene` carica tutti gli asset e i JSON nella cache Phaser → `TitleScene` → `WorldScene` (mappa, NPC, eventi da `events.json`/`npcs.json`) → `BattleScene` (macchina a stati in `src/utils/state-machine.js`). Lo stato di gioco persistente è in `src/utils/data-manager.js` (salvato in `localStorage` con chiave `CYBER_JRPG_DATA`).
 - **Contromosse** (`src/battle/cyber-types.js`): le unità red team in `monsters.json` hanno un `type` (`SOCIAL`, `NETWORK`, `MALWARE`); le mosse blue team in `attacks.json` hanno `counters` + `tip`. Se `counters` coincide col tipo del bersaglio il danno è ×2 e si mostra `tip`, altrimenti ×0.5 e un suggerimento da `CYBER_TYPE_HINT`. Le mosse red team hanno `description`, mostrata dopo che il nemico le usa. I messaggi extra passano da `#showMessagesAndWaitForInput` in `BattleScene`; l'input durante lo stato `BATTLE` è inoltrato solo se `battleMenu.isWaitingForPlayerInput`.
@@ -45,5 +45,5 @@ Fork di [Monster Tamer](https://github.com/devshareacademy/monster-tamer) (Phase
 - Inizio partita: le cutscene originali (eventi 1 e 2 di `main_1`) sono saltate tramite `initialState.viewedEvents`. L'NPC 3 (**Black Hat**, oggetto `NPC2` nella mappa `main_1.json`) è a destra del punto di partenza: parlandoci parte la battaglia.
 - Testi: dialoghi, cartelli e oggetti sono nei JSON; le stringhe nel codice sono già in italiano. Le voci dei menu restano costanti interne (`FIGHT`, `BAG`, ...) usate dalla logica: il testo mostrato viene da `menuLabel()` in `src/common/labels-it.js`.
 - Titolo: sfondo `assets/images/hackathon/title.jpg` (generato con FLUX), titolo e crediti del team disegnati come testo in `title-scene.js` (`TEAM_MEMBERS`).
-- Gli asset di terze parti non sono ridistribuibili (vedi `jrpg/README.md`): da sostituire con asset CC0 o nostri prima della consegna.
+- Gli asset di terze parti non sono ridistribuibili (vedi `c4-jrpg/README.md`): da sostituire con asset CC0 o nostri prima della consegna.
 - Test manuale rapido di una battaglia: in console `game` non è globale; per i test con Playwright si può intercettare `src/main.js` aggiungendo `window.__game = game` e avviare `BATTLE_SCENE` con `{ playerMonsters, enemyMonsters }` presi da `game.cache.json.get('MONSTERS')`.

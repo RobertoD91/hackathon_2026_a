@@ -18,7 +18,7 @@ Progetto per [The Big Hack 2026](https://go.codemotion.com/big-hack-hackathon-20
 
 Online su GitHub Pages: https://robertodisanto.it/hackathon_2026_a/
 
-- [`jrpg/`](jrpg/): JRPG a turni red team vs blue team ([gioca](https://robertodisanto.it/hackathon_2026_a/jrpg/)).
+- [`c4-jrpg/`](c4-jrpg/): JRPG a turni red team vs blue team ([gioca](https://robertodisanto.it/hackathon_2026_a/c4-jrpg/)).
 - Tower defense: in arrivo.
 
 ## Come avviare in locale
@@ -29,7 +29,7 @@ Dalla root della repo:
 python3 -m http.server 8000
 ```
 
-Poi apri http://localhost:8000/jrpg/
+Poi apri http://localhost:8000/c4-jrpg/
 
 ## Scadenze
 
