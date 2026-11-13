@@ -5,10 +5,9 @@ Progetto per [The Big Hack 2026](https://go.codemotion.com/big-hack-hackathon-20
 ## Team
 
 - Roberto D'Isanto
-- Francesca Morra
-- Giovanni Di Stazio
-- Pasquale Criscuolo
 - Mario Varlese
+
+Fino al 13/11 il team comprendeva anche Francesca Morra, Giovanni Di Stazio e Pasquale Criscuolo, che ora lavorano in un altro gruppo su challenge diverse, partendo da un fork di questa repo.
 
 ## Challenge
 
