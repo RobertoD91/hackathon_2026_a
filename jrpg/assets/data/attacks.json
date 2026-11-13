@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "phishing",
+    "animationName": "ICE_SHARD",
+    "audioKey": "ICE"
+  },
+  {
+    "id": 2,
+    "name": "port scan",
+    "animationName": "SLASH",
+    "audioKey": "CLAW"
+  },
+  {
+    "id": 3,
+    "name": "sql inject",
+    "animationName": "SLASH",
+    "audioKey": "CLAW"
+  },
+  {
+    "id": 4,
+    "name": "cryptolock",
+    "animationName": "ICE_SHARD",
+    "audioKey": "ICE"
+  },
+  {
+    "id": 5,
+    "name": "patch",
+    "animationName": "ICE_SHARD",
+    "audioKey": "ICE"
+  },
+  {
+    "id": 6,
+    "name": "block ip",
+    "animationName": "SLASH",
+    "audioKey": "CLAW"
+  },
+  {
+    "id": 7,
+    "name": "mfa",
+    "animationName": "ICE_SHARD",
+    "audioKey": "ICE"
+  },
+  {
+    "id": 8,
+    "name": "ids alert",
+    "animationName": "SLASH",
+    "audioKey": "CLAW"
+  }
+]

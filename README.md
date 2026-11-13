@@ -12,11 +12,24 @@ Progetto per [The Big Hack 2026](https://go.codemotion.com/big-hack-hackathon-20
 
 ## Challenge
 
-_Da definire._
+**Consorzio Clara (Cisco Networking Academy)**: serious game educativo su networking e cybersecurity.
 
-## Come avviare il progetto
+## Prototipi
 
-_Da definire quando viene scelto lo stack._
+Online su GitHub Pages: https://robertod91.github.io/hackathon_2026_a/
+
+- [`jrpg/`](jrpg/): JRPG a turni red team vs blue team ([gioca](https://robertod91.github.io/hackathon_2026_a/jrpg/)).
+- Tower defense: in arrivo.
+
+## Come avviare in locale
+
+Dalla root della repo:
+
+```bash
+python3 -m http.server 8000
+```
+
+Poi apri http://localhost:8000/jrpg/
 
 ## Scadenze
 
