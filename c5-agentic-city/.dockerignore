@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+**/__pycache__/
+media/
+risultati/
+firmware/
+openclaw/
+*.mp4

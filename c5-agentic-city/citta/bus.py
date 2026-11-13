@@ -86,7 +86,16 @@ class BusMQTT(Bus):
         self._mqtt = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=client_id or f"citta-{time.time_ns()}")
         self._mqtt.on_message = self._ricevuto
         self._mqtt.on_connect = self._connesso
-        self._mqtt.connect(host, porta, keepalive=30)
+        # Il broker può non essere ancora pronto (es. avvio con docker compose): riproviamo per 60 s.
+        for tentativo in range(30):
+            try:
+                self._mqtt.connect(host, porta, keepalive=30)
+                break
+            except OSError as e:
+                if tentativo == 29:
+                    raise
+                print(f"[bus] broker {host}:{porta} non raggiungibile ({e}), riprovo…")
+                time.sleep(2)
         self._mqtt.loop_start()
 
     def _connesso(self, client, userdata, flags, reason_code, properties=None):

@@ -262,6 +262,52 @@ python strumenti/operatore.py evento pullman --veicoli 25   # come il pulsante s
 python -m citta.sala --broker localhost                     # sala su un altro PC (con MQTT)
 ```
 
+## Con Docker
+
+```bash
+cd c5-agentic-city
+docker compose up -d                 # broker Mosquitto (:1883) + città: agenti, gemello SUMO, API (:8080)
+```
+
+```bash
+docker compose run --rm sala         # sala operativa a schermo intero nel terminale
+```
+
+```bash
+docker compose logs -f citta         # dialogo tra agenti a righe
+```
+
+- **Chiavi e opzioni** si prendono dall'ambiente della macchina, mai scritte nei file: `ANTHROPIC_API_KEY`, `C5_LLM`, `C5_MODELLO`, `C5_API_TOKEN`, `C5_VELOCITA` (default 20), `C5_INIZIO` (default 13:00), `C5_METEO`.
+- **Gli ESP32** si collegano al broker sulla porta 1883 del portatile.
+- **Fine giornata**: alla fine della giornata simulata il servizio `citta` riparte da capo (`restart: unless-stopped`).
+- **Cosa resta fuori**:
+  - `sumo-gui` (`--gui`) gira solo fuori da Docker, sul portatile con lo schermo;
+  - Codex (`--llm codex`) richiede la CLI installata.
+
+Provato: costruzione dell'immagine, città + Mosquitto su MQTT, API (`/stato`, `/chiedi` con negoziazione con la pizzeria), sala in container.
+
+## Video della simulazione
+
+`media/demo_gemello.mp4` (1920×1080, circa un minuto): la giornata 13:00–20:30 con a sinistra i semafori di oggi e a destra quelli guidati dagli agenti, stessi veicoli. Il fotogramma mostra:
+- orologio ed evento in corso;
+- piano dei semafori;
+- KPI cumulati;
+- dialogo tra gli agenti.
+
+Il pilota del drone è simulato: risponde dopo 3 minuti con la stima ±10%, ed è scritto nel video.
+
+Per rifarlo, anche solo per una finestra:
+
+```bash
+xvfb-run -a -s "-screen 0 1920x1080x24" python strumenti/video_demo.py
+```
+
+```bash
+xvfb-run -a -s "-screen 0 1920x1080x24" python strumenti/video_demo.py --inizio 13:45 --fine 15:30 --uscita media/regata.mp4
+```
+
+Sul portatile con lo schermo basta `python strumenti/video_demo.py`, senza `xvfb-run`.
+
 ## La demo (4 minuti)
 
 1. **Il gancio** (30 s): *"Napoli 2027, America's Cup. Un sabato con due navi, la regata e la partita. Oggi ogni servizio fa da sé: noi li facciamo parlare."*
@@ -294,3 +340,4 @@ Da fare:
 - [ ] Costruire il plastico.
 - [ ] Integrare i dati del Comune.
 - [ ] Preparare il video di riserva del drone.
+- [x] Video della simulazione (`media/demo_gemello.mp4`) e immagine Docker con compose.
