@@ -77,3 +77,32 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,linux
 
+
+### Segreti / ambiente ###
+.env
+.env.*
+!.env.example
+
+### Node ###
+node_modules/
+dist/
+build/
+.next/
+.vite/
+npm-debug.log*
+yarn-error.log*
+
+### Python ###
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+
+### Editor ###
+.vscode/
+.idea/
+
+### Claude Code (impostazioni locali) ###
+.claude/settings.local.json
