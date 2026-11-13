@@ -1,0 +1,11 @@
+<polygonTypes>
+    <!-- Tipi di poligoni da OSM per la vista di sumo-gui (polyconvert), colori chiari e leggibili -->
+    <polygonType id="building"        name="edificio" color="214,211,205" layer="-1"/>
+    <polygonType id="natural.water"   name="acqua"    color="147,197,253" layer="-3"/>
+    <polygonType id="natural.coastline" name="costa"  color="147,197,253" layer="-3" discard="true"/>
+    <polygonType id="leisure.park"    name="parco"    color="187,226,170" layer="-2"/>
+    <polygonType id="leisure.garden"  name="giardino" color="187,226,170" layer="-2"/>
+    <polygonType id="landuse.grass"   name="prato"    color="200,232,180" layer="-2"/>
+    <polygonType id="natural.beach"   name="spiaggia" color="245,230,190" layer="-2"/>
+    <polygonType id="leisure.marina"  name="porto turistico" color="186,214,250" layer="-2"/>
+</polygonTypes>

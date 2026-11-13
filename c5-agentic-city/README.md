@@ -166,19 +166,51 @@ c5-agentic-city/
 
 ## Risultati del gemello
 
-Giornata 13:00–20:30, circa 10.000 veicoli, identici nelle due simulazioni, sulla rete vera del lungomare.
+Giornata 13:00–20:30, circa 10.000 veicoli, identici nelle due simulazioni, sulla rete vera del lungomare. Per non fidarci di un'estrazione fortunata, **ripetiamo tutto con 4 semi diversi della domanda di traffico** (42, 7, 99, 2027). Ogni seme genera orari e percorsi diversi degli stessi flussi.
 
-| | Semafori fissi (oggi) | Semafori guidati dagli agenti | Differenza |
+Ore perse in coda rispetto ai semafori fissi di oggi (negativo = meglio):
+
+| Controllo | seme 42 | seme 7 | seme 99 | seme 2027 | **media** |
+|---|---|---|---|---|---|
+| Piano degli agenti prima della taratura | −13,6% | +2,0% | −7,3% | −5,1% | **−6,0%** |
+| Adattivo neutro (nessuna priorità) | −15,1% | −4,1% | −8,3% | −4,2% | **−7,9%** |
+| **Agenti, tarato** | −18,4% | −1,4% | −9,4% | −6,6% | **−9,0%** |
+
+Con il controllo tarato, in media sui 4 semi: **−9% di ore perse in coda, −4% di durata media del viaggio, −3,5% di CO₂**.
+
+Cosa dire in giuria, onestamente:
+- **il guadagno dipende molto dalla giornata**: da −1% a −18% secondo il seme. Il "−15%" che avevamo prima veniva da un solo seme favorevole;
+- il controllo è volutamente semplice (verde esteso dove c'è coda, cambio fase quando l'altra direzione aspetta di più). Con dati veri di flusso e un controllo più evoluto il margine cresce, ma serve un pilota su strada per misurarlo davvero.
+
+### Taratura
+
+`strumenti/taratura.py` rigioca i piani registrati dell'agente Traffico (`dati/piani_registrati.json`) su una sola simulazione per variante, in parallelo, e confronta con i semafori fissi. Due giri sul seme 42, poi la verifica sui 4 semi:
+
+| Variante (seme 42) | Ore perse | Durata | CO₂ |
 |---|---|---|---|
-| Ore perse in coda (veicoli fermi) | 387,6 h | 328,9 h | **−15,1%** |
-| Durata media del viaggio | 432 s | 408 s | **−5,5%** |
-| CO₂ | 10,47 t | 10,01 t | **−4,3%** |
+| Pesi pieni, verde max 75 s (prima) | −13,6% | −5,0% | −4,4% |
+| Pesi a metà, verde max 60 s | −16,6% | −7,5% | −5,6% |
+| Pesi a metà, verde max 50 s / 70 s | −10,6% / −10,5% | | |
+| Pesi ×0,4 / ×0,6 | −9,4% / −16,0% | | |
+| **Pesi a metà, verde max 60 s, soglia 1,2** | **−18,4%** | **−8,1%** | **−5,7%** |
 
-*(Controllo adattivo con il piano normale: `python -m citta.gemello.gemello 0`.)*
+Scelte applicate:
+- in `citta/gemello/gemello.py`: `FORZA_PESI = 0.5` (peso effettivo = 1 + 0,5 × (peso − 1)), `SOGLIA_CAMBIO = 1.2`, verde massimo limitato a 60 s;
+- l'agente Traffico ora propone verdi massimi tra 40 e 60 s.
 
-Con tutti gli agenti accesi (`avvia.py --llm regole --velocita 0 --senza-sala`), l'agente Traffico cambia i pesi dei corridoi durante la giornata. Il risultato è **−12,4%** di ore perse, −5,1% di durata e −4,3% di CO₂. Le priorità per corridoio, così come sono tarate oggi nelle regole, **tolgono qualcosa** rispetto al controllo adattivo neutro: aiutano il corridoio scelto ma allungano le code sulle traverse. **Da tarare**: pesi più bassi (massimo 1,5), oppure priorità solo sugli incroci del corridoio. Un numero onesto vale più di uno gonfiato: in giuria lo diciamo.
+Il motivo:
+- con pesi pieni la priorità al corridoio scelto allunga le code sulle traverse;
+- verdi più lunghi di 60 s svuotano una direzione ma ne riempiono un'altra.
 
-Una scoperta da raccontare: abbiamo provato a dare il 20% di consigli di percorso "ingenui" ai guidatori (`--quota-assistiti 0.2`). Le ore perse sono calate solo del **10,5%** invece del 15%, perché le auto deviate intasano i vicoli del centro. **I consigli non coordinati spostano il problema: per questo serve un orchestratore.**
+Si vede anche che i risultati sono "nervosi" (×0,4 dà −9%, ×0,5 dà −17%): un segnale in più per guardare la media sui semi e non il singolo numero.
+
+### Consigli di percorso non coordinati
+
+Abbiamo provato a dare consigli di percorso "ingenui" al 20% dei guidatori (`--quota-assistiti 0.2`, seme 42). Le ore perse sono calate solo del **10,5%**, contro il 15,1% del controllo neutro senza consigli, perché le auto deviate intasano i vicoli del centro. **I consigli non coordinati spostano il problema: per questo serve un orchestratore.**
+
+### Screenshot
+
+`strumenti/screenshot_sumo.py` affianca "oggi" e "con agenti" alla stessa ora. I veicoli sono colorati per velocità: rosso = fermo, arancione = lento, bianco = scorre. Le immagini sono in `media/`. Su un server senza schermo si usa `xvfb-run`.
 
 ## Come si avvia
 
@@ -255,7 +287,8 @@ python -m citta.sala --broker localhost                     # sala su un altro P
 - [x] Firmware ESP32 (semaforo con riflessi ESP-NOW, sensore di passaggio): compila, da provare su hardware
 
 Da fare:
-- [ ] Tarare i pesi dei corridoi dell'agente Traffico (oggi −12,4% contro −15,1% del piano neutro).
+- [x] Taratura dei pesi dei corridoi (verificata su 4 semi).
+- [ ] Controllo semaforico più evoluto (oggi semplice: estende il verde dove c'è coda).
 - [ ] Provare con un LLM vero: Claude (chiave del team) e Codex (verificare i flag di `codex exec`).
 - [ ] Provare il firmware su hardware e la skill su OpenClaw.
 - [ ] Costruire il plastico.

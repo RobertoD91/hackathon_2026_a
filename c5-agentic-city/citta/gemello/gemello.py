@@ -30,6 +30,9 @@ from .domanda import genera
 
 VERDE_MIN = 8
 VERDE_MAX = 60
+# Tarati con strumenti/taratura.py su 4 semi (vedi README, "Taratura"):
+FORZA_PESI = 0.5      # i pesi del piano contano a metà: pesi pieni allungano le code sulle traverse
+SOGLIA_CAMBIO = 1.2   # si cambia fase quando le altre direzioni aspettano il 20% in più
 CAMPIONE = 5  # ogni quanti secondi simulati si leggono i KPI di rete
 
 
@@ -71,7 +74,10 @@ class Simulazione:
                "--time-to-teleport", "300", "--collision.action", "warn",
                "--no-step-log", "--no-warnings", "--duration-log.disable"]
         if gui:
-            cmd += ["--start", "--delay", "0"]
+            cmd += ["--start", "--delay", "0", "--quit-on-end", "--window-size", "1400,900", "--window-pos", "0,0"]
+            if (DATI / "lungomare.poly.xml").exists():  # edifici e verde da OSM, solo per la vista
+                cmd += ["-a", str(DATI / "lungomare.poly.xml")]
+            cmd += ["--gui-settings-file", str(DATI / "vista.settings.xml")]
         if quota_assistiti > 0:
             cmd += ["--device.rerouting.probability", str(quota_assistiti),
                     "--device.rerouting.period", "60", "--device.rerouting.adaptation-steps", "60"]
@@ -109,12 +115,21 @@ class Simulazione:
 
         self.pesi = {}
         self.verde_max = VERDE_MAX
+        # Parametri del controllo (tarati con strumenti/taratura.py, vedi README):
+        self.forza_pesi = FORZA_PESI   # quanto contano i pesi del piano: 1 + forza × (peso - 1)
+        self.soglia = SOGLIA_CAMBIO    # si cambia fase se le altre direzioni aspettano soglia× di più
+        self.verde_min = VERDE_MIN
         self.partenze: dict[str, float] = {}
         self.durate: list[float] = []
         self.fermi_veicolo_s = 0.0
         self.co2_g = 0.0
         self.fermi_ora = 0
         self.code_corridoi: dict[str, int] = {}
+
+    def imposta_piano(self, pesi: dict, verde_max: float) -> None:
+        """Piano dell'agente Traffico. Il verde massimo è limitato a VERDE_MAX: oltre peggiora (taratura)."""
+        self.pesi = dict(pesi)
+        self.verde_max = max(30, min(VERDE_MAX, int(verde_max)))
 
     # --- controllo adattivo -------------------------------------------------
     def _domanda(self, corsie: set[str], dati_corsie: dict) -> float:
@@ -124,7 +139,7 @@ class Simulazione:
             if not d:
                 continue
             arco = corsia.rsplit("_", 1)[0]
-            peso = self.pesi.get(self.corridoio_di.get(arco, ""), 1.0)
+            peso = 1 + self.forza_pesi * (self.pesi.get(self.corridoio_di.get(arco, ""), 1.0) - 1)
             totale += peso * (d[tc.LAST_STEP_VEHICLE_HALTING_NUMBER] + 0.3 * d[tc.LAST_STEP_VEHICLE_NUMBER])
         return totale
 
@@ -137,11 +152,11 @@ class Simulazione:
             if not self.adattiva or fase not in s["verdi"] or len(s["verdi"]) < 2:
                 continue
             trascorso = t - s["inizio_fase"]
-            if trascorso < VERDE_MIN:
+            if trascorso < self.verde_min:
                 continue
             attuale = self._domanda(s["verdi"][fase], dati_corsie)
             altre = max(self._domanda(c, dati_corsie) for f, c in s["verdi"].items() if f != fase)
-            if trascorso >= self.verde_max or altre > attuale * 1.3 + 1:
+            if trascorso >= self.verde_max or altre > attuale * self.soglia + 1:
                 self.c.trafficlight.setPhaseDuration(tls, 0)  # passa al giallo
             else:
                 self.c.trafficlight.setPhaseDuration(tls, 2)  # resta verde
@@ -237,8 +252,7 @@ class Gemello(threading.Thread):
 
     def _applica_piano(self, sim: Simulazione) -> None:
         if self._piano:
-            sim.pesi = dict(self._piano.get("pesi", {}))
-            sim.verde_max = int(self._piano.get("verde_max", VERDE_MAX))
+            sim.imposta_piano(self._piano.get("pesi", {}), self._piano.get("verde_max", VERDE_MAX))
 
     def _aggiungi_extra(self, sims: list[Simulazione], t: float) -> None:
         porte = self.scenario["traffico"]["porte"]

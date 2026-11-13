@@ -32,7 +32,7 @@ Corridoi: lungomare (via Caracciolo, Riviera di Chiaia, via Partenope), porto (v
 Galleria della Vittoria, verso Stazione Marittima e Beverello), uscita_ovest (Viale Gramsci, Piedigrotta,
 verso Fuorigrotta e lo stadio Maradona), collina (Corso Vittorio Emanuele), centro (Toledo e traverse).
 Peso 1 = normale, fino a 3 = massima priorità. Più peso dai a un corridoio, più verde riceve quando c'è coda.
-verde_max: secondi massimi di verde per fase (30-90). La motivazione è letta dall'operatore della sala:
+verde_max: secondi massimi di verde per fase (40-60: oltre i 60 le code peggiorano). La motivazione è letta dall'operatore della sala:
 una o due frasi in italiano, concrete."""
 
 
@@ -76,6 +76,7 @@ class AgenteTraffico(Agente):
                 motivi.append("arrivi per la regata: priorità al lungomare")
             elif e["fase"] == "in_corso" and e["tipo"] == "regata":
                 pesi["lungomare"] = max(pesi["lungomare"], 1.5)
+                motivi.append("regata in corso: lungomare un po' favorito")
             elif e["fase"] == "deflusso" and e["tipo"] == "regata":
                 pesi.update(lungomare=max(pesi["lungomare"], 2.0), porto=max(pesi["porto"], 1.6),
                             uscita_ovest=max(pesi["uscita_ovest"], 1.6))
@@ -98,7 +99,7 @@ class AgenteTraffico(Agente):
                 continue
             pesi[c] = max(pesi[c], r["peso"])
             motivi.append(f"richiesta dell'orchestratore sul corridoio {c}")
-        return {"pesi": pesi, "verde_max": 75 if max(pesi.values()) >= 2 else 60,
+        return {"pesi": pesi, "verde_max": 60,
                 "motivazione": "; ".join(dict.fromkeys(motivi)) or "traffico regolare, piano normale"}
 
     def decidi(self) -> None:
@@ -112,7 +113,7 @@ class AgenteTraffico(Agente):
         piano, fonte = self.ragiona(SISTEMA, "Situazione:\n" + json.dumps(situazione, ensure_ascii=False),
                                     SCHEMA, self._regole)
         piano["pesi"] = {c: max(0.5, min(3.0, float(piano["pesi"].get(c, 1)))) for c in CORRIDOI}
-        piano["verde_max"] = max(30, min(90, int(piano.get("verde_max", 60))))
+        piano["verde_max"] = max(40, min(60, int(piano.get("verde_max", 60))))
         if self.piano and piano["pesi"] == self.piano["pesi"] and piano["verde_max"] == self.piano["verde_max"]:
             return
         self.piano = piano

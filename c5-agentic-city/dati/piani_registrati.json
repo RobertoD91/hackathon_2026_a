@@ -1,0 +1,126 @@
+{
+ "nota": "Piani dell'agente Traffico registrati in una giornata con --llm regole: servono a strumenti/taratura.py per provare varianti del controllo senza rifare girare tutti gli agenti.",
+ "piani": [
+  {
+   "ora": "13:01",
+   "pesi": {
+    "lungomare": 1.0,
+    "porto": 2.0,
+    "uscita_ovest": 1.0,
+    "collina": 1.0,
+    "centro": 1.0
+   },
+   "verde_max": 75
+  },
+  {
+   "ora": "13:01",
+   "pesi": {
+    "lungomare": 1.8,
+    "porto": 2.0,
+    "uscita_ovest": 1.0,
+    "collina": 1.0,
+    "centro": 1.0
+   },
+   "verde_max": 75
+  },
+  {
+   "ora": "17:11",
+   "pesi": {
+    "lungomare": 2.0,
+    "porto": 2.0,
+    "uscita_ovest": 1.6,
+    "collina": 1.0,
+    "centro": 1.0
+   },
+   "verde_max": 75
+  },
+  {
+   "ora": "17:46",
+   "pesi": {
+    "lungomare": 2.0,
+    "porto": 2.0,
+    "uscita_ovest": 1.6,
+    "collina": 1.0,
+    "centro": 1.5
+   },
+   "verde_max": 75
+  },
+  {
+   "ora": "18:01",
+   "pesi": {
+    "lungomare": 2.0,
+    "porto": 2.0,
+    "uscita_ovest": 1.6,
+    "collina": 1.0,
+    "centro": 1.0
+   },
+   "verde_max": 75
+  },
+  {
+   "ora": "18:15",
+   "pesi": {
+    "lungomare": 1.0,
+    "porto": 1.0,
+    "uscita_ovest": 2.5,
+    "collina": 1.0,
+    "centro": 1.0
+   },
+   "verde_max": 75
+  },
+  {
+   "ora": "19:01",
+   "pesi": {
+    "lungomare": 1.0,
+    "porto": 1.5,
+    "uscita_ovest": 2.5,
+    "collina": 1.0,
+    "centro": 1.0
+   },
+   "verde_max": 75
+  },
+  {
+   "ora": "19:16",
+   "pesi": {
+    "lungomare": 1.0,
+    "porto": 1.0,
+    "uscita_ovest": 2.5,
+    "collina": 1.0,
+    "centro": 1.5
+   },
+   "verde_max": 75
+  },
+  {
+   "ora": "19:31",
+   "pesi": {
+    "lungomare": 1.0,
+    "porto": 1.5,
+    "uscita_ovest": 2.5,
+    "collina": 1.0,
+    "centro": 1.5
+   },
+   "verde_max": 75
+  },
+  {
+   "ora": "19:46",
+   "pesi": {
+    "lungomare": 1.0,
+    "porto": 1.0,
+    "uscita_ovest": 2.5,
+    "collina": 1.0,
+    "centro": 1.5
+   },
+   "verde_max": 75
+  },
+  {
+   "ora": "20:16",
+   "pesi": {
+    "lungomare": 1.0,
+    "porto": 1.0,
+    "uscita_ovest": 2.5,
+    "collina": 1.0,
+    "centro": 1.0
+   },
+   "verde_max": 75
+  }
+ ]
+}
