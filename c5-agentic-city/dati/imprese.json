@@ -1,0 +1,20 @@
+{
+  "nota": "Imprese di fantasia (non sono attività reali). Capienza per fascia di 30 minuti; 'occupazione' è la quota già prenotata per ora del giorno, in base alle abitudini tipiche del sabato.",
+  "imprese": [
+    {"id": "pizzeria_borgo", "nome": "Pizzeria 'O Scoglio", "tipo": "pizzeria", "zona": "castel_ovo",
+     "descrizione": "pizza a portafoglio e sedute vista Castel dell'Ovo", "posti": 60, "sconto_ore_morte": 10,
+     "occupazione": {"12": 0.8, "13": 1.0, "14": 0.85, "15": 0.4, "16": 0.3, "17": 0.4, "18": 0.5, "19": 0.8, "20": 1.0}},
+    {"id": "friggitoria_chiaia", "nome": "Friggitoria del Vasto", "tipo": "street food", "zona": "piazza_vittoria",
+     "descrizione": "cuoppo di fritti da asporto, ideale per la regata", "posti": 40, "sconto_ore_morte": 15,
+     "occupazione": {"12": 0.6, "13": 0.9, "14": 0.7, "15": 0.3, "16": 0.4, "17": 0.6, "18": 0.7, "19": 0.6, "20": 0.5}},
+    {"id": "gozzo_mergellina", "nome": "Gozzi di Mergellina", "tipo": "barca", "zona": "mergellina",
+     "descrizione": "giro in gozzo da 12 posti: la regata vista dal mare", "posti": 12, "sconto_ore_morte": 20,
+     "occupazione": {"12": 0.3, "13": 0.5, "14": 1.0, "15": 1.0, "16": 0.9, "17": 0.4, "18": 0.2, "19": 0.1, "20": 0.0}},
+    {"id": "terrazza_vomero", "nome": "Bar Terrazza San Martino", "tipo": "bar", "zona": "vomero",
+     "descrizione": "aperitivo con vista sul golfo, raggiungibile con la funicolare di Chiaia", "posti": 50, "sconto_ore_morte": 15,
+     "occupazione": {"12": 0.3, "13": 0.4, "14": 0.3, "15": 0.2, "16": 0.3, "17": 0.6, "18": 0.9, "19": 1.0, "20": 0.8}},
+    {"id": "museo_pan", "nome": "PAN – Palazzo delle Arti (visita guidata)", "tipo": "museo", "zona": "piazza_vittoria",
+     "descrizione": "visita guidata di 45 minuti, al fresco e lontano dalla folla", "posti": 25, "sconto_ore_morte": 30,
+     "occupazione": {"12": 0.4, "13": 0.3, "14": 0.2, "15": 0.2, "16": 0.3, "17": 0.4, "18": 0.3, "19": 0.0, "20": 0.0}}
+  ]
+}

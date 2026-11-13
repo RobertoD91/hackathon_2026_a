@@ -1,0 +1,286 @@
+{
+  "nome": "Napoli 2027, giornata di festa",
+  "descrizione": "Sabato con due navi da crociera, la regata dell'America's Cup davanti a via Caracciolo e la partita al Maradona in serata. Nessun guasto: l'unico problema è far stare bene tutti.",
+  "inizio": "13:00",
+  "fine": "20:30",
+  "ipotesi": [
+    "Orari e passeggeri delle navi sono simulati: una nave media porta circa 3.000 passeggeri, scende circa il 70%.",
+    "Regata: finestra 14:00-17:30, ~40.000 persone sul lungomare nel picco, il 25% arriva in auto o taxi.",
+    "Partita: calcio d'inizio 20:45 a Fuorigrotta, il traffico da Chiaia e dal centro passa da Piedigrotta e Viale Gramsci tra le 18:30 e le 20:15.",
+    "Presenze da rete mobile simulate: stima del modello + rumore del 10%, come farebbe un operatore con dati anonimi e aggregati.",
+    "Condizioni per la regata: vento tra 6 e 22 nodi, raffiche sotto 30 nodi, onda sotto 1,8 m.",
+    "Il traffico di fondo (circa 500 veicoli/ora sull'area, più i flussi degli eventi) è stimato, non misurato: non abbiamo trovato dati open dei flussi."
+  ],
+  "meteo_scenario": {
+    "vento_nodi": 14,
+    "raffiche_nodi": 19,
+    "onda_m": 0.6,
+    "temperatura_c": 21,
+    "pioggia_mm": 0
+  },
+  "zone": {
+    "mergellina": {
+      "nome": "Mergellina",
+      "lon": 14.224,
+      "lat": 40.829,
+      "capienza": 18000
+    },
+    "rotonda_diaz": {
+      "nome": "Rotonda Diaz (village)",
+      "lon": 14.233,
+      "lat": 40.8335,
+      "capienza": 26000
+    },
+    "piazza_vittoria": {
+      "nome": "Piazza Vittoria",
+      "lon": 14.2445,
+      "lat": 40.8355,
+      "capienza": 7000
+    },
+    "castel_ovo": {
+      "nome": "Castel dell'Ovo",
+      "lon": 14.2475,
+      "lat": 40.8283,
+      "capienza": 6500
+    },
+    "municipio": {
+      "nome": "Piazza Municipio",
+      "lon": 14.2525,
+      "lat": 40.8395,
+      "capienza": 9000
+    },
+    "beverello": {
+      "nome": "Molo Beverello / Stazione Marittima",
+      "lon": 14.256,
+      "lat": 40.838,
+      "capienza": 7000
+    },
+    "vomero": {
+      "nome": "Vomero (funicolare di Chiaia)",
+      "lon": 14.237,
+      "lat": 40.84,
+      "capienza": 14000
+    }
+  },
+  "eventi": [
+    {
+      "id": "nave_1",
+      "tipo": "nave",
+      "nome": "Nave da crociera 1 alla Stazione Marittima",
+      "inizio": "09:30",
+      "fine": "11:00",
+      "zona": "beverello",
+      "persone": 2100,
+      "flussi": [
+        {
+          "verso": "municipio",
+          "quota": 0.35
+        },
+        {
+          "verso": "castel_ovo",
+          "quota": 0.25
+        },
+        {
+          "verso": "rotonda_diaz",
+          "quota": 0.25
+        },
+        {
+          "verso": "vomero",
+          "quota": 0.15
+        }
+      ]
+    },
+    {
+      "id": "nave_2",
+      "tipo": "nave",
+      "nome": "Nave da crociera 2 alla Stazione Marittima",
+      "inizio": "13:15",
+      "fine": "14:30",
+      "zona": "beverello",
+      "persone": 2300,
+      "flussi": [
+        {
+          "verso": "rotonda_diaz",
+          "quota": 0.45
+        },
+        {
+          "verso": "castel_ovo",
+          "quota": 0.25
+        },
+        {
+          "verso": "municipio",
+          "quota": 0.2
+        },
+        {
+          "verso": "vomero",
+          "quota": 0.1
+        }
+      ]
+    },
+    {
+      "id": "regata",
+      "tipo": "regata",
+      "nome": "Regata America's Cup davanti a via Caracciolo",
+      "inizio": "14:00",
+      "fine": "17:30",
+      "zona": "rotonda_diaz",
+      "persone": 40000,
+      "flussi": [
+        {
+          "verso": "rotonda_diaz",
+          "quota": 0.5
+        },
+        {
+          "verso": "mergellina",
+          "quota": 0.3
+        },
+        {
+          "verso": "castel_ovo",
+          "quota": 0.2
+        }
+      ]
+    },
+    {
+      "id": "partita",
+      "tipo": "partita",
+      "nome": "Partita al Maradona (Fuorigrotta)",
+      "inizio": "20:45",
+      "fine": "22:45",
+      "zona": "mergellina",
+      "persone": 50000,
+      "flussi": [
+        {
+          "verso": "fuorigrotta",
+          "quota": 1.0
+        }
+      ],
+      "anticipo_min": 150
+    }
+  ],
+  "traffico": {
+    "seme": 42,
+    "fondo_veicoli_ora": 500,
+    "porte": {
+      "ovest_in": [
+        "793599235"
+      ],
+      "ovest_out": [
+        "349136063#1",
+        "349136044#8"
+      ],
+      "est_in": [
+        "207466753#0"
+      ],
+      "est_out": [
+        "332277757#0",
+        "510115566#4"
+      ],
+      "nord_in": [
+        "403143578"
+      ],
+      "nord_out": [
+        "400565317",
+        "815790058#2",
+        "356825198#0",
+        "339582616#3"
+      ]
+    },
+    "destinazioni_zona": {
+      "mergellina": [
+        "349136052#2"
+      ],
+      "rotonda_diaz": [
+        "414416874#2"
+      ],
+      "piazza_vittoria": [
+        "988552008#0"
+      ],
+      "castel_ovo": [
+        "334878898#1"
+      ],
+      "municipio": [
+        "1162415470#0"
+      ],
+      "beverello": [
+        "236535362"
+      ]
+    },
+    "flussi_evento": [
+      {
+        "nome": "Taxi e bus turistici dalla nave 2",
+        "da": "13:15",
+        "a": "14:30",
+        "veicoli_ora": 144,
+        "origini": [
+          "est_in"
+        ],
+        "destinazioni": [
+          "rotonda_diaz",
+          "castel_ovo",
+          "piazza_vittoria"
+        ]
+      },
+      {
+        "nome": "Arrivi per la regata",
+        "da": "13:00",
+        "a": "14:45",
+        "veicoli_ora": 292,
+        "origini": [
+          "ovest_in",
+          "est_in",
+          "nord_in"
+        ],
+        "destinazioni": [
+          "rotonda_diaz",
+          "mergellina",
+          "piazza_vittoria"
+        ]
+      },
+      {
+        "nome": "Rientro croceristi",
+        "da": "16:30",
+        "a": "17:45",
+        "veicoli_ora": 117,
+        "origini": [
+          "zona:rotonda_diaz",
+          "zona:castel_ovo"
+        ],
+        "destinazioni": [
+          "est_out"
+        ]
+      },
+      {
+        "nome": "Deflusso regata",
+        "da": "17:30",
+        "a": "19:00",
+        "veicoli_ora": 315,
+        "origini": [
+          "zona:rotonda_diaz",
+          "zona:mergellina",
+          "zona:piazza_vittoria"
+        ],
+        "destinazioni": [
+          "est_out",
+          "ovest_out",
+          "nord_out"
+        ]
+      },
+      {
+        "nome": "Verso il Maradona",
+        "da": "18:30",
+        "a": "20:15",
+        "veicoli_ora": 337,
+        "origini": [
+          "est_in",
+          "nord_in",
+          "zona:piazza_vittoria",
+          "zona:municipio"
+        ],
+        "destinazioni": [
+          "ovest_out"
+        ]
+      }
+    ],
+    "scala": 1.8
+  }
+}
