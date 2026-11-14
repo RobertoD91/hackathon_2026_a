@@ -44,7 +44,7 @@ Sempre dal monitor seriale: `reset` cancella tutto, `stato` mostra la configuraz
 - **Sensore**: conta i passaggi davanti a un sensore IR (tipo FC-51, uscita LOW al passaggio). Ogni 2 secondi pubblica su `napoli/sensori/<id>/persone` i passaggi dell'ultimo minuto: `{"zona", "valore", "moltiplicatore"}`.
 - **Entrambi**: stato su `napoli/nodi/<id>/stato` (retained, con last will `{"online":false}`) con ruolo, IP, RSSI e versione.
 
-Il broker del team su `cloud.robertodisanto.it` (`cloud/mqtt/`) vuole utente e password: il firmware li supporta, ma senza TLS, quindi sulla porta 1883.
+Il broker del team su `twinciro.robertodisanto.it` (`cloud/mqtt/`) vuole utente e password: il firmware li supporta, ma senza TLS, quindi sulla porta 1883.
 
 ## Pin di default
 
