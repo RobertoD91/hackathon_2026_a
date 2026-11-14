@@ -14,6 +14,7 @@ Il nome unisce le due anime del progetto:
 | Agenti della città, assistenti personali, API per CiroGPT | `citta/`, `avvia.py` | funzionano (con LLM o con regole) |
 | Nodi ESP32 del plastico (semaforo o sensore) | [`firmware/twinciro-nodo/`](firmware/README.md) | compila per ESP32, S3 e C3; da provare su hardware |
 | **Flasher web** per gli ESP32 | [`flasher/`](https://robertodisanto.it/hackathon_2026_a/c5-agentic-city/flasher/) | binari compilati a richiesta dall'action "Firmware TwinCiro" |
+| **Napoli 3D navigabile** (regata, folla, barche, dialogo tra agenti) | [`visore3d/`](https://robertodisanto.it/hackathon_2026_a/c5-agentic-city/visore3d/) | funziona; dati da `visore3d/prepara_dati.py` |
 | Gemello digitale SUMO | `citta/gemello/` | funziona |
 | Video | `media/regata_3d.mp4` (regata in 3D), `media/demo_gemello.mp4` | pronti; consegna finale: video di massimo 3 minuti |
 | Docker | `compose.yaml` | provato (Mosquitto + città + API) |

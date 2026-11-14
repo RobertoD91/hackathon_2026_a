@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TwinCiro · Napoli 3D</title>
+<meta name="description" content="La regata dell'America's Cup a Napoli nel gemello digitale di TwinCiro: città in 3D, folla per zona, barche e dialogo tra gli agenti. Navigabile col mouse.">
+<script src="https://unpkg.com/deck.gl@9.0.38/dist.min.js"></script>
+<style>
+  :root { --fondo: #081123; --pannello: rgba(8,17,35,.82); --bordo: rgba(148,163,184,.28); --testo: #e2e8f0; --tenue: #94a3b8; --accento: #38bdf8; --giallo: #facc15; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--fondo); color: var(--testo); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #mappa { position: absolute; inset: 0; }
+  .pannello { position: absolute; background: var(--pannello); border: 1px solid var(--bordo); border-radius: 12px; padding: 12px 16px; backdrop-filter: blur(4px); }
+  #titolo { top: 16px; left: 16px; max-width: min(520px, calc(100% - 32px)); }
+  #titolo h1 { margin: 0; font-size: clamp(18px, 2.4vw, 26px); letter-spacing: 1px; }
+  #titolo h1 span { color: var(--accento); }
+  #titolo p { margin: 4px 0 0; color: var(--tenue); font-size: 13px; }
+  #orologio { top: 16px; right: 16px; text-align: right; }
+  #ora { font-size: clamp(28px, 4vw, 44px); font-weight: 700; font-variant-numeric: tabular-nums; }
+  #evento { color: var(--giallo); font-size: 14px; max-width: 360px; }
+  #legenda { top: 132px; left: 16px; font-size: 13px; color: var(--tenue); }
+  #legenda div { margin: 3px 0; }
+  .pallino { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+  #dialogo { right: 16px; bottom: 92px; width: min(560px, calc(100% - 32px)); max-height: 34vh; overflow: hidden; }
+  #dialogo h2 { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--tenue); }
+  .msg { font-size: 14px; margin: 6px 0; }
+  .msg b { font-weight: 700; }
+  #comandi { left: 16px; right: 16px; bottom: 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 10px 14px; }
+  #comandi button, #comandi select { background: #1e293b; color: var(--testo); border: 1px solid var(--bordo); border-radius: 8px; padding: 6px 12px; font: inherit; cursor: pointer; }
+  #comandi button.attivo { background: var(--accento); color: #00131f; border-color: var(--accento); font-weight: 700; }
+  #cursore { flex: 1 1 220px; accent-color: var(--accento); }
+  #comandi label { color: var(--tenue); font-size: 13px; display: flex; gap: 6px; align-items: center; }
+  #carico { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--tenue); }
+  #nota { position: absolute; left: 16px; bottom: 76px; font-size: 12px; color: var(--tenue); text-shadow: 0 1px 3px #000; }
+  @media (max-width: 720px) {
+    #legenda, #nota { display: none; }
+    #dialogo { bottom: 140px; max-height: 22vh; }
+    .msg { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div id="mappa"></div>
+<div id="carico">Carico la città…</div>
+
+<div class="pannello" id="titolo">
+  <h1><span>TwinCiro</span> · Napoli 3D</h1>
+  <p>Regata dell'America's Cup nel gemello digitale: trascina per ruotare, rotella per lo zoom, tasto destro per inclinare.</p>
+</div>
+<div class="pannello" id="orologio"><div id="ora">--:--</div><div id="evento"></div></div>
+<div class="pannello" id="legenda">
+  <div><b style="color:var(--testo)">Colonne: persone per zona</b></div>
+  <div><span class="pallino" style="background:#34d399"></span>poca gente</div>
+  <div><span class="pallino" style="background:#facc15"></span>un po' di gente</div>
+  <div><span class="pallino" style="background:#f97316"></span>tanta gente</div>
+  <div><span class="pallino" style="background:#ef4444"></span>il pienone</div>
+  <div style="margin-top:6px"><span class="pallino" style="background:#fff"></span>AC75 in regata</div>
+</div>
+<div class="pannello" id="dialogo"><h2>Cosa si dicono gli agenti</h2><div id="righe"></div></div>
+<div id="nota"></div>
+<div class="pannello" id="comandi">
+  <button id="play" class="attivo" title="Spazio">❚❚ Pausa</button>
+  <input id="cursore" type="range" min="0" max="1000" value="0" aria-label="Ora simulata">
+  <label>Velocità
+    <select id="velocita">
+      <option value="0.5">½ min/s</option>
+      <option value="1" selected>1 min/s</option>
+      <option value="2">2 min/s</option>
+      <option value="5">5 min/s</option>
+    </select>
+  </label>
+  <button id="giro" class="attivo">Giro automatico</button>
+  <button id="traffico">Traffico</button>
+</div>
+
+<script>
+const LIVELLO = {basso:[52,211,153], medio:[250,204,21], alto:[249,115,22], critico:[239,68,68]};
+const VEICOLO = [[120,220,255],[255,170,40],[255,50,60]];
+const NOME_BREVE = {beverello:'Beverello', municipio:'Municipio', rotonda_diaz:'Rotonda Diaz', piazza_vittoria:'Piazza Vittoria', castel_ovo:"Castel dell'Ovo", mergellina:'Mergellina', vomero:'Vomero'};
+const SPOSTA = {municipio:[-70,0], beverello:[70,0]};
+const COLORI_AGENTE = {"Orchestratore":"#e879f9","Traffico":"#67e8f9","Folla":"#facc15","Eventi":"#86efac","Meteo&Mare":"#93c5fd","Turismo":"#4ade80","Imprese":"#fde047","Pilota drone":"#93c5fd"};
+
+let scena, regata, deckgl;
+let t = 0, t0 = 0, t1 = 0, inPlay = true, velocita = 1, giro = true, traffico = false;
+let vista = {longitude: 14.2395, latitude: 40.8312, zoom: 14.4, pitch: 55, bearing: -20, maxPitch: 80};
+
+const luce = new deck.LightingEffect({
+  ambiente: new deck.AmbientLight({color:[255,255,255], intensity:1.25}),
+  luna: new deck.DirectionalLight({color:[190,210,255], intensity:1.5, direction:[-2,-6,-4]}),
+  lampioni: new deck.DirectionalLight({color:[255,190,120], intensity:0.6, direction:[3,2,-1]}),
+});
+
+const escape = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const altezza = p => 3.2 * Math.sqrt(Math.max(0, p));
+const ora = s => `${String(Math.floor(s / 3600) % 24).padStart(2, '0')}:${String(Math.floor(s % 3600 / 60)).padStart(2, '0')}`;
+
+function barche(s) {
+  // Due AC75 tra le boe (percorso ipotizzato), giro di 14 minuti, la seconda insegue. Stesso disegno del video.
+  const [a, b] = scena.boe, out = [], scie = [];
+  for (const [i, ritardo] of [[0, 0], [1, 25]]) {
+    const pos = x => {
+      const fase = (((x - ritardo) / 840) % 1 + 1) % 1;
+      const u = fase < .5 ? fase * 2 : 2 - fase * 2;
+      const lato = (fase < .5 ? 1 : -1) * 0.0007 * Math.sin(Math.PI * u) + (i ? 0.00025 : 0);
+      return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u + lato];
+    };
+    out.push({pos: pos(s), colore: i ? [255,80,80] : [255,255,255]});
+    const scia = []; for (let k = 0; k <= 40; k += 2) scia.push(pos(s - k * 2));
+    scie.push({path: scia, colore: i ? [255,120,120] : [200,230,255]});
+  }
+  return {out, scie};
+}
+
+function spettatori(s) {
+  const out = [];
+  for (let i = 0; i < 70; i++) {
+    const x = 14.226 + (i * 0.000271) % 0.02, y = 40.8236 + ((i * 7919) % 100) / 100 * 0.0012 + (i % 2 ? 0.0052 : 0);
+    out.push([x + 0.00004 * Math.sin(s / 60 + i), y]);
+  }
+  return out;
+}
+
+// Fotogramma all'istante s: folla interpolata tra i due campioni vicini, il resto dal campione precedente.
+function fotogramma(s) {
+  const F = regata.fotogrammi;
+  let i = Math.max(0, Math.min(F.length - 2, Math.floor((s - t0) / regata.passo_s)));
+  const a = F[i], b = F[i + 1] || a;
+  const w = Math.max(0, Math.min(1, (s - a.t) / Math.max(1, b.t - a.t)));
+  const folla = {};
+  for (const z of Object.keys(a.folla)) {
+    const pa = a.folla[z][0], pb = (b.folla[z] || a.folla[z])[0];
+    folla[z] = [Math.round(pa + (pb - pa) * w), (w < .5 ? a : b).folla[z]?.[1] || a.folla[z][1]];
+  }
+  return {s, a, folla};
+}
+
+function strati(f) {
+  const {out, scie} = barche(f.s);
+  const colonne = Object.entries(f.folla).map(([z, v]) => ({z, pos: scena.zone[z].pos, persone: v[0], livello: v[1]}));
+  const l = [
+    new deck.SolidPolygonLayer({id:'terra', data:[{p:scena.terra}], getPolygon:d=>d.p, getFillColor:[30,40,60], material:false}),
+    new deck.PathLayer({id:'strade', data:scena.strade, getPath:d=>d.p, getWidth:d=>d.w*1.4, widthMinPixels:1.2, getColor:[105,130,175], capRounded:true, jointRounded:true}),
+    new deck.PolygonLayer({id:'edifici', data:scena.edifici, getPolygon:d=>d.p, extruded:true, wireframe:false,
+      getElevation:d=>d.h, getFillColor:d=>d.chiesa?[140,120,180]:[78,96,132], material:{ambient:0.45, diffuse:0.7, shininess:16, specularColor:[50,60,80]}}),
+    new deck.PathLayer({id:'scie', data:scie, getPath:d=>d.path, getWidth:6, widthMinPixels:2, getColor:d=>[...d.colore,140]}),
+    new deck.ScatterplotLayer({id:'spettatori', data:spettatori(f.s), getPosition:d=>d, getRadius:5, radiusMinPixels:1.5, getFillColor:[226,232,240,200]}),
+    new deck.ColumnLayer({id:'vele', data:out, getPosition:d=>d.pos, diskResolution:3, radius:22, extruded:true, getElevation:70, getFillColor:d=>d.colore, material:{ambient:0.8, diffuse:0.5}}),
+  ];
+  if (traffico) {
+    l.push(new deck.ScatterplotLayer({id:'veicoli', data:f.a.v, getPosition:d=>[d[0],d[1]], getRadius:6, radiusMinPixels:1.5,
+      getFillColor:d=>[...VEICOLO[d[2]],170], parameters:{depthTest:false}}));
+  }
+  l.push(
+    new deck.ColumnLayer({id:'folla', data:colonne, getPosition:d=>d.pos, diskResolution:32, radius:75, extruded:true,
+      getElevation:d=>altezza(d.persone), getFillColor:d=>[...(LIVELLO[d.livello]||[148,163,184]),190], material:{ambient:0.6, diffuse:0.6},
+      updateTriggers:{getElevation:f.s, getFillColor:f.s}}),
+    new deck.TextLayer({id:'nomi', data:colonne, getPosition:d=>[d.pos[0], d.pos[1], altezza(d.persone)+30],
+      getText:d=>`${NOME_BREVE[d.z] || d.z}\n${d.persone.toLocaleString('it-IT')}`, getPixelOffset:d=>SPOSTA[d.z] || [0,0],
+      getSize:16, getColor:[255,255,255], fontFamily:'system-ui, Arial, sans-serif', fontWeight:'bold', outlineWidth:4, outlineColor:[8,17,35],
+      fontSettings:{sdf:true}, billboard:true, getTextAnchor:'middle', getAlignmentBaseline:'bottom', parameters:{depthTest:false},
+      updateTriggers:{getText:f.s, getPosition:f.s}}),
+  );
+  return l;
+}
+
+let ultimoDialogo = '';
+function hud(f) {
+  document.getElementById('ora').textContent = ora(f.s);
+  document.getElementById('evento').textContent = f.a.evento || '';
+  const html = (f.a.dialogo || []).slice().reverse().map(m =>
+    `<div class="msg"><b style="color:${COLORI_AGENTE[m.da] || '#e2e8f0'}">${escape(m.ora)} ${escape(m.da)} → ${escape(m.a)}:</b> ${escape(m.testo.length > 190 ? m.testo.slice(0, 187) + '…' : m.testo)}</div>`).join('');
+  if (html !== ultimoDialogo) { document.getElementById('righe').innerHTML = html; ultimoDialogo = html; }
+  document.getElementById('cursore').value = Math.round(1000 * (f.s - t0) / (t1 - t0));
+}
+
+function disegna() {
+  const f = fotogramma(t);
+  deckgl.setProps({layers: strati(f), viewState: vista});
+  hud(f);
+}
+
+let prima = performance.now();
+function ciclo(adesso) {
+  const dt = Math.min(0.1, (adesso - prima) / 1000);
+  prima = adesso;
+  if (inPlay) {
+    t += dt * 60 * velocita;
+    if (t > t1) t = t0;
+  }
+  if (giro) vista = {...vista, bearing: vista.bearing + dt * 4};
+  disegna();
+  requestAnimationFrame(ciclo);
+}
+
+function imposta(id, attivo, testo) {
+  const b = document.getElementById(id);
+  b.classList.toggle('attivo', attivo);
+  if (testo) b.textContent = testo;
+}
+
+async function avvia() {
+  try {
+    [scena, regata] = await Promise.all([fetch('scena.json').then(r => r.json()), fetch('regata.json').then(r => r.json())]);
+  } catch (e) {
+    document.getElementById('carico').textContent = 'Non riesco a caricare i dati della città: apri la pagina da un server (non da file://).';
+    return;
+  }
+  t0 = regata.fotogrammi[0].t;
+  t1 = regata.fotogrammi[regata.fotogrammi.length - 1].t;
+  t = t0;
+  document.getElementById('nota').textContent = regata.nota;
+  deckgl = new deck.Deck({
+    parent: document.getElementById('mappa'),
+    views: new deck.MapView({farZMultiplier: 3}),
+    viewState: vista,
+    controller: {dragRotate: true, touchRotate: true, keyboard: false},
+    onViewStateChange: ({viewState, interactionState}) => {
+      vista = viewState;
+      if (giro && (interactionState?.isDragging || interactionState?.isZooming || interactionState?.isRotating)) {
+        giro = false; imposta('giro', false);
+      }
+      return viewState;
+    },
+    effects: [luce],
+    parameters: {clearColor: [8/255, 17/255, 35/255, 1]},
+    getCursor: ({isDragging}) => isDragging ? 'grabbing' : 'grab',
+  });
+  document.getElementById('carico').remove();
+  requestAnimationFrame(ciclo);
+}
+
+document.getElementById('play').onclick = () => { inPlay = !inPlay; imposta('play', inPlay, inPlay ? '❚❚ Pausa' : '▶ Play'); };
+document.getElementById('velocita').onchange = e => { velocita = Number(e.target.value); };
+document.getElementById('giro').onclick = () => { giro = !giro; imposta('giro', giro); };
+document.getElementById('traffico').onclick = () => { traffico = !traffico; imposta('traffico', traffico); };
+document.getElementById('cursore').oninput = e => { t = t0 + (t1 - t0) * Number(e.target.value) / 1000; };
+document.addEventListener('keydown', e => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); document.getElementById('play').click(); } });
+avvia();
+</script>
+</body>
+</html>
