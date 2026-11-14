@@ -1,7 +1,26 @@
-// Dashboard d'esempio. Funziona in due modi senza cambiare codice:
-// - "live": servita dal hub (node example/server.js) → dati via /api/state e SSE;
+// Dashboard d'esempio, comune a tutti gli scenari (Napoli, Fattoria...). Funziona in due modi
+// senza cambiare codice:
+// - "live": servita dal hub (node example/server.js [--scenario fattoria]) → /api/state e SSE;
 // - "demo": su GitHub Pages o senza backend → simulatore e agenti girano nel browser.
 // Usa solo percorsi relativi (la pagina è servita anche sotto /hackathon_2026_a/...).
+//
+//   <script type="module">
+//     import { avviaDashboard } from './app.js';
+//     import scenario from './napoli.js';
+//     avviaDashboard(scenario);
+//   </script>
+//
+// Lo scenario (vedi napoli.js e fattoria/scenario.js):
+// {
+//   id, simConfig: URL del sim-config.json, demoAgents: async () => [agenti],
+//   firma: 'folla',                  // il hub live deve avere questo agente, altrimenti si va in demo
+//   notaAltroHub: 'HTML',            // testo mostrato se il hub esegue un altro scenario
+//   mappa: { ...configurazione di mappa.js },
+//   kpi?: ['nome_metrica', ...],     // ordine dei KPI (gli altri dopo)
+//   etichettaScenario?: (nome) → testo | null,   // etichetta degli scenari in corso non a catalogo
+//   simulatoreDemo?: async (hub, simConfig) → { stop },  // simulatore proprio in demo (al posto di quello generico)
+//   eventi?: (evento, api) → void,   // ogni evento (anche quelli dello stato iniziale): aggiorna mappa.setExtra...
+// }
 
 import { connectHub, formatClock } from '../src/client.js';
 import { readingLabel, formatReading, formatNumber, formatTime, escapeHtml, sparklineSvg } from '../src/ui-helpers.js';
@@ -24,24 +43,55 @@ const model = {
   clock: { sim: Date.now(), real: Date.now(), speed: 1 },
 };
 
-const hub = await connectHub({
-  simConfig: './sim-config.json',
-  demoAgents: async () => (await import('./agents/index.js')).createAgents(),
-});
+let hub = null;
+let scen = null;
+let catalogo = [];
+let mappa = null;
+const ora = () => model.clock.sim + (Date.now() - model.clock.real) * model.clock.speed;
+const api = {
+  model,
+  ora,
+  get hub() {
+    return hub;
+  },
+  get mappa() {
+    return mappa;
+  },
+};
 
-// ------------------------------------------------------------------ avvio (chiamato in fondo al file)
+// ------------------------------------------------------------------ avvio
 
-async function start() {
+export async function avviaDashboard(scenario) {
+  scen = scenario;
+  collegaSelettore();
+  const conf = await caricaConfig(scenario.simConfig);
+  catalogo = conf?.scenarios || [];
+
+  hub = await connectHub({ simConfig: conf, demoAgents: scenario.demoAgents });
+  let initial = await hub.getState();
+  let altroHub = false;
+  if (hub.mode === 'live' && scenario.firma && !(scenario.firma in (initial.agents || {}))) {
+    // il hub raggiungibile esegue un altro scenario (es. Napoli mentre questa è la fattoria)
+    hub.close();
+    altroHub = true;
+    hub = await connectHub({ simConfig: conf, demoAgents: scenario.demoAgents, forceDemo: true });
+    initial = await hub.getState();
+  }
+  if (hub.mode === 'demo' && scenario.simulatoreDemo) {
+    await scenario.simulatoreDemo(hub, conf);
+    initial = await hub.getState();
+  }
+
   $('mode').textContent = hub.mode === 'live' ? 'LIVE · hub' : 'DEMO · nel browser';
   $('mode').classList.add(hub.mode);
   $('demo-note').hidden = hub.mode !== 'demo';
+  if (altroHub && scenario.notaAltroHub) $('demo-note').innerHTML = scenario.notaAltroHub;
   hub.onStatus((s) => {
     const el = $('conn');
     el.className = `conn ${s}`;
     el.textContent = { connected: 'collegato', reconnecting: 'riconnessione…', demo: 'simulazione locale' }[s] || s;
   });
 
-  const initial = await hub.getState();
   model.devices = structuredClone(initial.devices || {});
   for (const m of Object.values(initial.metrics || {})) setMetric(m);
   model.decisions = (initial.decisions || []).slice(-MAX_DECISIONS);
@@ -50,11 +100,45 @@ async function start() {
   model.clock = { sim: initial.simTime, real: initial.now, speed: initial.speed || 1 };
   for (const c of initial.chats || []) addChatPair(c.data);
 
-  mappa = createMappa($('citymap'));
+  mappa = createMappa($('citymap'), scenario.mappa, { ora });
+  // lo stato iniziale passa dallo stesso aggancio degli eventi (in ordine di tempo)
+  if (scenario.eventi) {
+    const storici = [...(initial.messages || []), ...(initial.decisions || [])].sort((a, b) => a.ts - b.ts);
+    for (const e of storici) chiamaEventi(e);
+    for (const m of Object.values(initial.metrics || {})) chiamaEventi({ type: 'metric', ts: m.ts, source: m.source, data: m });
+  }
   renderScenarioButtons();
   renderAll();
   hub.on('*', onEvent);
   setInterval(renderClock, 1000);
+}
+
+async function caricaConfig(src) {
+  if (!src || typeof src === 'object') return src || null;
+  try {
+    return await (await fetch(src, { cache: 'no-cache' })).json();
+  } catch (err) {
+    console.warn('[dashboard] configurazione del simulatore non caricata:', err);
+    return null;
+  }
+}
+
+/** I link del selettore di scenario conservano i parametri (?demo=1, ?api=...). */
+function collegaSelettore() {
+  if (!location.search) return;
+  document.querySelectorAll('.scenari a[href]').forEach((a) => {
+    const u = new URL(a.getAttribute('href'), location.href);
+    u.search = location.search;
+    a.href = u.href;
+  });
+}
+
+function chiamaEventi(e) {
+  try {
+    scen.eventi?.(e, api);
+  } catch (err) {
+    console.error('[dashboard] aggancio eventi dello scenario in errore:', err);
+  }
 }
 
 // ------------------------------------------------------------------ eventi
@@ -72,7 +156,13 @@ function onEvent(e) {
       break;
     case 'agent.decision':
       model.decisions.push(e);
-      if (e.data.metrics) for (const [name, value] of Object.entries(e.data.metrics)) if (typeof value === 'number') setMetric({ name, value, ts: e.ts });
+      if (e.data.metrics) {
+        for (const [name, v] of Object.entries(e.data.metrics)) {
+          if (typeof v === 'number') setMetric({ name, value: v, ts: e.ts, source: e.source });
+          else if (v && typeof v.value === 'number') setMetric({ name, ...v, ts: e.ts, source: e.source });
+        }
+        schedule('kpis');
+      }
       model.decisions = model.decisions.slice(-MAX_DECISIONS);
       schedule('decisions');
       break;
@@ -90,6 +180,7 @@ function onEvent(e) {
       onChatEvent(e.data);
       break;
   }
+  if (scen.eventi) chiamaEventi(e);
 }
 
 function applyReading(r) {
@@ -126,7 +217,6 @@ function setMetric(m) {
 
 // ------------------------------------------------------------------ rendering
 
-let mappa = null;
 const dirty = new Set();
 function schedule(part) {
   dirty.add(part);
@@ -152,14 +242,15 @@ function renderAll() {
 }
 
 function renderClock() {
-  const { sim, real, speed } = model.clock;
-  const now = sim + (Date.now() - real) * speed;
-  $('clock').textContent = formatClock(now);
+  const { speed } = model.clock;
+  $('clock').textContent = formatClock(ora());
   $('speed').textContent = speed !== 1 ? `×${formatNumber(speed, 0)}` : 'tempo reale';
 }
 
 function renderKpis() {
-  const list = Object.values(model.metrics);
+  const ordine = scen.kpi || [];
+  const pos = (n) => (ordine.includes(n) ? ordine.indexOf(n) : ordine.length);
+  const list = Object.values(model.metrics).sort((a, b) => pos(a.name) - pos(b.name));
   $('kpis').innerHTML = list.length
     ? list
         .map((m) => {
@@ -218,7 +309,10 @@ function renderDecisions() {
           const d = e.data || {};
           const level = LEVELS[d.level] ? d.level : 'info';
           const actions = (d.actions || [])
-            .map((a) => `<span class="action">${escapeHtml(typeof a === 'string' ? a : [a.type, a.zone || a.to].filter(Boolean).join(' '))}</span>`)
+            .map((a) => {
+              const t = typeof a === 'string' ? a : a.label || [a.type, a.zone || a.to].filter(Boolean).join(' ');
+              return `<span class="action">${escapeHtml(t)}</span>`;
+            })
             .join('');
           return `<li class="decision ${level}">
             <div class="decision-head">${LEVELS[level]}<span class="agent">${escapeHtml(e.source)}</span><span class="when">${formatTime(e.ts)}</span></div>
@@ -246,11 +340,11 @@ function renderNotifications() {
 
 function renderScenarioButtons() {
   const box = $('scenario-buttons');
-  if (!hub.scenarios.length) {
+  if (!catalogo.length) {
     box.innerHTML = '<p class="empty">Nessuno scenario nel catalogo (sim-config.json → "scenarios").</p>';
     return;
   }
-  box.innerHTML = hub.scenarios
+  box.innerHTML = catalogo
     .map(
       (s, i) =>
         `<button class="scenario-btn" data-i="${i}" title="${escapeHtml(s.description || '')}">${escapeHtml(s.label || s.name)}${
@@ -261,7 +355,7 @@ function renderScenarioButtons() {
   box.addEventListener('click', async (ev) => {
     const btn = ev.target.closest('button[data-i]');
     if (!btn) return;
-    const s = hub.scenarios[Number(btn.dataset.i)];
+    const s = catalogo[Number(btn.dataset.i)];
     btn.disabled = true;
     try {
       await hub.scenario(s.name, s.params || {}, { duration: s.duration });
@@ -275,7 +369,7 @@ function renderScenarioButtons() {
 
 function renderActiveScenarios() {
   const act = Object.values(model.active);
-  const label = (name) => hub.scenarios.find((s) => s.name === name)?.label || name;
+  const label = (name) => catalogo.find((s) => s.name === name)?.label || scen.etichettaScenario?.(name) || name;
   $('active-scenarios').innerHTML = act.length
     ? act.map((s) => `<span class="chip">● ${escapeHtml(label(s.name))}</span>`).join('')
     : '<span class="chip none">Nessuno scenario in corso</span>';
@@ -289,7 +383,7 @@ $('chat-form').addEventListener('submit', async (ev) => {
   ev.preventDefault();
   const input = $('chat-input');
   const text = input.value.trim();
-  if (!text) return;
+  if (!text || !hub) return;
   input.value = '';
   addMsg('user', text);
   const wait = addMsg('bot pending', '…');
@@ -375,5 +469,3 @@ document.addEventListener('mousemove', (ev) => {
   tip.style.top = `${rect.top}px`;
   tip.hidden = false;
 });
-
-start();

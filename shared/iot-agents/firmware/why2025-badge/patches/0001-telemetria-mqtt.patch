@@ -1,0 +1,154 @@
+diff --git a/main/badge/ui.c b/main/badge/ui.c
+index da76329..c8b92f2 100644
+--- a/main/badge/ui.c
++++ b/main/badge/ui.c
+@@ -1,7 +1,9 @@
+ #include "ui.h"
+ #include "led.h"
++#include "telemetry.h"
++#include "telemetry_ui.h"
+ 
+-enum screen_order {SCREEN_LOGO, SCREEN_EVENT, SCREEN_RADAR, SCREEN_RSSI,  SCREEN_ADMIN, SCREEN_SNAKE, SCREEN_INVADERS, SCREEN_RAINBOW, NUM_SCREENS};
++enum screen_order {SCREEN_LOGO, SCREEN_TELEMETRY, SCREEN_EVENT, SCREEN_RADAR, SCREEN_RSSI,  SCREEN_ADMIN, SCREEN_SNAKE, SCREEN_INVADERS, SCREEN_RAINBOW, NUM_SCREENS};
+ static lv_obj_t* screens[NUM_SCREENS];
+ static int8_t current_screen = SCREEN_LOGO;
+ 
+@@ -158,6 +160,9 @@ void ui_button_up()
+     }
+ 
+     switch(current_screen){
++        case SCREEN_TELEMETRY:
++            telemetry_ui_button_up();   // segnalazione: lettura con button: true
++            break;
+         case SCREEN_SNAKE:
+             lv_task_set_prio(snake_task_handle, LV_TASK_PRIO_LOW);
+             snake_set_dir(1);
+@@ -231,6 +236,9 @@ void ui_button_down()
+     }
+ 
+     switch(current_screen){
++        case SCREEN_TELEMETRY:
++            telemetry_ui_button_down(); // invia subito una lettura
++            break;
+         case SCREEN_SNAKE:
+             lv_task_set_prio(snake_task_handle, LV_TASK_PRIO_LOW);
+             snake_set_dir(-1);
+@@ -637,7 +645,7 @@ void ui_screen_event_init() {
+ 
+     // Load the full schedule now, during init (before the logo is shown), so
+     // the badge does its heavy loading up front and the UI is responsive after.
+-    ui_event_load();
++    if (!telemetry_wants_heap()) ui_event_load();   // ~50 KB: con la telemetria serve al TLS
+ 
+     screens[SCREEN_EVENT] = screen_event;
+ }
+@@ -852,6 +860,7 @@ void ui_ap_stop_handler(){
+ }
+ 
+ void ui_sta_connected_handler(){
++    if (telemetry_owns_sta()) return;   // Wi-Fi della telemetria, non della sincronizzazione
+     sta_connected = true;
+ 
+     ESP_LOGI("UI", "STA connected handler called");
+@@ -873,6 +882,7 @@ void ui_sta_connected_handler(){
+ }
+ 
+ void ui_sta_disconnected_handler(){
++    if (telemetry_owns_sta()) return;   // Wi-Fi della telemetria, non della sincronizzazione
+     sta_connected = false;
+     lv_btn_set_state(admin_switch_sta, LV_BTN_STATE_RELEASED);
+     lv_obj_set_hidden(admin_client_ip, true);
+@@ -881,6 +891,7 @@ void ui_sta_disconnected_handler(){
+ }
+ 
+ void ui_sta_stop_handler() {
++    if (telemetry_owns_sta()) return;   // Wi-Fi della telemetria, non della sincronizzazione
+     sta_connected = false;
+     lv_label_set_text(admin_switch_sta_text, "SYNC SCHEDULE");
+     lv_obj_set_hidden(admin_client_ip, true);
+@@ -1041,6 +1052,8 @@ static void ui_init(void)
+ {
+     ui_screen_splash_init();
+ 
++    screens[SCREEN_TELEMETRY] = telemetry_ui_create();
++
+     ui_screen_event_init();
+ 
+     ui_screen_radar_init();
+@@ -1061,6 +1074,8 @@ static void ui_init(void)
+     invaders_task_handle = lv_task_create(invaders_task, INVADERS_TICK_MS, LV_TASK_PRIO_OFF, NULL);
+ 
+     // show first page.
++    if (TELEMETRY_START_SCREEN && telemetry_enabled()) current_screen = SCREEN_TELEMETRY;
++    telemetry_ui_set_active(current_screen == SCREEN_TELEMETRY);
+     lv_scr_load(screens[current_screen]);
+ 
+     // Turn on backlight and run backlight management task
+@@ -1135,7 +1150,8 @@ void ui_task(void *arg)
+ // that one runs on led_task (not LVGL) so entering/leaving it is just a flag.
+ static void ui_prepare_current_screen(void)
+ {
+-    if (current_screen == SCREEN_EVENT && !event_loaded) ui_event_load();
++    if (current_screen == SCREEN_EVENT && !event_loaded && !telemetry_wants_heap()) ui_event_load();
++    telemetry_ui_set_active(current_screen == SCREEN_TELEMETRY);
+ 
+     if (current_screen == SCREEN_INVADERS) {
+         invaders_reset(screen_invaders);   // fresh game; also enables the task
+diff --git a/main/badge/wifi.c b/main/badge/wifi.c
+index 75c88fb..baa2011 100644
+--- a/main/badge/wifi.c
++++ b/main/badge/wifi.c
+@@ -1,5 +1,6 @@
+ #include "wifi.h"
+ #include "esp_wpa2.h"
++#include "telemetry.h"
+ 
+ static const char *TAG = "WIFI";
+ 
+@@ -61,7 +62,10 @@ static void event_handler(void* arg, esp_event_base_t event_base,
+ 		if(ap_clients_num < 0) ap_clients_num = 0;
+ 		if(!ap_clients_num) esp_timer_start_once(inactivity_timer, AP_INACTIVITY_TIMEOUT_S * 1000000);
+     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+-        if (retry_num < STA_MAXIMUM_RETRY) {
++        xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
++        if (telemetry_owns_sta()) {
++            // connessione della telemetria: la riconnessione la gestisce telemetry.c
++        } else if (retry_num < STA_MAXIMUM_RETRY) {
+ 			ui_connection_progress(retry_num+1, STA_MAXIMUM_RETRY);
+             esp_wifi_connect();
+             retry_num++;
+diff --git a/main/main.c b/main/main.c
+index 26e93da..d23437b 100644
+--- a/main/main.c
++++ b/main/main.c
+@@ -2,6 +2,7 @@
+ #include <string.h>
+ 
+ #include "badge/badge.h"
++#include "badge/telemetry.h"
+ 
+ void app_main() 
+ {
+@@ -10,14 +11,19 @@ void app_main()
+     badge_init();
+     led_init();
+     
+-    // start bluetooth
+-    bt_init();
+-    xTaskCreatePinnedToCore(bt_task, "bt_task", 4096, NULL, 6, NULL, 0);
++    // start bluetooth (telemetria: si puo' spegnere con TELEMETRY_DISABLE_BLE per liberare heap)
++    if (!telemetry_ble_disabled()) {
++        bt_init();
++        xTaskCreatePinnedToCore(bt_task, "bt_task", 4096, NULL, 6, NULL, 0);
++    }
+ 
+     // start wifi management
+     wifi_init();
+     xTaskCreatePinnedToCore(wifi_task, "wifi_task", 4096, NULL, 5, NULL, 0);
+ 
++    // telemetria MQTT (badge/telemetry.c): Wi-Fi STA + sensori + MQTT
++    telemetry_start();
++
+     // start ui to core 1.
+     xTaskCreatePinnedToCore(ui_task, "ui_task", 8192, NULL, 0, NULL, 1);
+ 

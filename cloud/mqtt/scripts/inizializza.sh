@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+# Prima installazione del broker (si può rilanciare: non tocca gli utenti già esistenti).
+#   ./scripts/inizializza.sh                 con i certificati Let's Encrypt del server
+#   ./scripts/inizializza.sh --autofirmato   con certificati autofirmati (prove, portatile)
+#
+# 1. crea .env da .env.example (se manca) e la cartella segreti/ (0700);
+# 2. controlla i certificati TLS (o genera quelli autofirmati);
+# 3. crea gli utenti di servizio con password casuali: admin, ponte, c5, c5-plastico,
+#    dashboard, monitor. Le password di ponte e monitor vanno anche in .env; tutte sono
+#    stampate una volta e salvate in segreti/credenziali-iniziali.txt (0600): distribuiscile
+#    e poi cancella il file;
+# 4. controlla la configurazione di Mosquitto.
+. "$(dirname "$0")/_comune.sh"
+
+AUTOFIRMATO=0
+[ "${1:-}" = "--autofirmato" ] && AUTOFIRMATO=1
+
+# ------------------------------------------------------------------ 1. .env e segreti/
+if [ ! -f .env ]; then
+    cp .env.example .env && chmod 600 .env
+    echo "Creato .env da .env.example."
+fi
+prepara_cartelle
+if [ "$AUTOFIRMATO" = 1 ]; then
+    env_imposta MQTT_CERTIFICATI autofirmato
+    env_imposta LETSENCRYPT_DIR ./segreti
+fi
+DOMINIO="$(env_valore MQTT_DOMINIO cloud.robertodisanto.it)"
+CERTIFICATI="$(env_valore MQTT_CERTIFICATI letsencrypt)"
+LE_DIR="$(env_valore LETSENCRYPT_DIR /etc/letsencrypt)"
+
+# ------------------------------------------------------------------ 2. certificati
+echo "Immagine: $IMMAGINE"
+docker image inspect "$IMMAGINE" >/dev/null 2>&1 || docker compose pull mosquitto
+case "$CERTIFICATI" in
+    letsencrypt)
+        # Controllo fatto da un container (root): /etc/letsencrypt/live è leggibile solo da root.
+        [ -d "$LE_DIR" ] || errore "la cartella $LE_DIR non esiste (LETSENCRYPT_DIR in .env)"
+        if ! docker run --rm -v "$(cd "$LE_DIR" && pwd):/le:ro" --entrypoint /bin/sh "$IMMAGINE" \
+                -c "test -r /le/live/$DOMINIO/fullchain.pem && test -r /le/live/$DOMINIO/privkey.pem"; then
+            errore "non trovo $LE_DIR/live/$DOMINIO/{fullchain,privkey}.pem.
+  Ottieni il certificato (README, sezione TLS), ad esempio:
+    sudo certbot certonly --standalone -d $DOMINIO
+  oppure, per provare subito: ./scripts/inizializza.sh --autofirmato"
+        fi
+        echo "Certificati Let's Encrypt trovati: $LE_DIR/live/$DOMINIO/"
+        ;;
+    autofirmato)
+        if [ ! -f segreti/certs-autofirmati/fullchain.pem ]; then
+            "$MQTT_DIR/scripts/certificati-autofirmati.sh"
+        else
+            echo "Certificati autofirmati già presenti: segreti/certs-autofirmati/"
+        fi
+        ;;
+    *) errore "MQTT_CERTIFICATI in .env deve essere 'letsencrypt' o 'autofirmato'" ;;
+esac
+
+# ------------------------------------------------------------------ 3. utenti di servizio
+ESISTENTI="$(elenco_utenti)"
+CREDENZIALI=segreti/credenziali-iniziali.txt
+NUOVI=()
+for u in admin ponte c5 c5-plastico dashboard monitor; do
+    if grep -qx -- "$u" <<<"$ESISTENTI"; then
+        echo "Utente $u: già presente."
+        continue
+    fi
+    pw="$(genera_password)"
+    printf '%s\n' "$pw" | imposta_password "$u"
+    NUOVI+=("$u $pw")
+    case "$u" in
+        ponte)   env_imposta MQTT_PONTE_PASSWORD "$pw" ;;
+        monitor) env_imposta MQTT_MONITOR_PASSWORD "$pw" ;;
+    esac
+    echo "Utente $u: creato."
+done
+if [ "${#NUOVI[@]}" -gt 0 ]; then
+    umask 077
+    {
+        echo "# Credenziali MQTT generate il $(date '+%Y-%m-%d %H:%M') per $DOMINIO."
+        echo "# Distribuiscile (gestore di password, non in chat pubbliche) e poi CANCELLA questo file."
+        printf '%s\n' "${NUOVI[@]}"
+    } >> "$CREDENZIALI"
+    echo
+    echo "Nuove credenziali (utente password), salvate anche in $CREDENZIALI:"
+    printf '  %s\n' "${NUOVI[@]}"
+    echo
+fi
+
+# ------------------------------------------------------------------ 4. controllo
+echo "Controllo della configurazione..."
+verifica_configurazione || errore "configurazione non valida"
+ricarica_broker >/dev/null
+cat <<EOF
+
+Pronto. Prossimi passi:
+  docker compose up -d                    avvia il broker
+  docker compose ps                       deve risultare "healthy" dopo qualche secondo
+  ./scripts/prova.sh                      prova anonimo rifiutato, ACL, MQTT, TLS e WSS
+  ./scripts/aggiungi-utente.sh <deviceId> un utente per ogni dispositivo
+EOF

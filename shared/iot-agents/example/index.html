@@ -15,6 +15,10 @@
         <h1>Napoli connessa</h1>
         <p class="subtitle">Esempio della base comune IoT + agenti · sensori → agenti → orchestratore → persone</p>
       </div>
+      <nav class="scenari" aria-label="Scenario della demo">
+        <a href="./" aria-current="page"><b>Napoli</b><small>città in tempo reale</small></a>
+        <a href="./fattoria/"><b>Fattoria</b><small>Acqua comune</small></a>
+      </nav>
       <div class="status">
         <span id="mode" class="badge" title="Modalità di funzionamento">…</span>
         <span id="conn" class="conn" aria-live="polite"></span>
@@ -33,42 +37,8 @@
 
     <section class="kpis" id="kpis" aria-label="Metriche"></section>
 
-    <section class="panel citymap" id="citymap" aria-labelledby="h-map">
-      <div class="cm-head">
-        <div class="cm-title">
-          <h2 id="h-map">Napoli in tempo reale</h2>
-          <p class="cm-sub">Affollamento e clima dei luoghi principali, aggiornati dai sensori e dagli agenti</p>
-        </div>
-        <div class="cm-tools">
-          <div class="cm-seg" role="group" aria-label="Vista">
-            <button type="button" data-vista="lista" aria-pressed="false">☰ Lista</button>
-            <button type="button" data-vista="mappa" aria-pressed="true">◉ Mappa</button>
-          </div>
-          <div class="cm-search">
-            <input id="cm-search" type="search" placeholder="Cerca un luogo…" aria-label="Cerca un luogo" autocomplete="off" />
-            <ul id="cm-results" class="cm-results" hidden></ul>
-          </div>
-        </div>
-      </div>
-      <div class="cm-body">
-        <div id="cm-map" class="cm-map" aria-label="Mappa di Napoli"></div>
-        <div id="cm-list" class="cm-list" hidden></div>
-        <aside class="cm-side" aria-label="Legenda e filtri">
-          <div class="cm-seg small" role="group" aria-label="Indicatore">
-            <button type="button" data-modo="folla" aria-pressed="true">Affollamento</button>
-            <button type="button" data-modo="caldo" aria-pressed="false">Temperatura</button>
-          </div>
-          <ul id="cm-legend" class="cm-legend"></ul>
-          <div id="cm-cats" class="cm-cats"></div>
-        </aside>
-        <aside id="cm-detail" class="cm-detail" aria-live="polite" hidden></aside>
-      </div>
-      <p class="cm-note">
-        Il cerchio che pulsa indica il luogo più critico di ogni categoria. Dati simulati: in produzione l'affollamento
-        arriverebbe da dati anonimi e aggregati delle celle telefoniche e dai sensori ESP32 (5G), come fa
-        <a href="https://data.seoul.go.kr/SeoulRtd/" target="_blank" rel="noopener">Seoul Real-Time City Data</a>.
-      </p>
-    </section>
+    <!-- mappa "Napoli in tempo reale": la disegna mappa.js con la configurazione di napoli.js -->
+    <section class="panel citymap" id="citymap" aria-labelledby="h-map"></section>
 
     <main class="grid">
       <section class="panel" aria-labelledby="h-dev">
@@ -111,6 +81,10 @@
 
     <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
 
-    <script type="module" src="./app.js"></script>
+    <script type="module">
+      import { avviaDashboard } from './app.js';
+      import napoli from './napoli.js';
+      avviaDashboard(napoli);
+    </script>
   </body>
 </html>

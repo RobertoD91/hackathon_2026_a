@@ -1,0 +1,86 @@
+# Permessi sui topic (plugin acl-file di Mosquitto). Nessun segreto: questo file è versionato.
+# Dopo una modifica: ./scripts/ricarica.sh (controlla, copia in /mosquitto/run e manda SIGHUP:
+# un SIGHUP a mano o "docker compose kill -s HUP" NON rilegge questo file).
+#
+# Regole del formato:
+# - un commento è una riga che INIZIA con # (niente commenti a fine riga);
+# - "topic <read|write|readwrite|deny> <filtro>" vale per l'utente dell'ultima riga "user";
+# - "pattern ..." vale per TUTTI gli utenti; %u = nome utente, %c = client id;
+# - le righe "deny" vincono sui permessi;
+# - "#" non comprende i topic di sistema $SYS/...: vanno dati a parte.
+#
+# Topic previsti (shared/iot-agents/CONTRATTO.md e c5-agentic-city/README.md):
+#   bighack/<zona>/<deviceId>/readings   letture dei badge/ESP32 (JSON del contratto)
+#   bighack/<zona>/<deviceId>/status     stato online/offline (trattenuto, anche come LWT)
+#   tele/<topic>/SENSOR, STATE, LWT      telemetria Tasmota (stat/... e cmnd/... per i comandi)
+#   napoli/#                             città agentica c5-agentic-city
+
+# ==================================================================== DISPOSITIVI
+# Non serve toccare questo file per aggiungere un dispositivo: basta creare l'utente
+# con NOME UTENTE = deviceId (badge/ESP32) oppure = Topic di Tasmota:
+#   ./scripts/aggiungi-utente.sh esp32-plebiscito-01
+#   ./scripts/aggiungi-utente.sh tasmota-serra
+# Il dispositivo scrive solo sotto il proprio nome, in qualsiasi zona.
+
+# Badge ed ESP32: scrive readings e status (anche LWT trattenuto) e legge i propri comandi
+# (bighack/<zona>/<deviceId>/cmd, usato dal firmware del badge).
+pattern readwrite bighack/+/%u/#
+
+# Tasmota (Topic = nome utente, FullTopic predefinito %prefix%/%topic%/).
+pattern write tele/%u/#
+pattern write stat/%u/#
+pattern read cmnd/%u/#
+# Il topic di gruppo cmnd/tasmotas/# non è concesso: i comandi vanno al singolo dispositivo.
+
+# Badge e ESP32 possono pubblicare anche nel formato di c5: napoli/sensori/<deviceId>/<grandezza>.
+pattern write napoli/sensori/%u/#
+
+# Il pulsante dei badge con TELEMETRY_C5_COMPAT 1 scrive anche su napoli/eventi/manuale, che
+# è un topic condiviso: si concede badge per badge (un pattern varrebbe anche per "dashboard").
+# user badge-ab12
+# topic write napoli/eventi/manuale
+
+# ==================================================================== SERVIZI E PERSONE
+# Nomi fissi, creati da ./scripts/inizializza.sh con password casuali.
+
+# Amministratore: tutto, comprese le statistiche del broker.
+user admin
+topic readwrite #
+topic read $SYS/#
+
+# Ponte MQTT -> hub (shared/iot-agents): legge letture e stato di badge, ESP32 e Tasmota.
+user ponte
+topic read bighack/#
+topic read tele/#
+topic read stat/#
+# Per mandare comandi dal hub ai dispositivi togli il commento:
+# topic write bighack/+/+/cmd
+# topic write cmnd/#
+
+# Città agentica c5-agentic-city (agenti, gemello, sala, oppure il bridge dal broker del plastico).
+user c5
+topic readwrite napoli/#
+
+# ESP32 del plastico di c5 (sensori di passaggio, pulsanti, semafori), un utente condiviso.
+user c5-plastico
+topic write napoli/sensori/#
+topic write napoli/eventi/manuale
+topic read napoli/semafori/#
+topic write napoli/semafori/+/riflesso
+
+# Dashboard nel browser (wss://...:8884). La sua password finisce nel JavaScript della pagina,
+# quindi è da considerare PUBBLICA: solo lettura, e nessun permesso da dispositivo.
+user dashboard
+topic read bighack/#
+topic read tele/#
+topic read napoli/#
+topic deny bighack/+/dashboard/#
+topic deny tele/dashboard/#
+topic deny stat/dashboard/#
+topic deny cmnd/dashboard/#
+topic deny napoli/sensori/dashboard/#
+
+# Monitor (servizio "monitor" in compose.yaml, ./scripts/stato.sh): legge tutto, non scrive.
+user monitor
+topic read #
+topic read $SYS/#

@@ -1,0 +1,12 @@
+# Mai versionare segreti del broker.
+# Configurazione locale con password (si versiona solo .env.example).
+.env
+# File delle password, certificati autofirmati, credenziali iniziali.
+segreti/
+# Per sicurezza, ovunque in questa cartella:
+passwd
+*.pem
+*.key
+*.crt
+*.p12
+credenziali*.txt

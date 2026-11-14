@@ -1,0 +1,136 @@
+# Broker MQTT del team (The Big Hack 2026) per cloud.robertodisanto.it.
+# Guida completa: README.md in questa cartella.
+#
+#   cp .env.example .env && ./scripts/inizializza.sh   prima installazione (utenti, .env, TLS)
+#   docker compose up -d                               broker
+#   docker compose logs -f mosquitto                   log del broker
+#   ./scripts/prova.sh                                 prova completa (anonimo, ACL, TLS, WSS)
+#   docker compose --profile monitor up monitor        stampa tutti i messaggi (Ctrl+C per uscire)
+#
+# Porte sul server (modificabili in .env):
+#   1883 MQTT con password · 8883 MQTT su TLS · 8884 WebSocket su TLS (wss://)
+#   9001 WebSocket in chiaro solo su 127.0.0.1 (per un eventuale reverse proxy)
+name: bighack-mqtt
+
+services:
+  mosquitto:
+    # Versione fissata (2.1.2 = "eclipse-mosquitto:2" a novembre 2026, la stessa di c5-agentic-city).
+    image: eclipse-mosquitto:2.1.2-alpine
+    restart: unless-stopped
+    # avvio.sh (root): copia certificati TLS e ACL in /mosquitto/run e sistema i permessi,
+    # poi avvia Mosquitto, che scende all'utente mosquitto (uid 1883).
+    entrypoint: ["/bin/sh", "/mosquitto/config/avvio.sh"]
+    command: ["/usr/sbin/mosquitto", "-c", "/mosquitto/config/mosquitto.conf"]
+    environment:
+      MQTT_DOMINIO: ${MQTT_DOMINIO:-cloud.robertodisanto.it}
+      MQTT_CERTIFICATI: ${MQTT_CERTIFICATI:-letsencrypt}
+    ports:
+      - "${MQTT_PORTA:-1883}:1883"
+      - "${MQTTS_PORTA:-8883}:8883"
+      - "${WSS_PORTA:-8884}:8884"
+      - "${WS_INDIRIZZO:-127.0.0.1}:${WS_PORTA:-9001}:9001"
+    volumes:
+      - ./config:/mosquitto/config:ro
+      # Utenti e password (hash): cartella di uid 1883, la gestiscono gli script in scripts/.
+      - ./segreti/utenti:/mosquitto/utenti
+      # Certificati autofirmati (se MQTT_CERTIFICATI=autofirmato), in sola lettura.
+      - ./segreti:/mosquitto/segreti:ro
+      # Certificati Let's Encrypt del server, in sola lettura. Con MQTT_CERTIFICATI=autofirmato
+      # metti LETSENCRYPT_DIR=./segreti in .env (qualsiasi cartella esistente va bene).
+      - ${LETSENCRYPT_DIR:-/etc/letsencrypt}:/etc/letsencrypt:ro
+      - dati:/mosquitto/data
+    tmpfs:
+      # Copie di certificati e ACL fatte da avvio.sh: solo in memoria, mai su disco.
+      - /mosquitto/run:mode=0700,size=1m
+      # File temporanei di mosquitto_passwd (script in scripts/).
+      - /tmp:mode=1777,size=4m
+    healthcheck:
+      # Il broker è sano se risponde a MQTT E rifiuta la connessione anonima:
+      # se qualcuno riaprisse l'accesso anonimo, il container risulterebbe "unhealthy".
+      test: ["CMD-SHELL", "mosquitto_pub -h 127.0.0.1 -p 1883 -i salute -t salute -m x 2>&1 | grep -qi 'not authori'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    # Indurimento: file system in sola lettura (scrive solo su dati, utenti e tmpfs) e solo
+    # le capability che servono ad avvio.sh e agli script (copiare certificati e password,
+    # cambiare proprietario, cambiare utente). Mosquitto stesso, sceso a uid 1883, non ne ha.
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, SETUID, SETGID]
+    security_opt: ["no-new-privileges:true"]
+    # File aperti: margine ampio per global_max_connections 1000 (un socket per client).
+    ulimits:
+      nofile: { soft: 16384, hard: 16384 }
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 256M }
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "5" }
+
+  # Client di prova: si iscrive a MONITOR_TOPIC (predefinito: tutto) e stampa ogni messaggio
+  # con data, topic e contenuto. Stessa immagine del broker, nessun download in più.
+  #   docker compose --profile monitor up monitor
+  #   MONITOR_TOPIC='bighack/#' docker compose --profile monitor up monitor
+  monitor:
+    image: eclipse-mosquitto:2.1.2-alpine
+    profiles: ["monitor"]
+    depends_on:
+      mosquitto: { condition: service_healthy }
+    environment:
+      MQTT_USER: monitor
+      MQTT_PASSWORD: ${MQTT_MONITOR_PASSWORD:-}
+      MONITOR_TOPIC: ${MONITOR_TOPIC:-#}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        exec mosquitto_sub -h mosquitto -p 1883 -u "$$MQTT_USER" -P "$$MQTT_PASSWORD"
+        -i "monitor-$$(hostname)" -t "$$MONITOR_TOPIC" -F '%I %t %p'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  # Ponte MQTT -> hub (shared/iot-agents): vedi README, sezione "Ponte MQTT -> hub".
+  # Legge bighack/# e tele/# con l'utente "ponte" e inoltra le letture al hub (POST /api/readings).
+  # Usa shared/iot-agents della repo in sola lettura: sul server serve la repo intera
+  # (cloud/ e shared/ allo stesso livello). DA ATTIVARE quando il ponte è pronto:
+  # 1. togli il commento al blocco qui sotto e metti il nome del file al posto di <ponte>.js;
+  # 2. in .env controlla HUB_URL e HUB_TOKEN (MQTT_PONTE_PASSWORD la scrive inizializza.sh);
+  # 3. docker compose --profile ponte up -d   (log: docker compose logs -f ponte)
+  #
+  # ponte:
+  #   image: node:22.23.5-alpine
+  #   profiles: ["ponte"]
+  #   restart: unless-stopped
+  #   depends_on:
+  #     mosquitto: { condition: service_healthy }
+  #   user: node
+  #   working_dir: /repo
+  #   volumes:
+  #     - ../../shared/iot-agents:/repo/shared/iot-agents:ro
+  #   environment:
+  #     MQTT_URL: mqtt://mosquitto:1883
+  #     MQTT_USER: ponte
+  #     MQTT_PASSWORD: ${MQTT_PONTE_PASSWORD:-}
+  #     HUB_URL: ${HUB_URL:-http://host.docker.internal:8701}
+  #     HUB_TOKEN: ${HUB_TOKEN:-}
+  #   # host.docker.internal = il server stesso (hub avviato fuori da Docker).
+  #   extra_hosts: ["host.docker.internal:host-gateway"]
+  #   command: ["node", "shared/iot-agents/tools/<ponte>.js"]
+  #   read_only: true
+  #   cap_drop: [ALL]
+  #   security_opt: ["no-new-privileges:true"]
+  #   deploy:
+  #     resources:
+  #       limits: { cpus: "0.5", memory: 128M }
+  #   logging:
+  #     driver: json-file
+  #     options: { max-size: "10m", max-file: "3" }
+
+volumes:
+  # Persistenza di Mosquitto (mosquitto.db). Backup: README, sezione "Backup".
+  dati:

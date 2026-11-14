@@ -43,6 +43,7 @@ typedef struct {
     long heap;              // byte liberi; < 0 = assente
     long uptime_s;          // < 0 = assente
     double chip_temp_c;     // temperatura interna del SoC; NAN = assente
+    double board_temp_c;    // temperatura della scheda (TSC2007); NAN = assente
 } payload_msg_t;
 
 /** Azzera il messaggio (tutti i campi facoltativi assenti). */
@@ -68,6 +69,14 @@ int payload_status_json(char *out, size_t cap, const char *device_id, bool onlin
 /** Formato di c5-agentic-city: {"valore": n, "zona": "...", "deviceId": "..."} (+ moltiplicatore se > 0). */
 int payload_c5_json(char *out, size_t cap, double value, int decimals, const char *zona,
                     const char *device_id, int moltiplicatore);
+
+/**
+ * Nome della grandezza nel formato di c5-agentic-city (napoli/sensori/<nodo>/<grandezza>):
+ * light_lux → luce, temperature_c → temperatura, humidity_pct → umidita, pressure_hpa → pressione,
+ * supply_v → tensione, people_count → persone, badges_nearby → badge_vicini, button → pulsante.
+ * Gli altri nomi restano uguali.
+ */
+const char *payload_c5_name(const char *name);
 
 /** Evento manuale di c5-agentic-city: {"evento": "...", "zona": "...", "da": "<deviceId>"}. */
 int payload_c5_event_json(char *out, size_t cap, const char *evento, const char *zona,

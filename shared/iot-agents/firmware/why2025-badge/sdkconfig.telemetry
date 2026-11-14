@@ -1,0 +1,13 @@
+# Opzioni ESP-IDF aggiunte da build.sh a sdkconfig.emf2026-badge (sostituiscono quelle esistenti).
+# Una riga per opzione: CONFIG_NOME=valore oppure "# CONFIG_NOME is not set".
+
+# TLS con meno RAM: i buffer di mbedTLS (16 KB in ingresso) sono allocati solo quando servono
+# e liberati dopo l'handshake. Con BLE + Wi-Fi + LVGL l'heap libero del badge è poco
+# (vedi SKILL.md del repo del badge) e la connessione MQTT/TLS resta aperta per ore.
+CONFIG_MBEDTLS_DYNAMIC_BUFFER=y
+CONFIG_MBEDTLS_DYNAMIC_FREE_PEER_CERT=y
+CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA=y
+
+# Da disconnessi le letture non si accodano nella outbox di ESP-MQTT (niente RAM che cresce):
+# si perdono e la successiva parte all'intervallo dopo; lo stato retained dice chi è offline.
+CONFIG_MQTT_SKIP_PUBLISH_IF_DISCONNECTED=y

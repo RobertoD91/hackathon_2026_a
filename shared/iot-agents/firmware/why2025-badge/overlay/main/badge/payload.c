@@ -165,6 +165,7 @@ void payload_msg_init(payload_msg_t *m) {
     m->heap = -1;
     m->uptime_s = -1;
     m->chip_temp_c = NAN;
+    m->board_temp_c = NAN;
 }
 
 bool payload_add(payload_msg_t *m, const char *name, double value, int decimals) {
@@ -278,6 +279,10 @@ int payload_reading_json(const payload_msg_t *m, char *out, size_t cap) {
         jb_key(&b, "chip_temp_c", &f4);
         jb_num(&b, m->chip_temp_c, 1);
     }
+    if (isfinite(m->board_temp_c)) {
+        jb_key(&b, "board_temp_c", &f4);
+        jb_num(&b, m->board_temp_c, 1);
+    }
     if (m->light_sensor) {
         jb_key(&b, "light_sensor", &f4);
         jb_str(&b, m->light_sensor);
@@ -344,6 +349,18 @@ int payload_c5_json(char *out, size_t cap, double value, int decimals, const cha
     }
     jb_char(&b, '}');
     return jb_done(&b);
+}
+
+const char *payload_c5_name(const char *name) {
+    static const char *const map[][2] = {
+        {"light_lux", "luce"},         {"temperature_c", "temperatura"}, {"humidity_pct", "umidita"},
+        {"pressure_hpa", "pressione"}, {"supply_v", "tensione"},         {"people_count", "persone"},
+        {"badges_nearby", "badge_vicini"}, {"button", "pulsante"},
+    };
+    if (!name) return "";
+    for (size_t i = 0; i < sizeof(map) / sizeof(map[0]); i++)
+        if (strcmp(name, map[i][0]) == 0) return map[i][1];
+    return name;
 }
 
 int payload_c5_event_json(char *out, size_t cap, const char *evento, const char *zona, const char *device_id) {
