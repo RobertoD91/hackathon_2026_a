@@ -21,11 +21,12 @@ Lo stesso nucleo gira **anche nel browser**: le dashboard su GitHub Pages, senza
 Dalla root della repo:
 
 ```bash
-node shared/iot-agents/example/server.js          # hub + 3 agenti + simulatore su http://localhost:8701/
-node --test shared/iot-agents/test/               # test (anche: cd shared/iot-agents && npm test)
+node shared/iot-agents/example/server.js                       # Napoli: hub + 4 agenti + simulatore su http://localhost:8701/
+node shared/iot-agents/example/server.js --scenario fattoria   # Fattoria "Acqua comune" (stessa porta, uno scenario alla volta)
+node --test shared/iot-agents/test/                            # test (anche: cd shared/iot-agents && npm test)
 ```
 
-Apri http://localhost:8701/ (reindirizza a `/shared/iot-agents/example/`): letture in diretta, decisioni, metriche, pulsanti degli scenari, notifiche e chat. La timeline dell'esempio lancia un'ondata di calore dopo 20 s e le nuvole dopo 85 s; la giornata simulata (dalle 15:00, ×60) ricomincia ogni 3 minuti.
+Apri http://localhost:8701/ (reindirizza alla pagina dello scenario avviato): letture in diretta, decisioni, metriche, pulsanti degli scenari, notifiche e chat. Napoli: la timeline lancia un'ondata di calore dopo 20 s e le nuvole dopo 85 s; la giornata simulata (dalle 15:00, ×60) ricomincia ogni 3 minuti. Fattoria: giornata di luglio dalle 15:00 a ×300, ondata di calore dopo 15 s, turni d'acqua dalle 22:00 (dopo circa 85 s), la giornata ricomincia ogni 288 s. Le due pagine hanno un selettore di scenario nella testata (Napoli · Fattoria); se il hub raggiungibile esegue l'altro scenario, la pagina se ne accorge e gira in demo nel browser.
 
 Altri comandi:
 
@@ -42,10 +43,11 @@ node shared/iot-agents/tools/openclaw-bridge-sim.js
 node shared/iot-agents/tools/openclaw-bridge-sim.js --say "che temperatura c'è?"
 
 # modalità demo statica, come su GitHub Pages
-python3 -m http.server 8711     # poi apri http://localhost:8711/shared/iot-agents/example/
+python3 -m http.server 8711     # poi apri http://localhost:8711/shared/iot-agents/example/ (Napoli)
+                                #   e http://localhost:8711/shared/iot-agents/example/fattoria/ (Fattoria)
 ```
 
-Online (dopo il push): https://robertodisanto.it/hackathon_2026_a/shared/iot-agents/example/ (sempre in modalità demo).
+Online (dopo il push): https://robertodisanto.it/hackathon_2026_a/shared/iot-agents/example/ e https://robertodisanto.it/hackathon_2026_a/shared/iot-agents/example/fattoria/ (sempre in modalità demo).
 
 ## Struttura
 
@@ -64,9 +66,13 @@ Online (dopo il push): https://robertodisanto.it/hackathon_2026_a/shared/iot-age
 | `src/ui-helpers.js` | etichette, formattazione, sparkline SVG | browser |
 | `sim/sim-core.js` | motore del simulatore | Node e browser |
 | `sim/simulate.js` | simulatore da riga di comando, `runSimulator`, `attachSimulator` | Node |
-| `example/` | demo minima da copiare (porta 8701) | — |
-| `example/mappa.js`, `example/luoghi.js` | mappa "Napoli in tempo reale" stile [Seoul Real-Time City Data](https://data.seoul.go.kr/SeoulRtd/): 10 luoghi, 4 livelli di affollamento o di caldo, vista mappa/lista, ricerca, filtro per categoria, scheda di dettaglio, cerchio che pulsa sul luogo più critico di ogni categoria. Leaflet 1.9.4 da cdnjs, tessere OpenStreetMap. Luoghi e capienze (indicative) in `luoghi.js`; l'affollamento arriva dalla lettura `people_count` dei sensori della zona | browser |
-| `example/agents/folla.js` | agente folla: livello per luogo, quando un luogo diventa "Affollato" propone all'orchestratore l'alternativa tranquilla più vicina (notifica WhatsApp ai turisti) | Node e browser |
+| `example/` | demo da copiare (porta 8701), due scenari: Napoli (`index.html`) e Fattoria (`fattoria/`) | — |
+| `example/server.js` | hub dell'esempio: `--scenario napoli` (predefinito) o `--scenario fattoria` (anche `SCENARIO=fattoria`), `--no-sim` | Node |
+| `example/app.js` | dashboard comune: `avviaDashboard(scenario)` (KPI, sensori, decisioni, scenari, notifiche, chat, mappa) | browser |
+| `example/mappa.js` | componente mappa **configurabile** stile [Seoul Real-Time City Data](https://data.seoul.go.kr/SeoulRtd/): luoghi o poligoni colorati su livelli, modalità (indicatori), livelli sovrapposti, vista mappa/lista, ricerca, filtro per categoria, scheda di dettaglio, cerchio che pulsa sul più critico di ogni categoria. Leaflet 1.9.4 da cdnjs, tessere OpenStreetMap. API sotto, in "Esempio: due scenari" | browser |
+| `example/napoli.js`, `example/luoghi.js` | scenario Napoli: configurazione della dashboard e della mappa (indicatori affollamento e temperatura, colonne, scheda); 10 luoghi e capienze indicative in `luoghi.js` (l'affollamento arriva da `people_count`) | browser (`luoghi.js` anche Node) |
+| `example/agents/` | agenti di Napoli: clima, illuminazione, folla (quando un luogo diventa "Affollato" propone l'alternativa tranquilla più vicina), orchestratore | Node e browser |
+| `example/fattoria/` | scenario Fattoria "Acqua comune": `index.html`, `scenario.js` (dashboard e mappa), `campi.js` (campi, colture, vasca), `piano.js` (turni d'acqua), `simulatore.js` (bilancio idrico), `sim-config.json`, `agents/` (campi, meteo, consorzio) | browser; agenti e logica anche Node |
 | `firmware/esp32-sensor/` | sketch ESP32 ([README](firmware/esp32-sensor/README.md)) | ESP32 |
 | `firmware/why2025-badge/` | firmware MQTT per il badge Cyber Saiyan WHY2025/EMF2026 (ESP32-C3), sopra il firmware originale ([README](firmware/why2025-badge/README.md)) | badge |
 | `tools/openclaw-bridge-sim.js` | simulazione del ponte OpenClaw | Node |
@@ -74,6 +80,54 @@ Online (dopo il push): https://robertodisanto.it/hackathon_2026_a/shared/iot-age
 | `tools/mqtt-client.js`, `tools/mqtt-convert.js` | client MQTT 3.1.1 senza dipendenze, conversioni verso il contratto | Node |
 | `tools/mqtt-pub.js` | prove MQTT da riga di comando: pubblica, ascolta, simula badge e Tasmota | Node |
 | `test/` | test `node:test` | Node |
+
+## Esempio: due scenari (Napoli e Fattoria)
+
+La stessa dashboard (`example/app.js`) e lo stesso componente mappa (`example/mappa.js`) servono due scenari, ognuno con pagina, `sim-config.json`, agenti e luoghi propri:
+
+| Scenario | Pagina | Configurazione | Agenti | Simulatore |
+|---|---|---|---|---|
+| Napoli connessa | `example/index.html` | `napoli.js`, `luoghi.js`, `sim-config.json` | `agents/`: clima, illuminazione, folla, orchestratore | generico |
+| Acqua comune (fattoria) | `example/fattoria/` | `fattoria/scenario.js`, `campi.js`, `sim-config.json` | `fattoria/agents/`: campi, meteo, consorzio (orchestratore) | generico + bilancio idrico (`fattoria/simulatore.js`) |
+
+Una pagina è solo HTML + `avviaDashboard(configurazione)`; la configurazione dice `simConfig`, `demoAgents`, `firma` (un agente che deve esserci nel hub: se manca, il hub esegue un altro scenario e la pagina va in demo), `mappa`, ordine dei `kpi`, un eventuale `simulatoreDemo` e l'aggancio `eventi(evento, api)` che passa alla mappa dati non dai sensori (`api.mappa.setExtra(nome, dati)`).
+
+### Componente mappa (`example/mappa.js`)
+
+```js
+import { createMappa, aggregaSensori, colonna } from './mappa.js';
+const mappa = createMappa(document.getElementById('citymap'), {
+  titolo: 'Napoli in tempo reale', sottotitolo: '…', nota: 'HTML o (ctx) => HTML', cerca: 'Cerca un luogo…',
+  vista: { centro: [40.8435, 14.242], zoom: 13, zoomEtichette: 14, zoomVolo: 15 },   // anche zoomSnap, adattaMobile
+  tema: { gradiente: 'linear-gradient(…)', accento: '#4a6fe0' },                     // facoltativo
+  categorie: { piazze: 'Piazze e centro', … },
+  luoghi: { plebiscito: { nome, categoria, lat, lon, poligono?: [[lat, lon], …], icona?, parole? } },  // chiave = location.zone
+  aggrega: (dispositivi, luogo, zona) => aggregato,          // predefinito aggregaSensori: { n, somma, media, sensori, reali, ts }
+  storia: (aggregato) => numero,                             // per la sparkline della scheda
+  indicatori: [{ id: 'folla', label: 'Affollamento',
+                 livelli: [{ id: 'tranquillo', label: 'Tranquillo', colore: '#1fb46a' }, …, { id: 'affollato', label: 'Affollato', colore: '#e5413a', critico: true }],
+                 valuta: (aggregato, luogo, zona, ctx) => ({ livello: 'affollato', valore: 1.2 }) }],
+  colonne: [colonna.luogo(), colonna.categoria(), colonna.livello(), { titolo, classe: 'num', mobile: false, cella: (riga, ctx) => html }],
+  dettaglio: (riga, ctx) => html,                            // corpo della scheda; ctx.badge, ctx.barra, ctx.sparkline, ctx.extra, ctx.ora()
+  sovrapposti: [{ id, label, attivo: true, crea: ({ L, map, ctx }) => layer, aggiorna: (layer, ctx) => {} }],
+}, { ora: () => oraSimulata });
+mappa.update(devices);                 // a ogni lettura (lo fa app.js)
+```
+
+**Aggiungere una modalità** (es. qualità dell'aria a Napoli da una fonte reale): un elemento in `INDICATORI` di `napoli.js` (4 livelli con colori, `valuta` che legge l'aggregato dei sensori della zona o `ctx.extra.aria?.[zona]`), oppure `mappa.aggiungiIndicatore(def)` a mappa avviata. I dati esterni entrano con `mappa.setExtra('aria', dati)` (da un agente, tramite l'aggancio `eventi`, o da un `fetch` nella pagina). **Aggiungere un livello sovrapposto** (linee della metro, eventi, stazioni di misura): un elemento in `SOVRAPPOSTI` di `napoli.js` o `mappa.aggiungiSovrapposto(def)`; compare una casella nella legenda. I colori vengono dalla configurazione (`--lv` in linea), non dal CSS: nessuna modifica a `style.css` per un livello nuovo.
+
+### Fattoria "Acqua comune"
+
+Una piccola comunità irrigua **fittizia** tra Via Filettine e Via Migliaro a San Marzano sul Sarno (Agro Nocerino-Sarnese, pomodoro San Marzano DOP): 10 appezzamenti disegnati sulla mappa OpenStreetMap (poligoni, 1-2 ha: pomodoro, papaccella, zucchine, fagiolini, albicocchi, vigneto, uliveto), una vasca consortile alimentata da un pozzo e una stazione meteo. La giornata simulata è di luglio (stagione irrigua).
+
+- **Sensori** (simulati): per campo `soil_moisture_pct`, `temperature_c`, `light_lux`; vasca `fill_pct`; stazione `temperature_c`, `humidity_pct`, `light_lux`. Il bilancio idrico di `fattoria/simulatore.js` chiude il cerchio: l'umidità scende con l'evapotraspirazione (ET0 × Kc, a campana tra alba e tramonto), sale quando il consorzio apre l'acqua di un campo (azione `apri_valvola` nelle decisioni), la vasca scende con i turni e risale col pozzo. Per questo in live il server usa `attachFattoria` e in demo la pagina sostituisce il simulatore generico (`simulatoreDemo`).
+- **Agente campi**: livello di umidità (Saturo ≥ 34 %, Ottimale, Asciutto < 24 %, Stress idrico < 18 %, con isteresi di 0,4 punti) e avviso al consorzio quando cambia; allerta caldo in fioritura; KPI campi in stress e umidità media.
+- **Agente meteo**: previsione di domani da [Open-Meteo](https://open-meteo.com) (`et0_fao_evapotranspiration`, `precipitation_sum`; CC BY 4.0, senza chiave, CORS) per le coordinate dei campi. Se Open-Meteo non risponde, dà 429 o errore usa una **previsione simulata dichiarata** (`fonte: 'simulata'` con il motivo). Fuori dalla stagione irrigua (ottobre-marzo) mostra i valori reali ma usa la previsione simulata di luglio, perché la giornata simulata è estiva; il pulsante "Previsione reale (Open-Meteo)" forza i valori veri di oggi.
+- **Agente consorzio** (orchestratore): piano dei turni della notte (`piano.js`, funzioni pure e testate) con l'acqua disponibile (vasca sopra la riserva + pozzo, al massimo la dotazione di 900 m³): priorità a stress idrico, fase colturale e pioggia prevista; turni uno alla volta dalle 22:00 alle 06:00 col modulo di 35 l/s; turni ridotti o rinviati se l'acqua non basta. Ripianifica quando cambiano previsione, livelli o acqua (e alle 21:30), manda su WhatsApp a ogni agricoltore solo i cambiamenti ("Stanotte irriga il campo 3 … dalle 22:00 per 1 h 50 min: 229.500 litri. Domani niente pioggia…"), apre l'acqua all'ora del turno e al mattino manda il riepilogo al gruppo. KPI: litri risparmiati rispetto al turno a calendario, acqua assegnata, turni tagliati, livello della vasca. Chat: "quando irrigo il campo 3?", turni di stanotte, vasca, pioggia, risparmio. L'LLM, se configurato, riformula solo i testi (fallback deterministico).
+- **Scenari** (pulsanti): Ondata di calore, Pioggia in arrivo, Riduzione dell'acqua disponibile, Previsione reale (Open-Meteo).
+- **Mappa**: modalità Umidità, Temperatura e Turni (dal piano del consorzio), livello sovrapposto "Rete irrigua (schema)" che si anima sul campo che sta irrigando, schede di dettaglio per campo (coltura e fase, Kc, umidità con scala, prossimo turno, litri assegnati e a calendario, priorità), vasca e stazione meteo.
+
+Cosa è reale, simulato o indicativo: i Kc sono di FAO-56 (Allen et al. 1998, tab. 12; `fw` dalla tab. 20); soglie di umidità, spessore di suolo visto dalla sonda, sensibilità delle fasi (ispirata al Ky di FAO-33), efficienza, pioggia efficace, capacità della vasca, pozzo, dotazione e turno a calendario (ET0 6,5 mm × Kc ogni notte) sono **indicativi**; sensori, comunità, agricoltori e consorzio sono simulati o fittizi; i poligoni sono disegnati a mano guardando OpenStreetMap (non sono particelle catastali); la previsione è reale solo quando la pagina lo dichiara.
 
 ## Creare una soluzione (C2, C5)
 
@@ -385,7 +439,7 @@ node shared/iot-agents/tools/mqtt-pub.js --url mqtt://localhost:1883 --sub 'bigh
 node --test shared/iot-agents/test/
 ```
 
-50 test: validazione delle letture, formato degli eventi, dispatch e routing, protezione dai cicli (auto-eventi e catene tra agenti), isolamento delle eccezioni, ordine e coda per agente, chat, scenari con durata, adattatore LLM (mock, Anthropic e OpenAI-compatibile con `fetch` finto, JSON, timeout, errori), simulatore (determinismo, andamenti, accelerazione, timeline, effetti), server HTTP (tutte le API, SSE, notifiche con cursore, CORS, token, file statici e percorsi vietati) e gli agenti dell'esempio.
+89 test (88 superati + 1 saltato se non c'è un broker MQTT locale): validazione delle letture, formato degli eventi, dispatch e routing, protezione dai cicli (auto-eventi e catene tra agenti), isolamento delle eccezioni, ordine e coda per agente, chat, scenari con durata, adattatore LLM (mock, Anthropic e OpenAI-compatibile con `fetch` finto, JSON, timeout, errori), simulatore (determinismo, andamenti, accelerazione, timeline, effetti), server HTTP (tutte le API, SSE, notifiche con cursore, CORS, token, file statici e percorsi vietati), gli agenti dell'esempio e la fattoria (`test/fattoria.test.js`: piano dei turni con stress, pioggia e acqua scarsa, bilancio idrico, agente meteo con Open-Meteo finto e 429, agenti nel nucleo fino all'apertura della valvola, chat, configurazioni della mappa) e il ponte MQTT (`test/mqtt.test.js`: client MQTT, conversione dei payload del badge, di Tasmota e di c5, prova end-to-end con un broker vero).
 
 ## Limiti noti
 

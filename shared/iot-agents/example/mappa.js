@@ -27,7 +27,7 @@
 //   aggrega?: (dispositivi, luogo, zona) → aggregato     predefinito: aggregaSensori()
 //   storia?: (aggregato, luogo, zona) → numero | null    valore da tenere per la sparkline del dettaglio
 //   indicatori: [{ id, label,
-//                  livelli: [{ id, label, colore: '#hex', inchiostro?: '#hex', critico?: true }],  dal meno al più critico
+//                  livelli: [{ id, label, colore: '#hex', inchiostro?: '#hex', critico?: true }],  la legenda li mostra dall'ultimo al primo
 //                  valuta: (aggregato, luogo, zona, ctx) → { livello: id, valore: numero } | null }],
 //                  (valore serve a ordinare: più alto = più critico; il luogo critico che pulsa è
 //                   quello col valore più alto tra i livelli `critico` della sua categoria)

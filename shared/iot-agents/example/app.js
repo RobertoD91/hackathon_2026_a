@@ -87,11 +87,13 @@ export async function avviaDashboard(scenario) {
   $('mode').classList.add(hub.mode);
   $('demo-note').hidden = hub.mode !== 'demo';
   if (altroHub && scenario.notaAltroHub) $('demo-note').innerHTML = scenario.notaAltroHub;
-  hub.onStatus((s) => {
+  const stato = (s) => {
     const el = $('conn');
     el.className = `conn ${s}`;
     el.textContent = { connected: 'collegato', reconnecting: 'riconnessione…', demo: 'simulazione locale' }[s] || s;
-  });
+  };
+  stato(hub.status);
+  hub.onStatus(stato);
 
   model.devices = structuredClone(initial.devices || {});
   for (const m of Object.values(initial.metrics || {})) setMetric(m);
