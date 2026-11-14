@@ -14,6 +14,12 @@ Skill per **CiroGPT**, l'agente OpenClaw di TwinCiro, su WhatsApp. Ogni cartella
 
 Tutte le fonti sono state provate tra il 13 e il 14 novembre 2026. Il catalogo completo, con licenze ed esiti delle verifiche, è in [`docs/fonti-dati-napoli.md`](../../../docs/fonti-dati-napoli.md).
 
+## API dati città (in arrivo)
+
+L'altra sessione sta costruendo un'**API dati città** (`shared/citta-api/`, da mettere su `cloud.robertodisanto.it`) sopra lo stesso catalogo. Avrà endpoint compatti e già normalizzati: `/citta/riassunto`, `/meteo?luogo=`, `/aria`, `/allerta`, `/trasporti/vicino?luogo=`, `/passaggi?stazione=`, `/eventi/oggi`, `/luoghi`. Ci saranno anche cache e limiti.
+
+Quando sarà online, le skill delle fonti la useranno **per prima** e chiameranno le fonti dirette qui sotto solo come riserva. Contratto e indirizzo saranno in `shared/citta-api/README.md`.
+
 ## Installazione
 
 Copia le cartelle che ti servono nella cartella delle skill di OpenClaw, di solito `skills/` del workspace dell'agente oppure `~/.openclaw/skills/`. Riavvia o ricarica l'agente.
