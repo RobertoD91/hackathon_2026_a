@@ -1,5 +1,5 @@
 # Pubblica la root della repo (master) su GitHub Pages.
-# Ogni prototipo è servito dalla sua sottocartella, es. /jrpg/.
+# Ogni prototipo è servito dalla sua sottocartella, es. /c5-presentazione/mappa/.
 name: Deploy GitHub Pages
 
 on:

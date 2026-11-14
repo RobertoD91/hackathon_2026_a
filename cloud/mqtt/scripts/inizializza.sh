@@ -6,11 +6,12 @@
 #
 # 1. crea .env da .env.example (se manca) e la cartella segreti/ (0700);
 # 2. se TLS è acceso, controlla i certificati (o genera quelli autofirmati);
-# 3. crea gli utenti di servizio con password casuali: admin, ponte, c5, c5-plastico,
-#    dashboard, monitor. Le password di ponte e monitor vanno anche in .env; tutte sono
-#    stampate una volta e salvate in segreti/credenziali-iniziali.txt (0600): distribuiscile
-#    e poi cancella il file;
+# 3. crea gli utenti di servizio con password casuali: admin, c5, dashboard, monitor.
+#    La password di monitor va anche in .env; tutte sono stampate una volta e salvate in
+#    segreti/credenziali-iniziali.txt (0600): distribuiscile e poi cancella il file.
+#    Gli utenti dei dispositivi (badge, Tasmota) si creano a parte: ./scripts/aggiungi-utente.sh <id>;
 # 4. controlla la configurazione di Mosquitto.
+# Segnala gli utenti di servizio che non servono più (ponte, c5-plastico) da eliminare a mano.
 . "$(dirname "$0")/_comune.sh"
 
 AUTOFIRMATO=0
@@ -62,7 +63,7 @@ esac
 ESISTENTI="$(elenco_utenti)"
 CREDENZIALI=segreti/credenziali-iniziali.txt
 NUOVI=()
-for u in admin ponte c5 c5-plastico dashboard monitor; do
+for u in admin c5 dashboard monitor; do
     if grep -qx -- "$u" <<<"$ESISTENTI"; then
         echo "Utente $u: già presente."
         continue
@@ -70,10 +71,7 @@ for u in admin ponte c5 c5-plastico dashboard monitor; do
     pw="$(genera_password)"
     printf '%s\n' "$pw" | imposta_password "$u"
     NUOVI+=("$u $pw")
-    case "$u" in
-        ponte)   env_imposta MQTT_PONTE_PASSWORD "$pw" ;;
-        monitor) env_imposta MQTT_MONITOR_PASSWORD "$pw" ;;
-    esac
+    if [ "$u" = monitor ]; then env_imposta MQTT_MONITOR_PASSWORD "$pw"; fi
     echo "Utente $u: creato."
 done
 if [ "${#NUOVI[@]}" -gt 0 ]; then
@@ -89,6 +87,13 @@ if [ "${#NUOVI[@]}" -gt 0 ]; then
     echo
 fi
 
+# Ruoli che non esistono più (il ponte MQTT -> hub e gli ESP32 del plastico sono stati tolti il 14/11).
+for u in ponte c5-plastico; do
+    if grep -qx -- "$u" <<<"$ESISTENTI"; then
+        avviso "l'utente $u non serve più (nessun permesso nell'ACL): ./scripts/rimuovi-utente.sh $u"
+    fi
+done
+
 # ------------------------------------------------------------------ 4. controllo
 echo "Controllo della configurazione..."
 verifica_configurazione || errore "configurazione non valida"
@@ -98,6 +103,6 @@ cat <<EOF
 Pronto. Prossimi passi:
   docker compose up -d                    avvia il broker
   docker compose ps                       deve risultare "healthy" dopo qualche secondo
-  ./scripts/prova.sh                      prova anonimo rifiutato, ACL, MQTT (TLS e WSS se accesi)
-  ./scripts/aggiungi-utente.sh <deviceId> un utente per ogni dispositivo
+  ./scripts/prova.sh                      prova anonimo rifiutato, formato napoli/, ACL (TLS e WSS se accesi)
+  ./scripts/aggiungi-utente.sh <id>       un utente per ogni dispositivo (badge-1, tasmota-1)
 EOF

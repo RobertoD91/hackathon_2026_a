@@ -1,6 +1,0 @@
-{
-  "versione": "20261114-1235-abb3bcd",
-  "nota": "prima compilazione",
-  "commit": "abb3bcddf2e687ee9aef80de13285b6d10e88943",
-  "core": "esp32:esp32@3.3.12"
-}

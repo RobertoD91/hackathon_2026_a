@@ -1,11 +1,11 @@
-# API dati città di Napoli (shared/citta-api): il "cervello dati" di CiroGPT.
+# API dati città di Napoli (citta-api/): il "cervello dati" di CiroGPT.
 # Guida completa: README.md in questa cartella.
 #
 #   cp .env.example .env && chmod 600 .env     configurazione (token, porta, CORS, rinfresco)
 #   docker compose up -d --build                costruisce l'immagine e avvia
 #   docker compose logs -f citta-api            log (una riga per richiesta)
 #   ./prova.sh                                  /salute, /citta/riassunto, token
-#   docker compose exec citta-api node shared/citta-api/aggiorna.js --solo eventi   rigenera uno snapshot
+#   docker compose exec citta-api node citta-api/aggiorna.js --solo eventi   rigenera uno snapshot
 #
 # Porta sul server (modificabile in .env): 8791. Dietro un reverse proxy: CITTA_API_INDIRIZZO=127.0.0.1.
 #
@@ -18,8 +18,8 @@ name: bighack-citta-api
 services:
   citta-api:
     build:
-      # La radice della repo: l'immagine copia shared/citta-api e i moduli condivisi di
-      # shared/iot-agents (contesto ridotto da Dockerfile.dockerignore).
+      # La radice della repo: l'immagine copia solo citta-api/ (contesto ridotto da
+      # Dockerfile.dockerignore).
       context: ../..
       dockerfile: cloud/citta-api/Dockerfile
     image: bighack/citta-api:locale

@@ -68,7 +68,7 @@ class Claude:
         return self._chiama(sistema, richiesta, None)
 
     def conta_persone(self, percorso_foto: str, contesto: str = "") -> dict | None:
-        """Visione: stima quante persone (o statuine sul plastico) ci sono in una foto del drone."""
+        """Visione: stima quante persone (o statuine di un modellino) ci sono in una foto del drone."""
         import base64
         import mimetypes
 

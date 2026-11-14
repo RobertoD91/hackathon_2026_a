@@ -1,11 +1,22 @@
 # Napoli Agentic City con Docker.
-#   docker compose up -d                 broker MQTT + città (agenti, gemello SUMO, API su :8080)
+#   docker compose up -d                 broker MQTT locale + città (agenti, gemello SUMO, API su :8080)
 #   docker compose run --rm sala         sala operativa a schermo intero nel terminale
 #   docker compose logs -f citta         dialogo tra agenti a righe
-# Gli ESP32 del plastico si collegano al broker sulla porta 1883 del portatile.
+# Il Mosquitto qui sotto (porta 1883, senza password) serve per le prove in locale: il badge WHY2025
+# e la scheda Tasmota in evento usano il broker del team (vedi firmware/README.md nella radice).
+#
+# Broker del team al posto del Mosquitto locale: C5_BROKER, più utente e password dall'ambiente
+# (o da un .env in questa cartella, ignorato da git; mai scritti qui). Con --no-deps non parte il
+# Mosquitto locale, che sul server occuperebbe la 1883 del broker del team. Guida: README.md,
+# "Collegarsi al broker del team".
+#   export C5_BROKER=twinciro.robertodisanto.it:1883 C5_MQTT_UTENTE=c5   # da un portatile
+#   export C5_BROKER=host.docker.internal:1883 C5_MQTT_UTENTE=c5         # sul server del broker
+#   read -rs C5_MQTT_PASSWORD && export C5_MQTT_PASSWORD                  # la password di c5
+#   docker compose up -d --no-deps citta
+#   docker compose run --rm --no-deps sala
 services:
   mosquitto:
-    image: eclipse-mosquitto:2
+    image: eclipse-mosquitto:2.1.2-alpine
     ports:
       - "1883:1883"
     volumes:
@@ -24,8 +35,14 @@ services:
       C5_LLM: ${C5_LLM:-auto}
       C5_MODELLO: ${C5_MODELLO:-claude-opus-5-5}
       C5_API_TOKEN: ${C5_API_TOKEN:-}
+      # Utente e password del broker: vuoti = anonimo (Mosquitto locale); per il broker del team, c5.
+      C5_MQTT_UTENTE: ${C5_MQTT_UTENTE:-}
+      C5_MQTT_PASSWORD: ${C5_MQTT_PASSWORD:-}
+    extra_hosts:
+      # La macchina che fa girare Docker: serve quando il broker del team è sullo stesso server.
+      - "host.docker.internal:host-gateway"
     command: >
-      python avvia.py --broker mosquitto --senza-sala
+      python avvia.py --broker ${C5_BROKER:-mosquitto} --senza-sala
       --velocita ${C5_VELOCITA:-20} --inizio ${C5_INIZIO:-13:00} --meteo ${C5_METEO:-scenario}
     # A fine giornata simulata il processo esce: si riparte da capo.
     restart: unless-stopped
@@ -34,7 +51,12 @@ services:
     build: .
     depends_on:
       - citta
-    command: python -m citta.sala --broker mosquitto
+    environment:
+      C5_MQTT_UTENTE: ${C5_MQTT_UTENTE:-}
+      C5_MQTT_PASSWORD: ${C5_MQTT_PASSWORD:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: python -m citta.sala --broker ${C5_BROKER:-mosquitto}
     tty: true
     stdin_open: true
     profiles: ["sala"]

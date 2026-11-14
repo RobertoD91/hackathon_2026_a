@@ -10,7 +10,7 @@
   # invia un frame del video (screenshot da DJI Fly o dal visore FPV): il modello di visione conta le persone
   python strumenti/drone_osserva.py foto --zona castel_ovo --file frame.jpg --scala 100
 
---scala: quante persone vere rappresenta ogni persona/statuina contata (sul plastico, per esempio 100).
+--scala: quante persone vere rappresenta ogni persona/statuina contata (su un modellino, per esempio 100).
 Parla con la città tramite l'API HTTP (default http://localhost:8080), quindi funziona
 sia con il bus in memoria sia con MQTT.
 """
@@ -67,7 +67,7 @@ def main() -> None:
     else:
         from citta.llm.claude import Claude
 
-        esito = Claude().conta_persone(a.file, "Se è un plastico, conta le statuine." if a.scala > 1 else "")
+        esito = Claude().conta_persone(a.file, "Se è un modellino, conta le statuine." if a.scala > 1 else "")
         if not esito:
             sys.exit("Conteggio non riuscito: invia una stima con il comando 'invia'.")
         persone = int(esito["persone"] * a.scala)

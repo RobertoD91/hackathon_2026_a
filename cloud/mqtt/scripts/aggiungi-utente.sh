@@ -4,11 +4,11 @@
 #   ./scripts/aggiungi-utente.sh <utente>          genera una password casuale e la stampa
 #   ./scripts/aggiungi-utente.sh <utente> -        legge la password da tastiera o da stdin
 #
-# Dispositivi: nome utente = deviceId (badge, ESP32) oppure = Topic di Tasmota. I permessi
-# arrivano dai pattern di config/acl, senza modificarla. Esempi:
-#   ./scripts/aggiungi-utente.sh esp32-plebiscito-01
-#   ./scripts/aggiungi-utente.sh tasmota-serra
-# Ruoli fissi (permessi in config/acl): admin, ponte, c5, c5-plastico, dashboard, monitor.
+# Dispositivi: nome utente = id del badge oppure = Topic di Tasmota. I permessi arrivano dai
+# pattern di config/acl (napoli/sensori/<utente>/#, napoli/nodi/<utente>/#), senza modificarla:
+#   ./scripts/aggiungi-utente.sh badge-1
+#   ./scripts/aggiungi-utente.sh tasmota-1
+# Ruoli fissi (permessi in config/acl): admin, c5, dashboard, monitor.
 #
 # La password non passa mai sulla riga di comando: arriva a mosquitto_passwd (dentro il
 # container, che la salva come hash PBKDF2-SHA512) tramite stdin.

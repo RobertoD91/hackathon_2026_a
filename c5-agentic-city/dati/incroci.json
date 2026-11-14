@@ -1,5 +1,5 @@
 {
-  "nota": "Incroci semaforizzati del gemello (rete OSM) e corrispondenza con i semafori fisici del plastico. 'principale' = vie della testa A del semaforo fisico, tutte le altre vanno sulla testa B.",
+  "nota": "Incroci semaforizzati del gemello (rete OSM). 'plastico' (nome storico, non ci sono semafori fisici) = i 4 incroci di cui il gemello pubblica lo stato su napoli/semafori/<id>/stato per la sala e l'API. 'principale' = vie della testa A, tutte le altre vanno sulla testa B.",
   "plastico": [
     {
       "id": "mergellina",

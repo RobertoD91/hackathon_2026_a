@@ -9,36 +9,27 @@
 # - le righe "deny" vincono sui permessi;
 # - "#" non comprende i topic di sistema $SYS/...: vanno dati a parte.
 #
-# Topic previsti (shared/iot-agents/CONTRATTO.md e c5-agentic-city/README.md):
-#   bighack/<zona>/<deviceId>/readings   letture dei badge/ESP32 (JSON del contratto)
-#   bighack/<zona>/<deviceId>/status     stato online/offline (trattenuto, anche come LWT)
-#   tele/<topic>/SENSOR, STATE, LWT      telemetria Tasmota (stat/... e cmnd/... per i comandi)
-#   napoli/#                             città agentica c5-agentic-city
+# Formato MQTT unico di TwinCiro (specifica completa: firmware/README.md della repo):
+#   napoli/sensori/<id>/<grandezza>   letture {"zona","valore"} di badge e Tasmota
+#   napoli/nodi/<id>/stato            stato del nodo, trattenuto, last will {"online":false}
+#   napoli/nodi/<id>/cmd              comandi al badge
+#   napoli/nodi/<topic>/cmnd|stat|tele/...   topic interni di Tasmota (FullTopic napoli/nodi/%topic%/%prefix%/)
+#   napoli/#                          città agentica c5-agentic-city (agenti, gemello, sala)
+# Nient'altro: i vecchi bighack/... e tele/... fuori da napoli/ non sono più permessi a nessuno
+# tranne admin e monitor.
 
 # ==================================================================== DISPOSITIVI
 # Non serve toccare questo file per aggiungere un dispositivo: basta creare l'utente
-# con NOME UTENTE = deviceId (badge/ESP32) oppure = Topic di Tasmota:
-#   ./scripts/aggiungi-utente.sh esp32-plebiscito-01
-#   ./scripts/aggiungi-utente.sh tasmota-serra
-# Il dispositivo scrive solo sotto il proprio nome, in qualsiasi zona.
-
-# Badge ed ESP32: scrive readings e status (anche LWT trattenuto) e legge i propri comandi
-# (bighack/<zona>/<deviceId>/cmd, usato dal firmware del badge).
-pattern readwrite bighack/+/%u/#
-
-# Tasmota (Topic = nome utente, FullTopic predefinito %prefix%/%topic%/).
-pattern write tele/%u/#
-pattern write stat/%u/#
-pattern read cmnd/%u/#
-# Il topic di gruppo cmnd/tasmotas/# non è concesso: i comandi vanno al singolo dispositivo.
-
-# Badge e ESP32 possono pubblicare anche nel formato di c5: napoli/sensori/<deviceId>/<grandezza>.
+# con NOME UTENTE = id del dispositivo (badge) oppure = Topic di Tasmota:
+#   ./scripts/aggiungi-utente.sh badge-1
+#   ./scripts/aggiungi-utente.sh tasmota-1
+# Il dispositivo scrive solo sotto il proprio nome e legge solo i propri comandi.
 pattern write napoli/sensori/%u/#
-
-# Il pulsante dei badge con TELEMETRY_C5_COMPAT 1 scrive anche su napoli/eventi/manuale, che
-# è un topic condiviso: si concede badge per badge (un pattern varrebbe anche per "dashboard").
-# user badge-ab12
-# topic write napoli/eventi/manuale
+pattern write napoli/nodi/%u/#
+# comandi al badge
+pattern read napoli/nodi/%u/cmd
+# comandi a Tasmota (napoli/nodi/<topic>/cmnd/<comando>); il topic di gruppo tasmotas non è concesso
+pattern read napoli/nodi/%u/cmnd/#
 
 # ==================================================================== SERVIZI E PERSONE
 # Nomi fissi, creati da ./scripts/inizializza.sh con password casuali.
@@ -48,44 +39,22 @@ user admin
 topic readwrite #
 topic read $SYS/#
 
-# Ponte MQTT -> hub (shared/iot-agents): legge letture e stato di badge, ESP32 e Tasmota.
-user ponte
-topic read bighack/#
-topic read tele/#
-topic read stat/#
-# Solo se il ponte ha PONTE_C5=1 (legge anche il formato c5 napoli/sensori/<id>/<grandezza>).
-topic read napoli/sensori/#
-topic read napoli/nodi/+/stato
-# Per mandare comandi dal hub ai dispositivi togli il commento:
-# topic write bighack/+/+/cmd
-# topic write cmnd/#
-
-# Città agentica c5-agentic-city (agenti, gemello, sala, oppure il bridge dal broker del plastico).
+# Città agentica c5-agentic-city (agenti, gemello, sala, oppure il bridge dal broker del
+# portatile: esempi/ponte-c5-verso-cloud.conf). Legge le letture dei dispositivi e manda i comandi.
 user c5
 topic readwrite napoli/#
 
-# ESP32 del plastico di c5 (sensori di passaggio, pulsanti, semafori), un utente condiviso.
-user c5-plastico
-topic write napoli/sensori/#
-# stato dei nodi TwinCiro (firmware unico c5-agentic-city/firmware/twinciro-nodo), retained con last will
-topic write napoli/nodi/+/stato
-topic write napoli/eventi/manuale
-topic read napoli/semafori/#
-topic write napoli/semafori/+/riflesso
-
-# Dashboard nel browser (wss://...:8884). La sua password finisce nel JavaScript della pagina,
-# quindi è da considerare PUBBLICA: solo lettura, e nessun permesso da dispositivo.
+# Dashboard nel browser (wss://...:8884, solo con TLS acceso). La sua password finisce nel
+# JavaScript della pagina, quindi è da considerare PUBBLICA: solo lettura, e nessun permesso
+# da dispositivo (i pattern sopra varrebbero anche per lei).
 user dashboard
-topic read bighack/#
-topic read tele/#
 topic read napoli/#
-topic deny bighack/+/dashboard/#
-topic deny tele/dashboard/#
-topic deny stat/dashboard/#
-topic deny cmnd/dashboard/#
 topic deny napoli/sensori/dashboard/#
+topic deny napoli/nodi/dashboard/#
 
 # Monitor (servizio "monitor" in compose.yaml, ./scripts/stato.sh): legge tutto, non scrive.
 user monitor
 topic read #
 topic read $SYS/#
+topic deny napoli/sensori/monitor/#
+topic deny napoli/nodi/monitor/#

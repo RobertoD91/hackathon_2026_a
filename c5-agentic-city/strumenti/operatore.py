@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Comandi dell'operatore della sala operativa e pulsanti virtuali del plastico.
+"""Comandi dell'operatore della sala operativa ed eventi manuali (es. arriva un pullman).
 
   python strumenti/operatore.py approva D3
   python strumenti/operatore.py blocca D3

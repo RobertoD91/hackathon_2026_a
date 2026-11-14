@@ -1,0 +1,14 @@
+{
+  "name": "twinciro-mappa",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Mappa \"Napoli in tempo reale\" della presentazione di TwinCiro (C5, The Big Hack 2026): hub IoT + agenti + simulatore (folla e sensori simulati), dati reali dai moduli di ../../citta-api/. Nessuna dipendenza.",
+  "type": "module",
+  "main": "src/index.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "start": "node server.js",
+    "sim": "node sim/simulate.js --config ../../citta-api/simulatore/sim-config.json --target http://localhost:8701"
+  }
+}
