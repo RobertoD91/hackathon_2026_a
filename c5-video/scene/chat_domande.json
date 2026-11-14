@@ -1,0 +1,34 @@
+{
+  "nota": "Lato utente della chat di CiroGPT per la scena simulata. chat_da_api.py manda questi messaggi all'API /chiedi della città (c5-agentic-city, LLM a regole) e scrive le risposte vere in chat.json. Con le regole l'intento si capisce dalle parole chiave: 'prenot' + 'pizzeria' sceglie la Pizzeria 'O Scoglio, 'andare a' chiede un percorso. Non usare parole di cibo (pranzo, pizza, mangiare) nei messaggi che non riguardano il cibo.",
+  "contatto": "CiroGPT",
+  "utente": "Marta",
+  "presentazione_utente": "Marta, crocerista, gruppo di 4",
+  "citta": {
+    "inizio": "12:10",
+    "velocita": 30,
+    "nota": "Ora simulata di partenza e velocità (secondi simulati per secondo reale). Alle 12:10 la pizzeria è piena alle 13:00 e propone le 14:00; l'avviso sulla folla della regata arriva dopo le 14:00 simulate (circa 4 minuti reali)."
+  },
+  "turni": [
+    {
+      "tipo": "api",
+      "testo": "Ciao Ciro! Siamo 4 croceristi, puoi prenotare in una pizzeria vicino al Castel dell'Ovo alle 13:00? 🍕"
+    },
+    {
+      "tipo": "api",
+      "testo": "Ok, va bene!"
+    },
+    {
+      "tipo": "api",
+      "testo": "Poi vogliamo andare a vedere la regata alla Rotonda Diaz: come si arriva?"
+    },
+    {
+      "tipo": "meteo_reale",
+      "testo": "Ci serve l'ombrello?"
+    },
+    {
+      "tipo": "avviso",
+      "attendi_fino": "15:30",
+      "zone_preferite": ["rotonda_diaz", "castel_ovo", "mergellina"]
+    }
+  ]
+}
