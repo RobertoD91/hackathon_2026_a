@@ -13,20 +13,16 @@ I permessi di `/etc/letsencrypt` restano quelli di certbot.
 
 ## Comandi per l'amministratore (root, una volta)
 
-Sostituisci `<utente>` con l'utente che usa Docker sul server. Aggiungi al gruppo anche gli altri utenti non root che devono leggere i certificati.
+Sul server l'utente che usa Docker è **`openclaw`** (già impostato nello script). Aggiungi al gruppo anche gli altri utenti non root che devono leggere i certificati.
 
 ```bash
 sudo groupadd -f certificati
-sudo usermod -aG certificati <utente>
+sudo usermod -aG certificati openclaw
 ```
 
 ```bash
 sudo curl -fsSL -o /etc/letsencrypt/renewal-hooks/deploy/twinciro-copia.sh \
   https://raw.githubusercontent.com/RobertoD91/hackathon_2026_a/master/cloud/certificati/copia-certificati.sh
-```
-
-```bash
-sudo sed -i 's/^UTENTE=CAMBIAMI/UTENTE=<utente>/' /etc/letsencrypt/renewal-hooks/deploy/twinciro-copia.sh
 ```
 
 ```bash

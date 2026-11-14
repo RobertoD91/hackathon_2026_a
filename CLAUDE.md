@@ -50,7 +50,7 @@ Soluzioni esistenti:
 ## Infrastruttura
 
 - **Docker è disponibile** nelle sessioni cloud di Claude Code, demone compreso (`docker`, `docker compose`, `buildx`): usalo per provare davvero container e compose prima di consegnarli.
-- **Server `twinciro.robertodisanto.it`** (di Roberto): ci girano i servizi del team (broker MQTT in `cloud/mqtt/`, API dati città in `cloud/citta-api/`). Si possono aprire tutte le porte. **Lì non abbiamo root e non l'avremo**: niente `sudo`, niente nginx di sistema, niente scritture in `/etc`; solo un utente che usa Docker. Quello che richiede root lo fa l'amministratore, una volta (es. `cloud/certificati/`). Dal 14/11 pomeriggio sostituisce `cloud.robertodisanto.it`, che **non si usa più**: la cartella `cloud/` mantiene il nome, l'host no.
+- **Server `twinciro.robertodisanto.it`** (di Roberto): ci girano i servizi del team (broker MQTT in `cloud/mqtt/`, API dati città in `cloud/citta-api/`). Si possono aprire tutte le porte. **Lì non abbiamo root e non l'avremo**: niente `sudo`, niente nginx di sistema, niente scritture in `/etc`; solo l'utente **`openclaw`**, che usa Docker. **Attivi dal 14/11 pomeriggio: broker MQTT e API dati città.** Quello che richiede root lo fa l'amministratore, una volta (es. `cloud/certificati/`). Dal 14/11 pomeriggio sostituisce `cloud.robertodisanto.it`, che **non si usa più**: la cartella `cloud/` mantiene il nome, l'host no.
 
 ## Hosting
 

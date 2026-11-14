@@ -10,7 +10,7 @@
 # Modifica le tre righe qui sotto prima di installarlo.
 set -eu
 DOMINIO=twinciro.robertodisanto.it
-UTENTE=CAMBIAMI            # l'utente che lancia docker compose sul server
+UTENTE=openclaw            # l'utente che lancia docker compose sul server (twinciro.robertodisanto.it)
 GRUPPO=certificati         # gli altri utenti non root che devono leggere i certificati
 DEST=/srv/certificati/$DOMINIO
 
