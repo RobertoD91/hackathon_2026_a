@@ -1,0 +1,12 @@
+TwinCIRO · voce fuori campo · scena 11 di 15: sensori
+Nel video da 2:06,0 a 2:14,0 · clip clip/11-sensori.mp4 di 8,0 s
+
+1 · MARIO · da 0,3 a 4,4 s della clip · durata disponibile 4,1 s · nel video 2:06,3 → 2:10,4
+    Sensori fatti da noi: badge WHY2025 e Tasmota.
+    8 parole, ritmo di circa 154 al minuto · registra in girato/voce/11-sensori-1.m4a
+
+2 · ROBERTO · da 4,7 a 7,8 s della clip · durata disponibile 3,1 s · nel video 2:10,7 → 2:13,8
+    Oggi in Wi-Fi, domani con una SIM IoT.
+    8 parole, ritmo di circa 145 al minuto · registra in girato/voce/11-sensori-2.m4a
+
+Tutta la scena in un file: girato/voce/11-sensori.m4a (la prima parola va a 0,3 s dall'inizio della clip, il silenzio prima si toglie da solo).

@@ -27,11 +27,6 @@
   .hub .conta { margin-top: 18px; font-size: 176px; line-height: 0.9; font-weight: 800; letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
     color: #fff; text-shadow: 0 0 40px rgb(56 214 240 / 0.35); }
   .hub .frase { margin-top: 26px; font-size: 37px; line-height: 1.18; font-weight: 700; }
-  .hub .uso { margin-top: 24px; display: flex; align-items: center; gap: 12px; font-size: 27px; font-weight: 700; color: #eef2fb; }
-  .hub .uso i { width: 14px; height: 14px; border-radius: 50%; background: var(--twin); box-shadow: 0 0 12px 3px rgb(56 214 240 / 0.7); flex: none; }
-  .hub .piede { margin-top: 12px; font-size: 20px; line-height: 1.4; color: var(--tenue); }
-  .hub .piede b { color: #dbe4f7; font-weight: 700; }
-  .isola.uso .corpo { box-shadow: 0 0 18px rgb(56 214 240 / calc(var(--tinta, 0) * 0.45)), 0 10px 26px rgb(0 0 0 / 0.35); }
 </style>
 </head>
 <body>
@@ -43,8 +38,6 @@
   <div class="marchio" id="marchio"><span class="twin">Twin</span><span class="ciro">CIRO</span></div>
   <div class="conta" id="conta">0</div>
   <div class="frase" id="frase"></div>
-  <div class="uso" id="uso"><i></i><span></span></div>
-  <div class="piede" id="piede"></div>
 </div>
 <script type="module">
 import { CSS, carica, creaIsola, sparse, muro, disponi, aggancio, attendiImmagini, anteprima, casuale, fumo, curva, tra, esc } from './fonti/isole.js';
@@ -58,9 +51,10 @@ document.head.appendChild(stile);
 const COLORE = { meteo: '#38d6f0', mobilita: '#a78bfa', eventi: '#ffb547', territorio: '#4ade80' };
 const CENTRO = { x: 960, y: 470 };
 // Tempi (secondi). Le isole partono una dopo l'altra e atterrano nel muro: il contatore sale a ogni atterraggio e si
-// ferma sul numero di fonti pubbliche del catalogo. Solo le fonti già collegate all'API dati città (in_uso) mandano
-// dati a TwinCIRO (i punti luminosi): le altre sono catalogate e verificate, non ancora collegate.
-const T = { partenza: 0.2, passo: 0.033, volo: 0.85, viaggio: 0.42, marchio: 0.9, frase: 2.7, uso: 4.6, piede: 5.2, flusso: 3.2 };
+// ferma sul numero di fonti pubbliche del catalogo. I punti luminosi partono solo dalle fonti già collegate all'API dati
+// città (in_uso), senza contarle né distinguerle a schermo (scelta di Roberto del 14/11: il video non evidenzia quante
+// sono già collegate). Tutte le isole hanno la stessa luce.
+const T = { partenza: 0.2, passo: 0.033, volo: 0.85, viaggio: 0.42, marchio: 0.9, frase: 2.7, flusso: 3.2 };
 const outBack = (x) => { const c = 1.7; return x <= 0 ? 0 : x >= 1 ? 1 : 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
 
 let isole = [], arrivi = [], blocchi = [], flusso = [], totale = 0;
@@ -76,7 +70,7 @@ function punto(colore) {
 }
 
 window.pronta = (async () => {
-  const { cat, fonti, domini, confermate, daRiprovare, inUso } = await carica();
+  const { fonti, domini } = await carica();
   totale = fonti.length;
   svg.innerHTML = '<defs><filter id="bagliore" x="-2" y="-2" width="5" height="5"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
   const mare = document.getElementById('mare');
@@ -85,7 +79,6 @@ window.pronta = (async () => {
   const rango = fonti.map((_, i) => i).sort((a, b) => Math.abs(pos[a].x - CENTRO.x) - Math.abs(pos[b].x - CENTRO.x));
   isole = fonti.map((f, i) => {
     const el = creaIsola(f);
-    if (f.in_uso) el.classList.add('uso');
     mare.appendChild(el);
     const posto = posti.get(f.id);
     const a = aggancio(el, posto);
@@ -108,12 +101,9 @@ window.pronta = (async () => {
     const atterraggi = isole.filter((x) => x.f.dominio === b.dominio).map((x) => x.tA).sort((p, q) => p - q);
     return { el, t0: atterraggi[Math.floor(atterraggi.length / 2)] };
   });
-  // Frase e piede: il numero arrotondato per difetto alla decina ("Oltre 50") e gli esiti della verifica
+  // Frase: il numero arrotondato per difetto alla decina ("Oltre 50")
   const decine = Math.floor((totale - 1) / 10) * 10;
   document.getElementById('frase').innerHTML = `Oltre ${decine} fonti pubbliche,<br>verificate una per una`;
-  const [aa, mm, gg] = String(cat.verifica || '').split('-');
-  document.querySelector('#uso span').textContent = `${inUso} già collegate all'API di TwinCIRO`;
-  document.getElementById('piede').innerHTML = `Verifica del ${gg}/${mm}/${aa}: <b>${confermate} confermate</b>, ${daRiprovare} da riprovare`;
   // Dopo il conteggio i dati continuano ad arrivare dalle fonti collegate: un punto ogni 0,12 s (sempre la stessa sequenza)
   const rnd = casuale(42);
   const collegate = isole.map((x, i) => (x.f.in_uso ? i : -1)).filter((i) => i >= 0);
@@ -147,11 +137,10 @@ window.imposta = (t) => {
     const atterra = t >= x.tA ? 1 + 0.05 * Math.sin(Math.PI * tra(t, x.tA, x.tA + 0.3)) : 1;
     disponi(x.el, {
       x: xx, y: yy, r: x.p.r * (1 - e), s: (x.p.s + (1 - x.p.s) * e) * atterra, u,
-      // quando compare «già collegate», le fonti non ancora collegate si abbassano un poco
-      o: ((x.p.lontana ? 0.78 : 1) + (x.p.lontana ? 0.22 * e : 0)) * (x.f.in_uso ? 1 : 1 - 0.3 * fumo(tra(t, T.uso - 0.2, T.uso + 0.6))),
+      o: (x.p.lontana ? 0.78 : 1) + (x.p.lontana ? 0.22 * e : 0),
       of: 1 - fumo(tra(t, x.t0, x.t0 + 0.3)), larghezza: x.posto.w,
     });
-    x.el.style.setProperty('--tinta', ((x.f.in_uso ? 0.95 : 0.22) * u).toFixed(3));
+    x.el.style.setProperty('--tinta', (0.6 * u).toFixed(3));
     // il dato che parte verso TwinCIRO quando una fonte collegata si mette al suo posto
     if (x.punto) viaggio(x.punto, x.posto.x + x.posto.w / 2, x.posto.y + x.posto.h / 2, tra(t, x.tA, x.tA + T.viaggio));
   }
@@ -179,7 +168,7 @@ window.imposta = (t) => {
   conta.style.opacity = fumo(pc).toFixed(3);
   conta.style.transform = `scale(${colpo.toFixed(4)})`;
   conta.style.color = t >= fine ? '#ffffff' : '#cfe9f7';
-  for (const [id, t0] of [['frase', T.frase], ['uso', T.uso], ['piede', T.piede]]) {
+  for (const [id, t0] of [['frase', T.frase]]) {
     const p = fumo(tra(t, t0, t0 + 0.6));
     const el = document.getElementById(id);
     el.style.opacity = p.toFixed(3);

@@ -1,0 +1,12 @@
+TwinCIRO · voce fuori campo · scena 03 di 15: titolo
+Nel video da 0:19,0 a 0:26,0 · clip clip/03-titolo.mp4 di 7,0 s
+
+1 · ROBERTO · da 0,3 a 3,8 s della clip · durata disponibile 3,5 s · nel video 0:19,3 → 0:22,8
+    TwinCIRO: City Intelligence and Responsive Orchestration.
+    6 parole, ritmo di circa 163 al minuto · registra in girato/voce/03-titolo-1.m4a
+
+2 · MARIO · da 4,0 a 6,7 s della clip · durata disponibile 2,7 s · nel video 0:23,0 → 0:25,7
+    Il gemello di Napoli, che ci pensa.
+    7 parole, ritmo di circa 133 al minuto · registra in girato/voce/03-titolo-2.m4a
+
+Tutta la scena in un file: girato/voce/03-titolo.m4a (la prima parola va a 0,3 s dall'inizio della clip, il silenzio prima si toglie da solo).

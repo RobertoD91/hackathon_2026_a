@@ -93,6 +93,42 @@
   .chip-i { font-size: 27px; font-weight: 700; padding: 10px 20px; border-radius: 30px; background: #16213b; border: 1px solid var(--bordo); }
   .fonte-r { margin-top: 34px; font-size: 24px; color: var(--tenue); }
 
+  /* sensori fatti da noi: i due dispositivi veri, il formato unico napoli/ e la rete (oggi Wi-Fi, domani SIM IoT) */
+  .sens { position: absolute; left: 100px; right: 100px; top: 60px; bottom: 130px; display: flex; flex-direction: column; justify-content: center; }
+  .sens h1 { margin: 0 0 10px; font-size: 66px; font-weight: 800; letter-spacing: -0.02em; }
+  .sens .sotto-t { font-size: 31px; color: #c8d3ec; margin-bottom: 40px; }
+  .sens .percorso { grid-template-columns: 540px 60px 720px 60px 1fr; }
+  .sens .dispositivi .nodo { grid-template-columns: 62px 1fr; padding: 22px 24px; }
+  .sens .nodo h3 { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 32px; }
+  .sens .nodo p { font-size: 23px; }
+  .nostro { font: 800 17px/1 'Inter', sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #0a1020; background: var(--ciro);
+    padding: 6px 10px; border-radius: 8px; white-space: nowrap; }
+  .sens .msg { padding: 18px 22px; }
+  .sens .msg .tp { font-size: 26px; }
+  .sens .msg .js { font-size: 24px; }
+  .sens .msg .nt { font-size: 21px; }
+  .sens .nodo.ag h3 { font-size: 30px; white-space: normal; }
+  .rete-sens { display: flex; align-items: center; gap: 18px; margin-top: 34px; }
+  .rete-sens .chip-i { font-size: 28px; padding: 12px 22px; }
+  .rete-sens .chip-i.domani { border-color: var(--twin); color: #bff4ff; background: #0f2533; }
+  .rete-sens .fr { font-size: 34px; color: var(--tenue); }
+  .sens .fonte-r { margin-top: 26px; font-size: 22px; }
+
+  /* due colonne: cosa cambia (con i numeri) e perché Napoli */
+  .due { position: absolute; left: 90px; right: 90px; top: 0; height: 950px; display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 56px; }
+  .due h2 { margin: 0 0 22px; font-size: 46px; font-weight: 800; letter-spacing: -0.015em; }
+  .due h2 small { display: block; margin-top: 4px; font-size: 22px; font-weight: 600; color: var(--tenue); letter-spacing: 0; }
+  .due .col-righe { display: flex; flex-direction: column; gap: 14px; }
+  .rigad { display: grid; grid-template-columns: 58px auto 1fr; align-items: center; column-gap: 18px; min-height: 146px;
+    background: rgb(22 33 59 / 0.92); border: 1px solid var(--bordo); border-radius: 22px; padding: 14px 24px; }
+  .rigad .ic { font-size: 46px; line-height: 1; text-align: center; }
+  .rigad .num { font-size: 54px; font-weight: 800; letter-spacing: -0.02em; color: var(--verde); white-space: nowrap; }
+  .rigad .num:empty { display: none; }
+  .rigad .tx { font-size: 29px; line-height: 1.25; color: #eef2fb; }
+  .rigad .tx b { color: var(--ciro); font-weight: 800; }
+  .rigad .fo { display: block; margin-top: 4px; font-size: 19px; color: var(--tenue); }
+  .due .piede-d { grid-column: 1 / -1; margin-top: -26px; font-size: 21px; color: var(--tenue); text-align: center; }
+
   /* notifica di TwinCIRO sopra un video (telefono generico, nessun marchio) */
   .notifica { position: absolute; border-radius: 26px; background: rgb(246 248 252 / 0.97); color: #111827; padding: 18px 22px 20px;
     box-shadow: 0 24px 60px rgb(0 0 0 / 0.55), 0 0 0 2px rgb(255 181 71 / 0.85); }
@@ -122,8 +158,10 @@ window.pronta = (async () => {
   const s = await (await fetch('scaletta.json', { cache: 'no-store' })).json();
   if (id === 'testata') {
     document.body.className = 'trasparente';
+    // "testata_girato": la testata che compare solo sopra la ripresa vera (vedi monta.py)
     const sc = s.scene.find((x) => x.id === P.get('scena'));
-    r.innerHTML = `<div class="testata"><div><div class="etichetta">${esc(sc.testata.etichetta)}</div><div class="t">${esc(sc.testata.testo)}</div></div>${marchio()}</div>`;
+    const tt = sc.testata || sc.testata_girato;
+    r.innerHTML = `<div class="testata"><div><div class="etichetta">${esc(tt.etichetta)}</div><div class="t">${esc(tt.testo)}</div></div>${marchio()}</div>`;
   } else if (id === 'velo-regata' || id === 'velo-sumo' || id === 'velo-apertura') {
     // Scurisce le parti dei video già pronti che non servono (vecchio titolo in alto, riquadri dei KPI in basso)
     document.body.className = 'trasparente';
@@ -190,6 +228,27 @@ window.pronta = (async () => {
       r.innerHTML = `<div class="iot"><h1 class="a" style="--d:.1s">${esc(c.titolo)}</h1><div class="sotto-t a" style="--d:.3s">${esc(c.sotto)}</div>
         <div class="msgs">${c.messaggi.map((m, i) => `<div class="msg a" style="--d:${(0.7 + i * 0.9).toFixed(1)}s"><div class="tp"><span class="etf">${i ? 'stato' : 'lettura'}</span>${esc(m.topic)}</div><div class="js">${esc(m.contenuto)}</div>${m.nota ? `<div class="nt">${cod(m.nota)}</div>` : ''}</div>`).join('')}</div>
         <div class="chips">${c.chips.map((x, i) => `<span class="chip-i a" style="--d:${(2.6 + i * 0.3).toFixed(1)}s">${esc(x)}</span>`).join('')}</div></div>`;
+    } else if (c.tipo === 'sensori') {
+      // I due dispositivi veri (firmware e regole nostri), il formato unico napoli/ e la rete: nessuna misura inventata
+      const msg = (m, i, d) => `<div class="msg a" style="--d:${d}s"><div class="tp"><span class="etf">${i ? 'stato' : 'lettura'}</span>${esc(m.topic)}</div><div class="js">${esc(m.contenuto)}</div>${m.nota ? `<div class="nt">${cod(m.nota)}</div>` : ''}</div>`;
+      const ag = c.agenti;
+      r.innerHTML = `<div class="sens"><h1 class="a" style="--d:.1s">${esc(c.titolo)}</h1><div class="sotto-t a" style="--d:.3s">${cod(c.sotto)}</div>
+        <div class="percorso">
+          <div class="dispositivi">${c.dispositivi.map((x, i) => `<div class="nodo hw a" style="--d:${(0.5 + i * 0.35).toFixed(2)}s"><div class="ic">${x.icona}</div><div><h3>${esc(x.nome)}<span class="nostro">${esc(x.nostro)}</span></h3><p>${esc(x.testo)}</p></div></div>`).join('')}</div>
+          <div class="freccia f" style="--d:1.3s"></div>
+          <div class="msgs">${c.messaggi.map((m, i) => msg(m, i, (1.5 + i * 0.5).toFixed(1))).join('')}</div>
+          <div class="freccia f" style="--d:2.5s"></div>
+          <div class="nodo ag a" style="--d:2.7s"><div class="ic">${ag.icona}</div><h3>${esc(ag.nome)}</h3><p>${esc(ag.testo).replace('napoli/#', '<code>napoli/#</code>')}</p></div>
+        </div>
+        <div class="rete-sens"><span class="chip-i a" style="--d:${c.d_rete ?? 4.4}s">${esc(c.rete[0])}</span><span class="fr f" style="--d:${(c.d_rete ?? 4.4) + 0.4}s">→</span><span class="chip-i domani a" style="--d:${(c.d_rete ?? 4.4) + 0.6}s">${esc(c.rete[1])}</span></div>
+        <div class="fonte-r f" style="--d:${(c.d_rete ?? 4.4) + 1.2}s">${esc(c.fonte)}</div></div>`;
+    } else if (c.tipo === 'due-colonne') {
+      // Due colonne di righe (icona, numero facoltativo, testo, fonte), ognuna con il suo "d" (secondo di ingresso)
+      const riga = (v) => `<div class="rigad a" style="--d:${v.d}s"><div class="ic">${v.icona}</div><div class="num">${esc(v.numero || '')}</div>`
+        + `<div class="tx">${v.titolo ? `<b>${esc(v.titolo)}</b> ` : ''}${esc(v.testo)}${v.fonte ? `<span class="fo">${esc(v.fonte)}</span>` : ''}</div></div>`;
+      r.innerHTML = `<div class="due">${c.colonne.map((col) => `<div><h2 class="a" style="--d:${col.d}s">${esc(col.titolo)}${col.sotto ? `<small>${esc(col.sotto)}</small>` : ''}</h2>`
+        + `<div class="col-righe">${col.voci.map(riga).join('')}</div></div>`).join('')}
+        ${c.piede ? `<div class="piede-d f" style="--d:${c.d_piede ?? 9}s">${esc(c.piede)}</div>` : ''}</div>`;
     } else if (c.tipo === 'chiusura') {
       r.innerHTML = `<div class="alone"></div><div class="centro">
         <div class="wordmark c" style="--d:.1s;font-size:190px">${marchio()}</div>

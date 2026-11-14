@@ -2,10 +2,16 @@
 """Monta il video di consegna di TwinCIRO (bozza.mp4) a partire da scene/scaletta.json.
 
 Per ogni scena:
-- sorgente generata (cartelli, architettura, chat di TwinCIRO) con scene/rendi_html.mjs,
+- sorgente generata (cartelli, pagine HTML di scene/, chat di TwinCIRO) con scene/rendi_html.mjs,
   registrazione della mappa con scene/registra_mappa.mjs, oppure spezzone di un video esistente;
-- se in girato/ c'è la ripresa vera indicata in "girato" (es. girato/badge.mp4), usa quella;
-- testata (etichetta + testo) e velo sopra i video, dissolvenze brevi.
+- "pagina" accetta i parametri della pagina ("operatore.html?durata=14": il file è il nome senza "?…") e un campo
+  facoltativo "dipende": i file che la pagina legge (relativi a scene/, anche con * e ?, es. "oggi/*.json"), che
+  entrano nella chiave della cache insieme alla pagina: se cambiano, la scena si rigenera da sola;
+- se in girato/ c'è la ripresa vera indicata in "girato" (es. girato/badge.mp4), usa quella; "file" può essere anche
+  una lista (["badge", "tasmota"]): le riprese che ci sono si dividono la scena in parti uguali, se non ce n'è
+  nessuna resta la sorgente di riserva;
+- testata (etichetta + testo) e velo sopra i video, dissolvenze brevi; "testata_girato" è una testata che compare
+  solo sopra la ripresa vera (il cartello di riserva ha già il suo titolo).
 Poi unisce le scene, imprime i sottotitoli della voce fuori campo (ASS), aggiunge la voce ed eventuale
 musica libera da diritti (girato/musica.*), e codifica in due passate per restare sotto i 40 MB.
 
@@ -134,6 +140,27 @@ def trova(nome: str, estensioni: tuple[str, ...]) -> Path | None:
     return None
 
 
+def nomi_girato(cfg: dict) -> list[str]:
+    """"file" della ripresa vera: un nome o una lista di nomi (senza estensione)."""
+    f = cfg.get("file") if cfg else None
+    return [f] if isinstance(f, str) else list(f or [])
+
+
+def dipendenze(s: dict, dove: str) -> list:
+    """I file di "dipende" (relativi a scene/; * e ? per più file), con il loro nome: vanno nella chiave della cache."""
+    parti: list = []
+    for voce in s.get("dipende") or []:
+        if any(c in voce for c in "*?["):
+            trovati = sorted(f for f in QUI.glob(voce) if f.is_file())
+        else:
+            trovati = [QUI / voce] if (QUI / voce).is_file() else []
+        if not trovati:
+            sys.exit(f"{dove}: \"dipende\" indica {voce}, ma in scene/ non c'è")
+        for f in trovati:
+            parti += [f.relative_to(QUI).as_posix(), f]
+    return parti
+
+
 def chiave(*parti) -> str:
     h = hashlib.sha1()
     for p in parti:
@@ -217,7 +244,9 @@ def monta_scena(sc: dict, i: int, n: int, sorg: Sorgenti, dissolvenza: float) ->
     d = float(sc["durata"])
     s = sc["sorgente"]
     girato_cfg = sc.get("girato") or {}
-    girato = trova(girato_cfg["file"], ESTENSIONI_VIDEO) if girato_cfg else None
+    # Le riprese vere che ci sono davvero in girato/ ("file" può essere una lista: si dividono la scena)
+    girati = [f for f in (trova(nome, ESTENSIONI_VIDEO) for nome in nomi_girato(girato_cfg)) if f]
+    girato = girati[0] if girati else None
     ingressi: list[list[str]] = []
     filtri: list[str] = []
     descrizione = ""
@@ -226,22 +255,38 @@ def monta_scena(sc: dict, i: int, n: int, sorg: Sorgenti, dissolvenza: float) ->
         ingressi.append(args)
         return len(ingressi) - 1
 
-    def ripresa() -> str:
-        """Etichetta della ripresa vera: dal secondo "da", oppure i "pezzi" [[inizio, fine], ...] uniti in fila."""
-        g = ingresso(["-i", str(girato)])
-        pezzi = girato_cfg.get("pezzi")
+    def ripresa(file: Path, k: int = 0) -> str:
+        """Etichetta della ripresa vera: dal secondo "da", oppure i "pezzi" [[inizio, fine], ...] uniti in fila
+        (i pezzi valgono solo con una ripresa sola)."""
+        g = ingresso(["-i", str(file)])
+        pezzi = girato_cfg.get("pezzi") if len(girati) == 1 else None
         if pezzi:
-            for k, (p0, p1) in enumerate(pezzi):
-                filtri.append(f"[{g}:v]trim=start={p0}:end={p1},setpts=PTS-STARTPTS,fps={FPS},setsar=1[p{k}]")
-            filtri.append("".join(f"[p{k}]" for k in range(len(pezzi))) + f"concat=n={len(pezzi)}:v=1:a=0[gr]")
+            for j, (p0, p1) in enumerate(pezzi):
+                filtri.append(f"[{g}:v]trim=start={p0}:end={p1},setpts=PTS-STARTPTS,fps={FPS},setsar=1[p{k}_{j}]")
+            filtri.append("".join(f"[p{k}_{j}]" for j in range(len(pezzi))) + f"concat=n={len(pezzi)}:v=1:a=0[gr{k}]")
         else:
-            filtri.append(f"[{g}:v]trim=start={girato_cfg.get('da', 0)},setpts=PTS-STARTPTS,fps={FPS},setsar=1[gr]")
-        return "[gr]"
+            filtri.append(f"[{g}:v]trim=start={girato_cfg.get('da', 0)},setpts=PTS-STARTPTS,fps={FPS},setsar=1[gr{k}]")
+        return f"[gr{k}]"
+
+    def a_pieno(file: Path, k: int, dn: float, uscita: str) -> None:
+        """Una ripresa a tutto schermo, lunga esattamente dn secondi (ferma sull'ultimo fotogramma se è più corta)."""
+        gr = ripresa(file, k)
+        gw, gh = dimensioni(file)
+        if gw / gh >= 1.3:   # orizzontale: riempie lo schermo
+            filtri.append(f"{gr}scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1,"
+                          f"tpad=stop_mode=clone:stop_duration={dn:.3f},trim=duration={dn:.3f},setpts=PTS-STARTPTS{uscita}")
+        else:                # verticale: al centro su uno sfondo sfocato dello stesso video
+            filtri.append(f"{gr}tpad=stop_mode=clone:stop_duration={dn:.3f},trim=duration={dn:.3f},"
+                          f"setpts=PTS-STARTPTS,split[g1_{k}][g2_{k}]")
+            filtri.append(f"[g1_{k}]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},boxblur=30:2,"
+                          f"eq=brightness=-0.25[sf{k}]")
+            filtri.append(f"[g2_{k}]scale=-2:{H}[pp{k}]")
+            filtri.append(f"[sf{k}][pp{k}]overlay=(W-w)/2:0,setsar=1{uscita}")
 
     if girato and girato_cfg.get("modo") == "telefono":
         sfondo = sorg.html(f"chat.html?durata={d:g}&telefono=vuoto", d, QUI / "chat.html", QUI / "chat.json")
         a = ingresso(["-i", str(sfondo)])
-        gr = ripresa()
+        gr = ripresa(girato)
         x, y, w, h = SCHERMO_TEL
         filtri.append(filtro_base(f"[{a}:v]", d) + "[b]")
         filtri.append(f"{gr}scale={w}:{h}:force_original_aspect_ratio=decrease,"
@@ -249,19 +294,15 @@ def monta_scena(sc: dict, i: int, n: int, sorg: Sorgenti, dissolvenza: float) ->
         filtri.append(f"[b][g]overlay=x={x}+({w}-overlay_w)/2:y={y}+({h}-overlay_h)/2[v0]")
         descrizione = f"ripresa vera {girato.name} nel telefono"
     elif girato:
-        gr = ripresa()
-        gw, gh = dimensioni(girato)
-        if gw / gh >= 1.3:   # orizzontale: riempie lo schermo
-            filtri.append(f"{gr}scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
-                          f"tpad=stop_mode=clone:stop_duration={d:.3f},trim=duration={d:.3f},setpts=PTS-STARTPTS[v0]")
-        else:                # verticale: al centro su uno sfondo sfocato dello stesso video
-            filtri.append(f"{gr}tpad=stop_mode=clone:stop_duration={d:.3f},trim=duration={d:.3f},"
-                          f"setpts=PTS-STARTPTS,split[g1][g2]")
-            filtri.append(f"[g1]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},boxblur=30:2,"
-                          f"eq=brightness=-0.25[sf]")
-            filtri.append(f"[g2]scale=-2:{H}[pp]")
-            filtri.append("[sf][pp]overlay=(W-w)/2:0[v0]")
-        descrizione = f"ripresa vera {girato.name}"
+        # Più riprese: parti uguali, in fotogrammi interi (l'ultima prende il resto)
+        fotogrammi = round(d * FPS)
+        parti = [fotogrammi // len(girati)] * len(girati)
+        parti[-1] += fotogrammi - sum(parti)
+        for k, (f, nf) in enumerate(zip(girati, parti)):     # k, non n: n è il numero di scene (dissolvenza finale)
+            a_pieno(f, k, nf / FPS, "[v0]" if len(girati) == 1 else f"[q{k}]")
+        if len(girati) > 1:
+            filtri.append("".join(f"[q{k}]" for k in range(len(girati))) + f"concat=n={len(girati)}:v=1:a=0[v0]")
+        descrizione = "ripresa vera " + " + ".join(f.name for f in girati)
     else:
         if OPZIONI["segnaposto"] and sc.get("segnaposto"):
             s = {"tipo": "cartello", "id": sc["segnaposto"]}
@@ -271,8 +312,9 @@ def monta_scena(sc: dict, i: int, n: int, sorg: Sorgenti, dissolvenza: float) ->
             file = sorg.html(f"cartelli.html?id={s['id']}", d, QUI / "cartelli.html", dati=CARTELLI.get(s["id"]))
             descrizione = f"cartello {s['id']}" + (" (SEGNAPOSTO: manca la ripresa vera)" if s["id"].startswith("qui-") else "")
         elif tipo == "pagina":
-            file = sorg.html(s["pagina"], d, QUI / s["pagina"])
-            descrizione = s["pagina"]
+            # "operatore.html?durata=14": il file è il nome senza i parametri; "dipende" = i dati che la pagina legge
+            file = sorg.html(s["pagina"], d, QUI / s["pagina"].split("?")[0], *dipendenze(s, sc["id"]))
+            descrizione = s["pagina"] + (f" (+ {len(s['dipende'])} voci in \"dipende\")" if s.get("dipende") else "")
         elif tipo == "chat":
             file = sorg.html(f"chat.html?durata={d:g}", d, QUI / "chat.html", QUI / "chat.json")
             descrizione = "chat simulata di TwinCIRO (risposte vere dell'API)"
@@ -288,7 +330,8 @@ def monta_scena(sc: dict, i: int, n: int, sorg: Sorgenti, dissolvenza: float) ->
         filtri.append(filtro_base(f"[{a}:v]", d, da, s.get("ritaglio")) + "[v0]")
 
     if girato_cfg and not girato:
-        descrizione += f" · manca girato/{girato_cfg['file']}.mp4" + ("" if OPZIONI["segnaposto"] or s.get("tipo") == "chat" else ": uso la RISERVA")
+        mancano = " e ".join(f"girato/{n}.mp4" for n in nomi_girato(girato_cfg))
+        descrizione += f" · manca {mancano}" + ("" if OPZIONI["segnaposto"] or s.get("tipo") == "chat" else ": uso la RISERVA")
     ultimo = "v0"
     if s.get("velo") and not girato:
         p = ingresso(["-loop", "1", "-t", str(d), "-i", str(sorg.png(f"cartelli.html?id={s['velo']}", s["velo"], CARTELLI.get(s["velo"])))])
@@ -302,8 +345,10 @@ def monta_scena(sc: dict, i: int, n: int, sorg: Sorgenti, dissolvenza: float) ->
                       f"fade=t=out:st={max(da_, a_ - 0.4):.3f}:d=0.4:alpha=1[sv{k}]")
         filtri.append(f"[{ultimo}][sv{k}]overlay=0:0:format=auto[w{k}]")
         ultimo = f"w{k}"
-    if sc.get("testata"):
-        p = ingresso(["-loop", "1", "-t", str(d), "-i", str(sorg.png(f"cartelli.html?id=testata&scena={sc['id']}", f"testata-{sc['id']}", sc["testata"]))])
+    # "testata_girato": solo sopra la ripresa vera (il cartello di riserva ha già il suo titolo)
+    testata = sc.get("testata") or (sc.get("testata_girato") if girato else None)
+    if testata:
+        p = ingresso(["-loop", "1", "-t", str(d), "-i", str(sorg.png(f"cartelli.html?id=testata&scena={sc['id']}", f"testata-{sc['id']}", testata))])
         # Entra subito (0,3 s, mentre la scena esce dal nero): sotto la testata non si intravede il video
         filtri.append(f"[{p}:v]format=rgba,fade=t=in:st=0:d=0.3:alpha=1[ts]")
         filtri.append(f"[{ultimo}][ts]overlay=0:0:format=auto[v2]")
@@ -380,7 +425,7 @@ class Scena:
 
 
 def nome_scena(id_scena: str) -> str:
-    """'03-cirogpt' → 'cirogpt'; solo minuscole, cifre e trattini (va nei nomi dei file)."""
+    """'06-chat' → 'chat'; solo minuscole, cifre e trattini (va nei nomi dei file)."""
     def pulito(s: str) -> str:
         s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
         return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
@@ -589,10 +634,10 @@ def scrivi_testi_voce(piano: list[Scena], totale: float, pron: dict, avvisi: lis
           "Tre modi, che si possono mescolare. Formati: `.m4a` (Memo Vocali), `.wav`, `.mp3`, `.aac`, `.ogg`, `.flac`. Il montaggio"
           " toglie il silenzio all'inizio e alla fine di ogni file e porta tutti i file allo stesso volume.", "",
           "1. **Una battuta per file** (il più comodo: ognuno registra da solo, quando vuole). Leggi solo le tue battute, una per"
-          " file, e chiama il file come scritto accanto alla battuta (per esempio `girato/voce/03-cirogpt-2.m4a`). Non serve"
+          " file, e chiama il file come scritto accanto alla battuta (per esempio `girato/voce/06-chat-2.m4a`). Non serve"
           " guardare il video: `monta.sh` mette ogni battuta nel momento in cui compare il suo sottotitolo. Resta nella durata"
           " indicata: se una battuta è troppo lunga, `monta.sh` lo dice.",
-          "2. **Una clip per file**: `girato/voce/03-cirogpt.m4a`. Guarda la clip senza audio (`clip/03-cirogpt.mp4`, con il suo"
+          "2. **Una clip per file**: `girato/voce/06-chat.m4a`. Guarda la clip senza audio (`clip/06-chat.mp4`, con il suo"
           " `.srt` i sottotitoli fanno da gobbo) e leggi quando compaiono. La prima parola va al tempo della prima battuta. Se"
           " nella scena parlate tutti e due, registrate insieme.",
           "3. **Tutto in un file**, come prima: `girato/voce.m4a`, guardando `bozza.mp4` senza audio. Se all'inizio c'è silenzio:"
@@ -695,7 +740,7 @@ def pezzi_voce(piano: list[Scena]) -> tuple[list[Pezzo], list[str]]:
             continue
         val = nomi.get(f.stem.lower()) or nomi.get(re.sub(r"^\d+-", "", f.stem.lower()))
         if not val:
-            avvisi.append(f"girato/voce/{f.name}: il nome non corrisponde a nessuna scena o battuta (es. 03-cirogpt.m4a, 03-cirogpt-2.m4a): lo ignoro")
+            avvisi.append(f"girato/voce/{f.name}: il nome non corrisponde a nessuna scena o battuta (es. 06-chat.m4a, 06-chat-2.m4a): lo ignoro")
             continue
         chiave_pezzo = (val[0].pos, val[1])
         if chiave_pezzo in trovati:

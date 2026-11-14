@@ -1,0 +1,12 @@
+TwinCIRO · voce fuori campo · scena 04 di 15: fonti
+Nel video da 0:26,0 a 0:34,0 · clip clip/04-fonti.mp4 di 8,0 s
+
+1 · ROBERTO · da 0,3 a 4,1 s della clip · durata disponibile 3,8 s · nel video 0:26,3 → 0:30,1
+    Oltre cinquanta fonti pubbliche, verificate una per una.
+    8 parole, ritmo di circa 158 al minuto · registra in girato/voce/04-fonti-1.m4a
+
+2 · MARIO · da 4,3 a 7,8 s della clip · durata disponibile 3,5 s · nel video 0:30,3 → 0:33,8
+    Un catalogo unico: licenza e stato di ogni fonte.
+    9 parole, ritmo di circa 163 al minuto · registra in girato/voce/04-fonti-2.m4a
+
+Tutta la scena in un file: girato/voce/04-fonti.m4a (la prima parola va a 0,3 s dall'inizio della clip, il silenzio prima si toglie da solo).

@@ -1,0 +1,15 @@
+1
+00:00:00,300 --> 00:00:04,400
+Questa è Napoli adesso: dati
+veri, ognuno con la sua fonte.
+
+2
+00:00:04,600 --> 00:00:08,200
+Domani, in Campania, allerta
+arancione per temporali.
+
+3
+00:00:08,400 --> 00:00:13,600
+Chiedi come arrivare a Città della Scienza:
+TwinCIRO ti dà la prossima Cumana.
+

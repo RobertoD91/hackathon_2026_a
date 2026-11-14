@@ -1,0 +1,10 @@
+1
+00:00:00,300 --> 00:00:05,100
+Nella simulazione, un avviso sposta
+circa millenovecento persone.
+
+2
+00:00:05,400 --> 00:00:10,700
+Perché Napoli? Nessuna app nuova, i dati
+ci sono già, e si parte da un quartiere.
+

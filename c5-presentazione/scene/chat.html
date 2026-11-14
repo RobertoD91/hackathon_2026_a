@@ -55,7 +55,7 @@
   .passo > div { position: absolute; inset: 0; }
   .passo h2 { margin: 10px 0 12px; font-size: 62px; line-height: 1.05; font-weight: 800; letter-spacing: -0.02em; }
   .passo p { margin: 0; font-size: 28px; line-height: 1.35; color: #c8d3ec; }
-  .quinte { margin-top: 26px; background: rgb(22 33 59 / 0.85); border: 1px solid var(--bordo); border-radius: 22px; padding: 24px 28px; height: 470px; }
+  .quinte { margin-top: 26px; background: rgb(22 33 59 / 0.85); border: 1px solid var(--bordo); border-radius: 22px; padding: 24px 28px; min-height: 470px; }
   .quinte h3 { margin: 0 0 18px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tenue); font-weight: 700; }
   .righe { position: relative; }
   .riga { margin-bottom: 16px; background: #0f182c; border: 1px solid #22305228; border-radius: 14px; padding: 14px 18px; }
@@ -162,15 +162,16 @@ function costruisci() {
       const nq = (m.dietro_le_quinte || []).length;
       seg.push({ tipo: avviso ? 'quinte-avviso' : 'pensa', d: avviso ? 0.4 + 0.5 * nq : clamp(1.3 + 0.45 * nq, 1.4, 3.0), m, i });
       seg.push({ tipo: 'arriva', d: 0.45, v, m, i });
-      seg.push({ tipo: 'leggi', d: clamp(parole(testo) / 3.4, 2.2, 7.5), elastico: true, peso: 1, m, i });
+      seg.push({ tipo: 'leggi', d: clamp(parole(testo) / 3.4, 2.2, 7.5), elastico: true, peso: 1, m, i, ultimo: i === msg.length - 1 });
     }
   });
   seg.push({ tipo: 'pausa', d: 0.6, elastico: true, peso: 0.3 });
 
-  // Adatto le pause elastiche alla durata richiesta
+  // Adatto le pause elastiche alla durata richiesta. Se la scena è più corta del naturale, l'ultimo messaggio tiene
+  // tutto il suo tempo di lettura: gli altri restano a schermo anche mentre arrivano i messaggi dopo, lui no.
   const base = seg.reduce((s, x) => s + x.d, 0);
   if (DURATA) {
-    const el = seg.filter((x) => x.elastico);
+    const el = seg.filter((x) => x.elastico && !(DURATA < base && x.ultimo));
     const pesoTot = el.reduce((s, x) => s + x.d * x.peso, 0);
     let extra = DURATA - base;
     el.forEach((x) => { x.d = Math.max(x.peso < 1 ? 0.3 : 1.2, x.d + extra * (x.d * x.peso) / pesoTot); });

@@ -1,123 +1,166 @@
-# Copione del video di consegna · TwinCIRO (C5)
+# Copione del video di consegna · TwinCIRO (C5) · v3
 
-**Durata: 2:54** (limite 3:00) · 1920×1080 · 30 fps · in italiano · sottotitoli impressi.
+**Durata: 2:58** (limite 3:00) · 15 scene · 1920×1080 · 30 fps · in italiano · sottotitoli impressi · **due voci: Roberto e Mario**.
 
-**Al centro c'è TwinCIRO su WhatsApp**, come hanno chiesto Fastweb e Vodafone il 14/11: da 0:14 a 1:35 si parla solo dell'assistente (titolo, chat, architettura vista da TwinCIRO); la mappa (1:35–1:54) è presentata come le fonti di TwinCIRO e nel gemello digitale compare il suo avviso. In tutto circa due terzi del video. IoT e gemello servono da prove di concretezza. **Traffico e semafori** (non piaciuti ai partner) restano solo in un riquadro dei benefici: la scena SUMO è pronta ma esclusa (`"salta": true` in `scaletta.json`).
+**Al centro c'è TwinCIRO su WhatsApp**, come hanno chiesto Fastweb e Vodafone il 14/11: la chat del turista è la scena più lunga (40 s) e TwinCIRO torna in quasi tutte le altre (titolo, le sue fonti, i due utenti, l'architettura dietro di lui, come vede la città, la sua risposta con i dati di adesso, il suo avviso nel gemello, la chiusura). L'IoT (badge WHY2025 e scheda Tasmota, sensori fatti da noi) e il gemello digitale con la regata 3D servono da prove di concretezza. **Traffico e semafori** (non piaciuti ai partner) restano solo in una riga dei benefici: la scena SUMO non c'è più.
 
-Questo file è la versione da leggere di [`scene/scaletta.json`](scene/scaletta.json), che è quella usata dal montaggio: se cambi un tempo o un testo, cambialo in tutti e due i file.
+La challenge chiede anche **benefici misurabili** e **perché Napoli dovrebbe adottarla**: stanno nella scena 14, con i numeri già verificati e dichiarati come simulazione.
+
+Questo file è la versione da leggere di [`scene/scaletta.json`](scene/scaletta.json), che è quella usata dal montaggio: se cambi un tempo o un testo, cambialo lì e qui. I testi della voce scena per scena, con chi li legge e i nomi dei file da registrare, li scrive il montaggio in [`voce/`](voce/COPIONE-VOCE.md).
 
 ## Il racconto in una riga
 
-Una crocerista scrive a TwinCIRO su WhatsApp. TwinCIRO chiede agli agenti della città, negozia con la pizzeria, usa i dati veri e poi la avvisa quando la Rotonda Diaz si riempie. Dietro ci sono un orchestratore, un catalogo di oltre 50 fonti pubbliche verificate una per una, due dispositivi veri (il badge WHY2025 e una scheda Tasmota) e un gemello digitale. Si chiude con i benefici, con i numeri, e con il perché Napoli dovrebbe adottarla.
+Napoli 2027, un sabato con l'America's Cup: i dati della città ci sono ma sono sparsi, e manca il più importante, le persone. TwinCIRO li mette insieme. Una crocerista gli scrive su WhatsApp: TwinCIRO negozia con la pizzeria, la porta alla regata, usa i dati veri e la avvisa prima del pienone. Dietro c'è un sistema multi-agente con oltre 50 fonti pubbliche e sensori fatti da noi; la Polizia Locale approva le decisioni. Con Fastweb + Vodafone la folla si misura, i sensori vanno sulla rete mobile e il cervello può essere MIIA. Si chiude con i benefici, il perché Napoli e l'invito a scrivergli.
 
 ## Scene
 
-| # | Tempo | Durata | Cosa si vede | Testo a schermo |
+| # | Tempo | Durata | Cosa si vede | Voce |
 |---|---|---|---|---|
-| 1 | 0:00–0:14 | 14 s | Regata in 3D (`regata_3d.mp4` da 0:05, ritagliata e ingrandita, Mergellina compresa): città notturna, colonne della folla, barche. Un velo scuro copre il vecchio titolo, la legenda e i riquadri dei KPI | Testata: *Napoli 2027 · lo scenario. America's Cup, due navi da crociera, la partita al Maradona: lo stesso sabato* |
-| 2 | 0:14–0:21 | 7 s | Cartello del titolo | **TwinCIRO**. *La città che ci pensa. E te lo dice su WhatsApp.* Twin = gemello digitale, CIRO = City Intelligence & Responsive Orchestration |
-| 3 | 0:21–1:19 | 58 s | **TwinCIRO su WhatsApp.** A sinistra il telefono con la chat: la ripresa vera se c'è `girato/cirogpt.mp4`, altrimenti la chat ricostruita. A destra il passo del racconto e «dietro le quinte», cioè i messaggi veri tra gli agenti | 5 passi: *Negozia con le imprese → Prenota con un «ok» → Ti porta dove serve → Usa dati reali, con la fonte → Ti avvisa prima del problema*. In basso, la nota su cosa è simulato |
-| 4 | 1:19–1:35 | 16 s | Schema dell'architettura, che si compone in sincronia con la voce, partendo da TwinCIRO | *Come pensa la città*: persone → TwinCIRO → API → orchestratore → 6 agenti → bus MQTT `napoli/#` → badge WHY2025 e Tasmota, drone, gemello, sala operativa; fonti pubbliche reali (oltre 50, verificate) |
-| 5 | 1:35–1:54 | 19 s | Registrazione della mappa «Napoli in tempo reale»: banner Meteoalarm, ricerca di Castel dell'Ovo con la sua scheda, modalità Meteo, modalità Aria con le centraline ARPAC, pannello «Oggi a Napoli» con gli eventi veri | Testata: *Dati reali · le fonti di TwinCIRO. Mappa «Napoli in tempo reale»: le stesse fonti pubbliche delle skill di TwinCIRO* |
-| 6 | 1:54–2:01 | 7 s | **Ripresa vera** `girato/badge.mp4`. Se manca: riquadro di riserva «Due dispositivi veri, un solo bus»: badge WHY2025 e scheda Tasmota → hotspot Wi-Fi → broker MQTT di `twinciro.robertodisanto.it` → agenti (`napoli/#`), con la nota che il firmware del badge è provato sul PC e non ancora sul badge | Testata: *IoT · i sensi della città. Badge WHY2025 e scheda Tasmota → MQTT napoli/# → agenti* |
-| 7 | 2:01–2:07 | 6 s | **Ripresa vera** `girato/tasmota.mp4`. Se manca: riquadro di riserva «Un solo formato, quello degli agenti» con i due messaggi: `napoli/sensori/<id>/<grandezza>` → `{"zona": "<zona>", "valore": <numero>}` e `napoli/nodi/<id>/stato` (trattenuto, con last will). Solo segnaposto tra `< >`, nessuna misura | Testata: *Oggi sull'hotspot Wi-Fi, domani su 5G: un solo formato MQTT* |
-| 8 | 2:07–2:20 | 13 s | Regata in 3D (`regata_3d.mp4` da 0:40): le colonne della folla a Rotonda Diaz e Mergellina diventano gialle. Da 2:13 compare la notifica di TwinCIRO con l'avviso della chat | Testata: *Gemello digitale. La giornata della regata simulata sulle strade vere: folla per zona e barche* |
-| – | – | 0 s | *Scena 9, gemello SUMO affiancato con i numeri medi: esclusa (`"salta": true`)* | – |
-| 10 | 2:20–2:35 | 15 s | Cartello «Cosa cambia, con i numeri»: 4 riquadri che compaiono con la voce (il quarto, il traffico, senza voce) | Chi visita · imprese · città · traffico, ognuno con la fonte del numero |
-| 11 | 2:35–2:47 | 12 s | Cartello «Perché Napoli dovrebbe adottarla»: 5 righe | Nessuna app nuova · i dati ci sono · il 2027 è vicino · con Fastweb + Vodafone · si parte piccoli |
-| 12 | 2:47–2:54 | 7 s | Cartello di chiusura | **TwinCIRO**. *Napoli ci pensa.* «Scrivi a TwinCIRO». Roberto D'Isanto · Mario Varlese · link |
+| 1 | 0:00–0:08 | 8 s | **Il gancio.** Regata 3D del gemello digitale (`regata_3d.mp4` da 0:05, ritagliata con Mergellina), con il velo sul vecchio titolo e sui riquadri dei KPI. Testata: *Napoli 2027 · lo scenario. America's Cup, due navi da crociera, la partita al Maradona: lo stesso sabato* | Roberto, Mario |
+| 2 | 0:08–0:19 | 11 s | `motivazione.html`: «I dati ci sono. Ma sono sparsi.» Le 56 fonti pubbliche del catalogo come isole (logo ufficiale o nome, formato), collegamenti che si interrompono; poi «E manca il dato più importante»: le persone per zona, che in Italia non è un dato pubblico | Roberto, Mario |
+| 3 | 0:19–0:26 | 7 s | `titolo.html`: **TwinCIRO**; CIRO si apre in *City Intelligence & Responsive Orchestration*, Twin = *gemello digitale*; motto *Napoli che ci pensa*. Solo la scritta, nessun logo | Roberto, Mario |
+| 4 | 0:26–0:34 | 8 s | `fonti.html`: le isole convergono in un muro per dominio intorno a TwinCIRO; il contatore arriva a 56 e compare *Oltre 50 fonti pubbliche, verificate una per una*. Per scelta di Roberto la pagina **non dice quante sono già collegate** all'API: i punti di dati verso TwinCIRO partono solo da quelle, senza numeri né evidenze | Roberto, Mario |
+| 5 | 0:34–0:38 | 4 s | `utenti.html`: due utenti. *Chi visita*: Marta, crocerista, scrive a TwinCIRO su WhatsApp. *Chi governa*: l'operatore della Polizia Locale, in sala operativa | Roberto |
+| 6 | 0:38–1:18 | 40 s | **Il turista.** A sinistra il telefono con la chat di Marta: la ripresa vera se c'è `girato/chat.mp4`, altrimenti la chat ricostruita con le risposte vere dell'API. A destra il passo del racconto e «dietro le quinte», i messaggi veri tra gli agenti. Risposte di TwinCIRO a 6,4 · 12,3 · 18,7 · 25,5 · 31,6 s della scena; l'avviso resta a schermo 8 s | Mario, Roberto (6 battute) |
+| 7 | 1:18–1:29 | 11 s | `architettura.html`: **Un sistema multi-agente.** Persone → TwinCIRO (agente OpenClaw) → API della città → orchestratore e sei agenti specializzati, che si parlano sul bus MQTT `napoli/#`; fonti pubbliche reali; in basso sensori fatti da noi (badge WHY2025 e Tasmota), drone, gemello digitale, sala operativa della Polizia Locale | Mario, Roberto |
+| 8 | 1:29–1:38 | 9 s | `grafo.html`: la città come rete di relazioni il giorno della regata (83 nodi, 196 relazioni, a strati: luoghi, eventi e flussi, stazioni e imprese, agenti, sensori e fonti). Pagina navigabile: [`grafo/`](grafo/) | Mario, Roberto |
+| 9 | 1:38–1:52 | 14 s | `adesso.html`: **Napoli adesso**, sabato 14/11/2026 alle 19:30, con i dati veri dell'API dati città (meteo, allerte, eventi, treni, aria, Campi Flegrei, tangenziale), ognuno con fonte e stato; a destra TwinCIRO risponde a «Come arrivo a Città della Scienza?» con le prossime Cumana | Mario, Roberto |
+| 10 | 1:52–2:06 | 14 s | `operatore.html`: **chi governa.** La dashboard (mappa in modalità demo), la proposta D4 delle 14:41 degli agenti con *Approva / Blocca*, approvata dall'operatore con `POST /operatore`, poi la stessa decisione nella sala nel terminale | Roberto, Mario |
+| 11 | 2:06–2:14 | 8 s | **Sensori fatti da noi.** Le riprese vere `girato/badge.mp4` e `girato/tasmota.mp4` (quelle che ci sono si dividono la scena, con la testata). Se mancano tutte e due, il cartello: badge WHY2025 (*firmware nostro*) e scheda Tasmota (*regole nostre*) → formato unico `napoli/sensori/<id>/<grandezza>` e `napoli/nodi/<id>/stato` → agenti; *Oggi: hotspot Wi-Fi → Domani: SIM IoT*; nessun valore inventato | Mario, Roberto |
+| 12 | 2:14–2:23 | 9 s | **Il gemello digitale.** Regata 3D (`regata_3d.mp4` da 0:40): le colonne della folla a Rotonda Diaz e Mergellina diventano gialle; da 4,4 s la notifica di TwinCIRO con l'avviso della chat. Testata: *Gemello digitale* | Mario, Roberto |
+| 13 | 2:23–2:39 | 16 s | `fastweb.html`: *Tre passi con Fastweb + Vodafone*: le persone (analytics di rete: la folla da simulata a misurata), sensori sulla rete (SIM IoT, esempio Walter), AI italiana e dati in Italia (TwinCIRO *può integrare* MIIA; *FastwebMIIA-7B su Hugging Face*). Solo testo, nessun logo | Mario, Roberto |
+| 14 | 2:39–2:50 | 11 s | Cartello in due colonne. **Cosa cambia**, con i numeri: ≈ 1.900 persone spostate con un avviso prima del pienone (simulazione) · tavolo negoziato e prenotato con un «ok», senza telefonate · sconti 10–30% delle imprese (di fantasia) · −9% di ore in coda in media su 4 simulazioni. **Perché Napoli**: nessuna app nuova · i dati ci sono già · America's Cup 2027 · si parte da un quartiere | Roberto, Mario |
+| 15 | 2:50–2:58 | 8 s | Chiusura: **TwinCIRO**, *Napoli che ci pensa*, «💬 Scrivi a TwinCIRO su WhatsApp», Roberto D'Isanto · Mario Varlese, The Big Hack 2026 · Challenge 05 Fastweb + Vodafone, robertodisanto.it/hackathon_2026_a | Roberto, Mario |
 
-Le dissolvenze sono brevi (0,2 s attraverso il nero). Il video si apre dal nero in 0,6 s e si chiude nel nero in 1 s.
+Le dissolvenze sono brevi (0,2 s attraverso il nero). Il video si apre dal nero in 0,6 s e si chiude nel nero in 1 s. Nessun logo di Fastweb, Vodafone, WhatsApp o Polizia Locale: solo testo (le icone delle fonti nelle scene 2, 4 e 8 sono quelle ufficiali dei loro siti).
 
 ## Voce fuori campo (da leggere)
 
-Ritmo: circa **150 parole al minuto** dentro ogni battuta, contando le sigle come si pronunciano, con pause tra una battuta e l'altra (circa 340 parole in 2:54). Tono: caldo, sicuro, senza fretta.
+Due voci, **Roberto** e **Mario**, che si alternano: 36 battute, circa 1:13 di parlato per Roberto e 1:18 per Mario. Ritmo: circa **150 parole al minuto** dentro ogni battuta, contando le sigle come si pronunciano; nessuna battuta si sovrappone (controllo: `./monta.sh --solo-testi`). Tono: caldo, sicuro, senza fretta. Tempi, durata disponibile e nome del file di ogni battuta: [`voce/COPIONE-VOCE.md`](voce/COPIONE-VOCE.md) (lo riscrive il montaggio).
 
-Come registrare: guarda `bozza.mp4` **senza audio** e leggi i sottotitoli quando compaiono (fanno da gobbo). Una sola ripresa, dall'inizio alla fine. Se sbagli, fermati, aspetta due secondi e ricomincia dalla scena: poi taglia.
+Pronuncia: *TwinCIRO* = «tuìn cìro»; *WHY2025* = «uài duemilaventicinque»; *Wi-Fi* = «uài fai»; *MQTT* = «emme cu ti ti»; *IoT* = «ai o ti»; *SIM* = «sim»; *Cumana* = «cumàna»; *AI* = «a i» (sempre allo stesso modo); *MIIA*: da decidere prima di registrare (è il nome del modello di Fastweb, non l'abbiamo verificato: nel dubbio «emme i i a»).
 
-Pronuncia: *TwinCIRO* = «tuìn cìro»; *WHY2025* = «uài duemilaventicinque»; *Wi-Fi* = «uài fai»; *MQTT* = «emme cu ti ti»; *OpenClaw* = «open clò»; *5G* = «cinque gi»; *9%* = «nove per cento».
+**1 · Il gancio (0:00)**
+> ROBERTO: Napoli, 2027.
+> MARIO: Un sabato: America's Cup, navi da crociera e partita al Maradona.
 
-**1 · Apertura (0:00)**
-> Napoli, 2027. Lo stesso sabato: l'America's Cup, due navi da crociera e la partita al Maradona. Migliaia di persone, ognuna con una domanda. E ogni servizio della città fa da sé.
+**2 · I dati ci sono, ma sparsi (0:08)**
+> ROBERTO: I dati ci sono. Ma sono sparsi, e non si parlano.
+> MARIO: E manca il dato più importante: quante persone ci sono, adesso, in ogni zona.
 
-**2 · Titolo (0:14)**
-> Per questo abbiamo creato TwinCIRO: una città che pensa, e che ti parla su WhatsApp.
+**3 · TwinCIRO (0:19)**
+> ROBERTO: TwinCIRO: City Intelligence and Responsive Orchestration.
+> MARIO: Il gemello di Napoli, che ci pensa.
 
-**3 · TwinCIRO su WhatsApp (0:21)**, una battuta per ogni passo della chat, *aspettando che compaia il messaggio*:
-> (0:21) Marta è in crociera, e scrive a TwinCIRO come a un amico.
-> (0:27) TwinCIRO chiede agli agenti: la pizzeria alle 13 è piena, e propone le 14.
-> (0:36) Marta risponde «ok», e il tavolo è prenotato. Nessuna telefonata.
-> (0:45) Poi TwinCIRO le dice come arrivare alla regata, e quanta gente c'è adesso.
-> (0:57) Per il meteo usa dati veri, e cita la fonte: domani c'è allerta arancione.
-> (1:08) E quando la Rotonda Diaz si riempie, è TwinCIRO a scrivere per primo: c'è un posto più tranquillo, con un'offerta.
+**4 · Le fonti (0:26)**
+> ROBERTO: Oltre cinquanta fonti pubbliche, verificate una per una.
+> MARIO: Un catalogo unico: licenza e stato di ogni fonte.
 
-**4 · Architettura (1:19)**
-> Quando Marta scrive, TwinCIRO chiama l'API della città. L'orchestratore interroga sei agenti: meteo, eventi, folla, traffico, turismo e imprese. Si parlano su un bus MQTT, e ogni decisione ha la sua motivazione.
+*Di proposito non dice quante fonti sono già collegate all'API e non dice che TwinCIRO le usa tutte: il catalogo (`docs/fonti-dati-napoli.md`) ha per ogni fonte licenza ed esito della verifica.*
 
-**5 · Dati reali (1:35)**
-> TwinCIRO risponde con dati veri: un catalogo di oltre cinquanta fonti pubbliche, verificate una per una. Meteo e aria, metro e funicolari, eventi del giorno, allerte. La folla è simulata: è il dato che la rete di Fastweb e Vodafone può dare, anonimo.
+**5 · Due utenti (0:34)**
+> ROBERTO: Due utenti: chi visita Napoli, e chi la governa.
 
-**6–7 · IoT (1:54)**
-> (1:54) La città ha anche i sensi: un badge WHY2025 e una scheda Tasmota.
-> (2:01) Parlano MQTT: oggi in Wi-Fi, domani sul 5G.
+**6 · Il turista: la chat di Marta (0:38)**, una battuta per passo, *aspettando che compaia il messaggio*:
+> (0:38,5) MARIO: Marta, in crociera, scrive a TwinCIRO come a un amico.
+> (0:42,3) ROBERTO: TwinCIRO chiede alla pizzeria: alle 13 è piena, propone le 14.
+> (0:47,4) MARIO: Marta dice «ok»: tavolo prenotato, nessuna telefonata.
+> (0:53,6) ROBERTO: Poi TwinCIRO le dice come arrivare alla regata, e quanta gente c'è.
+> (1:00,6) MARIO: Per il meteo usa dati veri, e cita sempre la fonte.
+> (1:06,6) ROBERTO: E quando la Rotonda Diaz si riempie, è TwinCIRO a scrivere per primo: c'è un posto più tranquillo, con un'offerta.
 
-*Frase prudente di proposito. Il firmware del badge è compilato e provato sul PC, ma non ancora su un badge vero (`firmware/why2025-badge/README.md`); Tasmota parla MQTT di suo. Finché le riprese R2 e R3 non mostrano un dispositivo che pubblica davvero, il video usa i riquadri di riserva e la voce non dice «misurano» o «pubblicano». Con le riprese si può dire, nello stesso tempo: «Il badge e la scheda Tasmota pubblicano sul bus degli agenti.»*
+**7 · Un sistema multi-agente (1:18)**
+> MARIO: Dietro TwinCIRO c'è un sistema multi-agente: agenti specializzati e un orchestratore.
+> ROBERTO: Si parlano su MQTT, con le fonti pubbliche e i sensori fatti da noi.
 
-**8 · Gemello digitale (2:07)**
-> Il gemello digitale prova la giornata della regata, sulle strade vere del lungomare. Mostra dove si forma la folla, e quante persone sposta un avviso di TwinCIRO.
+**8 · Come vede la città (1:29)**
+> MARIO: Così TwinCIRO vede la città: luoghi, eventi, flussi, stazioni.
+> ROBERTO: Poi agenti, sensori e fonti: la rete con cui decidono.
 
-**10 · Benefici (2:20)**
-> Per chi visita: risposte in pochi secondi, e un tavolo senza telefonate. Le imprese riempiono le ore vuote, con offerte mirate. E un solo avviso sposta circa millenovecento persone, prima del pienone.
+**9 · Napoli adesso (1:38)**
+> MARIO: Questa è Napoli adesso: dati veri, ognuno con la sua fonte.
+> ROBERTO: Domani, in Campania, allerta arancione per temporali.
+> MARIO: Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà la prossima Cumana.
 
-*Il riquadro del traffico (−9% di ore in coda, media su 4 simulazioni, da −1% a −18%) resta a schermo senza voce: è l'unico punto del video sul traffico.*
+*La battuta dell'allerta vale per la cattura del 14/11 alle 19:30 (Meteoalarm: domani temporali arancione). Se si rifà la cattura (`node c5-presentazione/scene/oggi/cattura.mjs`), va riletta sui dati nuovi; una versione che va bene con qualsiasi cattura: «Allerte, treni, aria e Campi Flegrei, con l'ora del dato.»*
 
-**11 · Perché Napoli (2:35)**
-> Perché Napoli? WhatsApp ce l'hanno tutti, e i dati pubblici ci sono. Il 2027 è vicino: con Fastweb e Vodafone si parte da un quartiere.
+**10 · Chi governa: la Polizia Locale (1:52)**
+> ROBERTO: E la Polizia Locale vede folla, allerte e decisioni.
+> MARIO: Gli agenti propongono: l'operatore approva, o blocca.
+> ROBERTO: Nel terminale della sala, la stessa decisione: l'avviso è partito.
 
-**12 · Chiusura (2:47)**
-> TwinCIRO. Napoli ci pensa. Scrivigli su WhatsApp.
+**11 · Sensori fatti da noi (2:06)**
+> MARIO: Sensori fatti da noi: badge WHY2025 e Tasmota.
+> ROBERTO: Oggi in Wi-Fi, domani con una SIM IoT.
+
+*Frase prudente di proposito: il firmware del badge è compilato e provato sul PC ma non ancora su un badge vero (`firmware/why2025-badge/README.md`), e le regole di Tasmota sono da provare sulla scheda. Finché le riprese R2 e R3 non mostrano un dispositivo che pubblica davvero, il video usa il cartello e la voce non dice «misurano» o «pubblicano». Con le riprese si può dire, nello stesso tempo: «Il badge e la scheda Tasmota pubblicano sul bus degli agenti.»*
+
+**12 · Il gemello digitale (2:14)**
+> MARIO: Il gemello digitale prova la giornata sulle strade vere.
+> ROBERTO: E mostra quante persone sposta un avviso di TwinCIRO.
+
+**13 · Con Fastweb + Vodafone (2:23)**
+> MARIO: Con Fastweb e Vodafone la folla non si simula più: si misura.
+> ROBERTO: Con le loro SIM IoT, i sensori si mettono dove servono.
+> MARIO: E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: dati in Italia, sovranità digitale.
+
+*«Può integrare»: l'adattatore compatibile con OpenAI della città (`C5_LLM=compatibile`, alias `miia`) è provato con un server di prova e con llama.cpp, non ancora con MIIA (licenza non commerciale su Hugging Face; per la produzione l'offerta FastwebAI Suite). Dettagli nel README di `c5-agentic-city`, sezione «LLM».*
+
+**14 · Cosa cambia e perché Napoli (2:39)**
+> ROBERTO: Nella simulazione, un avviso sposta circa millenovecento persone.
+> MARIO: Perché Napoli? Nessuna app nuova, i dati ci sono già, e si parte da un quartiere.
+
+*Gli altri numeri del cartello (sconti 10–30% delle imprese di fantasia, −9% di ore in coda in media su 4 simulazioni, da −1% a −18%) restano a schermo senza voce: il traffico è l'unico punto del video sul traffico.*
+
+**15 · Chiusura (2:50)**
+> ROBERTO: TwinCIRO. Napoli che ci pensa.
+> MARIO: Scrivi a TwinCIRO su WhatsApp.
 
 ## Riprese da girare
 
 Metti i file in [`girato/`](girato/LEGGIMI.md) con questi nomi esatti, poi lancia `./monta.sh`. Tutto orizzontale 1920×1080 tranne il telefono. Luce frontale, niente controluce verso le vetrate, telefono e portatile con la luminosità al massimo. Per vedere dove andranno le riprese mancanti: `./monta.sh --segnaposto` (cartelli «Qui va una ripresa reale» al posto delle riserve).
 
-### R1 · `girato/cirogpt.mp4`: la chat vera con TwinCIRO (la più importante)
+### R1 · `girato/chat.mp4`: la chat WhatsApp vera con il contatto TwinCIRO (la più importante)
 
-Sostituisce la chat ricostruita della scena 3. Il telefono vero va al posto di quello disegnato, e a destra resta il pannello «dietro le quinte».
+Sostituisce la chat ricostruita della scena 6. Il telefono vero va al posto di quello disegnato, e a destra resta il pannello «dietro le quinte».
 
-- **Cosa:** registrazione dello schermo del telefono (iPhone: Centro di Controllo → Registra schermo; Android: Registra schermo dalle impostazioni rapide), verticale, nel gruppo WhatsApp con TwinCIRO.
-- **Prima di registrare:** modalità Non disturbare (niente notifiche di altre chat sullo schermo), batteria e ora pulite, carattere di WhatsApp a grandezza media, sfondo della chat semplice, il contatto dell'agente con il nome TwinCIRO. Nel gruppo cancella o scorri via i messaggi vecchi. Se nel gruppo ci sono numeri di persone che non vogliono comparire, usa un gruppo nuovo solo con te e TwinCIRO.
+- **Cosa:** registrazione dello schermo del telefono (iPhone: Centro di Controllo → Registra schermo; Android: Registra schermo dalle impostazioni rapide), verticale, nella chat o nel gruppo WhatsApp con TwinCIRO.
+- **Prima di registrare:** il contatto dell'agente deve chiamarsi **TwinCIRO** (se si chiama ancora con il vecchio nome, rinominalo). Modalità Non disturbare (niente notifiche di altre chat sullo schermo), batteria e ora pulite, carattere di WhatsApp a grandezza media, sfondo della chat semplice. Nel gruppo cancella o scorri via i messaggi vecchi. Se nel gruppo ci sono numeri di persone che non vogliono comparire, usa un gruppo nuovo solo con te e TwinCIRO.
 - **La città:** perché le risposte siano quelle del racconto, avvia l'API come per la chat ricostruita, partendo alle 12:10 con la giornata accelerata:
   `cd c5-agentic-city && python avvia.py --llm regole --senza-sala --senza-gemello --inizio 12:10 --velocita 30 --api-porta 8080`
   Con `--llm claude` (e la chiave) le risposte sono più naturali, ma vanno ricontrollate: la pizzeria deve dire pieno alle 13:00 e posto alle 14:00. Se la città gira da più di 2 minuti, riavviala: alle 12:30 simulate le 13:00 non sono più «future».
-- **Attenzione al testo:** la skill `twinciro-citta` inoltra la risposta dell'API **senza riscriverla**. Prima delle correzioni, con le regole la prima risposta cominciava con «Alle 13:00 siamo pieni…» (sembrava parlare la pizzeria) e l'avviso diceva «A Rotonda Diaz (village)… è molto più tranquillo». `c5-agentic-city` li ha corretti nel commit b32bcf6: ora su WhatsApp e nella chat ricostruita escono gli stessi testi dell'API, senza ritocchi (vedi «Problemi noti» nel README).
+- **Il testo:** la skill `twinciro-citta` inoltra la risposta dell'API **senza riscriverla**, quindi su WhatsApp escono gli stessi testi della chat ricostruita (vedi «Problemi noti» nel README).
 - **Cosa scrivere**, uno alla volta, aspettando la risposta (testi in [`scene/chat_domande.json`](scene/chat_domande.json)):
   1. `Ciao Ciro! Siamo 4 croceristi: vogliamo prenotare in una pizzeria vicino al Castel dell'Ovo alle 13:00 🍕`
   2. `Ok, va bene!`
   3. `Poi vogliamo andare a vedere la regata alla Rotonda Diaz: come si arriva?`
-  4. `Ci serve l'ombrello?` (risponde la skill `napoli-citta-dati`, che prende meteo e allerta dall'API dati città, se è caricata su TwinCIRO; se non lo è, salta questa domanda e togli la battuta del meteo dalla voce)
+  4. `Ci serve l'ombrello?` (risponde la skill `napoli-citta-dati`, che prende meteo e allerta dall'API dati città, se è caricata su TwinCIRO; se non lo è, salta questa domanda e cambia la battuta del meteo)
   5. Poi **aspetta l'avviso**: arriva da solo dopo le 14:00 simulate, cioè circa 5 minuti reali dopo l'avvio, se l'heartbeat di OpenClaw interroga `/notifiche`. Se l'heartbeat non c'è ancora, scrivi `Com'è la situazione alla Rotonda Diaz?` dopo le 14:30 simulate.
-- **Durata:** la registrazione sarà lunga qualche minuto. Non serve tagliarla a mano: annota in `scene/scaletta.json`, nella scena `03-cirogpt`, i pezzi da tenere. Per esempio `"girato": { "file": "cirogpt", "modo": "telefono", "pezzi": [[2, 16], [20, 31], [40, 53], [62, 72], [300, 310]] }` tiene 14 + 11 + 13 + 10 + 10 = 58 s. In totale i pezzi devono fare **58 s**: se sono di meno, l'ultimo fotogramma resta fermo. Il pannello a destra (passi e «dietro le quinte») segue i tempi della chat ricostruita, quindi scegli i pezzi in modo che le risposte di TwinCIRO compaiano vicino a questi secondi della scena: pizzeria 6,8 s, conferma 17,9 s, percorso 26,0 s, meteo 38,0 s, avviso 49,4 s (i messaggi di Marta circa 3 s prima). Se non ci riesci, riallinea i tempi della voce della scena 3 ai momenti in cui arrivano i messaggi.
+- **Durata:** la registrazione sarà lunga qualche minuto. Non serve tagliarla a mano: annota in `scene/scaletta.json`, nella scena `06-chat`, i pezzi da tenere. Per esempio `"girato": { "file": "chat", "modo": "telefono", "pezzi": [[2, 11], [20, 26], [40, 47], [62, 69], [300, 311]] }` tiene 9 + 6 + 7 + 7 + 11 = 40 s. In totale i pezzi devono fare **40 s**: se sono di meno, l'ultimo fotogramma resta fermo. Il pannello a destra (passi e «dietro le quinte») e la voce seguono i tempi della chat ricostruita, quindi scegli i pezzi in modo che le risposte di TwinCIRO compaiano vicino a questi secondi della scena: pizzeria 6,4 s, conferma 12,3 s, percorso 18,7 s, meteo 25,5 s, avviso 31,6 s (i messaggi di Marta circa 3 s prima). L'avviso deve restare a schermo fino alla fine (almeno 8 s). Se non ci riesci, riallinea i tempi della voce della scena 6.
 - **Ritmo:** scrivi con calma (si vede la tastiera) e lascia ogni risposta sullo schermo 4–5 secondi prima di scrivere la successiva.
 
 I due dispositivi si collegano all'hotspot del telefono di Roberto (rete e configurazione in [`firmware/README.md`](../firmware/README.md)) e pubblicano sul broker di `twinciro.robertodisanto.it` nel formato unico della città: `napoli/sensori/<id>/<grandezza>` con `{"zona": "<zona>", "valore": <numero>}` e lo stato trattenuto su `napoli/nodi/<id>/stato`. Per vederli arrivare dal portatile: `mosquitto_sub -h twinciro.robertodisanto.it -u <utente> -P <password> -t 'napoli/#' -v` (utente in sola lettura, per esempio `monitor`). **Niente a schermo** di password, token o IP privati: lancia il comando prima di registrare e inquadra solo i messaggi.
 
-### R2 · `girato/badge.mp4`: il badge WHY2025 (7 s)
+### R2 · `girato/badge.mp4`: il badge WHY2025 (4 s, oppure 8 s se manca la ripresa di Tasmota)
 
 - **Inquadratura:** primo piano orizzontale, con la mano che tiene il badge a 30–40 cm; il sensore I2C collegato si deve vedere. Sfondo scuro e pulito, telefono su un appoggio o treppiede.
-- **Azione:** 0–3 s la schermata SENSORI del badge con i valori (luce, temperatura, umidità) e lo stato della connessione; 3–7 s spostamento lento verso il portatile, dove la stessa lettura arriva su `napoli/sensori/<id>/...` nel terminale con `mosquitto_sub`.
-- **Prima di girare:** controlla che il badge sia davvero online (`napoli/nodi/<id>/stato` con `"online": true`). Se non pubblica, non girare finte letture: resta il riquadro di riserva.
+- **Azione:** la schermata SENSORI del badge con i valori (luce, temperatura, umidità) e lo stato della connessione, poi uno spostamento lento verso il portatile, dove la stessa lettura arriva su `napoli/sensori/<id>/...` nel terminale con `mosquitto_sub`. Se ci sono tutte e due le riprese, della scena 11 se ne usano 4 s ciascuna (i primi 4 s di ogni file, oppure da `"da"`): metti all'inizio la parte migliore.
+- **Prima di girare:** controlla che il badge sia davvero online (`napoli/nodi/<id>/stato` con `"online": true`). Se non pubblica, non girare finte letture: resta il cartello.
 
-### R3 · `girato/tasmota.mp4`: la scheda Tasmota (6 s)
+### R3 · `girato/tasmota.mp4`: la scheda Tasmota (4 s, oppure 8 s se manca la ripresa del badge)
 
 - **Inquadratura:** la scheda accesa con il suo sensore, ferma e ben illuminata (telefono sul treppiede), poi lo schermo del portatile con i suoi messaggi `napoli/sensori/<id>/...` che arrivano. Va bene anche solo lo schermo: carattere del terminale di almeno 20 pt, tema scuro.
 - In alternativa, la console web di Tasmota con la riga della regola che pubblica nel formato `napoli/` (senza mostrare la pagina con la password del Wi-Fi o di MQTT).
 
-### R4 · `girato/voce.m4a`: voce fuori campo (2:54)
+Con una ripresa vera nella scena 11 compare la testata *Sensori fatti da noi · Badge WHY2025 e scheda Tasmota → MQTT napoli/ → agenti della città* (campo `"testata_girato"`); il cartello di riserva ha già il suo titolo.
 
-- Stanza silenziosa e con tende o divani (meno eco), telefono a 20 cm dalla bocca, leggermente di lato. Memo vocali di iPhone o Registratore di Android vanno bene; un microfono a clip è meglio.
-- Leggi guardando `bozza.mp4` senza audio: comincia a parlare quando compare il primo sottotitolo, a 0,6 s. Se la registrazione ha silenzio all'inizio, usa `./monta.sh --voce-da 1.5` (secondi da saltare).
-- Il montaggio normalizza il volume (−16 LUFS). I sottotitoli restano anche con la voce: molti guardano senza audio.
+### R4 · le voci di Roberto e Mario
+
+- **Testi:** [`voce/COPIONE-VOCE.md`](voce/COPIONE-VOCE.md) ha il copione in ordine, le sezioni «Solo Roberto» e «Solo Mario» e, per ogni battuta, il nome del file. Un file per scena in `voce/NN-<scena>.txt`.
+- **Il modo più comodo:** una battuta per file, `girato/voce/NN-<scena>-K.m4a` (per esempio `girato/voce/06-chat-2.m4a` è la seconda battuta della chat, di Roberto). Ognuno registra da solo le sue battute, senza guardare il video: il montaggio toglie il silenzio, porta tutto allo stesso volume (−16 LUFS) e mette ogni battuta quando compare il suo sottotitolo. Se una battuta è più lunga del suo spazio, `monta.sh` lo dice.
+- Si può anche registrare una scena intera (`girato/voce/NN-<scena>.m4a`, guardando la clip muta `clip/NN-<scena>.mp4` con il suo `.srt`) o tutto il video in un file (`girato/voce.m4a`, guardando `bozza.mp4` senza audio; con silenzio all'inizio: `./monta.sh --voce-da 1.5`).
+- Stanza silenziosa e con tende o divani (meno eco), telefono a 20 cm dalla bocca, leggermente di lato, sempre lo stesso telefono per la stessa persona. Memo vocali di iPhone o Registratore di Android vanno bene; un microfono a clip è meglio.
+- I sottotitoli restano anche con la voce: molti guardano senza audio.
 
 ### Facoltativo · `girato/musica.mp3`
 
@@ -127,26 +170,30 @@ Solo musica **libera da diritti** (CC0 o fatta da noi), con la licenza scritta i
 
 | Nel video | Reale o simulato |
 |---|---|
-| Risposte di TwinCIRO nella chat ricostruita | **Vere**: uscite dall'API `/chiedi` di `c5-agentic-city`, con gli agenti a regole (`scene/chat_da_api.py`). Le stesse che TwinCIRO inoltra su WhatsApp con la skill `twinciro-citta` |
-| Ritocchi di forma nella chat | **Nessuno**: la chat del 14/11 pomeriggio è generata dall'API già corretta da `c5-agentic-city` (commit b32bcf6: chi parla nella controproposta, «Rotonda Diaz» senza il nome interno «(village)», accordi, Linea 6 senza «se attiva»). I testi sono quelli dell'API; le regole in `scene/chat_domande.json` restano come rete di sicurezza ma oggi non cambiano nulla, quindi in `chat.json` non c'è `testo_api`. La nota a schermo dice «testi così come escono dall'API» |
+| Regata 3D (scene 1 e 12) | **Simulazione** del gemello digitale su strade ed edifici veri (OpenStreetMap). Barche, percorso della regata e folla per zona sono ipotesi. Lo scenario «Napoli 2027» è un'ipotesi: l'America's Cup a Napoli nel 2027 è reale, la giornata con navi e partita è inventata |
+| Isole e muro delle fonti (scene 2 e 4) | **Reali**: le righe del catalogo `docs/fonti-dati-napoli.md` (58 righe, 56 fonti pubbliche), lette da `scene/fonti/catalogo.json`, con le icone ufficiali dei siti. «Oltre 50 fonti pubbliche, verificate una per una» vuol dire provate una per una (45 confermate, 11 da riprovare dalla rete italiana); non tutte hanno licenza aperta e non tutte sono collegate all'API (per scelta il video non lo quantifica: i punti di dati verso TwinCIRO partono solo da quelle collegate). Le presenze per zona non sono un dato pubblico |
+| Risposte di TwinCIRO nella chat ricostruita (scena 6) | **Vere**: uscite dall'API `/chiedi` di `c5-agentic-city`, con gli agenti a regole (`scene/chat_da_api.py`), senza ritocchi. Le stesse che TwinCIRO inoltra su WhatsApp con la skill `twinciro-citta` |
 | Negoziazione con la pizzeria, offerte, conferma | Il meccanismo è **vero** (agenti delle imprese sul bus). Le **imprese sono di fantasia** e i posti liberi sono simulati |
 | Messaggi «dietro le quinte» | **Veri**: il dialogo tra agenti stampato dalla città durante la stessa conversazione, senza ritocchi |
-| Meteo nella chat | **Reale**: Open-Meteo dal vivo (14/11, 18,9 °C, pioggia al massimo 18% nelle 6 ore successive) e allerta Meteoalarm (snapshot della mappa: arancione per temporali il 15/11, 07:00–18:59). La frase la compone lo script con quei dati, come farebbe la skill `napoli-citta-dati` (meteo e allerta dall'API dati città) |
-| Notifica di TwinCIRO sulla regata 3D | Lo stesso testo dell'avviso della chat (agente Turismo, simulazione) |
-| Folla per zona (chat, mappa, regata 3D) | **Simulata**: modello con ipotesi dichiarate. In produzione: presenze anonime e aggregate da rete mobile, il dato di Fastweb + Vodafone |
-| Mappa: meteo, aria, allerte, metro e funicolari, eventi, terremoti | **Reali**, alcuni da snapshot del 14/11. «Oltre 50 fonti pubbliche» è il catalogo verificato in `docs/fonti-dati-napoli.md` (58 righe, di cui 56 fonti pubbliche; non tutte con licenza aperta e non tutte integrate: 23 sono collegate all'API dati città): per questo il video dice «fonti pubbliche, verificate una per una» e non «aperte» |
-| Regata 3D e gemello SUMO | **Simulazione** su strade e edifici veri (OpenStreetMap). Domanda di traffico, barche e percorso della regata sono ipotesi |
-| −9% di ore in coda (riquadro dei benefici) | Media su 4 semi della simulazione (da −1% a −18%): `c5-agentic-city/README.md`, «Risultati del gemello» |
-| Sconti dal −10% al −30% | Regole delle imprese di fantasia (`c5-agentic-city/dati/imprese.json`) |
-| «Circa 1.900 persone spostate» | Stima dell'agente Turismo nella stessa simulazione della chat (~1.915; adesione del 6–12% secondo il livello, ipotesi in `turismo.py`) |
-| Badge WHY2025 e scheda Tasmota | **Dispositivi veri**, sull'hotspot e sul broker di `twinciro.robertodisanto.it`. Le loro letture compaiono nel video solo con le riprese R2 e R3. Senza riprese: riquadri con i due dispositivi e il formato unico dei messaggi (`napoli/sensori/...`, `napoli/nodi/.../stato`), solo segnaposto tra `< >`, nessun valore inventato. Il firmware del badge non è ancora provato su un badge vero, e il riquadro lo dice |
-| Scenario «Napoli 2027» | Ipotesi: l'America's Cup a Napoli nel 2027 è reale, la giornata con navi e partita è inventata |
+| Meteo nella chat | **Reale**: Open-Meteo dal vivo (14/11, 18,9 °C, pioggia al massimo 18% nelle 6 ore successive) e allerta Meteoalarm (arancione per temporali il 15/11, 07:00–18:59) |
+| Architettura (scena 7) | **Vera**: gli agenti, l'orchestratore, il bus `napoli/#`, la sala e il drone (pilota umano nel loop) sono quelli di `c5-agentic-city`; i sensori sono i due dispositivi di `firmware/` |
+| Grafo della città (scena 8) | Relazioni **ricavate dai file della repository** (`grafo/genera.mjs`, nessuna scritta a mano): luoghi, stazioni (GTFS) e fonti reali; eventi e flussi dello scenario simulato 2027; imprese di fantasia; presenze da rete mobile simulate. È una rappresentazione delle relazioni, non un database interrogato dagli agenti |
+| Napoli adesso (scena 9) | **Dati veri** dell'API dati città, catturati il 14/11/2026 alle 19:30 (`scene/oggi/`), ognuno con la sua fonte e il suo stato (reale, snapshot, programmato…); la risposta su Città della Scienza è il testo vero dell'API |
+| Operatore della Polizia Locale (scena 10) | Dashboard: la mappa «Napoli in tempo reale» in modalità demo (**folla simulata**, allerte, meteo ed eventi **veri**). Proposta D4 e sala nel terminale: la **città vera** (simulazione della giornata) con `--approvazione`, approvata davvero con `POST /operatore`; l'avviso che parte è identico a quello della chat. I pulsanti *Approva / Blocca* sono una scheda di presentazione delle due funzioni vere (nel progetto si approva da API o con `strumenti/operatore.py`) |
+| Badge WHY2025 e scheda Tasmota (scena 11) | **Dispositivi veri**, sull'hotspot e sul broker di `twinciro.robertodisanto.it`; firmware del badge e regole di Tasmota sono nostri. Le loro letture compaiono nel video solo con le riprese R2 e R3. Senza riprese: il cartello con i due dispositivi e il formato dei messaggi, solo segnaposto tra `< >`, nessun valore inventato, e la nota che le prove sui dispositivi veri sono in corso |
+| Notifica di TwinCIRO sulla regata 3D (scena 12) | Lo stesso testo dell'avviso della chat (agente Turismo, simulazione) |
+| Fastweb + Vodafone (scena 13) | **Fatti verificati**: Vodafone Analytics e gli studi Istat (2023 e MNO-MINDS, comunicato del 17/3/2026); Walter di DPTechnics (ESP32-S3 con modem LTE-M/NB-IoT e SIM integrata); FastwebMIIA-7B su Hugging Face (licenza non commerciale). «Può integrare»: l'adattatore della città è provato con server compatibili, non ancora con MIIA |
+| Folla per zona (chat, mappa, regata 3D, operatore) | **Simulata**: modello con ipotesi dichiarate. In produzione: presenze anonime e aggregate da rete mobile, il dato di Fastweb + Vodafone |
+| «≈ 1.900 persone spostate» (scena 14) | Stima dell'agente Turismo nella stessa simulazione della chat (~1.915; adesione del 6–12% secondo il livello, ipotesi in `turismo.py`) |
+| Sconti 10–30% (scena 14) | Regole delle imprese di fantasia (`c5-agentic-city/dati/imprese.json`) |
+| −9% di ore in coda (scena 14) | Media su 4 semi della simulazione SUMO (da −1% a −18%): `c5-agentic-city/README.md`, «Risultati del gemello» |
 
 ## Controlli prima di consegnare
 
 - [ ] `./monta.sh --controllo` e scorri i fotogrammi in `$C5_VIDEO_LAVORO/controllo/` (uno ogni 5 s): niente segnaposto, testi leggibili, nessun refuso.
 - [ ] Durata ≤ 3:00 e file ≤ 40 MB: li stampa `monta.sh` alla fine.
+- [ ] `./monta.sh --solo-testi` non segnala niente (sovrapposizioni, battute fuori scena, ritmo).
 - [ ] Guardalo una volta intero con l'audio e una senza.
 - [ ] Nessun numero di telefono, token o password visibile nelle riprese.
 - [ ] Se la voce dice qualcosa di diverso, aggiorna `scene/scaletta.json`: i sottotitoli vengono da lì.
-- [ ] Meteo coerente: la chat dice «niente pioggia» con il dato di Open-Meteo; se la mappa registrata mostra pioggia (succede quando Open-Meteo dà 429 e risponde MET Norway), rigenera la mappa (`./monta.sh --rigenera-mappa`) o la chat (`python3 scene/chat_da_api.py`) nello stesso momento.
+- [ ] Se si rifà la cattura di «Napoli adesso» (scena 9), rileggi la battuta dell'allerta; se si rigenera la chat (`python3 scene/chat_da_api.py`), rifai anche la cattura della città dell'operatore (`scene/operatore/cattura_citta.py`), che controlla che l'avviso sia lo stesso.

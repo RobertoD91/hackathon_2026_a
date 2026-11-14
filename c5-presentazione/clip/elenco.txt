@@ -1,0 +1,17 @@
+# Clip del video di TwinCIRO in ordine (scritto da monta.sh, che lo usa per togliere le clip vecchie).
+# Per unirle: ffmpeg -f concat -safe 0 -i elenco.txt -c copy prova.mp4
+file '01-regata.mp4'
+file '02-motivazione.mp4'
+file '03-titolo.mp4'
+file '04-fonti.mp4'
+file '05-utenti.mp4'
+file '06-chat.mp4'
+file '07-architettura.mp4'
+file '08-grafo.mp4'
+file '09-adesso.mp4'
+file '10-operatore.mp4'
+file '11-sensori.mp4'
+file '12-gemello.mp4'
+file '13-fastweb.mp4'
+file '14-benefici.mp4'
+file '15-chiusura.mp4'

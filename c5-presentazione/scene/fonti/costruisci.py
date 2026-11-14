@@ -7,9 +7,9 @@ aggiunge solo ciò che serve a schermo: un nome breve, il sito ufficiale (per l'
 la fonte è pubblica. Ogni riga del documento deve avere la sua voce qui sotto, e viceversa: se il documento
 cambia, lo script si ferma e dice cosa manca.
 
-  python3 -I costruisci.py                 # rigenera catalogo.json (tiene le icone già scaricate)
-  python3 -I costruisci.py --loghi         # scarica di nuovo le icone ufficiali dei siti in loghi/
-  python3 -I costruisci.py --loghi --solo anm,istat   # solo alcuni siti (chiavi di SITI)
+  PYTHONDONTWRITEBYTECODE=1 python3 costruisci.py                 # rigenera catalogo.json (tiene le icone già scaricate)
+  PYTHONDONTWRITEBYTECODE=1 python3 costruisci.py --loghi         # scarica di nuovo le icone ufficiali dei siti in loghi/
+  PYTHONDONTWRITEBYTECODE=1 python3 costruisci.py --loghi --solo anm,istat   # solo alcuni siti (chiavi di SITI)
 
 Le icone vengono dai siti stessi (apple-touch-icon, icona più grande dichiarata nella pagina o nel manifest,
 favicon; per i siti che reindirizzano in JavaScript o fanno una verifica anti-bot, la pagina aperta in Chromium):

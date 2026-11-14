@@ -1,0 +1,175 @@
+1
+00:00:00,600 --> 00:00:03,000
+Napoli, 2027.
+
+2
+00:00:03,200 --> 00:00:07,700
+Un sabato: America's Cup, navi da
+crociera e partita al Maradona.
+
+3
+00:00:08,300 --> 00:00:12,300
+I dati ci sono. Ma sono
+sparsi, e non si parlano.
+
+4
+00:00:13,000 --> 00:00:18,700
+E manca il dato più importante: quante
+persone ci sono, adesso, in ogni zona.
+
+5
+00:00:19,300 --> 00:00:22,800
+TwinCIRO: City Intelligence
+and Responsive Orchestration.
+
+6
+00:00:23,000 --> 00:00:25,700
+Il gemello di Napoli, che ci pensa.
+
+7
+00:00:26,300 --> 00:00:30,100
+Oltre cinquanta fonti pubbliche,
+verificate una per una.
+
+8
+00:00:30,300 --> 00:00:33,800
+Un catalogo unico: licenza
+e stato di ogni fonte.
+
+9
+00:00:34,200 --> 00:00:37,800
+Due utenti: chi visita
+Napoli, e chi la governa.
+
+10
+00:00:38,500 --> 00:00:42,100
+Marta, in crociera, scrive
+a TwinCIRO come a un amico.
+
+11
+00:00:42,300 --> 00:00:47,100
+TwinCIRO chiede alla pizzeria:
+alle 13 è piena, propone le 14.
+
+12
+00:00:47,400 --> 00:00:51,600
+Marta dice «ok»: tavolo
+prenotato, nessuna telefonata.
+
+13
+00:00:53,600 --> 00:00:58,400
+Poi TwinCIRO le dice come arrivare
+alla regata, e quanta gente c'è.
+
+14
+00:01:00,600 --> 00:01:04,400
+Per il meteo usa dati veri,
+e cita sempre la fonte.
+
+15
+00:01:06,600 --> 00:01:13,600
+E quando la Rotonda Diaz si riempie, è TwinCIRO a scrivere
+per primo: c'è un posto più tranquillo, con un'offerta.
+
+16
+00:01:18,300 --> 00:01:23,800
+Dietro TwinCIRO c'è un sistema multi-agente:
+agenti specializzati e un orchestratore.
+
+17
+00:01:24,000 --> 00:01:28,800
+Si parlano su MQTT, con le fonti
+pubbliche e i sensori fatti da noi.
+
+18
+00:01:29,300 --> 00:01:33,400
+Così TwinCIRO vede la città:
+luoghi, eventi, flussi, stazioni.
+
+19
+00:01:33,700 --> 00:01:37,700
+Poi agenti, sensori e fonti:
+la rete con cui decidono.
+
+20
+00:01:38,300 --> 00:01:42,400
+Questa è Napoli adesso: dati
+veri, ognuno con la sua fonte.
+
+21
+00:01:42,600 --> 00:01:46,200
+Domani, in Campania, allerta
+arancione per temporali.
+
+22
+00:01:46,400 --> 00:01:51,600
+Chiedi come arrivare a Città della Scienza:
+TwinCIRO ti dà la prossima Cumana.
+
+23
+00:01:52,300 --> 00:01:56,500
+E la Polizia Locale vede
+folla, allerte e decisioni.
+
+24
+00:01:56,800 --> 00:02:01,000
+Gli agenti propongono:
+l'operatore approva, o blocca.
+
+25
+00:02:01,300 --> 00:02:05,700
+Nel terminale della sala, la stessa
+decisione: l'avviso è partito.
+
+26
+00:02:06,300 --> 00:02:10,400
+Sensori fatti da noi:
+badge WHY2025 e Tasmota.
+
+27
+00:02:10,700 --> 00:02:13,800
+Oggi in Wi-Fi, domani con una SIM IoT.
+
+28
+00:02:14,300 --> 00:02:18,300
+Il gemello digitale prova la
+giornata sulle strade vere.
+
+29
+00:02:18,600 --> 00:02:22,600
+E mostra quante persone
+sposta un avviso di TwinCIRO.
+
+30
+00:02:23,300 --> 00:02:28,000
+Con Fastweb e Vodafone la folla
+non si simula più: si misura.
+
+31
+00:02:28,300 --> 00:02:32,400
+Con le loro SIM IoT, i sensori
+si mettono dove servono.
+
+32
+00:02:32,700 --> 00:02:38,600
+E TwinCIRO può integrare MIIA, l'AI italiana
+di Fastweb: dati in Italia, sovranità digitale.
+
+33
+00:02:39,300 --> 00:02:44,100
+Nella simulazione, un avviso sposta
+circa millenovecento persone.
+
+34
+00:02:44,400 --> 00:02:49,700
+Perché Napoli? Nessuna app nuova, i dati
+ci sono già, e si parte da un quartiere.
+
+35
+00:02:50,400 --> 00:02:53,000
+TwinCIRO. Napoli che ci pensa.
+
+36
+00:02:53,300 --> 00:02:56,300
+Scrivi a TwinCIRO su WhatsApp.
+
