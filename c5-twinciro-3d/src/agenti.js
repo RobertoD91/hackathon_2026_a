@@ -297,10 +297,11 @@ export async function rispondi(testo, ctx) {
       dice('eventi', ev.length ? `A destinazione: ${ev.map(descriviEvento).join('; ')}.` : `Nessun grande evento a ${nomeLuogo(a)} nelle prossime ore.`);
       const met = agenteMeteo(ctx, ts);
       dice('meteo', met.testo);
-      if (mob.percorso) azioni.push({ tipo: 'percorso', percorso: mob.percorso, da, a });
+      if (mob.percorso) azioni.push({ tipo: 'percorso', percorso: mob.percorso, da, a, fonte: mob.fonte });
       else azioni.push({ tipo: 'seleziona', zona: a });
       const partendo = Math.abs(ts - ctx.adesso) > 20 * 60_000 ? `Partendo ${quando(ts, ctx.adesso)}, da` : 'Da';
-      let risposta = mob.percorso ? `${partendo} ${nomeLuogo(da)} a ${nomeLuogo(a)} ci vogliono ${mob.percorso.minuti} minuti: ${descriviPercorso(mob.percorso)}. Arrivi alle ${hh(mob.percorso.arrivo)}.` : mob.testo;
+      const riassunto = (p) => (p.soloPiedi ? 'si va a piedi' : `${p.linee.map(etichettaLinea).join(', poi ')}${p.tratte[0].modo === 'piedi' && p.tratte[1] ? ` da ${p.tratte[1].da.nome}` : ''}`);
+      let risposta = mob.percorso ? `${partendo} ${nomeLuogo(da)} a ${nomeLuogo(a)} ci vogliono ${mob.percorso.minuti} minuti: ${riassunto(mob.percorso)}. Arrivi alle ${hh(mob.percorso.arrivo)}.` : mob.testo;
       risposta += ` ${nomeLuogo(a)} sarà ${f.stima.etichetta.toLowerCase()} (${soglia(f.stima.quota)})`;
       risposta += ev.length ? `, attenzione: ${ev[0].titolo}.` : '.';
       if (alt.length) risposta += ` Se vuoi evitare la folla: ${nomeLuogo(alt[0].zona)}.`;

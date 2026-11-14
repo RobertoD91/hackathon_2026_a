@@ -377,10 +377,15 @@ export function rendiOperatore(s) {
   const base = attivo ? s.modelloBase.indicatori(da, 48) : null;
   const sc = s.scenario || {};
   const righe = ind.dettaglio.slice(0, 8);
-  const confronto = (nome, ora, prima, formato = num, meglioSeMeno = true) => {
-    const d = prima == null ? 0 : ora - prima;
-    const classe = !d ? '' : (d < 0) === meglioSeMeno ? 'meglio' : 'peggio';
-    return `<div class="indicatore ${classe}"><span>${nome}</span><b>${formato(ora)}</b>${prima != null ? `<small>${d ? `${d > 0 ? '+' : '−'}${formato(Math.abs(d))} rispetto a ${formato(prima)}` : 'come senza scenario'}</small>` : '<small>situazione reale</small>'}</div>`;
+  // con le misure accese il confronto che conta è "con e senza misure"; altrimenti scenario contro realtà
+  const senza = attivo && s.modelloSenzaMisure ? s.modelloSenzaMisure.indicatori(da, 48) : null;
+  const confronto = (nome, chiave, formato = num) => {
+    const ora = ind[chiave];
+    const rif = senza ? senza[chiave] : base?.[chiave];
+    const d = rif == null ? 0 : ora - rif;
+    const classe = !d ? '' : d < 0 ? 'meglio' : 'peggio';
+    const riga = rif == null ? 'situazione reale' : d ? `${d > 0 ? '+' : '−'}${formato(Math.abs(d))} rispetto a ${formato(rif)} ${senza ? 'senza misure' : 'reali'}` : senza ? 'come senza misure' : 'come senza scenario';
+    return `<div class="indicatore ${classe}"><span>${nome}</span><b>${formato(ora)}</b><small>${riga}</small>${senza && base ? `<small class="secondo">situazione reale: ${formato(base[chiave])}</small>` : ''}</div>`;
   };
   const giorni = [0, 1, 2].map((i) => ({ i, nome: maiuscola(giornoParlato(s.adesso + i * GIORNO, s.adesso)) }));
   const pioggia = sc.pioggia ? Math.round((sc.pioggia.da - N.inizioGiorno(N.giornoLocale(s.adesso))) / ORA) : '';
@@ -392,9 +397,9 @@ export function rendiOperatore(s) {
     <section>
       <h3>Indicatori, prossime 48 ore ${attivo ? tag('whatif', 'scenario') : tag('reale', 'previsione')}</h3>
       <div class="indicatori">
-        ${confronto('Luoghi critici', ind.luoghiCritici, base?.luoghiCritici)}
-        ${confronto('Ore sopra soglia', ind.oreCritiche, base?.oreCritiche)}
-        ${confronto('Persone oltre soglia', ind.eccesso, base?.eccesso, corto)}
+        ${confronto('Luoghi critici', 'luoghiCritici')}
+        ${confronto('Ore sopra soglia', 'oreCritiche')}
+        ${confronto('Persone oltre soglia', 'eccesso', corto)}
       </div>
       <p class="nota">“Persone oltre soglia” somma, ora per ora, chi eccede la soglia “affollato”: misura quanta pressione c’è, non solo dove.</p>
     </section>
@@ -471,11 +476,27 @@ export function passoAgente(p) {
   return `<li><i style="background:${a.colore}"></i><b>${esc(a.nome)}</b><span>${esc(p.testo)}</span></li>`;
 }
 
+const MEZZI = { metro: 'Metro', funicolare: 'Funicolare', treno: 'Treno', bus: 'Bus', tram: 'Tram', traghetto: 'Traghetto', mezzo: 'Mezzo' };
+
+/** Itinerario in forma di schema: una riga per tratta, con il colore della linea. */
+export function rendiItinerario(p, fonte) {
+  const righe = p.tratte
+    .map((t, i) => {
+      if (t.modo === 'piedi') return `<li class="a-piedi"><i></i><b>A piedi ${t.minuti} min</b><small>${i === p.tratte.length - 1 ? 'fino a destinazione' : `fino a ${esc(t.a.nome)}`}${t.metri ? ` · ${num(t.metri)} m` : ''}</small></li>`;
+      return `<li style="--c:${esc(t.colore || '#38bdf8')}"><i></i><b><span class="linea" style="--c:${esc(t.colore || '#38bdf8')}">${esc(t.linea || MEZZI[t.modo])}</span>${esc(MEZZI[t.modo] || 'Mezzo')}${t.verso ? ` verso ${esc(t.verso)}` : ''} · ${t.minuti} min</b><small>${esc(t.da.nome)} → ${esc(t.a.nome)} · ${t.fermate} ${t.fermate === 1 ? 'fermata' : 'fermate'}${t.partenza ? ` · parte alle ${N.oraBreve(t.partenza)}` : ''} ${t.tempoReale ? tag('reale', 'tempo reale') : ''}${t.indicativa ? tag('ipotesi', 'indicativo') : ''}</small></li>`;
+    })
+    .join('');
+  return `<ol class="itinerario">${righe}</ol>
+    <p class="itinerario-fine"><b>${p.minuti} min</b> · partenza ${N.oraBreve(p.partenza)} · arrivo ${N.oraBreve(p.arrivo)} ${fonte === 'transitous' ? tag('reale', 'Transitous, dal vivo') : tag('ipotesi', 'orari GTFS, motore di riserva')}</p>`;
+}
+
 export function messaggioCiro(r) {
   const agenti = [...new Set(r.passi.map((p) => p.agente))];
+  const viaggio = r.azioni?.find((a) => a.tipo === 'percorso');
   return `<li class="msg msg-ciro">
     <div class="msg-agenti">${agenti.map((a) => `<span style="--c:${AGENTI[a]?.colore || '#94a3b8'}">${esc(AGENTI[a]?.nome || a)}</span>`).join('')}</div>
     <p>${esc(r.testo)}</p>
+    ${viaggio ? rendiItinerario(viaggio.percorso, viaggio.fonte) : ''}
     <details class="traccia"><summary>Come hanno lavorato gli agenti (${r.passi.length} passaggi)</summary><ol>${r.passi.map(passoAgente).join('')}</ol></details>
     ${r.azioni?.some((a) => a.tipo === 'percorso') ? '<button type="button" class="collegamento" data-azione="togli-percorso">Togli il percorso dalla mappa</button>' : ''}
   </li>`;

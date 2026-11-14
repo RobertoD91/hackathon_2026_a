@@ -13,7 +13,7 @@ Challenge 05 Fastweb + Vodafone, *"Napoli Agentic City: la città che Ci pensa"*
 | **Osservare** | 26 luoghi di Napoli come colonne 3D: altezza = persone stimate, colore = livello (tranquillo, normale, un po' affollato, affollato), anello = soglia del luogo scelto. Oppure la vista **Celle**: 2.512 esagoni con le presenze per cella, come nei dati aggregati delle reti mobili. Metro, funicolari e treni, grandi eventi, flussi pedonali animati. |
 | **Chiedere** | **CiroGPT** in chat: *"Sono appena arrivato al Porto: come raggiungo Fuorigrotta?"*. L'orchestratore passa la domanda a Mobilità, Folla, Eventi e Meteo; il percorso compare sulla mappa 3D e si vede chi ha detto cosa. |
 | **Prevedere** | Linea del tempo da ieri a +48 ore, con riproduzione. Scheda del luogo con le barre ora per ora, il picco previsto, chi c'è (residenti, pendolari, turisti) e come nasce la stima. |
-| **Simulare** | **Sala operativa**: criticità previste per luogo e per ora, indicatori a 48 ore, scenari what-if (nuovo evento, linea chiusa, pioggia forte, navi da crociera) e misure degli agenti (diversione dei flussi, ingressi scaglionati, navette), con il confronto prima/dopo. |
+| **Simulare** | **Sala operativa**: criticità previste per luogo e per ora, indicatori a 48 ore, scenari what-if (nuovo evento, linea chiusa, pioggia forte, navi da crociera) e misure degli agenti (diversione dei flussi, ingressi scaglionati, navette). Gli indicatori dicono quanto pesa lo scenario e quanto aiutano le misure (con e senza). |
 
 Le due domande del brief funzionano sui **dati reali di questi giorni**: per domenica 15/11 il calendario del Comune ha davvero due grandi eventi (Tri Gold Caracciolo sul Lungomare e Viva la Strada a Parco San Laise), e il percorso Porto → Fuorigrotta arriva dal pianificatore dal vivo (a piedi fino a Municipio, poi Linea 6).
 
@@ -31,6 +31,10 @@ cd c5-twinciro-3d && npm test
 
 27 test (modello, rete, percorsi, agenti, celle), senza rete e senza dipendenze.
 
+### Giro guidato (per il video)
+
+Il pulsante **Giro guidato** in alto fa presentare il gemello da solo in circa un minuto e mezzo, con una didascalia per passo: osservare (colonne, scheda, celle), chiedere (percorso Porto → Fuorigrotta), prevedere (eventi di domani, linea del tempo che scorre), simulare (concerto al Plebiscito, poi la diversione dei flussi). Si ferma con Esc. Per registrarlo sempre uguale: `?giro&adesso=2026-11-14T15:30`.
+
 ### Link diretti
 
 CiroGPT su WhatsApp può rispondere con un link che apre il gemello sul punto giusto:
@@ -42,6 +46,7 @@ CiroGPT su WhatsApp può rispondere con un link che apre il gemello sul punto gi
 | `domanda` | `?domanda=come arrivo al Maradona?` | fa la domanda a CiroGPT all'apertura |
 | `vista`, `scheda`, `camera` | `?vista=celle&scheda=operatore&camera=vesuvio` | celle, sala operativa, vista della camera |
 | `adesso` | `?adesso=2026-11-14T15:30` | blocca "adesso": utile per registrare il video |
+| `giro` | `?giro` | fa partire da solo il giro guidato |
 | `rilievo=0`, `prova` | | senza rilievo (dispositivi lenti); senza animazioni (test automatici) |
 
 ## Cosa è reale e cosa è simulato

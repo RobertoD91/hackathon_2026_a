@@ -7,6 +7,7 @@
 //   ?domanda=come arrivo al Maradona?  fa la domanda a CiroGPT all'apertura
 //   ?vista=celle  ?scheda=operatore  ?camera=vesuvio
 //   ?adesso=2026-11-14T15:30   blocca "adesso" (per registrare il video o ripetere una prova)
+//   ?giro                      parte da solo il giro guidato (un minuto e mezzo, con didascalie)
 //   ?rilievo=0                 senza rilievo (dispositivi lenti)   ?prova  senza animazioni (test automatici)
 
 import { LUOGHI3D } from './luoghi3d.js';
@@ -32,6 +33,7 @@ const s = {
   griglia: null,
   modelloBase: null,
   modello: null,
+  modelloSenzaMisure: null,
   scenario: null,
   adesso: ora(),
   ts: ora(),
@@ -150,6 +152,9 @@ function mostraScheda(nome, ridisegna = true) {
 function impostaScenario(sc) {
   s.scenario = UI.scenarioAttivo(sc) ? sc : null;
   s.modello = s.scenario ? creaModello(contestoModello, s.scenario) : s.modelloBase;
+  // lo stesso scenario senza le misure degli agenti: serve a dire quanto aiutano
+  const conMisure = s.scenario && Object.values(s.scenario.misure || {}).some(Boolean);
+  s.modelloSenzaMisure = conMisure ? creaModello(contestoModello, { ...s.scenario, misure: {} }) : null;
   aggiorna({ tempo: true });
 }
 
@@ -263,6 +268,99 @@ async function mostraPassaggi(idStazione) {
   lista.innerHTML = '<li class="vuoto">Chiedo a Transitous…</li>';
   const r = await F.passaggi(st, { n: 5 });
   lista.innerHTML = UI.rendiPassaggi(r.dati, r.fonte.tipo === 'assente' ? `Non disponibile: ${r.fonte.nota}` : '');
+}
+
+// ------------------------------------------------------------------ giro dimostrativo
+
+let giroAttivo = false;
+const attendi = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Giro dimostrativo: un minuto e mezzo che mostra da solo le quattro cose che fa il gemello
+ * (osservare, chiedere, prevedere, simulare), con una didascalia per passo. Serve a registrare il video
+ * di consegna e a presentare il progetto senza mani. Si ferma con Esc o con lo stesso pulsante.
+ */
+async function giro() {
+  if (giroAttivo) return void (giroAttivo = false);
+  giroAttivo = true;
+  document.body.classList.add('in-giro');
+  $('btn-giro').textContent = 'Ferma il giro';
+  const dida = $('didascalia');
+  const passo = async (testo, ms, fai) => {
+    if (!giroAttivo) throw new Error('fermato');
+    dida.innerHTML = testo;
+    dida.hidden = false;
+    await fai?.();
+    for (let t = 0; t < ms && giroAttivo; t += 200) await attendi(200);
+    if (!giroAttivo) throw new Error('fermato');
+  };
+  const domani = inizioOggi() + GIORNO;
+  try {
+    impostaScenario(null);
+    riproduci(false);
+    seleziona(null);
+    impostaOra(s.adesso, { vivo: true });
+    impostaVista('luoghi');
+    mostraScheda('luogo');
+    await passo('<b>Osservare.</b> Napoli adesso, in 3D: ogni colonna è un luogo, l’altezza sono le persone stimate, il colore è l’affollamento.', 7000, () => {
+      mappa.volaA('golfo');
+      s.orbita = true;
+      mappa.orbita(true);
+      aggiornaStrumenti();
+    });
+    await passo('Ogni luogo ha la sua scheda: quante persone ci sono, il picco previsto ora per ora, chi c’è e come nasce la stima.', 8000, () => {
+      mappa.orbita(false);
+      s.orbita = false;
+      aggiornaStrumenti();
+      seleziona(s.modello.sintesi(s.ts).classifica[0].zona);
+    });
+    await passo('La stessa città come la vede una rete mobile: presenze per cella, aggregate e anonime.', 7000, () => {
+      seleziona(null, { vola: false });
+      impostaVista('celle');
+      mappa.volaA('golfo');
+    });
+    await passo('<b>Chiedere.</b> Un turista scrive a CiroGPT. L’orchestratore passa la domanda agli agenti Mobilità, Folla, Eventi e Meteo.', 9000, async () => {
+      impostaVista('luoghi');
+      await chiedi('Sono appena arrivato al Porto: come raggiungo Fuorigrotta?');
+    });
+    await passo('<b>Prevedere.</b> La sala operativa chiede cosa succederà domani con i grandi eventi: aree critiche, flussi, misure.', 11000, async () => {
+      s.percorso = null;
+      mappa.mostraPercorso(null);
+      await chiedi('Domani ci sono grandi eventi: come evolvono i flussi e quali aree saranno critiche?');
+    });
+    await passo('La linea del tempo scorre da ieri alle prossime 48 ore: le colonne crescono e calano con la città.', 9000, () => {
+      mappa.evidenzia([]);
+      mappa.volaA('golfo');
+      impostaOra(domani + 7 * ORA);
+      riproduci(true);
+    });
+    await passo('<b>Simulare.</b> E se domani sera ci fosse un concerto al Plebiscito con 20 mila persone?', 8000, () => {
+      riproduci(false);
+      mostraScheda('operatore');
+      predefinito('concerto');
+    });
+    await passo('Gli agenti propongono una misura: diversione dei flussi verso i luoghi vicini più liberi. Gli indicatori dicono quanto aiuta.', 8000, () => {
+      const sc = copiaScenario();
+      sc.misure.diversione = true;
+      impostaScenario(sc);
+    });
+    await passo('<b>TwinCiro 3D.</b> Osservare, chiedere, prevedere, simulare: Napoli che ci pensa.', 6000, () => {
+      impostaScenario(null);
+      seleziona(null, { vola: false });
+      mostraScheda('luogo');
+      impostaOra(s.adesso, { vivo: true });
+      mappa.volaA('vesuvio');
+    });
+  } catch {
+    riproduci(false);
+  }
+  giroAttivo = false;
+  mappa.orbita(false);
+  s.orbita = false;
+  aggiornaStrumenti();
+  dida.hidden = true;
+  document.body.classList.remove('in-giro');
+  $('btn-giro').textContent = 'Giro guidato';
 }
 
 // ------------------------------------------------------------------ eventi dell'interfaccia
@@ -403,6 +501,10 @@ function collega() {
     $('fonti').innerHTML = UI.rendiFonti(s);
     $('fonti').showModal();
   });
+  $('btn-giro').addEventListener('click', () => void giro());
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && giroAttivo) giroAttivo = false;
+  });
   $('btn-luoghi').addEventListener('click', () => {
     const aperto = $('sinistra').classList.toggle('aperto');
     $('btn-luoghi').setAttribute('aria-expanded', String(aperto));
@@ -456,7 +558,7 @@ async function avvia() {
     catturabile: PROVA,
     vista: parametri.get('camera') || 'golfo',
   });
-  window.twinciro = { stato: s, mappa, chiedi, impostaOra, seleziona, impostaScenario }; // per le prove e per chi vuole curiosare dalla console
+  window.twinciro = { stato: s, mappa, chiedi, impostaOra, seleziona, impostaScenario, giro }; // per le prove e per chi vuole curiosare dalla console
 
   $('categorie').innerHTML = UI.rendiCategorie(s.categoria);
   $('spunti').innerHTML = UI.rendiSpunti(SUGGERIMENTI_BASE);
@@ -481,6 +583,7 @@ async function avvia() {
     setTimeout(() => $('caricamento').remove(), 700);
     const domanda = parametri.get('domanda');
     if (domanda) chiedi(domanda).finally(() => (window.rispostaPronta = true));
+    else if (parametri.has('giro')) setTimeout(() => void giro(), 1500);
     mappa.map.once('idle', () => (window.pronto = true));
   });
 
