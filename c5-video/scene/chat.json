@@ -1,6 +1,6 @@
 {
   "generato": {
-    "quando": "2026-11-14T13:49:25",
+    "quando": "2026-11-14T14:51:18",
     "come": "scene/chat_da_api.py: messaggi veri all'API /chiedi di c5-agentic-city (LLM a regole, senza SUMO) e meteo da Open-Meteo. Ritocchi di forma da chat_domande.json: il testo originale dell'API resta in 'testo_api'. Puoi ritoccare i testi a mano: il renderer legge solo questo file.",
     "api": "c5-agentic-city/avvia.py --llm regole --senza-gemello --inizio 12:10 --velocita 30",
     "nota": "Folla, offerte e imprese sono SIMULATE (imprese di fantasia); il meteo è reale."
@@ -23,7 +23,7 @@
       "id": 2,
       "da": "ciro",
       "ora": "12:10",
-      "testo": "La Pizzeria 'O Scoglio alle 13:00 è piena, ma alle 14:00 ha posto per 4. Confermo? Per arrivare: a piedi da via Acton e via Partenope (15 minuti). Adesso a Castel dell'Ovo l'affollamento è basso.",
+      "testo": "Pizzeria 'O Scoglio alle 13:00 non ha posto, ma vi propone le 14:00 per 4. Prenoto? Per arrivare: a piedi da via Acton e via Partenope (15 minuti). Al Castel dell'Ovo c'è poca gente (stima della città simulata).",
       "fonte": "API della città /chiedi (agenti, LLM a regole)",
       "dietro_le_quinte": [
         {
@@ -48,8 +48,7 @@
       "etichetta": {
         "titolo": "Negozia con le imprese",
         "sotto": "CiroGPT chiede all'API della città: l'agente della pizzeria è pieno alle 13:00 e fa una controproposta."
-      },
-      "testo_api": "Alle 13:00 siamo pieni. Alle 14:00 c'è posto per 4. Confermo? Per arrivare: a piedi da via Acton e via Partenope (15 minuti). Adesso a Castel dell'Ovo l'affollamento è basso."
+      }
     },
     {
       "id": 3,
@@ -94,22 +93,20 @@
       "id": 6,
       "da": "ciro",
       "ora": "12:11",
-      "testo": "Per arrivare: a piedi lungo via Partenope e via Caracciolo (25 minuti), oppure con la Linea 6 della metro. Adesso alla Rotonda Diaz l'affollamento è basso.",
+      "testo": "Per arrivare: Linea 6 da Municipio a San Pasquale e poi 5 minuti a piedi, oppure a piedi lungo via Partenope e via Caracciolo (25 minuti). A Rotonda Diaz c'è poca gente (stima della città simulata).",
       "fonte": "API della città /chiedi (agenti, LLM a regole)",
       "dietro_le_quinte": [
         {
           "ora": "12:11",
           "da": "Folla",
           "a": "CiroGPT",
-          "testo": "Rotonda Diaz: 3.377 persone, livello basso (stima simulata, letta dal bus)",
-          "testo_api": "Rotonda Diaz (village): 3.377 persone, livello basso (stima simulata, letta dal bus)"
+          "testo": "Rotonda Diaz: 3.377 persone, livello basso (stima simulata, letta dal bus)"
         }
       ],
       "etichetta": {
         "titolo": "Ti porta dove serve",
         "sotto": "Percorso e affollamento della zona, adesso, dagli agenti della città."
-      },
-      "testo_api": "Per arrivare: a piedi lungo via Partenope e via Caracciolo (25 minuti), oppure Linea 6 della metro se attiva. Adesso a Rotonda Diaz (village) l'affollamento è basso."
+      }
     },
     {
       "id": 7,
@@ -125,8 +122,8 @@
       "id": 8,
       "da": "ciro",
       "ora": "12:11",
-      "testo": "No, niente pioggia nelle prossime ore (probabilità massima 20%). Adesso 19 °C, quasi sereno, vento 11 km/h. Fonte: Open-Meteo, dato reale di oggi. Domani però allerta arancione per temporali in Campania (Meteoalarm).",
-      "fonte": "Open-Meteo (live, 2026-11-14T14:30) + Meteoalarm (snapshot della mappa); testo composto dallo script",
+      "testo": "No, niente pioggia nelle prossime ore (probabilità massima 18%). Adesso 19 °C, quasi sereno, vento 10 km/h. Fonte: Open-Meteo, dato reale di oggi. Domani però allerta arancione per temporali in Campania (Meteoalarm).",
+      "fonte": "Open-Meteo (live, 2026-11-14T15:45) + Meteoalarm (snapshot della mappa); testo composto dallo script",
       "dietro_le_quinte": [
         {
           "ora": "12:11",
@@ -138,7 +135,7 @@
           "ora": "12:11",
           "da": "Open-Meteo",
           "a": "CiroGPT",
-          "testo": "19,2 °C, quasi sereno, vento 11,0 km/h, pioggia al massimo 20% nelle prossime 6 ore (dato reale)"
+          "testo": "18,9 °C, quasi sereno, vento 10,2 km/h, pioggia al massimo 18% nelle prossime 6 ore (dato reale)"
         },
         {
           "ora": "12:11",
@@ -157,43 +154,38 @@
       "da": "ciro",
       "tipo": "avviso",
       "ora": "14:41",
-      "testo": "📣 Alla Rotonda Diaz c'è il pienone: in questo momento Piazza del Plebiscito e Palazzo Reale sono molto più tranquilli. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto.",
+      "testo": "📣 C'è il pienone a Rotonda Diaz: adesso si sta molto più tranquilli in Piazza del Plebiscito e a Palazzo Reale. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto.",
       "fonte": "API della città /notifiche (agente Turismo, regole)",
       "dietro_le_quinte": [
         {
           "ora": "14:31",
           "da": "Orchestratore",
           "a": "Tutti",
-          "testo": "[D3] Mergellina risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire. Rotonda Diaz risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire",
-          "testo_api": "[D3] Mergellina risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire. Rotonda Diaz (village) risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire"
+          "testo": "[D3] Mergellina risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire. Rotonda Diaz risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire"
         },
         {
           "ora": "14:31",
           "da": "Orchestratore",
           "a": "Pilota drone",
-          "testo": "Puoi fare un volo di verifica sull'affluenza alla Rotonda Diaz?",
-          "testo_api": "Puoi fare un volo di verifica? verifica affluenza a Rotonda Diaz (village)"
+          "testo": "Puoi fare un volo di verifica a Rotonda Diaz? Il motivo: celle e sensori danno affollamento alto. Mi serve una conferma prima di spostare la gente."
         },
         {
           "ora": "14:41",
           "da": "Orchestratore",
           "a": "Tutti",
-          "testo": "[D4] Mergellina alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Rotonda Diaz alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Castel dell'Ovo risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire",
-          "testo_api": "[D4] Mergellina alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Rotonda Diaz (village) alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Castel dell'Ovo risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire"
+          "testo": "[D4] Mergellina alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Rotonda Diaz alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Castel dell'Ovo risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire"
         },
         {
           "ora": "14:41",
           "da": "Turismo",
           "a": "Assistenti",
-          "testo": "Avviso per chi è alla Rotonda Diaz: Alla Rotonda Diaz c'è il pienone: in questo momento Piazza del Plebiscito e Palazzo Reale sono molto più tranquilli. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto. (stimo ~1.915 persone spostate verso Piazza Vittoria)",
-          "testo_api": "Avviso per chi è a Rotonda Diaz (village): A Rotonda Diaz (village) c'è il pienone: in questo momento Piazza del Plebiscito e Palazzo Reale è molto più tranquillo. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto. (stimo ~1.915 persone spostate verso Piazza Vittoria)"
+          "testo": "Avviso per chi è a Rotonda Diaz: C'è il pienone a Rotonda Diaz: adesso si sta molto più tranquilli in Piazza del Plebiscito e a Palazzo Reale. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto. (stimo ~1.915 persone spostate a Piazza Vittoria)"
         }
       ],
       "etichetta": {
         "titolo": "Ti avvisa prima del problema",
         "sotto": "Folla e Orchestratore vedono il pienone; Turismo propone un'alternativa con l'offerta di un'impresa."
-      },
-      "testo_api": "📣 A Rotonda Diaz (village) c'è il pienone: in questo momento Piazza del Plebiscito e Palazzo Reale è molto più tranquillo. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto."
+      }
     }
   ]
 }

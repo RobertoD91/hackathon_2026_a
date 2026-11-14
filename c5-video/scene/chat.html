@@ -112,7 +112,7 @@ window.pronta = (async () => {
     : `Il telefono di ${chat.presentazione_utente || chat.utente}`;
   document.getElementById('nota').textContent = VUOTO
     ? 'A destra: i messaggi tra agenti registrati dall\'API della città per la stessa conversazione.'
-    : 'Chat ricostruita con le risposte vere dell\'API della città (agenti con LLM a regole, solo ritocchi di forma). Folla, offerte e imprese sono simulate; il meteo è reale (Open-Meteo, Meteoalarm).';
+    : 'Chat ricostruita con le risposte vere dell\'API della città (agenti con LLM a regole, testi così come escono dall\'API). Folla, offerte e imprese sono simulate; il meteo è reale (Open-Meteo, Meteoalarm).';
   if (VUOTO) document.getElementById('telefono').classList.add('vuoto-reale');
   costruisci();
   return { durata: totale };

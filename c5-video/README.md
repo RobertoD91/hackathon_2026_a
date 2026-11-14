@@ -52,7 +52,7 @@ Se un file c'è, `monta.sh` lo usa al posto della scena generata. Se manca, per 
 - **Chat di CiroGPT:**
   - i messaggi dell'utente sono in [`scene/chat_domande.json`](scene/chat_domande.json);
   - `python3 scene/chat_da_api.py` avvia la città di `c5-agentic-city` (agenti a regole, senza SUMO, porta 8805), manda i messaggi a `/chiedi`, aspetta l'avviso proattivo (circa 5 minuti) e scrive [`scene/chat.json`](scene/chat.json) con le risposte vere e i messaggi tra agenti;
-  - i **ritocchi di forma** (chi parla nella controproposta, preposizioni, accordi) sono regole in `chat_domande.json`, applicate da `chat_da_api.py`; in `chat.json` il testo originale dell'API resta in `testo_api`. Dopo aver cambiato le regole basta `python3 scene/chat_da_api.py --solo-ritocchi`, senza riavviare la città;
+  - i **ritocchi di forma** (chi parla nella controproposta, preposizioni, accordi) sono regole in `chat_domande.json`, applicate da `chat_da_api.py`; in `chat.json` il testo originale dell'API resta in `testo_api`. Dopo aver cambiato le regole basta `python3 scene/chat_da_api.py --solo-ritocchi`, senza riavviare la città. Dalla chat del 14/11 pomeriggio, generata dopo le correzioni di `c5-agentic-city` (commit b32bcf6), i testi sono quelli dell'API: le regole restano come rete di sicurezza ma oggi non cambiano nulla, e `testo_api` non compare;
   - `chat.json` si può anche ritoccare a mano.
   - Con `--api http://host:porta` usa un'API già accesa. Con `--senza-rete` prende il meteo dallo snapshot.
 
@@ -88,11 +88,11 @@ Cosa è reale e cosa è simulato: tabella in fondo a [`copione.md`](copione.md#c
 - [ ] Voce fuori campo (R4)
 - [ ] Controllo finale dei fotogrammi con le riprese vere
 
-## Problemi noti (da correggere in `c5-agentic-city`, non qui)
+## Problemi noti (risolti in `c5-agentic-city`)
 
-Su WhatsApp vero la skill `twinciro-citta` inoltra la risposta dell'API senza riscriverla, quindi la ripresa R1 mostrerebbe i testi originali:
-- la controproposta comincia con «Alle 13:00 siamo pieni. Alle 14:00 c'è posto per 4. Confermo?»: sembra parlare la pizzeria, non CiroGPT (`citta/agenti/assistente.py`);
-- l'avviso dice «A Rotonda Diaz (village) c'è il pienone: in questo momento Piazza del Plebiscito e Palazzo Reale è molto più tranquillo» (preposizione, nome interno della zona, accordo: `citta/agenti/turismo.py` e i nomi in `dati/`);
-- il percorso dice «oppure Linea 6 della metro se attiva» (`dati/luoghi.json`), mentre la Linea 6 c'è nel GTFS di ANM.
+Su WhatsApp vero la skill `twinciro-citta` inoltra la risposta dell'API senza riscriverla, quindi la ripresa R1 mostra i testi originali. Questi tre punti li ha corretti `c5-agentic-city` nel commit b32bcf6 (con `citta/testi.py`):
+- la controproposta cominciava con «Alle 13:00 siamo pieni. Alle 14:00 c'è posto per 4. Confermo?»: sembrava parlare la pizzeria, non CiroGPT (`citta/agenti/assistente.py`);
+- l'avviso diceva «A Rotonda Diaz (village) c'è il pienone: in questo momento Piazza del Plebiscito e Palazzo Reale è molto più tranquillo» (preposizione, nome interno della zona, accordo: `citta/agenti/turismo.py` e i nomi in `dati/`);
+- il percorso diceva «oppure Linea 6 della metro se attiva» (`dati/luoghi.json`), mentre la Linea 6 c'è nel GTFS di ANM.
 
-Nella chat ricostruita del video questi punti sono corretti con i ritocchi dichiarati in `scene/chat_domande.json`.
+Fino alla chat precedente il video li correggeva con i ritocchi dichiarati in `scene/chat_domande.json`. La chat attuale (14/11 pomeriggio) è generata dall'API corretta: i testi sono quelli dell'API, senza ritocchi (ora la controproposta comincia con «Pizzeria 'O Scoglio alle 13:00 non ha posto, ma vi propone le 14:00 per 4. Prenoto?» e il percorso con «Linea 6 da Municipio a San Pasquale»).
