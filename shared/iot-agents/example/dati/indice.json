@@ -1,0 +1,177 @@
+{
+ "generato": "2026-11-14T07:54:07.802Z",
+ "file": {
+  "trasporti.json": {
+   "generato": "2026-11-14T07:40:08.374Z",
+   "fonti": [
+    {
+     "nome": "GTFS ANM (metro L1, L6, L2 e funicolari)",
+     "ente": "ANM / Comune di Napoli",
+     "licenza": "CC BY 4.0 (dataset del Comune di Napoli su dati.gov.it)",
+     "stato": "ok",
+     "url": "https://www.anm.it/google/google-transit.zip"
+    },
+    {
+     "nome": "GTFS EAV (Cumana, Circumflegrea, Circumvesuviana, Metrocampania)",
+     "ente": "EAV srl",
+     "licenza": "non indicata dal fornitore (citare EAV)",
+     "stato": "ok",
+     "url": "https://www.wimob.it/cfile/download.php?file=google-transit.zip"
+    },
+    {
+     "nome": "Transitous: fermate (id per i prossimi passaggi)",
+     "ente": "Transitous (comunità, MOTIS)",
+     "licenza": "servizio gratuito per progetti open source non commerciali; dati delle aziende di trasporto",
+     "stato": "ok",
+     "url": "https://api.transitous.org/"
+    }
+   ]
+  },
+  "aria.json": {
+   "generato": "2026-11-14T07:40:08.374Z",
+   "fonti": [
+    {
+     "nome": "Anagrafica delle stazioni di qualità dell'aria",
+     "ente": "European Environment Agency",
+     "licenza": "riuso libero con citazione dell'EEA",
+     "stato": "ok",
+     "url": "https://air.discomap.eea.europa.eu/arcgis/rest/services/AirQuality/AirQualityDownloadServiceEUMonitoringStations/MapServer/0"
+    },
+    {
+     "nome": "Dati orari aggiornati (E2a, non validati) delle centraline ARPAC dell'area di Napoli",
+     "ente": "EEA, dati trasmessi da ARPA Campania tramite ISPRA",
+     "licenza": "riuso libero con citazione dell'EEA; dati E2a non validati",
+     "stato": "ok",
+     "url": "https://eeadmz1-downloads-webapp.azurewebsites.net/"
+    }
+   ]
+  },
+  "eventi.json": {
+   "generato": "2026-11-14T07:54:07.802Z",
+   "fonti": [
+    {
+     "nome": "Eventi del Comune di Napoli",
+     "ente": "Comune di Napoli",
+     "licenza": "CC BY 4.0 (note legali del sito); immagini escluse",
+     "stato": "ok",
+     "url": "https://www.comune.napoli.it/wp-json/api/v1/news"
+    },
+    {
+     "nome": "Calendario Serie A 2026/27 (partite in casa del Napoli)",
+     "ente": "openfootball",
+     "licenza": "CC0 1.0 (pubblico dominio)",
+     "stato": "ok",
+     "url": "https://github.com/openfootball/football.json"
+    },
+    {
+     "nome": "Prossima partita del Napoli (anche coppe)",
+     "ente": "TheSportsDB",
+     "licenza": "termini TheSportsDB (chiave pubblica di prova, citare la fonte)",
+     "stato": "ok",
+     "url": "https://www.thesportsdb.com/api/v1/json/123/eventsnext.php?id=133670"
+    },
+    {
+     "nome": "Calendario degli scali delle navi da crociera a Napoli",
+     "ente": "Cruise Timetables (fonte privata, non ufficiale)",
+     "licenza": "proprietaria: citata come fonte in una demo non commerciale",
+     "stato": "ok",
+     "url": "https://www.cruisetimetables.com/cruises-to-naples-italy.html"
+    },
+    {
+     "nome": "Calendario America's Cup 2027 (Napoli)",
+     "ente": "America's Cup Event",
+     "licenza": "contenuto del sito ufficiale, senza licenza dichiarata: citato come fonte",
+     "stato": "ok",
+     "url": "https://www.americascup.com/json/schedule-ac38.json"
+    }
+   ]
+  },
+  "riferimenti.json": {
+   "generato": "2026-11-14T07:47:43.411Z",
+   "fonti": [
+    {
+     "nome": "Visitatori mensili dei siti culturali comunali",
+     "ente": "Comune di Napoli (dati.comune.napoli.it)",
+     "licenza": "CC BY 4.0",
+     "stato": "precedente",
+     "url": "https://dati.comune.napoli.it/dataset?q=visitatori"
+    },
+    {
+     "nome": "Arrivi e presenze turistiche mensili, provincia di Napoli",
+     "ente": "ISTAT (esploradati, SDMX)",
+     "licenza": "CC BY 4.0",
+     "stato": "ok",
+     "url": "https://esploradati.istat.it/databrowser/"
+    },
+    {
+     "nome": "Visitatori annui di musei e monumenti (Wikidata, proprietà P1174)",
+     "ente": "Wikidata",
+     "licenza": "CC0 1.0",
+     "stato": "ok",
+     "url": "https://query.wikidata.org/"
+    },
+    {
+     "nome": "Annunci di affitti brevi (densità di turisti che dormono in zona)",
+     "ente": "Inside Airbnb",
+     "licenza": "CC BY 4.0",
+     "stato": "ok",
+     "url": "https://insideairbnb.com/get-the-data/"
+    },
+    {
+     "nome": "Acque di balneazione: classe di qualità 2025 per sito",
+     "ente": "EEA (dati del Ministero della Salute e di ARPAC)",
+     "licenza": "riuso libero con citazione dell'EEA",
+     "stato": "ok",
+     "url": "https://water.discomap.eea.europa.eu/arcgis/rest/services/BathingWater/BathingWater_Dyna_WM_2025/MapServer/3"
+    },
+    {
+     "nome": "Statistiche del porto (crocieristi, passeggeri del golfo)",
+     "ente": "Autorità di Sistema Portuale del Mar Tirreno Centrale",
+     "licenza": "contenuti riservati: valori aggregati citati, non ripubblicati",
+     "stato": "trascritto",
+     "url": "https://adsptirrenocentrale.it/statistiche/bollettino-dati-statistici/"
+    }
+   ]
+  },
+  "meteo.json": {
+   "generato": "2026-11-14T07:47:43.411Z",
+   "fonti": [
+    {
+     "nome": "Meteo attuale per luogo (modello ICON-2I, 2,2 km)",
+     "ente": "Open-Meteo.com (ItaliaMeteo-ARPAE)",
+     "licenza": "CC BY 4.0",
+     "stato": "ok",
+     "url": "https://open-meteo.com/"
+    },
+    {
+     "nome": "Indice europeo della qualità dell'aria (modello CAMS)",
+     "ente": "Open-Meteo.com su dati Copernicus CAMS",
+     "licenza": "CC BY 4.0 (dati Copernicus)",
+     "stato": "ok",
+     "url": "https://open-meteo.com/en/docs/air-quality-api"
+    },
+    {
+     "nome": "Allerta meteo regionale (Zona 1, Napoli)",
+     "ente": "Protezione Civile Regione Campania, Centro Funzionale",
+     "licenza": "© Protezione Civile Regione Campania: citata come fonte",
+     "stato": "ok",
+     "url": "https://centrofunzionale.regione.campania.it/"
+    },
+    {
+     "nome": "Avvisi Meteoalarm per la Campania",
+     "ente": "EUMETNET Meteoalarm (dati dell'Aeronautica Militare)",
+     "licenza": "riuso con attribuzione a Meteoalarm/EUMETNET",
+     "stato": "ok",
+     "url": "https://meteoalarm.org/"
+    },
+    {
+     "nome": "Terremoti dei Campi Flegrei (ultimi 30 giorni)",
+     "ente": "INGV",
+     "licenza": "CC BY 4.0",
+     "stato": "ok",
+     "url": "https://terremoti.ingv.it/"
+    }
+   ]
+  }
+ }
+}

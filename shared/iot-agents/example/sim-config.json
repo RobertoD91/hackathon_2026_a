@@ -99,9 +99,25 @@
           "noise": 40,
           "round": 0,
           "effects": {
+            "stagione_bassa": {
+              "multiply": 0.8,
+              "rampSec": 10
+            },
+            "stagione_alta": {
+              "multiply": 1.2,
+              "rampSec": 10
+            },
             "crociere": {
               "add": 900,
               "rampSec": 15
+            },
+            "evento_plebiscito": {
+              "add": 1500,
+              "rampSec": 20
+            },
+            "evento_beverello": {
+              "add": 900,
+              "rampSec": 20
             }
           }
         }
@@ -176,7 +192,21 @@
             ]
           ],
           "noise": 40,
-          "round": 0
+          "round": 0,
+          "effects": {
+            "stagione_bassa": {
+              "multiply": 0.9,
+              "rampSec": 10
+            },
+            "stagione_alta": {
+              "multiply": 1.1,
+              "rampSec": 10
+            },
+            "evento_sanita": {
+              "add": 800,
+              "rampSec": 20
+            }
+          }
         }
       }
     },
@@ -256,7 +286,21 @@
             ]
           ],
           "noise": 25,
-          "round": 0
+          "round": 0,
+          "effects": {
+            "stagione_bassa": {
+              "multiply": 0.9,
+              "rampSec": 10
+            },
+            "stagione_alta": {
+              "multiply": 1.1,
+              "rampSec": 10
+            },
+            "evento_vomero": {
+              "add": 1000,
+              "rampSec": 20
+            }
+          }
         }
       }
     },
@@ -324,9 +368,25 @@
           "noise": 40,
           "round": 0,
           "effects": {
+            "stagione_bassa": {
+              "multiply": 0.8,
+              "rampSec": 10
+            },
+            "stagione_alta": {
+              "multiply": 1.2,
+              "rampSec": 10
+            },
             "crociere": {
               "add": 700,
               "rampSec": 15
+            },
+            "evento_centro_storico": {
+              "add": 1500,
+              "rampSec": 20
+            },
+            "evento_beverello": {
+              "add": 700,
+              "rampSec": 20
             }
           }
         }
@@ -398,7 +458,21 @@
             ]
           ],
           "noise": 40,
-          "round": 0
+          "round": 0,
+          "effects": {
+            "stagione_bassa": {
+              "multiply": 0.8,
+              "rampSec": 10
+            },
+            "stagione_alta": {
+              "multiply": 1.2,
+              "rampSec": 10
+            },
+            "evento_lungomare": {
+              "add": 2500,
+              "rampSec": 20
+            }
+          }
         }
       }
     },
@@ -462,7 +536,23 @@
           "noise": 40,
           "round": 0,
           "effects": {
+            "stagione_bassa": {
+              "multiply": 0.8,
+              "rampSec": 10
+            },
+            "stagione_alta": {
+              "multiply": 1.2,
+              "rampSec": 10
+            },
             "partita": {
+              "add": 1300,
+              "rampSec": 20
+            },
+            "evento_mergellina": {
+              "add": 1000,
+              "rampSec": 20
+            },
+            "evento_maradona": {
               "add": 1300,
               "rampSec": 20
             }
@@ -534,9 +624,21 @@
           "noise": 40,
           "round": 0,
           "effects": {
+            "stagione_bassa": {
+              "multiply": 0.8,
+              "rampSec": 10
+            },
+            "stagione_alta": {
+              "multiply": 1.2,
+              "rampSec": 10
+            },
             "crociere": {
               "add": 2600,
               "rampSec": 15
+            },
+            "evento_beverello": {
+              "add": 1500,
+              "rampSec": 20
             }
           }
         }
@@ -606,9 +708,25 @@
           "noise": 25,
           "round": 0,
           "effects": {
+            "stagione_bassa": {
+              "multiply": 0.8,
+              "rampSec": 10
+            },
+            "stagione_alta": {
+              "multiply": 1.2,
+              "rampSec": 10
+            },
             "crociere": {
               "add": 500,
               "rampSec": 15
+            },
+            "evento_castel_ovo": {
+              "add": 700,
+              "rampSec": 20
+            },
+            "evento_beverello": {
+              "add": 500,
+              "rampSec": 20
             }
           }
         }
@@ -678,7 +796,23 @@
           "noise": 60,
           "round": 0,
           "effects": {
+            "stagione_bassa": {
+              "multiply": 0.9,
+              "rampSec": 10
+            },
+            "stagione_alta": {
+              "multiply": 1.1,
+              "rampSec": 10
+            },
             "partita": {
+              "add": 1500,
+              "rampSec": 20
+            },
+            "evento_garibaldi": {
+              "add": 2000,
+              "rampSec": 20
+            },
+            "evento_maradona": {
               "add": 1500,
               "rampSec": 20
             }
@@ -731,6 +865,10 @@
           "round": 0,
           "effects": {
             "partita": {
+              "add": 11500,
+              "rampSec": 20
+            },
+            "evento_maradona": {
               "add": 11500,
               "rampSec": 20
             }

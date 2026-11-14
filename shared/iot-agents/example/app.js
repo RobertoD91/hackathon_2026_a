@@ -20,6 +20,7 @@
 //   etichettaScenario?: (nome) → testo | null,   // etichetta degli scenari in corso non a catalogo
 //   simulatoreDemo?: async (hub, simConfig) → { stop },  // simulatore proprio in demo (al posto di quello generico)
 //   eventi?: (evento, api) → void,   // ogni evento (anche quelli dello stato iniziale): aggiorna mappa.setExtra...
+//   avvio?: (api) → void | Promise,   // dopo la creazione della mappa (es. fonti dati esterne: Napoli)
 // }
 
 import { connectHub, formatClock } from '../src/client.js';
@@ -113,6 +114,11 @@ export async function avviaDashboard(scenario) {
   renderScenarioButtons();
   renderAll();
   hub.on('*', onEvent);
+  if (scenario.avvio) {
+    Promise.resolve()
+      .then(() => scenario.avvio(api))
+      .catch((err) => console.error('[dashboard] aggancio avvio dello scenario in errore:', err));
+  }
   setInterval(renderClock, 1000);
 }
 

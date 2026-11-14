@@ -28,7 +28,7 @@ export class ClimaAgent extends Agent {
 
     // KPI: temperatura media della città, al massimo una volta ogni 3 secondi
     if (this.cooldown('metrica', 3000)) {
-      ctx.metric('temperatura_media', round(ctx.state.average('temperature_c')), '°C', { label: 'Temperatura media' });
+      ctx.metric('temperatura_media', round(ctx.state.average('temperature_c')), '°C', { label: 'Temperatura sensori' });
       ctx.metric('zone_calde', [...this.#statoZone.values()].filter((s) => s === 'caldo').length, '', {
         label: 'Zone con caldo',
       });

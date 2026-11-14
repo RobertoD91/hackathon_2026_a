@@ -8,3 +8,4 @@ import './sim.test.js';
 import './http.test.js';
 import './fattoria.test.js';
 import './mqtt.test.js';
+import './fonti-napoli.test.js';

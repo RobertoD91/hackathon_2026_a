@@ -21,12 +21,12 @@ Lo stesso nucleo gira **anche nel browser**: le dashboard su GitHub Pages, senza
 Dalla root della repo:
 
 ```bash
-node shared/iot-agents/example/server.js                       # Napoli: hub + 4 agenti + simulatore su http://localhost:8701/
+node shared/iot-agents/example/server.js                       # Napoli: hub + 5 agenti + simulatore su http://localhost:8701/
 node shared/iot-agents/example/server.js --scenario fattoria   # Fattoria "Acqua comune" (stessa porta, uno scenario alla volta)
 node --test shared/iot-agents/test/                            # test (anche: cd shared/iot-agents && npm test)
 ```
 
-Apri http://localhost:8701/ (reindirizza alla pagina dello scenario avviato): letture in diretta, decisioni, metriche, pulsanti degli scenari, notifiche e chat. Napoli: la timeline lancia un'ondata di calore dopo 20 s e le nuvole dopo 85 s; la giornata simulata (dalle 15:00, ×60) ricomincia ogni 3 minuti. Fattoria: giornata di luglio dalle 15:00 a ×300, ondata di calore dopo 15 s, turni d'acqua dalle 22:00 (dopo circa 85 s), la giornata ricomincia ogni 288 s. Le due pagine hanno un selettore di scenario nella testata (Napoli · Fattoria); se il hub raggiungibile esegue l'altro scenario, la pagina se ne accorge e gira in demo nel browser.
+Apri http://localhost:8701/ (reindirizza alla pagina dello scenario avviato): letture in diretta, decisioni, metriche, pulsanti degli scenari, notifiche e chat. Napoli: la timeline lancia un'ondata di calore dopo 20 s e le nuvole dopo 85 s; la giornata simulata (dalle 15:00, ×60) ricomincia ogni 3 minuti; meteo, aria, allerte, trasporti ed eventi sono **reali** (vedi "Dati reali di Napoli"). Fattoria: giornata di luglio dalle 15:00 a ×300, ondata di calore dopo 15 s, turni d'acqua dalle 22:00 (dopo circa 85 s), la giornata ricomincia ogni 288 s. Le due pagine hanno un selettore di scenario nella testata (Napoli · Fattoria); se il hub raggiungibile esegue l'altro scenario, la pagina se ne accorge e gira in demo nel browser.
 
 Altri comandi:
 
@@ -70,8 +70,11 @@ Online (dopo il push): https://robertodisanto.it/hackathon_2026_a/shared/iot-age
 | `example/server.js` | hub dell'esempio: `--scenario napoli` (predefinito) o `--scenario fattoria` (anche `SCENARIO=fattoria`), `--no-sim` | Node |
 | `example/app.js` | dashboard comune: `avviaDashboard(scenario)` (KPI, sensori, decisioni, scenari, notifiche, chat, mappa) | browser |
 | `example/mappa.js` | componente mappa **configurabile** stile [Seoul Real-Time City Data](https://data.seoul.go.kr/SeoulRtd/): luoghi o poligoni colorati su livelli, modalità (indicatori), livelli sovrapposti, vista mappa/lista, ricerca, filtro per categoria, scheda di dettaglio, cerchio che pulsa sul più critico di ogni categoria. Leaflet 1.9.4 da cdnjs, tessere OpenStreetMap. API sotto, in "Esempio: due scenari" | browser |
-| `example/napoli.js`, `example/luoghi.js` | scenario Napoli: configurazione della dashboard e della mappa (indicatori affollamento e temperatura, colonne, scheda); 10 luoghi e capienze indicative in `luoghi.js` (l'affollamento arriva da `people_count`) | browser (`luoghi.js` anche Node) |
-| `example/agents/` | agenti di Napoli: clima, illuminazione, folla (quando un luogo diventa "Affollato" propone l'alternativa tranquilla più vicina), orchestratore | Node e browser |
+| `example/napoli.js`, `example/luoghi.js` | scenario Napoli: configurazione della dashboard e della mappa (modalità Affollamento, Temperatura, Meteo, Aria; colonne; scheda); 10 luoghi con capienze indicative e parole chiave in `luoghi.js` (l'affollamento arriva da `people_count`) | browser (`luoghi.js` anche Node) |
+| `example/napoli-fonti.js`, `example/napoli.css` | dati reali nella pagina di Napoli: modalità Meteo e Aria, livelli sovrapposti (metro, funicolari e treni; eventi di oggi; centraline ARPAC; traffico), sezioni della scheda, pannello "Oggi a Napoli", banner di allerta, tabella delle fonti | browser |
+| `example/fonti/` | `normalizza.js` (funzioni pure: risposte delle API → formati della mappa) e `dati.js` (fonti live con cache, timeout e riserva; snapshot) | Node e browser |
+| `example/dati/` | snapshot statici dei dati reali (JSON, ~120 KB in tutto), rigenerati da `tools/aggiorna-dati-napoli.js` | — |
+| `example/agents/` | agenti di Napoli: clima, illuminazione, folla (quando un luogo diventa "Affollato" propone l'alternativa tranquilla più vicina), fonti (dati reali sul bus, scenari degli eventi reali), orchestratore | Node e browser |
 | `example/fattoria/` | scenario Fattoria "Acqua comune": `index.html`, `scenario.js` (dashboard e mappa), `campi.js` (campi, colture, vasca), `piano.js` (turni d'acqua), `simulatore.js` (bilancio idrico), `sim-config.json`, `agents/` (campi, meteo, consorzio) | browser; agenti e logica anche Node |
 | `firmware/esp32-sensor/` | sketch ESP32 ([README](firmware/esp32-sensor/README.md)) | ESP32 |
 | `firmware/why2025-badge/` | firmware MQTT per il badge Cyber Saiyan WHY2025/EMF2026 (ESP32-C3), sopra il firmware originale ([README](firmware/why2025-badge/README.md)) | badge |
@@ -79,6 +82,8 @@ Online (dopo il push): https://robertodisanto.it/hackathon_2026_a/shared/iot-age
 | `tools/mqtt-bridge.js` | ponte MQTT → hub (badge, ESP32, Tasmota, c5) | Node |
 | `tools/mqtt-client.js`, `tools/mqtt-convert.js` | client MQTT 3.1.1 senza dipendenze, conversioni verso il contratto | Node |
 | `tools/mqtt-pub.js` | prove MQTT da riga di comando: pubblica, ascolta, simula badge e Tasmota | Node |
+| `tools/aggiorna-dati-napoli.js` | rigenera gli snapshot di `example/dati/` (GTFS, centraline EEA, eventi, riferimenti, meteo di riserva) | Node |
+| `tools/zip-mini.js`, `tools/parquet-mini.js` | lettori ZIP/CSV e Parquet (Snappy compreso) senza dipendenze, per lo script degli snapshot | Node |
 | `test/` | test `node:test` | Node |
 
 ## Esempio: due scenari (Napoli e Fattoria)
@@ -87,10 +92,10 @@ La stessa dashboard (`example/app.js`) e lo stesso componente mappa (`example/ma
 
 | Scenario | Pagina | Configurazione | Agenti | Simulatore |
 |---|---|---|---|---|
-| Napoli connessa | `example/index.html` | `napoli.js`, `luoghi.js`, `sim-config.json` | `agents/`: clima, illuminazione, folla, orchestratore | generico |
+| Napoli connessa | `example/index.html` | `napoli.js`, `napoli-fonti.js`, `luoghi.js`, `sim-config.json`, `fonti/`, `dati/` | `agents/`: clima, illuminazione, folla, fonti, orchestratore | generico (+ scenari degli eventi reali) |
 | Acqua comune (fattoria) | `example/fattoria/` | `fattoria/scenario.js`, `campi.js`, `sim-config.json` | `fattoria/agents/`: campi, meteo, consorzio (orchestratore) | generico + bilancio idrico (`fattoria/simulatore.js`) |
 
-Una pagina è solo HTML + `avviaDashboard(configurazione)`; la configurazione dice `simConfig`, `demoAgents`, `firma` (un agente che deve esserci nel hub: se manca, il hub esegue un altro scenario e la pagina va in demo), `mappa`, ordine dei `kpi`, un eventuale `simulatoreDemo` e l'aggancio `eventi(evento, api)` che passa alla mappa dati non dai sensori (`api.mappa.setExtra(nome, dati)`).
+Una pagina è solo HTML + `avviaDashboard(configurazione)`; la configurazione dice `simConfig`, `demoAgents`, `firma` (un agente che deve esserci nel hub: se manca, il hub esegue un altro scenario e la pagina va in demo), `mappa`, ordine dei `kpi`, un eventuale `simulatoreDemo`, l'aggancio `eventi(evento, api)` che passa alla mappa dati non dai sensori (`api.mappa.setExtra(nome, dati)`), l'aggancio `avvio(api)` chiamato dopo la creazione della mappa (Napoli ci carica le fonti reali) ed `etichettaScenario(nome)` per gli scenari non a catalogo.
 
 ### Componente mappa (`example/mappa.js`)
 
@@ -115,6 +120,46 @@ mappa.update(devices);                 // a ogni lettura (lo fa app.js)
 ```
 
 **Aggiungere una modalità** (es. qualità dell'aria a Napoli da una fonte reale): un elemento in `INDICATORI` di `napoli.js` (4 livelli con colori, `valuta` che legge l'aggregato dei sensori della zona o `ctx.extra.aria?.[zona]`), oppure `mappa.aggiungiIndicatore(def)` a mappa avviata. I dati esterni entrano con `mappa.setExtra('aria', dati)` (da un agente, tramite l'aggancio `eventi`, o da un `fetch` nella pagina). **Aggiungere un livello sovrapposto** (linee della metro, eventi, stazioni di misura): un elemento in `SOVRAPPOSTI` di `napoli.js` o `mappa.aggiungiSovrapposto(def)`; compare una casella nella legenda. I colori vengono dalla configurazione (`--lv` in linea), non dal CSS: nessuna modifica a `style.css` per un livello nuovo.
+
+### Dati reali di Napoli
+
+La mappa di Napoli unisce la **simulazione** (folla e sensori, come prima) a **fonti reali verificate**. Ogni valore in pagina dice se è reale (con fonte e ora) o simulato, con un cartellino: *dal vivo*, *fonte di riserva*, *ultimo dato salvato*, *snapshot*, *orario programmato*, *simulato*. Se una fonte non risponde la pagina continua a funzionare e lo dichiara. La tabella "Fonti dei dati, stato e licenze" sotto la mappa mostra lo stato di ogni fonte in quel momento. Il catalogo completo della ricerca (anche le fonti valutate e non integrate, licenze, lacune) è in [`docs/fonti-dati-napoli.md`](../../docs/fonti-dati-napoli.md).
+
+| Dato | Fonte | Come arriva | Licenza | Se non risponde |
+|---|---|---|---|---|
+| Meteo per luogo (temperatura, percepita, umidità, pioggia, vento, cielo): modalità **Meteo** e scheda | [Open-Meteo](https://open-meteo.com/), modello ICON-2I di ItaliaMeteo-ARPAE (2,2 km: distingue i luoghi) | browser, una chiamata per i 10 luoghi, cache 15 min | CC BY 4.0 | Open-Meteo modello predefinito → MET Norway (un punto per la città; non dopo un 429, la quota è per IP) → `dati/meteo.json` |
+| Allerta meteo per Napoli (Zona 1): banner, scheda, KPI, avviso WhatsApp | Protezione Civile Regione Campania, Centro Funzionale (API del portale) | browser, cache 20 min | © Regione Campania, citata | ultimo avviso salvato |
+| Avvisi Meteoalarm (Campania, livello più alto per fenomeno e giorno) | EUMETNET Meteoalarm | **snapshot** (niente CORS) | attribuzione | — |
+| Qualità dell'aria: modalità **Aria** | centraline ARPAC (dati orari E2a non validati dall'EEA, letti dai Parquet) entro 1,5 km se il dato ha meno di 48 ore; altrimenti modello Copernicus CAMS via Open-Meteo (celle di 11 km) | centraline: **snapshot**; CAMS: browser, cache 1 h | EEA con citazione; CC BY 4.0 | CAMS → `dati/meteo.json` |
+| Livello "Centraline aria (ARPAC)" | come sopra: classe dell'indice europeo EEA (NO2 e O3 orari, PM su 24 ore) | snapshot | | |
+| Livello "Metro, funicolari e treni", stazioni vicine nella scheda (con corse programmate in quest'ora) | GTFS ANM (L1, L6, L2, funicolari F1, F3, F4) ed EAV (Cumana, Circumflegrea, Circumvesuviana, Metrocampania), dalle copie di Mobility Database | **snapshot** ridotto (linee semplificate, 92 stazioni, corse per ora feriale/sabato/festivo) | ANM: CC BY 4.0 (Comune di Napoli); EAV: citata | — |
+| Prossimi passaggi (pulsante nella scheda, clic su una stazione) | [Transitous](https://transitous.org/sources/) (MOTIS): solo metro, funicolari e treni (Transitous raggruppa con la stazione anche le fermate dei bus vicine, che si scartano) | browser, a richiesta, cache 1 min | servizio per progetti open source non commerciali | messaggio: vale l'orario programmato |
+| Avvisi EAV (ascensori fuori servizio, scioperi) | API WordPress di eavsrl.it | browser, cache 15 min | contenuti EAV citati | — |
+| Livello "Traffico su tangenziale e autostrade" | Autostrade per l'Italia (viabilita.autostrade.it) | browser, solo quando il livello è acceso, cache 5 min; un riquadro sulla mappa dice quanti eventi ci sono (anche "nessun evento in corso") | © ASPI: dato di contesto citato | "non disponibile" (il traffico urbano non ha fonti aperte: non è mostrato) |
+| Eventi di oggi e prossimi (pannello "Oggi a Napoli", livello "Eventi reali di oggi") | Comune di Napoli (API del sito), openfootball (Serie A, aggiornato anche dal vivo), TheSportsDB (coppe), Cruise Timetables (navi), America's Cup (calendario 2027) | **snapshot** (+ Serie A dal vivo) | Comune CC BY 4.0, openfootball CC0, altre citate | — |
+| Terremoti dei Campi Flegrei | INGV | browser, cache 30 min | CC BY 4.0 | snapshot |
+| Dati di riferimento nella scheda (scala della folla) | visitatori mensili dei siti comunali (Comune, CC BY 4.0), musei (Wikidata, CC0), passeggeri del porto e crocieristi (AdSP, valori citati), affitti brevi entro 600 m (Inside Airbnb, CC BY 4.0), acque di balneazione 2025 (EEA), stagionalità turistica (ISTAT, CC BY 4.0) | snapshot | | |
+
+**Cosa resta simulato e perché.** L'affollamento non ha una fonte pubblica (a Seoul arriva dalle celle telefoniche: andrebbe chiesto a Fastweb + Vodafone), quindi resta la stima del simulatore, ma con la scala presa dai dati reali e con due collegamenti reali dichiarati come ipotesi:
+- l'agente **fonti** accende sull'ora simulata gli scenari `evento_<zona>` quando c'è un evento reale (partita in casa al Maradona da 3 ore prima a 3 ore dopo il calcio d'inizio, navi in porto dalle 8 alle 18, eventi del Comune "grandi" come gare e festival, regate dell'America's Cup); gli effetti (persone in più) sono in `sim-config.json`;
+- e lo scenario `stagione_bassa` o `stagione_alta` dal mese: arrivi ISTAT del mese rispetto alla media mensile (novembre 2025: 0,52×, quindi folla −20 % nei luoghi turistici e −10 % a Vomero, Sanità e Garibaldi; il Maradona dipende solo dalle partite).
+
+Anche la temperatura dei sensori resta simulata (serve allo scenario "Ondata di calore"); quella reale è nella modalità Meteo e nella scheda.
+
+**Agente `fonti`** (`agents/fonti.js`, isomorfo): legge gli snapshot e, se c'è rete, le fonti live; pubblica la decisione "Oggi a Napoli: …", le metriche `eventi_oggi`, `temperatura_reale`, `aqi_europeo`, `allerta_meteo` e manda all'orchestratore il contesto (eventi, stazioni vicine a ogni luogo, stagione, meteo, aria, allerta). L'orchestratore lo usa nei consigli anti-folla su WhatsApp ("Oggi c'è "Tri Gold Caracciolo 2026". Stazione più vicina a Piazza del Plebiscito: Chiaia (L6), 2 min a piedi."), manda l'avviso di allerta gialla o superiore al gruppo e risponde in chat su eventi, "come arrivo a…", aria, allerta e meteo. Opzione `createAgents({ fonti: { rete: false } })` per lavorare senza rete (è automatica sotto `node --test`).
+
+**Rigenerare gli snapshot** (`example/dati/`, file JSON piccoli: solo ciò che serve alla mappa):
+
+```bash
+node shared/iot-agents/tools/aggiorna-dati-napoli.js                         # tutto (1-5 minuti: CKAN del Comune e ISTAT sono lenti)
+node shared/iot-agents/tools/aggiorna-dati-napoli.js --solo eventi,meteo     # sezioni: trasporti, aria, eventi, riferimenti, meteo
+node shared/iot-agents/tools/aggiorna-dati-napoli.js --curl                  # richieste con curl (se un WAF rifiuta il client di Node)
+node shared/iot-agents/tools/aggiorna-dati-napoli.js --out /tmp/dati         # altra cartella
+```
+
+Ogni file ha `meta.generato`, `meta.fonti` (nome, ente, URL, licenza, stato, errore) e `indice.json` riassume tutto. Se nessuna fonte di una sezione risponde il file precedente resta com'è; se ne fallisce solo qualcuna la sezione viene riscritta e la parte di quella fonte viene ripresa dal file precedente (stato `precedente`, con l'errore e la data `datoDel`), così un 429 o un 502 passeggero non svuota lo snapshot. Consigliato: eventi e meteo ogni mattina, aria ogni ora (i dati EEA hanno qualche ora di ritardo), trasporti quando cambia l'orario. Dalla sandbox di sviluppo l'API eventi del Comune risponde 403 al client di Node e 200 a curl: per questo c'è `--curl`.
+
+Fonti valutate e lasciate fuori: posizioni dei bus di BusOne (aggregatore non ufficiale, termini per soli privati e no profit, limite di richieste anonime), ViaggiaTreno (API non documentata e senza CORS; i treni regionali e la L2 sono già nei passaggi di Transitous), OpenSky, AIS, TomTom e HERE (serve una chiave), ARPAC open data e portale della Regione (irraggiungibili dalla sandbox), WAQI (i termini vietano la cache).
 
 ### Fattoria "Acqua comune"
 
@@ -439,7 +484,7 @@ node shared/iot-agents/tools/mqtt-pub.js --url mqtt://localhost:1883 --sub 'bigh
 node --test shared/iot-agents/test/
 ```
 
-89 test (88 superati + 1 saltato se non c'è un broker MQTT locale): validazione delle letture, formato degli eventi, dispatch e routing, protezione dai cicli (auto-eventi e catene tra agenti), isolamento delle eccezioni, ordine e coda per agente, chat, scenari con durata, adattatore LLM (mock, Anthropic e OpenAI-compatibile con `fetch` finto, JSON, timeout, errori), simulatore (determinismo, andamenti, accelerazione, timeline, effetti), server HTTP (tutte le API, SSE, notifiche con cursore, CORS, token, file statici e percorsi vietati), gli agenti dell'esempio e la fattoria (`test/fattoria.test.js`: piano dei turni con stress, pioggia e acqua scarsa, bilancio idrico, agente meteo con Open-Meteo finto e 429, agenti nel nucleo fino all'apertura della valvola, chat, configurazioni della mappa) e il ponte MQTT (`test/mqtt.test.js`: client MQTT, conversione dei payload del badge, di Tasmota e di c5, prova end-to-end con un broker vero).
+105 test (104 superati + 1 saltato se non c'è un broker MQTT locale): validazione delle letture, formato degli eventi, dispatch e routing, protezione dai cicli (auto-eventi e catene tra agenti), isolamento delle eccezioni, ordine e coda per agente, chat, scenari con durata, adattatore LLM (mock, Anthropic e OpenAI-compatibile con `fetch` finto, JSON, timeout, errori), simulatore (determinismo, andamenti, accelerazione, timeline, effetti), server HTTP (tutte le API, SSE, notifiche con cursore, CORS, token, file statici e percorsi vietati), gli agenti dell'esempio e la fattoria (`test/fattoria.test.js`: piano dei turni con stress, pioggia e acqua scarsa, bilancio idrico, agente meteo con Open-Meteo finto e 429, agenti nel nucleo fino all'apertura della valvola, chat, configurazioni della mappa), il ponte MQTT (`test/mqtt.test.js`: client MQTT, conversione dei payload del badge, di Tasmota e di c5, prova end-to-end con un broker vero) e le fonti reali di Napoli (`test/fonti-napoli.test.js`: normalizzazione di meteo, aria, allerte, eventi, passaggi, avvisi e traffico; catena di riserve con `fetch` finto, 429 compreso; lettori ZIP, CSV, Snappy e Parquet su file costruiti nel test; riduzione del GTFS; script degli snapshot con `fetch` finto e sezione fallita; agente fonti con gli scenari degli eventi sull'ora simulata e l'orchestratore che cita stazioni ed eventi; effetti in `sim-config.json`).
 
 ## Limiti noti
 
@@ -447,3 +492,4 @@ node --test shared/iot-agents/test/
 - Nessuna autenticazione per le `GET` (stato, stream): su un server pubblico i dati sono leggibili da tutti.
 - Il firmware non è stato compilato su una scheda vera (vedi il suo README).
 - La modalità demo usa solo l'LLM `mock` (nessuna chiave nel browser).
+- Dati reali di Napoli: le fonti live dal browser consumano la quota di ogni visitatore (Open-Meteo: 10.000 chiamate al giorno per IP, una batch di 10 luoghi ne vale 10); gli snapshot vanno rigenerati a mano o con un cron sul server; le API del Centro Funzionale, di EAV e di ASPI non sono open data dichiarati e possono cambiare.

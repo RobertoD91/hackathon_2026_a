@@ -1,0 +1,144 @@
+/* Napoli in tempo reale: stili dei dati reali (napoli-fonti.js). Usa i token di style.css,
+   quindi funziona in tema chiaro e scuro. Caricato solo dalla pagina di Napoli. */
+
+:root {
+  --nf-giallo: #f2c200;
+  --nf-arancio: #ff8a2a;
+  --nf-rosso: #e5413a;
+  --nf-viola: #7a4fd0;
+}
+
+/* --------------------------------------------------------------- cartellini reale / simulato */
+.nf-tag {
+  display: inline-block; vertical-align: 1px; padding: 0 6px; border-radius: 99px; font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.01em; line-height: 1.5; white-space: nowrap; border: 1px solid transparent; text-transform: none;
+}
+.nf-live, .nf-cache { background: color-mix(in srgb, var(--lvl-tranquillo) 16%, transparent); color: var(--good-ink); border-color: color-mix(in srgb, var(--lvl-tranquillo) 40%, transparent); }
+.nf-riserva { background: color-mix(in srgb, var(--nf-giallo) 20%, transparent); color: var(--warning-ink); border-color: color-mix(in srgb, var(--nf-giallo) 45%, transparent); }
+.nf-snapshot, .nf-programmato { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+.nf-salvato { background: color-mix(in srgb, var(--nf-arancio) 14%, transparent); color: var(--warning-ink); border-color: color-mix(in srgb, var(--nf-arancio) 40%, transparent); }
+.nf-assente { background: var(--surface-2); color: var(--text-3); border-color: var(--border); }
+.nf-simulato { background: color-mix(in srgb, var(--nf-viola) 13%, transparent); color: var(--nf-viola); border-color: color-mix(in srgb, var(--nf-viola) 35%, transparent); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .nf-simulato { color: #b9a2f2; } }
+.nf-fonte { display: block; margin-top: 4px; color: var(--text-3); font-size: 0.74rem; line-height: 1.35; }
+
+/* --------------------------------------------------------------- modalità: 4 pulsanti in 2 righe */
+#citymap .cm-modi { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+#citymap .cm-side { max-height: calc(100% - 24px); overflow: auto; }
+
+/* --------------------------------------------------------------- scheda di dettaglio */
+.nf-sez { border-top: 1px solid var(--border); margin-top: 10px; padding-top: 8px; font-size: 0.86rem; }
+.nf-sez h4 { margin: 0 0 6px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-2); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.nf-sez p { margin: 4px 0; }
+.nf-meteo { font-size: 0.92rem; }
+.nf-meteo b { font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+.nf-meteo span { color: var(--text-2); }
+.nf-allerta-mini { margin: 4px 0; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+.nf-sez-ev ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.nf-sez-ev li { display: grid; padding: 6px 8px; border-radius: 8px; background: color-mix(in srgb, var(--nf-viola) 9%, transparent); }
+.nf-sez-ev small { color: var(--text-3); }
+.nf-linea {
+  display: inline-block; min-width: 20px; padding: 0 5px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-align: center;
+  background: var(--nf-col, #777); color: #fff; text-shadow: 0 0 2px rgb(0 0 0 / 0.55); line-height: 1.5;
+}
+.nf-staz { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.nf-staz li { display: grid; gap: 2px; }
+.nf-staz small { color: var(--text-3); }
+.nf-btn {
+  justify-self: start; margin-top: 2px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font: inherit;
+  font-size: 0.78rem; padding: 3px 9px; border-radius: 99px; cursor: pointer;
+}
+.nf-btn:hover { border-color: var(--accent); }
+.nf-pass { margin: 4px 0 0; padding: 0; list-style: none; font-size: 0.8rem; display: grid; gap: 2px; }
+.nf-pass li { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.nf-pass b { font-variant-numeric: tabular-nums; }
+.nf-pass-l { font-weight: 700; }
+.nf-pass.muted { display: block; color: var(--text-3); }
+.nf-ko { color: var(--critical); font-style: normal; font-weight: 600; }
+.nf-avvisi-mini { display: grid; gap: 4px; margin-top: 8px; font-size: 0.78rem; }
+.nf-avvisi-mini a { color: var(--warning-ink); }
+.nf-rif { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.nf-rif li { display: grid; grid-template-columns: 1fr auto; gap: 0 8px; font-size: 0.8rem; }
+.nf-rif li span:first-child { color: var(--text-2); }
+.nf-rif li span:nth-child(2) { grid-column: 1; font-variant-numeric: tabular-nums; }
+.nf-rif li a { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--accent); font-size: 0.72rem; }
+
+/* --------------------------------------------------------------- marker dei livelli sovrapposti */
+.nf-icon { background: none; border: 0; }
+.nf-ev {
+  position: absolute; left: -11px; top: -11px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px;
+  background: var(--nf-viola); color: #fff; font-size: 12px; font-weight: 700; border: 2px solid #fff; box-shadow: 0 1px 4px rgb(0 0 0 / 0.35); cursor: pointer;
+}
+.nf-aq {
+  position: absolute; transform: translate(-50%, -50%); white-space: nowrap; padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 700;
+  background: var(--nf-col, #9a9993); color: #1d1d1b; border: 1.5px solid #fff; box-shadow: 0 1px 3px rgb(0 0 0 / 0.3); cursor: pointer;
+}
+.nf-tr { position: absolute; transform: translate(-50%, -60%); font-size: 18px; line-height: 1; text-shadow: 0 0 2px #fff, 0 0 3px #fff; cursor: pointer; }
+.nf-tr-chiuso { color: var(--nf-rosso); }
+.nf-tr-coda { color: var(--nf-arancio); }
+.nf-tr-altro { color: #b38f00; }
+.nf-pop { font-size: 0.82rem; line-height: 1.4; }
+.nf-pop-sub { color: #555; margin: 2px 0; }
+.nf-tab { border-collapse: collapse; margin: 4px 0; }
+.nf-tab td { padding: 1px 6px 1px 0; }
+
+/* --------------------------------------------------------------- allerta in testa */
+.nf-allerta {
+  display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin: 0 0 12px; padding: 10px 14px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--surface); font-size: 0.88rem; border-left-width: 6px;
+}
+.nf-allerta[hidden] { display: none; }
+.nf-allerta strong { font-size: 0.95rem; }
+.nf-al-2 { border-left-color: var(--nf-giallo); background: color-mix(in srgb, var(--nf-giallo) 14%, var(--surface)); }
+.nf-al-3 { border-left-color: var(--nf-arancio); background: color-mix(in srgb, var(--nf-arancio) 16%, var(--surface)); }
+.nf-al-4 { border-left-color: var(--nf-rosso); background: color-mix(in srgb, var(--nf-rosso) 14%, var(--surface)); }
+.nf-allerta-mini.nf-al-2, .nf-allerta-mini.nf-al-3, .nf-allerta-mini.nf-al-4 { border-left: 4px solid; }
+
+/* --------------------------------------------------------------- pannello "Oggi a Napoli" */
+.nf-oggi { margin: 0 0 16px; }
+.nf-oggi-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin-bottom: 8px; }
+.nf-oggi-head h2 { margin: 0; }
+.nf-oggi-data { color: var(--text-2); font-size: 0.9rem; text-transform: capitalize; }
+.nf-griglia { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.nf-griglia article { min-width: 0; }
+.nf-griglia h3 { margin: 0 0 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-3); }
+.nf-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.nf-lista li { min-width: 0; }
+.nf-card {
+  display: grid; gap: 1px; width: 100%; text-align: left; font: inherit; color: var(--text); padding: 7px 10px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface-2);
+}
+button.nf-card { cursor: pointer; }
+button.nf-card:hover:not([disabled]) { border-color: var(--accent); }
+button.nf-card[disabled] { cursor: default; opacity: 1; color: var(--text); }
+.nf-card-folla { border-left: 4px solid var(--nf-viola); }
+.nf-ev-t { font-weight: 600; overflow-wrap: anywhere; }
+.nf-lista a.nf-ev-t { color: var(--text); text-decoration: none; }
+.nf-lista a.nf-ev-t:hover { text-decoration: underline; }
+.nf-ev-d { font-size: 0.75rem; font-weight: 700; color: var(--nf-viola); text-transform: uppercase; }
+.nf-lista small { color: var(--text-3); font-size: 0.78rem; overflow-wrap: anywhere; }
+.nf-ev-f { color: var(--nf-viola) !important; font-weight: 600; }
+.nf-stagione { margin: 10px 0 0; font-size: 0.85rem; color: var(--text-2); }
+.nf-stagione:empty { display: none; }
+.nf-fonti { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
+.nf-fonti summary { cursor: pointer; font-weight: 600; font-size: 0.88rem; }
+.nf-fonti-scroll { overflow-x: auto; margin-top: 6px; }
+.nf-fonti-tab td small { display: block; color: var(--text-3); font-size: 0.74rem; }
+.nf-fonti-tab td { vertical-align: top; }
+.nf-fonti-tab a { color: var(--accent); }
+
+/* --------------------------------------------------------------- domande di esempio in chat */
+.nf-chiedi { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+.nf-chiedi button {
+  border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2); font: inherit; font-size: 0.75rem;
+  padding: 3px 8px; border-radius: 99px; cursor: pointer;
+}
+.nf-chiedi button:hover { border-color: var(--accent); color: var(--text); }
+
+@media (max-width: 900px) {
+  .nf-griglia { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  #citymap .cm-side { max-height: none; }
+  .nf-allerta { margin: 0 0 10px; }
+}

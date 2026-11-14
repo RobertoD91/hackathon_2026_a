@@ -12,18 +12,52 @@ export const CATEGORIE = Object.freeze({
   eventi: 'Eventi e sport',
 });
 
-/** @type {Record<string, {nome: string, categoria: keyof typeof CATEGORIE, capienza: number, lat: number, lon: number}>} */
+/**
+ * `parole`: nomi di vie, piazze e monumenti della zona (ricerca nella mappa e abbinamento degli
+ * eventi reali del Comune al luogo, vedi fonti/normalizza.js → zonaPerTesto).
+ * @type {Record<string, {nome: string, categoria: keyof typeof CATEGORIE, capienza: number, lat: number, lon: number, parole: string[]}>}
+ */
 export const LUOGHI = Object.freeze({
-  plebiscito: { nome: 'Piazza del Plebiscito', categoria: 'piazze', capienza: 3000, lat: 40.8359, lon: 14.2488 },
-  centro_storico: { nome: 'Spaccanapoli · Centro storico', categoria: 'piazze', capienza: 4500, lat: 40.8484, lon: 14.2558 },
-  lungomare: { nome: 'Lungomare Caracciolo', categoria: 'mare', capienza: 5000, lat: 40.8329, lon: 14.2349 },
-  mergellina: { nome: 'Mergellina', categoria: 'mare', capienza: 2500, lat: 40.8288, lon: 14.2183 },
-  beverello: { nome: 'Molo Beverello · Stazione Marittima', categoria: 'mare', capienza: 3500, lat: 40.8383, lon: 14.2537 },
-  castel_ovo: { nome: "Castel dell'Ovo", categoria: 'attrazioni', capienza: 1500, lat: 40.828, lon: 14.2476 },
-  garibaldi: { nome: 'Napoli Centrale · Garibaldi', categoria: 'trasporti', capienza: 6000, lat: 40.853, lon: 14.2725 },
-  vomero: { nome: 'Vomero · Piazza Vanvitelli', categoria: 'quartieri', capienza: 3000, lat: 40.844, lon: 14.229 },
-  sanita: { nome: 'Rione Sanità', categoria: 'quartieri', capienza: 2000, lat: 40.8606, lon: 14.2497 },
-  maradona: { nome: 'Stadio Diego Armando Maradona', categoria: 'eventi', capienza: 12000, lat: 40.828, lon: 14.193 },
+  plebiscito: {
+    nome: 'Piazza del Plebiscito', categoria: 'piazze', capienza: 3000, lat: 40.8359, lon: 14.2488,
+    parole: ['Plebiscito', 'Palazzo Reale', 'Teatro San Carlo', 'Galleria Umberto', 'Piazza Trieste e Trento', 'Via Toledo', 'Via Chiaia'],
+  },
+  centro_storico: {
+    nome: 'Spaccanapoli · Centro storico', categoria: 'piazze', capienza: 4500, lat: 40.8484, lon: 14.2558,
+    parole: ['Spaccanapoli', 'Via dei Tribunali', 'San Gregorio Armeno', 'Piazza del Gesù', 'Piazza Dante', 'San Domenico Maggiore', 'Piazza Bellini', 'Duomo', 'San Severo al Pendino', 'Decumani', 'Museo Archeologico', 'MANN'],
+  },
+  lungomare: {
+    nome: 'Lungomare Caracciolo', categoria: 'mare', capienza: 5000, lat: 40.8329, lon: 14.2349,
+    parole: ['Caracciolo', 'Rotonda Diaz', 'Villa Comunale', 'Casina Pompeiana', 'Lungomare', 'Riviera di Chiaia'],
+  },
+  mergellina: {
+    nome: 'Mergellina', categoria: 'mare', capienza: 2500, lat: 40.8288, lon: 14.2183,
+    parole: ['Mergellina', 'Piazza Sannazaro', 'Molo Mergellina', 'Posillipo', 'Pausilypon'],
+  },
+  beverello: {
+    nome: 'Molo Beverello · Stazione Marittima', categoria: 'mare', capienza: 3500, lat: 40.8383, lon: 14.2537,
+    parole: ['Beverello', 'Stazione Marittima', 'Molo Angioino', 'Piazza Municipio', 'Maschio Angioino', 'Castel Nuovo', 'Molosiglio', 'Porto di Napoli', 'crociere', 'aliscafi'],
+  },
+  castel_ovo: {
+    nome: "Castel dell'Ovo", categoria: 'attrazioni', capienza: 1500, lat: 40.828, lon: 14.2476,
+    parole: ["Castel dell'Ovo", 'Borgo Marinari', 'Via Partenope', 'Santa Lucia', 'Nazario Sauro'],
+  },
+  garibaldi: {
+    nome: 'Napoli Centrale · Garibaldi', categoria: 'trasporti', capienza: 6000, lat: 40.853, lon: 14.2725,
+    parole: ['Garibaldi', 'Napoli Centrale', 'Stazione Centrale', 'Corso Umberto', 'Porta Nolana', 'Circumvesuviana'],
+  },
+  vomero: {
+    nome: 'Vomero · Piazza Vanvitelli', categoria: 'quartieri', capienza: 3000, lat: 40.844, lon: 14.229,
+    parole: ['Vomero', 'Vanvitelli', 'Via Scarlatti', "Castel Sant'Elmo", 'San Martino', 'Floridiana', 'Arenella', 'funicolare'],
+  },
+  sanita: {
+    nome: 'Rione Sanità', categoria: 'quartieri', capienza: 2000, lat: 40.8606, lon: 14.2497,
+    parole: ['Sanità', 'Rione Sanità', 'Catacombe', 'Capodimonte', 'Materdei', 'Vergini'],
+  },
+  maradona: {
+    nome: 'Stadio Diego Armando Maradona', categoria: 'eventi', capienza: 12000, lat: 40.828, lon: 14.193,
+    parole: ['Maradona', 'stadio', 'Fuorigrotta', 'San Paolo', "Mostra d'Oltremare", 'Piazzale Tecchio', 'SSC Napoli', 'partita'],
+  },
 });
 
 /** Livelli di affollamento, come i 4 livelli di Seoul (여유 · 보통 · 약간 붐빔 · 붐빔). */

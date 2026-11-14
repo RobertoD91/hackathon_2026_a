@@ -26,6 +26,8 @@ Diario delle decisioni e di quello che sappiamo sull'ambiente di lavoro. Aggiorn
 | 13/11 sera | Avviati: ricerca e verifica delle fonti dati pubbliche di Napoli (catalogo in `docs/fonti-dati-napoli.md`), versione fattoria della mappa, firmware del badge WHY2025 con MQTT verso `cloud.robertodisanto.it` (+ ponte MQTT → hub, valutazione Tasmota), Docker del broker MQTT in `cloud/mqtt/`. |
 | 13/11 sera | Priorità: **C5 principale**, C2 di riserva, C1 molto improbabile. C4 passa all'altro gruppo; le cartelle restano come sono. |
 | 14/11 | Confermato: Docker con demone disponibile nelle sessioni cloud; su `cloud.robertodisanto.it` si possono aprire tutte le porte. |
+| 14/11 notte | Consegnati: Docker MQTT in `cloud/mqtt/`; firmware del badge WHY2025 (ESP32-C3, **senza sensore di luce**: serve un BH1750/VEML7700 I2C) con MQTT e ponte MQTT → hub (Tasmota sì per ESP32 generici, no sul badge); versione Fattoria "Acqua comune" della mappa. |
+| 14/11 mattina | Fonti dati di Napoli: 59 fonti in 4 domini, verificate da agenti scettici, catalogo in `docs/fonti-dati-napoli.md`. Integrate nella mappa di Napoli: meteo e aria reali, allerta, metro/funicolari/treni con prossimi passaggi, eventi di oggi, visitatori e riferimenti, traffico ASPI. Mancano (e restano simulati): presenze da rete mobile (da chiedere a Fastweb + Vodafone) e traffico urbano. |
 | — | Tower defense per C4: non più nostro (altro gruppo). |
 
 ## Punti di forza del team

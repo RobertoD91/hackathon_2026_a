@@ -10,9 +10,14 @@
 //   elemento in `SOVRAPPOSTI` con `crea({ L, map, ctx })` e, se cambia nel tempo, `aggiorna`;
 // - le stesse cose si possono aggiungere a mappa avviata: `mappa.aggiungiIndicatore(...)`,
 //   `mappa.aggiungiSovrapposto(...)` (es. da un modulo che legge una fonte esterna).
+//
+// Dati REALI (napoli-fonti.js, fonti/, dati/): modalità Meteo e Aria, livelli sovrapposti di
+// metro/funicolari/treni, eventi di oggi, centraline ARPAC e traffico, sezioni della scheda e
+// pannello "Oggi a Napoli". Affollamento e sensori restano simulati e lo dichiarano.
 
 import { CATEGORIE, LUOGHI, LIVELLI_FOLLA, LIVELLI_CALDO, livelloFolla, livelloCaldo } from './luoghi.js';
 import { aggregaSensori, colonna, distanzaKm } from './mappa.js';
+import { indicatoriReali, SOVRAPPOSTI_REALI, sezioniReali, etichettaReale, COLONNE_REALI, notaFonti, avviaFonti } from './napoli-fonti.js';
 
 /** Colori dei 4 livelli (gli stessi per affollamento e temperatura). */
 const COLORI = {
@@ -37,10 +42,12 @@ export const INDICATORI = [
     livelli: conColori(LIVELLI_CALDO),
     valuta: (a) => (a?.temperatura != null ? { livello: livelloCaldo(a.temperatura).id, valore: a.temperatura } : null),
   },
+  // dati reali: meteo per luogo (Open-Meteo) e qualità dell'aria (centraline ARPAC o modello CAMS)
+  ...indicatoriReali(COLORI),
 ];
 
-/** Livelli sovrapposti (per ora nessuno: vedi il commento in cima). */
-export const SOVRAPPOSTI = [];
+/** Livelli sovrapposti: metro, funicolari e treni; eventi reali di oggi; centraline ARPAC; traffico (ASPI). */
+export const SOVRAPPOSTI = [...SOVRAPPOSTI_REALI];
 
 /** Aggregato di zona: persone stimate (somma), temperatura e umidità (medie). */
 function aggrega(dispositivi) {
@@ -67,6 +74,11 @@ function alternativa(zona, c) {
 }
 
 function dettaglio(r, c) {
+  return `${dettaglioSensori(r, c)}${sezioniReali(r, c)}`;
+}
+
+/** Parte della scheda dai sensori (simulati): folla stimata, temperatura, alternativa più tranquilla. */
+function dettaglioSensori(r, c) {
   const { zona: z, luogo: l, agg: a } = r;
   if (!a) return '<p class="muted">In attesa dei dati dei sensori di questo luogo…</p>';
   const folla = r.livelli.folla;
@@ -81,14 +93,14 @@ function dettaglio(r, c) {
     </div>
     ${
       a.conPersone
-        ? `<div class="cm-d-num"><b>${formatNumber(a.persone, 0)}</b> persone stimate <small>· soglia ${formatNumber(l.capienza, 0)}</small></div>
+        ? `<div class="cm-d-num"><b>${formatNumber(a.persone, 0)}</b> persone stimate <small>· soglia ${formatNumber(l.capienza, 0)} · <span class="nf-tag nf-simulato">simulato</span></small></div>
            ${c.barra(quota, folla)}
            ${h.length > 2 ? `<div class="cm-d-spark">${c.sparkline(h, { width: 260, height: 40 })}<small>andamento recente</small></div>` : ''}`
         : ''
     }
     <dl class="cm-d-grid">
-      <dt>Temperatura</dt><dd>${a.temperatura != null ? `${formatNumber(a.temperatura, 1)} °C` : '–'}</dd>
-      <dt>Umidità</dt><dd>${a.umidita != null ? `${formatNumber(a.umidita, 0)} %` : '–'}</dd>
+      <dt>Temp. sensori</dt><dd>${a.temperatura != null ? `${formatNumber(a.temperatura, 1)} °C` : '–'}</dd>
+      <dt>Umidità sensori</dt><dd>${a.umidita != null ? `${formatNumber(a.umidita, 0)} %` : '–'}</dd>
       <dt>Sensori</dt><dd>${a.sensori} ${a.reali ? `(${a.reali} reali)` : '(simulati)'}</dd>
       <dt>Aggiornato</dt><dd>${formatTime(a.ts)}</dd>
     </dl>
@@ -102,7 +114,7 @@ function dettaglio(r, c) {
 /** Configurazione del componente mappa (mappa.js). */
 export const MAPPA = {
   titolo: 'Napoli in tempo reale',
-  sottotitolo: 'Affollamento e clima dei luoghi principali, aggiornati dai sensori e dagli agenti',
+  sottotitolo: 'Folla stimata, meteo, aria, metro e treni, eventi reali dei luoghi principali',
   cerca: 'Cerca un luogo…',
   ariaMappa: 'Mappa di Napoli',
   vista: { centro: [40.8435, 14.242], zoom: 13, zoomEtichette: 14, zoomVolo: 15 },
@@ -122,15 +134,22 @@ export const MAPPA = {
       classe: 'num',
       cella: (r, c) => (r.agg?.conPersone ? `${c.formatNumber(r.agg.persone, 0)} <small>/ ${c.formatNumber(r.luogo.capienza, 0)}</small>` : '–'),
     },
-    { titolo: 'Temperatura', classe: 'num', cella: (r, c) => (r.agg?.temperatura != null ? `${c.formatNumber(r.agg.temperatura, 1)} °C` : '–') },
+    { titolo: 'Temp. sensori', classe: 'num', mobile: false, cella: (r, c) => (r.agg?.temperatura != null ? `${c.formatNumber(r.agg.temperatura, 1)} °C` : '–') },
+    ...COLONNE_REALI,
     colonna.aggiornato(),
   ],
   dettaglio,
-  nota:
-    "Il cerchio che pulsa indica il luogo più critico di ogni categoria. Dati simulati: in produzione l'affollamento " +
-    'arriverebbe da dati anonimi e aggregati delle celle telefoniche e dai sensori ESP32 (5G), come fa ' +
-    '<a href="https://data.seoul.go.kr/SeoulRtd/" target="_blank" rel="noopener">Seoul Real-Time City Data</a>.',
+  etichetta: etichettaReale,
+  nota: notaFonti,
 };
+
+/** Etichette degli scenari accesi dall'agente fonti (eventi reali e stagione turistica). */
+function etichettaScenario(nome) {
+  if (nome.startsWith('evento_')) return `Evento reale: ${LUOGHI[nome.slice(7)]?.nome ?? nome.slice(7)}`;
+  if (nome === 'stagione_bassa') return 'Bassa stagione turistica (ISTAT)';
+  if (nome === 'stagione_alta') return 'Alta stagione turistica (ISTAT)';
+  return null;
+}
 
 /** Configurazione della dashboard (app.js → avviaDashboard). */
 export default {
@@ -142,4 +161,8 @@ export default {
     'Il hub raggiungibile da qui esegue un altro scenario, quindi Napoli gira nel tuo browser (modalità demo). ' +
     'Per la versione con il hub: <code>node shared/iot-agents/example/server.js</code>.',
   mappa: MAPPA,
+  kpi: ['luoghi_affollati', 'persone_stimate', 'eventi_oggi', 'temperatura_reale', 'aqi_europeo', 'allerta_meteo', 'temperatura_media', 'zone_calde'],
+  etichettaScenario,
+  // dati reali: caricati dopo la creazione della mappa (non bloccano la pagina)
+  avvio: (api) => avviaFonti(api, { colori: COLORI }),
 };
