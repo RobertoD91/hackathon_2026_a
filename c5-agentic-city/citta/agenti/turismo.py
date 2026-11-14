@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 
 from .. import DATI
+from ..testi import dove
 from .base import Agente, numero
 
 ADESIONE = {"medio": 0.06, "alto": 0.09, "critico": 0.12}
@@ -64,7 +65,7 @@ class AgenteTurismo(Agente):
                 continue
             if not any(l["zona"] == zona for l in self.luoghi):
                 continue
-            offerta = next((o for o in self.offerte if o["zona"] == zona), None)
+            offerta = next((o for o in self.offerte if o["zona"] == zona and o["ora"] >= self.ora), None)
             riempimento = f["persone"] / f["capienza"]
             candidate.append((riempimento - (0.15 if offerta else 0), zona, offerta))
         if not candidate:
@@ -87,7 +88,7 @@ class AgenteTurismo(Agente):
         luogo = next(l for l in self.luoghi if l["zona"] == verso)
 
         def regole() -> dict:
-            testo = f"A {f_da['nome']} c'è il pienone: in questo momento {luogo['nome']} è molto più tranquillo"
+            testo = f"C'è il pienone {dove(da_zona)}: adesso si sta molto più tranquilli {luogo.get('dove', 'a ' + luogo['nome'])}"
             if come:
                 testo += f" ({come})"
             if offerta:
@@ -107,5 +108,5 @@ class AgenteTurismo(Agente):
         self.bus.pubblica("napoli/avvisi", {"ora": self.ora, "per": "turisti", "zona": da_zona, "verso": verso,
                                             "testo": avviso["testo"], "offerta": offerta, "fonte": fonte})
         self.bus.pubblica("napoli/turismo/spostamenti", {"da": da_zona, "verso": verso, "persone": persone, "ora": self.ora})
-        self.di("Assistenti", f"Avviso per chi è a {f_da['nome']}: {avviso['testo']} "
-                f"(stimo ~{numero(persone)} persone spostate verso {f_verso['nome']})", fonte=fonte)
+        self.di("Assistenti", f"Avviso per chi è {dove(da_zona)}: {avviso['testo']} "
+                f"(stimo ~{numero(persone)} persone spostate {dove(verso)})", fonte=fonte)

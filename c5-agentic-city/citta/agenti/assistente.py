@@ -18,6 +18,7 @@ import time
 
 from .. import DATI
 from ..bus import Bus
+from ..testi import frase_folla, frase_prenotazione
 
 ZONE = ["mergellina", "rotonda_diaz", "piazza_vittoria", "castel_ovo", "municipio", "beverello", "vomero"]
 INTENTI = ["percorso", "mangiare", "prenota", "cosa_fare", "evento", "conferma", "altro"]
@@ -49,7 +50,8 @@ Se l'utente è crocerista e non dice dove si trova, da_zona = beverello. persone
 SISTEMA_RISPOSTA = """Sei l'assistente personale di Napoli Agentic City per {utente}.
 Rispondi nella lingua dell'utente ({lingua}), stile WhatsApp: massimo 70 parole, al massimo 1 emoji.
 Usa SOLO i dati forniti (orari, offerte, livelli di folla, collegamenti): non inventare.
-Se c'è una negoziazione con un'impresa, riferisci l'esito e, se è una controproposta, chiedi conferma.
+Se c'è una negoziazione con un'impresa, riferisci TU l'esito in terza persona (es. "La pizzeria 'O Scoglio alle 13:00 è piena, propone le 14:00"), non copiare il testo dell'impresa; se è una controproposta, chiedi conferma.
+La folla è una stima simulata della demo: se la citi, dillo.
 Tono caldo, concreto, napoletano quanto basta."""
 
 
@@ -218,7 +220,8 @@ class Assistenti:
         c = dati["citta"]
         parti = []
         if dati.get("negoziazione"):
-            parti.append(dati["negoziazione"]["testo"] + (". Confermo?" if dati["negoziazione"]["esito"] == "controproposta" else "."))
+            n = dati["negoziazione"]
+            parti.append(frase_prenotazione(n, n.get("persone") or intento.get("persone") or 2))
         elif dati.get("conferma"):
             p = dati["conferma"]
             parti.append(f"Fatto! Prenotato da {self.imprese[p['impresa']]['nome']} alle {p['ora']} per {p['persone']}.")
@@ -232,7 +235,7 @@ class Assistenti:
         verso = intento.get("verso_zona")
         if verso in c["folla"]:
             f = c["folla"][verso]
-            parti.append(f"Adesso a {f['nome']} l'affollamento è {f['livello']}.")
+            parti.append(f"{frase_folla(verso, f['livello'])} (stima della città simulata).")
         if intento["intento"] in ("cosa_fare", "altro") and not parti:
             tranquille = sorted((z for z, f in c["folla"].items() if f["livello"] in ("basso", "medio")),
                                 key=lambda z: c["folla"][z]["persone"])

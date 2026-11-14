@@ -5,6 +5,8 @@ description: Numeri reali su turismo e affluenza a Napoli: visitatori mensili de
 
 # Turismo e statistiche di Napoli
 
+> **Riserva.** Prima prova la skill `napoli-citta-dati` (API dati città): ha gli stessi dati con cache e fonte già pronta. Usa questa skill solo se l'API non risponde, o per i dati che l'API non ha.
+
 Sono **dati storici** (mensili o annuali), non presenze in tempo reale. Servono a dire "di solito" e "rispetto alla media". **Le presenze in tempo reale da rete mobile non sono pubbliche**: nella demo sono simulate, e sono il dato che chiediamo a Fastweb + Vodafone.
 
 ## 1. Visitatori dei siti comunali (CKAN del Comune, CC BY)

@@ -4,6 +4,7 @@ Skill per **CiroGPT**, l'agente OpenClaw di TwinCiro, su WhatsApp. Ogni cartella
 
 | Skill | Quando la usa CiroGPT | Fonti |
 |---|---|---|
+| [`napoli-citta-dati`](napoli-citta-dati/SKILL.md) | **per prima**, per qualunque dato reale sulla città: meteo, allerta, aria, eventi, trasporti, prossime partenze, terremoti | API dati città (`shared/citta-api`): una sola chiamata, con cache, fonte e ora di ogni dato |
 | [`twinciro-citta`](twinciro-citta/SKILL.md) | domande su come muoversi, dove mangiare o prenotare, folla e avvisi della città | API della città simulata (agenti di `c5-agentic-city`) |
 | [`napoli-meteo-allerte`](napoli-meteo-allerte/SKILL.md) | meteo, vento, pioggia, allerta | Open-Meteo (ICON-2I), MET Norway, Protezione Civile Campania, Meteoalarm, meteo@uniparthenope |
 | [`napoli-aria-mare-terremoti`](napoli-aria-mare-terremoti/SKILL.md) | qualità dell'aria, mare, balneazione, terremoti dei Campi Flegrei | Open-Meteo Air Quality e Marine, EEA, INGV |
@@ -14,11 +15,11 @@ Skill per **CiroGPT**, l'agente OpenClaw di TwinCiro, su WhatsApp. Ogni cartella
 
 Tutte le fonti sono state provate tra il 13 e il 14 novembre 2026. Il catalogo completo, con licenze ed esiti delle verifiche, è in [`docs/fonti-dati-napoli.md`](../../../docs/fonti-dati-napoli.md).
 
-## API dati città (in arrivo)
+## Ordine d'uso
 
-L'altra sessione sta costruendo un'**API dati città** (`shared/citta-api/`, da mettere su `cloud.robertodisanto.it`) sopra lo stesso catalogo. Avrà endpoint compatti e già normalizzati: `/citta/riassunto`, `/meteo?luogo=`, `/aria`, `/allerta`, `/trasporti/vicino?luogo=`, `/passaggi?stazione=`, `/eventi/oggi`, `/luoghi`. Ci saranno anche cache e limiti.
-
-Quando sarà online, le skill delle fonti la useranno **per prima** e chiameranno le fonti dirette qui sotto solo come riserva. Contratto e indirizzo saranno in `shared/citta-api/README.md`.
+1. **`napoli-citta-dati`**: l'API dati città dell'altra sessione (`shared/citta-api/`, Docker in `cloud/citta-api/`). Fa una sola chiamata per domanda, con cache, riserve e quote già gestite. Ogni risposta ha un `testo` da citare e `fonte.stato` (reale, riserva, salvato, snapshot, programmato, simulato, assente).
+2. **`twinciro-citta`**: per prenotazioni, negoziazione con le imprese e avvisi della città simulata.
+3. Le **skill delle fonti dirette** (`napoli-meteo-allerte`, `napoli-trasporti`, ecc.) sono la **riserva**: si usano solo se l'API non risponde, o per un dato che l'API non ha (per esempio onde, balneazione, statistiche turistiche, farmacie).
 
 ## Installazione
 
@@ -27,8 +28,10 @@ Copia le cartelle che ti servono nella cartella delle skill di OpenClaw, di soli
 Da verificare sulla nostra installazione: posizione esatta delle skill, variabili d'ambiente, heartbeat per gli avvisi proattivi.
 
 Variabili usate:
-- `C5_API`: indirizzo dell'API della città (solo per `twinciro-citta`);
-- `C5_API_TOKEN`: token dell'API, se è impostato.
+- `CITTA_API`: indirizzo dell'API dati città, senza barra finale (es. `https://cloud.robertodisanto.it/citta-api`);
+- `CITTA_API_TOKEN`: token dell'API dati città;
+- `C5_API`: indirizzo dell'API della città simulata di `c5-agentic-city` (solo per `twinciro-citta`);
+- `C5_API_TOKEN`: token di quell'API, se è impostato.
 
 ## Regole comuni a tutte le skill
 

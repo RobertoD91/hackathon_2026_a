@@ -5,6 +5,8 @@ description: Trasporti pubblici e mobilità a Napoli: prossime partenze di metro
 
 # Trasporti a Napoli
 
+> **Riserva.** Prima prova la skill `napoli-citta-dati` (API dati città): ha gli stessi dati con cache e fonte già pronta. Usa questa skill solo se l'API non risponde, o per i dati che l'API non ha.
+
 ## 1. Prossime partenze e itinerari: Transitous (con CORS, senza chiave)
 
 Raccoglie più operatori: ANM, EAV, Trenitalia (con la Linea 2). Servizio comunitario best-effort per progetti non commerciali e leggeri: usalo con parsimonia e **cita transitous.org/sources**.

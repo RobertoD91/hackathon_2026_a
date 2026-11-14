@@ -5,6 +5,8 @@ description: Eventi reali a Napoli: agenda del Comune, partite del Napoli al Mar
 
 # Eventi a Napoli
 
+> **Riserva.** Prima prova la skill `napoli-citta-dati` (API dati città): ha gli stessi dati con cache e fonte già pronta. Usa questa skill solo se l'API non risponde, o per i dati che l'API non ha.
+
 ## 1. Agenda del Comune (CC BY 4.0, senza CORS: leggila dal server, cache 30 minuti)
 
 ```bash

@@ -5,6 +5,8 @@ description: Qualità dell'aria (AQI, PM10, PM2.5, NO2, pollini), condizioni del
 
 # Aria, mare e terremoti a Napoli
 
+> **Riserva.** Prima prova la skill `napoli-citta-dati` (API dati città): ha gli stessi dati con cache e fonte già pronta. Usa questa skill solo se l'API non risponde, o per i dati che l'API non ha.
+
 ## 1. Qualità dell'aria: Open-Meteo Air Quality (Copernicus CAMS, CC BY 4.0)
 
 ```bash

@@ -29,7 +29,7 @@ class AgenteImprese(Agente):
 
     def avvio(self) -> None:
         self.ascolta("napoli/imprese/+/richieste")
-        self.ogni(30, self.pubblica_offerte)
+        self.ogni(10, self.pubblica_offerte)
 
     def _occupati(self, imp: dict, fascia: int) -> float:
         ora = str(fascia // 3600)
@@ -64,10 +64,19 @@ class AgenteImprese(Agente):
             richiesta = secondi_da_ora(m.get("ora") or ora_da_secondi(self.t + FASCIA))
         except ValueError:
             richiesta = self.t + FASCIA
-        fascia = max(richiesta // FASCIA * FASCIA, (self.t // FASCIA + 1) * FASCIA)
-        risposta = {"id_richiesta": m.get("id_richiesta"), "impresa": imp["id"], "nome": imp["nome"]}
+        chiesta = richiesta // FASCIA * FASCIA
+        fascia = max(chiesta, (self.t // FASCIA + 1) * FASCIA)
+        # Orario chiesto già passato: non prenotiamo d'ufficio un altro orario, lo proponiamo.
+        spostata = bool(m.get("ora")) and fascia != chiesta
+        risposta = {"id_richiesta": m.get("id_richiesta"), "impresa": imp["id"], "nome": imp["nome"],
+                    "persone": persone, "ora_richiesta": ora_da_secondi(chiesta if m.get("ora") else fascia)}
         chi = m.get("da", "un assistente")
-        if self._liberi(imp, fascia) >= persone:
+        if spostata and self._liberi(imp, fascia) >= persone:
+            sconto = imp["sconto_ore_morte"] if self._ora_morta(imp, fascia) else 0
+            risposta.update(esito="controproposta", ora=ora_da_secondi(fascia), sconto_pct=sconto,
+                            testo=f"Le {ora_da_secondi(chiesta)} sono già passate. Alle {ora_da_secondi(fascia)} c'è posto per {persone}"
+                                  + (f", e vi facciamo il {sconto}% di sconto" if sconto else ""))
+        elif self._liberi(imp, fascia) >= persone:
             self.prenotati[(imp["id"], fascia)] = self.prenotati.get((imp["id"], fascia), 0) + persone
             sconto = imp["sconto_ore_morte"] if self._ora_morta(imp, fascia) else 0
             risposta.update(esito="accettata", ora=ora_da_secondi(fascia), sconto_pct=sconto,

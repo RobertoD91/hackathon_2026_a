@@ -15,6 +15,7 @@ from __future__ import annotations
 import itertools
 import json
 
+from ..testi import dove
 from .base import Agente
 
 AZIONI = ["traffico", "turismo", "drone", "avviso"]
@@ -157,7 +158,7 @@ class Orchestratore(Agente):
             if not visto_di_recente and self.t - chiesto > 45 * 60:
                 # Prima verifichiamo con il drone, poi (alla prossima decisione) spostiamo la folla.
                 azioni.append({"agente": "drone", "zona": zona, "corridoio": "", "peso": 0,
-                               "testo": f"verifica affluenza a {f['nome']}"})
+                               "testo": f"celle e sensori danno affollamento {f['livello']}"})
                 frasi.append(f"{f['nome']} risulta {f['livello']} secondo celle e sensori: chiedo conferma al drone prima di agire")
                 continue
             if not visto_di_recente and self.t - chiesto < 10 * 60:
@@ -209,7 +210,9 @@ class Orchestratore(Agente):
                 self.drone_chiesto[a["zona"]] = self.t
                 self.bus.pubblica("napoli/drone/richieste", {"zona": a["zona"], "motivo": a.get("testo", ""),
                                                              "ora": self.ora, "decisione": d["id"]}, trattieni=True)
-                self.di("Pilota drone", f"Puoi fare un volo di verifica? {a.get('testo', '')}")
+                motivo = a.get("testo") or "serve una conferma dell'affollamento"
+                self.di("Pilota drone", f"Puoi fare un volo di verifica {dove(a['zona'])}? Il motivo: {motivo}. "
+                        "Mi serve una conferma prima di spostare la gente.")
             elif agente == "avviso" and a.get("testo"):
                 self.bus.pubblica("napoli/avvisi", {"ora": self.ora, "per": "tutti", "zona": a.get("zona", ""),
                                                     "testo": a["testo"], "fonte": d["fonte"]})

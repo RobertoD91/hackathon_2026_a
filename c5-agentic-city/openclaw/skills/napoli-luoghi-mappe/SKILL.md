@@ -5,6 +5,8 @@ description: Trovare luoghi e indirizzi a Napoli, coordinate, distanze e percors
 
 # Luoghi e mappe di Napoli
 
+> **Riserva.** Prima prova la skill `napoli-citta-dati` (API dati città): ha gli stessi dati con cache e fonte già pronta. Usa questa skill solo se l'API non risponde, o per i dati che l'API non ha.
+
 ## 1. Da nome o indirizzo a coordinate: Nominatim (OpenStreetMap, ODbL)
 
 Al massimo 1 richiesta al secondo, con User-Agent. Tieni i risultati in cache.

@@ -26,7 +26,7 @@
       "capienza": 18000
     },
     "rotonda_diaz": {
-      "nome": "Rotonda Diaz (village)",
+      "nome": "Rotonda Diaz",
       "lon": 14.233,
       "lat": 40.8335,
       "capienza": 26000
@@ -56,7 +56,7 @@
       "capienza": 7000
     },
     "vomero": {
-      "nome": "Vomero (funicolare di Chiaia)",
+      "nome": "Vomero",
       "lon": 14.237,
       "lat": 40.84,
       "capienza": 14000

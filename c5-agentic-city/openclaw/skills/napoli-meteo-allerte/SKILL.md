@@ -5,6 +5,8 @@ description: Meteo reale a Napoli (temperatura, pioggia, vento, previsioni orari
 
 # Meteo e allerte a Napoli
 
+> **Riserva.** Prima prova la skill `napoli-citta-dati` (API dati città): ha gli stessi dati con cache e fonte già pronta. Usa questa skill solo se l'API non risponde, o per i dati che l'API non ha.
+
 ## 1. Meteo: Open-Meteo (senza chiave, CC BY 4.0, uso non commerciale)
 
 Più luoghi in una sola chiamata, separando le coordinate con la virgola. La risposta è un array, un elemento per luogo. Con `models=italia_meteo_arpae_icon_2i` (modello italiano a 2,2 km) i luoghi hanno valori diversi; senza, finiscono tutti nella stessa cella.

@@ -1,27 +1,107 @@
 {
-  "nota": "Luoghi e collegamenti usati dall'agente Turismo e dagli assistenti. I visitatori annui dei siti comunali sono nei dataset open del Comune di Napoli (dati.comune.napoli.it: Castel dell'Ovo, Maschio Angioino, PAN, Pausilypon); qui usiamo solo la zona e la capienza della zona dallo scenario.",
+  "nota": "Luoghi e collegamenti usati dall'agente Turismo e dagli assistenti. I visitatori annui dei siti comunali sono nei dataset open del Comune di Napoli (dati.comune.napoli.it: Castel dell'Ovo, Maschio Angioino, PAN, Pausilypon); qui usiamo solo la zona e la capienza della zona dallo scenario. 'dove' è la frase con la preposizione giusta, usata nei messaggi su WhatsApp. Linea 6 (Mostra–Municipio) presente nel GTFS ANM 2026.",
   "luoghi": [
-    {"id": "castel_ovo", "nome": "Castel dell'Ovo e Borgo Marinari", "zona": "castel_ovo", "interessi": ["storia", "mare", "foto", "cibo"]},
-    {"id": "village", "nome": "America's Cup Village (Rotonda Diaz)", "zona": "rotonda_diaz", "interessi": ["regata", "sport", "eventi"]},
-    {"id": "lungomare", "nome": "Lungomare di via Caracciolo", "zona": "mergellina", "interessi": ["regata", "mare", "passeggiata"]},
-    {"id": "maschio", "nome": "Maschio Angioino", "zona": "municipio", "interessi": ["storia", "musei"]},
-    {"id": "plebiscito", "nome": "Piazza del Plebiscito e Palazzo Reale", "zona": "piazza_vittoria", "interessi": ["storia", "musei", "foto"]},
-    {"id": "pan", "nome": "PAN – Palazzo delle Arti", "zona": "piazza_vittoria", "interessi": ["musei", "arte"]},
-    {"id": "sant_elmo", "nome": "Castel Sant'Elmo e Certosa di San Martino", "zona": "vomero", "interessi": ["storia", "panorama", "foto"]},
-    {"id": "gozzo", "nome": "Giro in gozzo da Mergellina", "zona": "mergellina", "interessi": ["mare", "regata", "esperienze"]}
+    {
+      "id": "castel_ovo",
+      "nome": "Castel dell'Ovo e Borgo Marinari",
+      "zona": "castel_ovo",
+      "interessi": [
+        "storia",
+        "mare",
+        "foto",
+        "cibo"
+      ],
+      "dove": "al Castel dell'Ovo e al Borgo Marinari"
+    },
+    {
+      "id": "village",
+      "nome": "America's Cup Village (Rotonda Diaz)",
+      "zona": "rotonda_diaz",
+      "interessi": [
+        "regata",
+        "sport",
+        "eventi"
+      ],
+      "dove": "all'America's Cup Village di Rotonda Diaz"
+    },
+    {
+      "id": "lungomare",
+      "nome": "Lungomare di via Caracciolo",
+      "zona": "mergellina",
+      "interessi": [
+        "regata",
+        "mare",
+        "passeggiata"
+      ],
+      "dove": "sul lungomare di via Caracciolo"
+    },
+    {
+      "id": "maschio",
+      "nome": "Maschio Angioino",
+      "zona": "municipio",
+      "interessi": [
+        "storia",
+        "musei"
+      ],
+      "dove": "al Maschio Angioino"
+    },
+    {
+      "id": "plebiscito",
+      "nome": "Piazza del Plebiscito e Palazzo Reale",
+      "zona": "piazza_vittoria",
+      "interessi": [
+        "storia",
+        "musei",
+        "foto"
+      ],
+      "dove": "in Piazza del Plebiscito e a Palazzo Reale"
+    },
+    {
+      "id": "pan",
+      "nome": "PAN – Palazzo delle Arti",
+      "zona": "piazza_vittoria",
+      "interessi": [
+        "musei",
+        "arte"
+      ],
+      "dove": "al PAN, il Palazzo delle Arti"
+    },
+    {
+      "id": "sant_elmo",
+      "nome": "Castel Sant'Elmo e Certosa di San Martino",
+      "zona": "vomero",
+      "interessi": [
+        "storia",
+        "panorama",
+        "foto"
+      ],
+      "dove": "a Castel Sant'Elmo e alla Certosa di San Martino"
+    },
+    {
+      "id": "gozzo",
+      "nome": "Giro in gozzo da Mergellina",
+      "zona": "mergellina",
+      "interessi": [
+        "mare",
+        "regata",
+        "esperienze"
+      ],
+      "dove": "su un gozzo da Mergellina"
+    }
   ],
   "collegamenti": {
-    "beverello->rotonda_diaz": "a piedi lungo via Partenope e via Caracciolo (25 minuti), oppure Linea 6 della metro se attiva",
+    "beverello->rotonda_diaz": "Linea 6 da Municipio a San Pasquale e poi 5 minuti a piedi, oppure a piedi lungo via Partenope e via Caracciolo (25 minuti)",
     "beverello->castel_ovo": "a piedi da via Acton e via Partenope (15 minuti)",
     "beverello->vomero": "Linea 1 da Municipio fino a Vanvitelli (12 minuti)",
     "municipio->vomero": "Linea 1 da Municipio fino a Vanvitelli (12 minuti)",
     "rotonda_diaz->vomero": "Funicolare di Chiaia da Parco Margherita (10 minuti a piedi + 5 di funicolare)",
     "piazza_vittoria->vomero": "Funicolare di Chiaia da Parco Margherita (8 minuti a piedi + 5 di funicolare)",
     "mergellina->vomero": "Funicolare di Mergellina fino a via Manzoni, poi bus",
-    "rotonda_diaz->beverello": "a piedi lungo il mare (25 minuti) o taxi dalla Riviera di Chiaia",
-    "mergellina->beverello": "Linea 2 da Mergellina a Piazza Garibaldi e poi Linea 1, oppure a piedi sul lungomare (35 minuti)",
+    "rotonda_diaz->beverello": "Linea 6 da San Pasquale a Municipio, oppure a piedi lungo il mare (25 minuti)",
+    "mergellina->beverello": "Linea 6 da Mergellina a Municipio, oppure a piedi sul lungomare (35 minuti)",
     "mergellina->fuorigrotta": "Linea 2 da Mergellina a Campi Flegrei (5 minuti): evita l'auto, la zona stadio è chiusa",
     "piazza_vittoria->fuorigrotta": "a piedi fino a Mergellina e Linea 2 fino a Campi Flegrei",
-    "municipio->fuorigrotta": "Linea 1 fino a Garibaldi e Linea 2 fino a Campi Flegrei, oppure Cumana da Montesanto"
+    "municipio->fuorigrotta": "Linea 1 fino a Garibaldi e Linea 2 fino a Campi Flegrei, oppure Cumana da Montesanto",
+    "beverello->mergellina": "Linea 6 da Municipio a Mergellina"
   }
 }
