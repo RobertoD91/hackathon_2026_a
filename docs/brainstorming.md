@@ -1,5 +1,7 @@
 # Brainstorming — challenge 1, 2, 5
 
+> **Documento storico (13/11).** La scelta definitiva è la C5 con **TwinCiro** e CiroGPT al centro (vedi `CLAUDE.md` e il diario in `stato-e-strumenti.md`). Le idee `c5-regia-evento`, `c5-heatescape` e `c5-smartwaste` non sono state sviluppate come cartelle separate: lo scenario America's Cup + navi + partita vive in `c5-agentic-city/`.
+
 Testi ufficiali delle challenge: [`hackathon.md`](hackathon.md). Punti di forza del team: IoT (ESP32, modulo 5G), OpenClaw già funzionante con WhatsApp, server cloud e deploy rapido con Claude Code.
 
 Idea trasversale: **C2 e C5 possono condividere la stessa base tecnica**. Il flusso è: ESP32 con sensori → backend di ingestione → agenti specializzati → orchestratore (OpenClaw) → canale verso le persone (WhatsApp) e dashboard per l'operatore. Si costruisce una volta (firmware, ingestione, simulatore di sensori, formato dei messaggi) e cambia solo lo scenario. Proposta: una cartella condivisa `shared/iot-agents/`.

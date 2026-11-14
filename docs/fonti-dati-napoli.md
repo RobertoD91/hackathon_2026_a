@@ -2,6 +2,8 @@
 
 Catalogo delle fonti dati per la mappa "Napoli in tempo reale" (`shared/iot-agents/example/`, 10 luoghi in `luoghi.js`) e per gli agenti di C5 (Fastweb + Vodafone, "Napoli Agentic City"). Nasce da una ricerca su quattro domini: meteo e ambiente, mobilità, eventi e turismo, territorio e cataloghi. Un verificatore indipendente ha poi ricontrollato ogni dominio e, quando ricerca e verifica non coincidono, qui vale la verifica. Non c'è niente che non sia stato trovato o provato in quella ricerca: dove la verifica non ha confermato, è scritto.
 
+**Chi le usa.** La mappa le legge con `shared/iot-agents/example/fonti/` (snapshot in `example/dati/`, rigenerati da `shared/iot-agents/tools/aggiorna-dati-napoli.js`). CiroGPT le usa tramite le skill OpenClaw in [`c5-agentic-city/openclaw/skills/`](../c5-agentic-city/openclaw/skills/README.md) e, quando sarà pronta, tramite l'API dati città in `shared/citta-api/` (una sola API con cache, per non esaurire le quote delle fonti).
+
 **Quando e da dove.** Le prove sono state fatte dalla sandbox cloud di Claude Code tra la sera del 13/11/2026 e la notte del 14/11/2026: la verifica, tra le 00:00 e le 01:45 UTC del 14/11. La sandbox esce verso l'esterno da un unico IP condiviso, non italiano, attraverso un proxy HTTPS. Per questo negli esiti si distinguono tre casi:
 
 - **bloccata dalla sandbox**: è il proxy della sandbox a rifiutare o chiudere la connessione. Non vuol dire che la fonte non funzioni: va riprovata dalla rete dell'evento o da `cloud.robertodisanto.it`;

@@ -23,6 +23,11 @@ Team (dal 13/11 sera): **Roberto D'Isanto e Mario Varlese**. Francesca Morra, Gi
 
 **Regole di consegna C5:** si consegna un **video di massimo 3 minuti**. La live demo è facoltativa: c'è un gruppo WhatsApp con CiroGPT dentro.
 
+**Il progetto si chiama TwinCiro** ("Napoli che ci pensa"): CiroGPT su WhatsApp + agenti della città + gemello digitale. **Divisione del lavoro tra le sessioni Claude di Roberto** (per non pestarsi i piedi; fai sempre `git pull --rebase` prima di pushare):
+- la sessione "Hackathon napoli" possiede **`c5-agentic-city/`** (codice di TwinCiro, `openclaw/` con le skill di CiroGPT, flasher, README di C5);
+- la sessione "hackathon-2026-a" possiede **`shared/`** (mappa "Napoli in tempo reale", fonti, base IoT, firmware del badge, `shared/citta-api/` = API dati città per CiroGPT), **`cloud/`**, **`c5-video/`** (video di consegna) e **`docs/`**;
+- README principale e `index.html` li aggiornano entrambe, con modifiche piccole e mirate. Le richieste da una sessione all'altra si lasciano in `docs/stato-e-strumenti.md`.
+
 Vincoli che contano per le scelte tecniche:
 - **Consegna: domenica 15/11 ore 12:00.** Sabato si lavora 11:00–20:30, domenica dalle 8:30. Privilegia soluzioni che arrivano a una demo funzionante, non architetture complete.
 - **Criteri della giuria:** utilità/valore, aderenza alla challenge, chiarezza e completezza del progetto, design/UX, creatività/innovazione. La UX della demo pesa quanto il backend.
