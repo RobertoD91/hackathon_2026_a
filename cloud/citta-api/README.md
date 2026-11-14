@@ -1,10 +1,10 @@
 # API dati città su twinciro.robertodisanto.it
 
-L'API di [`citta-api/`](../../citta-api/README.md) (il "cervello dati" di CiroGPT) in **Docker**: immagine `node:22.23.5-alpine`, nessuna dipendenza npm, porta **8791**, token Bearer facoltativo, healthcheck su `/salute`, snapshot in un volume e rinfresco automatico degli snapshot dentro il processo.
+L'API di [`citta-api/`](../../citta-api/README.md) (il "cervello dati" di TwinCIRO) in **Docker**: immagine `node:22.23.5-alpine`, nessuna dipendenza npm, porta **8791**, token Bearer facoltativo, healthcheck su `/salute`, snapshot in un volume e rinfresco automatico degli snapshot dentro il processo.
 
 | Porta | Protocollo | Per chi |
 |---|---|---|
-| **443** | HTTPS (profilo `https`: nginx in un container) | CiroGPT (OpenClaw): `https://twinciro.robertodisanto.it/citta-api` |
+| **443** | HTTPS (profilo `https`: nginx in un container) | TwinCIRO (OpenClaw): `https://twinciro.robertodisanto.it/citta-api` |
 | 8791 | HTTP (JSON) | prove e rete interna; con il profilo `https` può restare su 127.0.0.1 |
 
 Sul server **non abbiamo root**: niente nginx di sistema né `sudo`. HTTPS lo fa un nginx in Docker con i certificati che l'amministratore rende leggibili ([`../certificati/`](../certificati/README.md)).
@@ -36,7 +36,7 @@ cloud/citta-api/
 git clone https://github.com/RobertoD91/hackathon_2026_a.git     # se non c'è già (è la stessa del broker MQTT)
 cd hackathon_2026_a/cloud/citta-api
 cp .env.example .env && chmod 600 .env
-sed -i "s/^CITTA_API_TOKEN=.*/CITTA_API_TOKEN=$(openssl rand -hex 24)/" .env   # token per CiroGPT
+sed -i "s/^CITTA_API_TOKEN=.*/CITTA_API_TOKEN=$(openssl rand -hex 24)/" .env   # token per TwinCIRO
 docker compose up -d --build
 ./prova.sh                                   # /salute, 401 senza token, riassunto, luogo, passaggi, fonti
 ```
@@ -65,7 +65,7 @@ nginx rilegge i certificati da solo ogni 12 ore, quindi dopo un rinnovo non serv
 
 Provato il 14/11 con un certificato autofirmato, con la chiave 0640 di un altro utente come la lascia `copia-certificati.sh`: container `healthy`, `prova.sh` 6 su 6 attraverso nginx e ricaricamento a caldo.
 
-Per CiroGPT: `CITTA_API=https://twinciro.robertodisanto.it/citta-api` e `CITTA_API_TOKEN=<token>` (skill d'esempio nel [README dell'API](../../citta-api/README.md#usarla-da-cirogpt)).
+Per TwinCIRO: `CITTA_API=https://twinciro.robertodisanto.it/citta-api` e `CITTA_API_TOKEN=<token>` (skill d'esempio nel [README dell'API](../../citta-api/README.md#usarla-da-twinciro)).
 
 ## Configurazione (`.env`)
 
@@ -82,7 +82,7 @@ Per CiroGPT: `CITTA_API=https://twinciro.robertodisanto.it/citta-api` e `CITTA_A
 | `CITTA_TIENI_CALDO` | `1` | fonti del riassunto rilette in anticipo (solo se scadute) |
 | `CITTA_PAUSA_429` | `15m` | pausa di un dominio dopo un 429 |
 
-La mappa nel browser e CiroGPT possono usare la stessa API solo se il token è vuoto (una pagina pubblica non può tenere un segreto). Se serve il token per CiroGPT e l'accesso libero per la mappa, aggiungi in `nginx/https.conf` un percorso che inserisce l'header `Authorization` solo per la mappa, oppure avvia una seconda istanza senza token con `CITTA_TIENI_CALDO=0`.
+La mappa nel browser e TwinCIRO possono usare la stessa API solo se il token è vuoto (una pagina pubblica non può tenere un segreto). Se serve il token per TwinCIRO e l'accesso libero per la mappa, aggiungi in `nginx/https.conf` un percorso che inserisce l'header `Authorization` solo per la mappa, oppure avvia una seconda istanza senza token con `CITTA_TIENI_CALDO=0`.
 
 Dopo una modifica a `.env`: `docker compose up -d` (ricrea il container, il volume resta).
 
@@ -112,7 +112,9 @@ cd cloud/citta-api && docker compose --profile https up -d --build   # senza il 
 ./prova.sh && ./prova.sh https://twinciro.robertodisanto.it/citta-api
 ```
 
-**Dopo il riordino del 14/11** (l'API è passata da `shared/citta-api/` a `citta-api/`, autonoma) basta questo: l'immagine va **ricostruita** (`--build`), il volume `dati` resta com'è e all'avvio l'API ci rimette gli snapshot della repo se sono più recenti. Il nome del progetto compose (`bighack-citta-api`), la porta, il `.env` e il percorso per CiroGPT non cambiano. Niente `docker compose down -v`.
+Se il pull cambia `nginx/https.conf`, ricrea anche nginx: `docker compose --profile https up -d --force-recreate https`. Il file è montato da solo, quindi dopo un `git pull` il container continua a leggere la versione di prima, anche con `nginx -s reload`.
+
+**Dopo il riordino del 14/11** (l'API è passata da `shared/citta-api/` a `citta-api/`, autonoma) basta questo: l'immagine va **ricostruita** (`--build`), il volume `dati` resta com'è e all'avvio l'API ci rimette gli snapshot della repo se sono più recenti. Il nome del progetto compose (`bighack-citta-api`), la porta, il `.env` e il percorso per TwinCIRO non cambiano. Niente `docker compose down -v`.
 
 ## Log e controllo
 
@@ -137,7 +139,7 @@ Righe utili nei log:
 | Sintomo | Causa e rimedio |
 |---|---|
 | `/citta/meteo` dice `riserva` o `salvato` | Open-Meteo ha risposto 429 o non risponde: è previsto, l'API lo dichiara. `/citta/fonti` mostra la pausa e quando finisce |
-| `401` da CiroGPT | token diverso tra `.env` e la variabile `CITTA_API_TOKEN` di OpenClaw |
+| `401` da TwinCIRO | token diverso tra `.env` e la variabile `CITTA_API_TOKEN` di OpenClaw |
 | la mappa nel browser non legge l'API | origine non in `CITTA_API_CORS`, oppure token impostato (il browser non lo ha) |
 | `stato: degradato` in `/salute` | nessuno snapshot caricato: controlla il volume (`docker compose exec citta-api ls -l /dati`) |
 | rinfresco sempre in errore | l'uscita verso una fonte è bloccata dal firewall del server; `/citta/fonti` → `snapshot.<sezione>.fonti[].errore` |

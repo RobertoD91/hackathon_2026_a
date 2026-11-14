@@ -175,14 +175,14 @@ export async function creaServizio(config, deps = {}) {
       snapshot,
       aggiornamento_snapshot: aggiornamento.stato(),
       legenda_stati: LEGENDA_STATI,
-      catalogo_completo: 'docs/fonti-dati-napoli.md nella repo (59 fonti verificate, licenze ed esiti delle prove)',
+      catalogo_completo: 'docs/fonti-dati-napoli.md nella repo (oltre 50 fonti pubbliche verificate una per una, con licenze ed esiti delle prove)',
     };
   }
 
   function indice() {
     return {
       servizio: 'API dati città di Napoli (citta-api)',
-      descrizione: 'Dati reali della città per CiroGPT e per la mappa, con cache, riserve dichiarate e rispetto delle quote delle fonti. Ogni risposta ha una `fonte` con lo stato del dato e un campo `testo` pronto da citare.',
+      descrizione: 'Dati reali della città per TwinCIRO e per la mappa, con cache, riserve dichiarate e rispetto delle quote delle fonti. Ogni risposta ha una `fonte` con lo stato del dato e un campo `testo` pronto da citare.',
       versione: VERSIONE,
       endpoint: ENDPOINT.map(([percorso, cosa, esempio]) => ({ percorso, cosa, esempio })),
       parametri_comuni: { formato: 'testo → solo il campo testo (text/plain)', leggibile: '1 → JSON indentato' },
@@ -341,7 +341,7 @@ export async function creaServizio(config, deps = {}) {
       });
       const indirizzo = server.address();
       log(`in ascolto su http://${host}:${indirizzo.port} (token ${config.token ? 'richiesto' : 'non richiesto'}, CORS: ${config.cors.join(', ') || 'nessuno'}, snapshot in ${archivio.cartella})`);
-      // fonti tenute "calde": la prima domanda di CiroGPT non aspetta le fonti lente
+      // fonti tenute "calde": la prima domanda di TwinCIRO non aspetta le fonti lente
       if (config.tieniCaldo) {
         scalda().catch(() => {});
         const t = setInterval(() => scalda().catch(() => {}), 5 * 60_000);

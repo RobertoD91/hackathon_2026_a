@@ -1,4 +1,4 @@
-// Configurazione della telemetria MQTT del badge WHY2025/EMF2026 (formato napoli/ di TwinCiro).
+// Configurazione della telemetria MQTT del badge WHY2025/EMF2026 (formato napoli/ di TwinCIRO).
 // COPIA questo file in `telemetry_config.h` (stessa cartella, NON versionato) e metti utente e
 // password MQTT del badge:
 //   cp telemetry_config.example.h telemetry_config.h

@@ -1,6 +1,6 @@
-# Firmware `why2025-badge`: il badge Cyber Saiyan come nodo di TwinCiro
+# Firmware `why2025-badge`: il badge Cyber Saiyan come nodo di TwinCIRO
 
-Firmware per il badge **WHY2025/EMF2026 di Cyber Saiyan** ([CyberSaiyanIT/why2025-badge](https://github.com/CyberSaiyanIT/why2025-badge)) costruito **sopra il firmware originale** (ESP-IDF 4.4 via PlatformIO): il badge resta com'era (logo, radar dei badge, giochi, LED, web in modalità AP) e in più parla con la città nel **formato MQTT unico di TwinCiro** (specifica completa in [`../README.md`](../README.md)):
+Firmware per il badge **WHY2025/EMF2026 di Cyber Saiyan** ([CyberSaiyanIT/why2025-badge](https://github.com/CyberSaiyanIT/why2025-badge)) costruito **sopra il firmware originale** (ESP-IDF 4.4 via PlatformIO): il badge resta com'era (logo, radar dei badge, giochi, LED, web in modalità AP) e in più parla con la città nel **formato MQTT unico di TwinCIRO** (specifica completa in [`../README.md`](../README.md)):
 
 - si collega all'**hotspot del team** (`iBob12`) e al broker `twinciro.robertodisanto.it:1883` (già nei valori predefiniti: resta da mettere solo utente e password MQTT);
 - fa da **contapersone a mano**: rotella SU = un gruppo di persone visto nella sua zona, pubblicato subito su `napoli/sensori/<id>/persone`, che l'agente Folla della città aggiunge alla stima della zona; rotella GIÙ = azzera;
@@ -88,7 +88,7 @@ Comportamento:
   - **SU** = un gruppo di persone visto: +1 e pubblicazione **subito** di `napoli/sensori/<id>/persone` con `valore` = pressioni negli ultimi `TELEMETRY_PERSONE_FINESTRA_S` (10 minuti) e `moltiplicatore` = `TELEMETRY_PERSONE_MOLTIPLICATORE` (500);
   - **GIÙ** = azzera il conteggio e pubblica subito `valore` 0 (per ripetere la demo);
   - le pressioni escono dalla finestra da sole; lo schermo mostra il conteggio e quante persone aggiunge alla zona.
-- **Perché il pulsante fa questo**: l'agente Folla della città (`c5-agentic-city/citta/agenti/folla.py`) ascolta `napoli/sensori/+/persone` e somma `valore × moltiplicatore` alla stima della zona, se la zona è una di quelle dello scenario, se la lettura non è più vecchia di 180 s (per questo il badge la ripete a ogni ciclo) e se il badge non è offline. Così il badge cambia davvero quello che vedono gli agenti: 10 pressioni a `rotonda_diaz` = +5000 persone nella stima della zona (capienza 26 000); mentre la regata riempie la Rotonda Diaz basta a far salire prima il livello di affollamento, e la città reagisce (orchestratore, avviso di CiroGPT). Le altre letture e lo stato del badge la città li mostra nella sala (pannello "Sensori reali") e in `GET /stato` (chiavi `sensori` e `nodi`); la temperatura la dice anche l'agente Meteo&Mare. Il vecchio `napoli/eventi/manuale` non si usa più: è un topic condiviso della città, e l'ACL del broker non lo concede ai dispositivi.
+- **Perché il pulsante fa questo**: l'agente Folla della città (`c5-agentic-city/citta/agenti/folla.py`) ascolta `napoli/sensori/+/persone` e somma `valore × moltiplicatore` alla stima della zona, se la zona è una di quelle dello scenario, se la lettura non è più vecchia di 180 s (per questo il badge la ripete a ogni ciclo) e se il badge non è offline. Così il badge cambia davvero quello che vedono gli agenti: 10 pressioni a `rotonda_diaz` = +5000 persone nella stima della zona (capienza 26 000); mentre la regata riempie la Rotonda Diaz basta a far salire prima il livello di affollamento, e la città reagisce (orchestratore, avviso di TwinCIRO). Le altre letture e lo stato del badge la città li mostra nella sala (pannello "Sensori reali") e in `GET /stato` (chiavi `sensori` e `nodi`); la temperatura la dice anche l'agente Meteo&Mare. Il vecchio `napoli/eventi/manuale` non si usa più: è un topic condiviso della città, e l'ACL del broker non lo concede ai dispositivi.
 - **Wi-Fi**: la telemetria si collega all'hotspot quando nessun altro usa il Wi-Fi. Si ricollega da sola con attese da 2 a 30 s. Se dalla schermata admin accendi l'**AP** (web del badge), la telemetria va in pausa; riparte quando l'AP si spegne (60 s senza client). Il "SYNC SCHEDULE" del firmware originale funziona ancora (usa la sua rete, poi la telemetria riprende).
 - **MQTT** (ESP-MQTT di ESP-IDF):
   - riconnessione automatica ogni 5 s e keepalive di 30 s;
@@ -160,7 +160,7 @@ Più badge con lo stesso firmware: lascia `TELEMETRY_DEVICE_ID` e `TELEMETRY_MQT
 
 ## Topic e messaggi
 
-Il formato è quello unico di TwinCiro, descritto per intero in [`../README.md`](../README.md#formato-mqtt-unico). Quello che manda e riceve il badge `badge-1` alla Rotonda Diaz:
+Il formato è quello unico di TwinCIRO, descritto per intero in [`../README.md`](../README.md#formato-mqtt-unico). Quello che manda e riceve il badge `badge-1` alla Rotonda Diaz:
 
 | Topic | Direzione | Contenuto |
 |---|---|---|

@@ -1,7 +1,7 @@
 // telemetry_cfg: carica telemetry_config.h (non versionato) e completa i valori predefiniti.
 // Non modificare questo file: copia ../../../telemetry_config.example.h in telemetry_config.h.
 //
-// Predefiniti = la demo di TwinCiro: hotspot del team (rete di prova, SSID e password possono stare
+// Predefiniti = la demo di TwinCIRO: hotspot del team (rete di prova, SSID e password possono stare
 // nella repo), broker twinciro.robertodisanto.it:1883 in chiaro, zona rotonda_diaz. Resta da mettere
 // in telemetry_config.h solo utente e password MQTT (cloud/mqtt/scripts/aggiungi-utente.sh <id>).
 

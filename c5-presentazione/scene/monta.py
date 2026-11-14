@@ -2,7 +2,7 @@
 """Monta il video di consegna di TwinCIRO (bozza.mp4) a partire da scene/scaletta.json.
 
 Per ogni scena:
-- sorgente generata (cartelli, architettura, chat di CiroGPT) con scene/rendi_html.mjs,
+- sorgente generata (cartelli, architettura, chat di TwinCIRO) con scene/rendi_html.mjs,
   registrazione della mappa con scene/registra_mappa.mjs, oppure spezzone di un video esistente;
 - se in girato/ c'è la ripresa vera indicata in "girato" (es. girato/badge.mp4), usa quella;
 - testata (etichetta + testo) e velo sopra i video, dissolvenze brevi.
@@ -88,7 +88,6 @@ SILENZIO_PRIMA, SILENZIO_DOPO = 0.08, 0.25   # secondi di silenzio lasciati prim
 # Come si leggono le parole difficili (per il copione e per contare le parole); "pronuncia" nella scaletta le integra
 PRONUNCIA = {
     "TwinCIRO": "tuìn cìro",
-    "CiroGPT": "cìro gi pi ti",
     "WHY2025": "uài duemilaventicinque",
     "Wi-Fi": "uài fai",
     "MQTT": "emme cu ti ti",
@@ -177,7 +176,7 @@ class Sorgenti:
         return uscita
 
     def png(self, pagina: str, nome: str, dati: object = None) -> Path:
-        # chat.json nella chiave: la notifica di CiroGPT ne riprende il testo dell'avviso
+        # chat.json nella chiave: la notifica di TwinCIRO ne riprende il testo dell'avviso
         k = chiave(pagina, QUI / "cartelli.html", QUI / "chat.json", *self.comuni, json.dumps(dati, sort_keys=True))
         uscita = self.dir / f"{nome}-{k}.png"
         if self.rigenera or not uscita.exists():
@@ -276,7 +275,7 @@ def monta_scena(sc: dict, i: int, n: int, sorg: Sorgenti, dissolvenza: float) ->
             descrizione = s["pagina"]
         elif tipo == "chat":
             file = sorg.html(f"chat.html?durata={d:g}", d, QUI / "chat.html", QUI / "chat.json")
-            descrizione = "chat simulata di CiroGPT (risposte vere dell'API)"
+            descrizione = "chat simulata di TwinCIRO (risposte vere dell'API)"
         elif tipo == "mappa":
             file, da = sorg.mappa(), float(s.get("da", 0))
             descrizione = "registrazione della mappa con dati reali"

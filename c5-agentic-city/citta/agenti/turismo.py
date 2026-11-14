@@ -2,7 +2,7 @@
 
 Quando una zona diventa troppo piena (o l'orchestratore lo chiede) sceglie una zona
 alternativa meno piena con qualcosa di interessante e un'offerta di un'impresa,
-e la propone come avviso ai turisti (via assistenti personali, cioè CiroGPT su WhatsApp).
+e la propone come avviso ai turisti (via assistenti personali, cioè TwinCIRO su WhatsApp).
 Stima quante persone accettano (ipotesi: 6-12% di chi è in zona e riceve l'avviso)
 e lo comunica all'agente Folla, che aggiorna le stime: il cerchio si chiude.
 """

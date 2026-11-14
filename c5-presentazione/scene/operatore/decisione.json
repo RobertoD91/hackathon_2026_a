@@ -1,0 +1,339 @@
+{
+  "generato": {
+    "quando": "2026-11-14T19:53:18+00:00",
+    "come": "scene/operatore/cattura_citta.py: la città di c5-agentic-city in memoria, come avvia.py con --llm regole --senza-gemello --approvazione --inizio 12:10 --velocita 30 e l'API su 127.0.0.1. Lo script rifà le domande di Marta (chat_domande.json) e fa l'operatore con l'API vera (POST /operatore): approva subito le decisioni precedenti, poi si ferma sulla proposta che sposta la folla da rotonda_diaz e la approva dopo aver reso la sala.",
+    "nota": "Folla, imprese e offerte sono SIMULATE (stima della città e imprese di fantasia); niente LLM (regole). La sala è resa con il layout vero di citta/sala.py; il gemello SUMO è spento, quindi i pannelli dei semafori e dei KPI restano in attesa, e nessun dispositivo è collegato (Sensori reali vuoto).",
+    "terminale": {
+      "colonne": 118,
+      "righe": 38
+    }
+  },
+  "proposta": {
+    "id": "D4",
+    "ora": "14:41",
+    "stato": "in_attesa",
+    "fonte": "regole",
+    "sintesi": "Castel dell'Ovo affollamento alto; nessuna risposta dal drone su mergellina; nessuna risposta dal drone su rotonda_diaz",
+    "motivazione": "Mergellina alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Rotonda Diaz alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Castel dell'Ovo risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire",
+    "azioni": [
+      {
+        "agente": "turismo",
+        "zona": "mergellina",
+        "corridoio": "",
+        "peso": 0,
+        "testo": ""
+      },
+      {
+        "agente": "turismo",
+        "zona": "rotonda_diaz",
+        "corridoio": "",
+        "peso": 0,
+        "testo": ""
+      },
+      {
+        "agente": "drone",
+        "zona": "castel_ovo",
+        "corridoio": "",
+        "peso": 0,
+        "testo": "celle e sensori danno affollamento alto"
+      }
+    ],
+    "messaggio_alla_sala": {
+      "ora": "14:41",
+      "da": "Orchestratore",
+      "a": "Sala operativa",
+      "testo": "[D4] proposta: Mergellina alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Rotonda Diaz alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Castel dell'Ovo risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire — approvi?",
+      "fonte": "regole"
+    }
+  },
+  "approvazione": {
+    "richiesta": "POST /operatore",
+    "corpo": {
+      "decisione": "D4",
+      "esito": "approva"
+    },
+    "ora_simulata": "14:41",
+    "come_da_terminale": "python strumenti/operatore.py approva D4"
+  },
+  "eseguita": {
+    "id": "D4",
+    "ora": "14:41",
+    "stato": "approvata dall'operatore",
+    "fonte": "regole"
+  },
+  "avviso": {
+    "ora": "14:41",
+    "per": "turisti",
+    "zona": "rotonda_diaz",
+    "verso": "piazza_vittoria",
+    "testo": "C'è il pienone a Rotonda Diaz: adesso si sta molto più tranquilli in Piazza del Plebiscito e a Palazzo Reale. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto.",
+    "offerta": {
+      "impresa": "friggitoria_chiaia",
+      "nome": "Friggitoria del Vasto",
+      "zona": "piazza_vittoria",
+      "tipo": "street food",
+      "descrizione": "cuoppo di fritti da asporto, ideale per la regata",
+      "ora": "15:00",
+      "posti_liberi": 28,
+      "sconto_pct": 15
+    },
+    "fonte": "regole"
+  },
+  "notifica_a_marta": {
+    "ora": "14:41",
+    "per": "turisti",
+    "zona": "rotonda_diaz",
+    "verso": "piazza_vittoria",
+    "testo": "C'è il pienone a Rotonda Diaz: adesso si sta molto più tranquilli in Piazza del Plebiscito e a Palazzo Reale. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto.",
+    "offerta": {
+      "impresa": "friggitoria_chiaia",
+      "nome": "Friggitoria del Vasto",
+      "zona": "piazza_vittoria",
+      "tipo": "street food",
+      "descrizione": "cuoppo di fritti da asporto, ideale per la regata",
+      "ora": "15:00",
+      "posti_liberi": 28,
+      "sconto_pct": 15
+    },
+    "fonte": "regole"
+  },
+  "uguale_alla_chat": true,
+  "avviso_nella_chat": "C'è il pienone a Rotonda Diaz: adesso si sta molto più tranquilli in Piazza del Plebiscito e a Palazzo Reale. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto.",
+  "folla_alla_proposta": {
+    "mergellina": {
+      "nome": "Mergellina",
+      "persone": 16708,
+      "capienza": 18000,
+      "livello": "alto",
+      "fonti": [
+        "modello",
+        "celle (simulato)"
+      ]
+    },
+    "rotonda_diaz": {
+      "nome": "Rotonda Diaz",
+      "persone": 24434,
+      "capienza": 26000,
+      "livello": "alto",
+      "fonti": [
+        "modello",
+        "celle (simulato)"
+      ]
+    },
+    "piazza_vittoria": {
+      "nome": "Piazza Vittoria",
+      "persone": 1482,
+      "capienza": 7000,
+      "livello": "basso",
+      "fonti": [
+        "modello",
+        "celle (simulato)"
+      ]
+    },
+    "castel_ovo": {
+      "nome": "Castel dell'Ovo",
+      "persone": 5517,
+      "capienza": 6500,
+      "livello": "alto",
+      "fonti": [
+        "modello",
+        "celle (simulato)"
+      ]
+    },
+    "municipio": {
+      "nome": "Piazza Municipio",
+      "persone": 3805,
+      "capienza": 9000,
+      "livello": "basso",
+      "fonti": [
+        "modello",
+        "celle (simulato)"
+      ]
+    },
+    "beverello": {
+      "nome": "Molo Beverello / Stazione Marittima",
+      "persone": 2401,
+      "capienza": 7000,
+      "livello": "basso",
+      "fonti": [
+        "modello",
+        "celle (simulato)"
+      ]
+    },
+    "vomero": {
+      "nome": "Vomero",
+      "persone": 4141,
+      "capienza": 14000,
+      "livello": "basso",
+      "fonti": [
+        "modello",
+        "celle (simulato)"
+      ]
+    }
+  },
+  "dialogo_prima": [
+    {
+      "ora": "14:30",
+      "da": "Folla",
+      "a": "Orchestratore",
+      "testo": "Mergellina: affollamento medio → alto (14.405 persone su 18.000)"
+    },
+    {
+      "ora": "14:30",
+      "da": "Folla",
+      "a": "Orchestratore",
+      "testo": "Rotonda Diaz: affollamento medio → alto (21.844 persone su 26.000)"
+    },
+    {
+      "ora": "14:31",
+      "da": "Orchestratore",
+      "a": "Sala operativa",
+      "testo": "[D3] proposta: Mergellina risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire. Rotonda Diaz risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire — approvi?",
+      "fonte": "regole"
+    },
+    {
+      "ora": "14:31",
+      "da": "Orchestratore",
+      "a": "Tutti",
+      "testo": "[D3] Mergellina risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire. Rotonda Diaz risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire",
+      "fonte": "regole"
+    },
+    {
+      "ora": "14:31",
+      "da": "Orchestratore",
+      "a": "Pilota drone",
+      "testo": "Puoi fare un volo di verifica a Mergellina? Il motivo: celle e sensori danno affollamento alto. Mi serve una conferma prima di spostare la gente."
+    },
+    {
+      "ora": "14:31",
+      "da": "Orchestratore",
+      "a": "Pilota drone",
+      "testo": "Puoi fare un volo di verifica a Rotonda Diaz? Il motivo: celle e sensori danno affollamento alto. Mi serve una conferma prima di spostare la gente."
+    },
+    {
+      "ora": "14:40",
+      "da": "Folla",
+      "a": "Orchestratore",
+      "testo": "Castel dell'Ovo: affollamento medio → alto (5.517 persone su 6.500)"
+    },
+    {
+      "ora": "14:41",
+      "da": "Orchestratore",
+      "a": "Sala operativa",
+      "testo": "[D4] proposta: Mergellina alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Rotonda Diaz alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Castel dell'Ovo risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire — approvi?",
+      "fonte": "regole"
+    }
+  ],
+  "dialogo_dopo": [
+    {
+      "ora": "14:41",
+      "da": "Orchestratore",
+      "a": "Tutti",
+      "testo": "[D4] Mergellina alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Rotonda Diaz alto (il drone non ha risposto, mi fido della stima): sposto parte della folla con suggerimenti e offerte. Castel dell'Ovo risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire",
+      "fonte": "regole"
+    },
+    {
+      "ora": "14:41",
+      "da": "Orchestratore",
+      "a": "Pilota drone",
+      "testo": "Puoi fare un volo di verifica al Castel dell'Ovo? Il motivo: celle e sensori danno affollamento alto. Mi serve una conferma prima di spostare la gente."
+    },
+    {
+      "ora": "14:41",
+      "da": "Turismo",
+      "a": "Assistenti",
+      "testo": "Avviso per chi è a Mergellina: C'è il pienone a Mergellina: adesso si sta molto più tranquilli in Piazza del Plebiscito e a Palazzo Reale. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto. (stimo ~1.503 persone spostate a Piazza Vittoria)",
+      "fonte": "regole"
+    },
+    {
+      "ora": "14:41",
+      "da": "Turismo",
+      "a": "Assistenti",
+      "testo": "Avviso per chi è a Rotonda Diaz: C'è il pienone a Rotonda Diaz: adesso si sta molto più tranquilli in Piazza del Plebiscito e a Palazzo Reale. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto. (stimo ~1.915 persone spostate a Piazza Vittoria)",
+      "fonte": "regole"
+    }
+  ],
+  "decisioni_approvate_prima": [
+    {
+      "id": "D1",
+      "ora": "12:16",
+      "motivazione": "Sbarco crocieristi: priorità al porto",
+      "richiesta": "POST /operatore",
+      "corpo": {
+        "decisione": "D1",
+        "esito": "approva"
+      },
+      "ora_simulata": "12:16",
+      "come_da_terminale": "python strumenti/operatore.py approva D1"
+    },
+    {
+      "id": "D2",
+      "ora": "13:01",
+      "motivazione": "In arrivo la regata: preparo il lungomare e consiglio i mezzi pubblici",
+      "richiesta": "POST /operatore",
+      "corpo": {
+        "decisione": "D2",
+        "esito": "approva"
+      },
+      "ora_simulata": "13:01",
+      "come_da_terminale": "python strumenti/operatore.py approva D2"
+    },
+    {
+      "id": "D3",
+      "ora": "14:31",
+      "motivazione": "Mergellina risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire. Rotonda Diaz risulta alto secondo celle e sensori: chiedo conferma al drone prima di agire",
+      "richiesta": "POST /operatore",
+      "corpo": {
+        "decisione": "D3",
+        "esito": "approva"
+      },
+      "ora_simulata": "14:31",
+      "come_da_terminale": "python strumenti/operatore.py approva D3"
+    }
+  ],
+  "domande_di_marta": [
+    {
+      "ora": "12:10",
+      "domanda": "Ciao Ciro! Siamo 4 croceristi: vogliamo prenotare in una pizzeria vicino al Castel dell'Ovo alle 13:00 🍕",
+      "risposta": "Pizzeria 'O Scoglio alle 13:00 non ha posto, ma vi propone le 14:00 per 4. Prenoto? Per arrivare: a piedi da via Acton e via Partenope (15 minuti). Al Castel dell'Ovo c'è poca gente (stima della città simulata)."
+    },
+    {
+      "ora": "12:10",
+      "domanda": "Ok, va bene!",
+      "risposta": "Fatto! Prenotato da Pizzeria 'O Scoglio alle 14:00 per 4."
+    },
+    {
+      "ora": "12:11",
+      "domanda": "Poi vogliamo andare a vedere la regata alla Rotonda Diaz: come si arriva?",
+      "risposta": "Per arrivare: Linea 6 da Municipio a San Pasquale e poi 5 minuti a piedi, oppure a piedi lungo via Partenope e via Caracciolo (25 minuti). A Rotonda Diaz c'è poca gente (stima della città simulata)."
+    }
+  ],
+  "sala": {
+    "prima": "sala-prima.svg",
+    "dopo": "sala-dopo.svg",
+    "colonne": 118,
+    "righe": 38,
+    "geometria": {
+      "larghezza": 1439.0,
+      "altezza": 977.1999999999999,
+      "x0": 9.0,
+      "y0": 42.5,
+      "cella": 12.04,
+      "riga": 24.4
+    },
+    "evidenze_dopo": {
+      "regia": {
+        "riga": 29,
+        "righe": 1,
+        "col": 55,
+        "col_fine": 116
+      },
+      "avviso": {
+        "riga": 4,
+        "righe": 5,
+        "col": 55,
+        "col_fine": 116
+      }
+    }
+  }
+}

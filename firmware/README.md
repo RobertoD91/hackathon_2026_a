@@ -1,6 +1,6 @@
-# firmware/: i due dispositivi reali di TwinCiro
+# firmware/: i due dispositivi reali di TwinCIRO
 
-TwinCiro usa **due dispositivi veri**, nient'altro. Si collegano entrambi all'**hotspot del team**, poi al broker MQTT del team, e parlano lo **stesso formato** della città agentica (`c5-agentic-city`): topic `napoli/...`, un messaggio per grandezza.
+TwinCIRO usa **due dispositivi veri**, nient'altro. Si collegano entrambi all'**hotspot del team**, poi al broker MQTT del team, e parlano lo **stesso formato** della città agentica (`c5-agentic-city`): topic `napoli/...`, un messaggio per grandezza.
 
 | Dispositivo | Cartella | Cosa manda alla città | Stato |
 |---|---|---|---|

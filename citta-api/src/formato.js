@@ -3,7 +3,7 @@
 
 import * as N from '../fonti/normalizza.js';
 
-/** Stato del dato per chi legge (CiroGPT): da `fonte.tipo` di fonti/dati.js. */
+/** Stato del dato per chi legge (TwinCIRO): da `fonte.tipo` di fonti/dati.js. */
 export const STATI = Object.freeze({
   live: 'reale',
   cache: 'reale',

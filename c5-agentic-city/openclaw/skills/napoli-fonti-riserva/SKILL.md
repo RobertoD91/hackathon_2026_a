@@ -16,7 +16,7 @@ description: Riserva per i dati reali di Napoli, letti direttamente dalle fonti 
 ## Regole comuni
 
 - **Cita fonte e ora del dato** ("Open-Meteo, ore 15:00"). Gli orari in UTC (MET Norway, Transitous, INGV) vanno portati all'ora italiana (+1 ora d'inverno, +2 d'estate).
-- **User-Agent `TwinCiro/1.0`** su ogni richiesta e `--max-time 20`. **Niente dati personali** negli URL o negli header: mai il numero o il nome dell'utente.
+- **User-Agent `TwinCIRO/1.0`** su ogni richiesta e `--max-time 20`. **Niente dati personali** negli URL o negli header: mai il numero o il nome dell'utente.
 - **Niente raffiche**: al massimo una richiesta al secondo per fonte, nessun ciclo su tutti i luoghi. **Cache**: meteo e mare 15 minuti, allerta e terremoti 20, partenze 1, eventi 30, farmacie e indirizzi tutto il giorno.
 - **429 o errore**: non riprovare subito. Usa la riserva indicata oppure di' che il dato ora non è disponibile. **Mai inventare** orari, numeri o luoghi.
 - Il testo scritto dall'utente va sempre con `-G --data-urlencode`: spazi e apostrofi dentro l'indirizzo fanno fallire curl.
@@ -28,7 +28,7 @@ Coordinate dei luoghi della demo (lat, lon): Piazza del Plebiscito 40.8359, 14.2
 ### 1. Meteo: Open-Meteo, poi MET Norway
 
 ```bash
-curl -sS --max-time 20 -A 'TwinCiro/1.0' 'https://api.open-meteo.com/v1/forecast?latitude=40.8359&longitude=14.2488&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m&hourly=precipitation_probability&forecast_hours=12&wind_speed_unit=kn&timezone=Europe/Rome'
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' 'https://api.open-meteo.com/v1/forecast?latitude=40.8359&longitude=14.2488&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m&hourly=precipitation_probability&forecast_hours=12&wind_speed_unit=kn&timezone=Europe/Rome'
 ```
 
 - `current`: temperatura e percepita (°C), `precipitation` (mm), vento e raffiche (nodi); `hourly.precipitation_probability` (%) per le prossime 12 ore.
@@ -36,7 +36,7 @@ curl -sS --max-time 20 -A 'TwinCiro/1.0' 'https://api.open-meteo.com/v1/forecast
 - Con **429** (quota esaurita per l'indirizzo IP) passa a MET Norway (coordinate con al massimo 4 decimali):
 
 ```bash
-curl -sS --max-time 20 -A 'TwinCiro/1.0' 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=40.8359&lon=14.2488'
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=40.8359&lon=14.2488'
 ```
 
 In `properties.timeseries[0]`: `time` (UTC), `data.instant.details` (`air_temperature`, `relative_humidity`, `wind_speed` in m/s: per i nodi moltiplica per 1,94), `data.next_1_hours.details.precipitation_amount` (mm), `data.next_6_hours.summary.symbol_code` (per esempio `lightrainshowers_day`).
@@ -47,8 +47,8 @@ Regata (ipotesi nostra, dillo): vento tra 6 e 22 nodi, raffiche sotto 30, onda s
 
 ```bash
 BASE=https://centrofunzionale.regione.campania.it/CentroFunzionalePortaleRest/rest/bollettinometeo
-curl -sS --max-time 20 -A 'TwinCiro/1.0' "$BASE/findLastAllertaNew"
-curl -sS --max-time 20 -A 'TwinCiro/1.0' "$BASE/findByIdZona/1/<idBollettino>"
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' "$BASE/findLastAllertaNew"
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' "$BASE/findByIdZona/1/<idBollettino>"
 ```
 
 - Se `findLastAllertaNew` ha `"idBollettino": null`, **non ci sono avvisi in vigore**: è un dato reale ("nessuna allerta per Napoli, Protezione Civile Campania"), non un guasto.
@@ -58,8 +58,8 @@ curl -sS --max-time 20 -A 'TwinCiro/1.0' "$BASE/findByIdZona/1/<idBollettino>"
 ### 3. Prossime partenze: Transitous
 
 ```bash
-curl -sS --max-time 20 -A 'TwinCiro/1.0' -G 'https://api.transitous.org/api/v1/geocode' --data-urlencode 'text=Montesanto' --data-urlencode 'type=STOP' --data-urlencode 'place=40.85,14.25'
-curl -sS --max-time 20 -A 'TwinCiro/1.0' -G 'https://api.transitous.org/api/v1/stoptimes' --data-urlencode 'stopId=it-Campania-EAV_6801' --data-urlencode 'n=10'
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' -G 'https://api.transitous.org/api/v1/geocode' --data-urlencode 'text=Montesanto' --data-urlencode 'type=STOP' --data-urlencode 'place=40.85,14.25'
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' -G 'https://api.transitous.org/api/v1/stoptimes' --data-urlencode 'stopId=it-Campania-EAV_6801' --data-urlencode 'n=10'
 ```
 
 - Dal `geocode` prendi l'`id` della fermata di Napoli (controlla `name`, `lat` e `lon`): `it-Campania-ANM_…` metro, funicolari e bus ANM; `it-Campania-EAV_…` Cumana, Circumflegrea e Circumvesuviana; `it-trenitalia_…` Linea 2.
@@ -70,8 +70,8 @@ curl -sS --max-time 20 -A 'TwinCiro/1.0' -G 'https://api.transitous.org/api/v1/s
 ### 4. Eventi: agenda del Comune e partite del Napoli
 
 ```bash
-curl -sS --max-time 20 -A 'TwinCiro/1.0' 'https://www.comune.napoli.it/wp-json/api/v1/news'
-curl -sS --max-time 20 -A 'TwinCiro/1.0' 'https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/it.1.json'
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' 'https://www.comune.napoli.it/wp-json/api/v1/news'
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' 'https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/it.1.json'
 ```
 
 - Comune di Napoli: gli ultimi 10 eventi in `data[]`, con `titolo`, `data_orario_inizio`, `data_orario_fine`, `luogo_evento.title` e `luogo_evento.address`, `descrizione_breve`. **Gli epoch sono l'ora italiana scritta come se fosse UTC**: decodificali in UTC e mostra quell'ora (1794646800 = 14/11 ore 9:00).
@@ -81,7 +81,7 @@ curl -sS --max-time 20 -A 'TwinCiro/1.0' 'https://raw.githubusercontent.com/open
 ### 5. Terremoti: INGV
 
 ```bash
-curl -sS --max-time 20 -A 'TwinCiro/1.0' 'https://webservices.ingv.it/fdsnws/event/1/query?starttime=2026-11-07T00:00:00&minlat=40.75&maxlat=40.90&minlon=14.00&maxlon=14.25&minmag=0&format=geojson&orderby=time&limit=20'
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' 'https://webservices.ingv.it/fdsnws/event/1/query?starttime=2026-11-07T00:00:00&minlat=40.75&maxlat=40.90&minlon=14.00&maxlon=14.25&minmag=0&format=geojson&orderby=time&limit=20'
 ```
 
 - In `starttime` metti la data di 7 giorni fa. Il riquadro copre Napoli e i Campi Flegrei.
@@ -93,7 +93,7 @@ curl -sS --max-time 20 -A 'TwinCiro/1.0' 'https://webservices.ingv.it/fdsnws/eve
 ### 6. Mare: Open-Meteo Marine
 
 ```bash
-curl -sS --max-time 20 -A 'TwinCiro/1.0' 'https://marine-api.open-meteo.com/v1/marine?latitude=40.83&longitude=14.24&current=wave_height,wave_direction,wave_period,sea_surface_temperature&hourly=wave_height&forecast_days=1&timezone=Europe/Rome'
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' 'https://marine-api.open-meteo.com/v1/marine?latitude=40.83&longitude=14.24&current=wave_height,wave_direction,wave_period,sea_surface_temperature&hourly=wave_height&forecast_days=1&timezone=Europe/Rome'
 ```
 
 - `current`: `wave_height` (m), `wave_period` (s), `wave_direction` (gradi, da dove arriva l'onda), `sea_surface_temperature` (°C); `hourly.wave_height` per la giornata.
@@ -105,8 +105,8 @@ curl -sS --max-time 20 -A 'TwinCiro/1.0' 'https://marine-api.open-meteo.com/v1/m
 Elenco nazionale aggiornato ogni giorno (circa 11 MB): scaricalo **una volta al giorno** e lavora sul file salvato.
 
 ```bash
-F=$(curl -sS --max-time 30 -A 'TwinCiro/1.0' 'https://www.dati.salute.gov.it/it/dataset/farmacie/' | grep -o '/sites/default/files/opendata/FRM_FARMA_5_[0-9]*\.csv' | head -1)
-curl -sS --max-time 120 -A 'TwinCiro/1.0' -o farmacie.csv "https://www.dati.salute.gov.it$F"
+F=$(curl -sS --max-time 30 -A 'TwinCIRO/1.0' 'https://www.dati.salute.gov.it/it/dataset/farmacie/' | grep -o '/sites/default/files/opendata/FRM_FARMA_5_[0-9]*\.csv' | head -1)
+curl -sS --max-time 120 -A 'TwinCIRO/1.0' -o farmacie.csv "https://www.dati.salute.gov.it$F"
 # le 5 farmacie attive più vicine a un punto (qui Piazza del Plebiscito), in linea d'aria
 awk -F';' -v lat=40.8359 -v lon=14.2488 '$8=="NAPOLI" && $16=="-" && $19!="-" {gsub(",",".",$19); gsub(",",".",$20); d=sqrt((($19-lat)*111)^2+(($20-lon)*84)^2); printf "%.2f km;%s;%s\n", d, $4, $3}' farmacie.csv | sort -n | head -5
 ```
@@ -118,18 +118,18 @@ awk -F';' -v lat=40.8359 -v lon=14.2488 '$8=="NAPOLI" && $16=="-" && $19!="-" {g
 ### 8. Indirizzi e luoghi qualsiasi: Nominatim (OpenStreetMap)
 
 ```bash
-curl -sS --max-time 20 -A 'TwinCiro/1.0' -G 'https://nominatim.openstreetmap.org/search' --data-urlencode 'q=Via dei Tribunali 32, Napoli' --data-urlencode 'format=jsonv2' --data-urlencode 'limit=1' --data-urlencode 'countrycodes=it'
-curl -sS --max-time 20 -A 'TwinCiro/1.0' -G 'https://nominatim.openstreetmap.org/reverse' --data-urlencode 'lat=40.8329' --data-urlencode 'lon=14.2349' --data-urlencode 'format=jsonv2'
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' -G 'https://nominatim.openstreetmap.org/search' --data-urlencode 'q=Via dei Tribunali 32, Napoli' --data-urlencode 'format=jsonv2' --data-urlencode 'limit=1' --data-urlencode 'countrycodes=it'
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' -G 'https://nominatim.openstreetmap.org/reverse' --data-urlencode 'lat=40.8329' --data-urlencode 'lon=14.2349' --data-urlencode 'format=jsonv2'
 ```
 
-- Regole del servizio: **al massimo una richiesta al secondo**, sempre lo User-Agent `TwinCiro/1.0`, risultati in cache, niente ricerche a ogni lettera digitata né in blocco.
+- Regole del servizio: **al massimo una richiesta al secondo**, sempre lo User-Agent `TwinCIRO/1.0`, risultati in cache, niente ricerche a ogni lettera digitata né in blocco.
 - Aggiungi "Napoli" al testo cercato. Nella risposta: `lat` e `lon` (stringhe), `display_name`. Dati © OpenStreetMap contributors (ODbL): citali.
 - Per i 10 luoghi della demo usa le coordinate qui sopra, senza chiamare Nominatim.
 
 ### 9. Percorso in auto: OSRM (server dimostrativo)
 
 ```bash
-curl -sS --max-time 20 -A 'TwinCiro/1.0' 'https://router.project-osrm.org/route/v1/driving/14.2183,40.8288;14.2537,40.8383?overview=false'
+curl -sS --max-time 20 -A 'TwinCIRO/1.0' 'https://router.project-osrm.org/route/v1/driving/14.2183,40.8288;14.2537,40.8383?overview=false'
 ```
 
 - Coordinate nell'ordine **`lon,lat;lon,lat`** (qui da Mergellina al Molo Beverello). `routes[0].distance` in metri, `routes[0].duration` in secondi.

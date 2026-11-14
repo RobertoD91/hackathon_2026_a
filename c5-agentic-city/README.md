@@ -1,17 +1,17 @@
-# TwinCiro
+# TwinCIRO
 
-**TwinCiro** è il progetto del nostro team per la Challenge 05 di The Big Hack 2026, promossa da **Fastweb + Vodafone**: *"Napoli Agentic City: la città che Ci pensa"*.
+**TwinCIRO** è il progetto del nostro team per la Challenge 05 di The Big Hack 2026, promossa da **Fastweb + Vodafone**: *"Napoli Agentic City: la città che Ci pensa"*.
 
 Il nome unisce le due anime del progetto:
 - **Twin**: il gemello digitale della città: agenti che leggono le misure vere di due dispositivi (badge WHY2025 e scheda Tasmota) e la simulazione sulle strade vere;
-- **Ciro**: **CiroGPT**, l'assistente su WhatsApp (agente OpenClaw) che parla con cittadini e turisti e con gli agenti della città.
+- **CIRO**: *City Intelligence & Responsive Orchestration*: gli agenti della città coordinati dall'orchestratore e l'assistente su WhatsApp (agente OpenClaw) che parla con cittadini e turisti e con gli agenti. Anche l'assistente si chiama **TwinCIRO**; in chat lo chiamano «Ciro».
 
-## I pezzi di TwinCiro
+## I pezzi di TwinCIRO
 
 | Pezzo | Dove | Stato |
 |---|---|---|
-| **CiroGPT**: skill OpenClaw, cioè città (`twinciro-citta`), dati reali (`napoli-citta-dati`, dall'API [`citta-api`](../citta-api/README.md)) e riserva (`napoli-fonti-riserva`, fonti aperte lette direttamente) | [`openclaw/skills/`](openclaw/skills/README.md) | la skill della città funziona su CiroGPT; le altre due sono da caricare |
-| Agenti della città, assistenti personali, API per CiroGPT | `citta/`, `avvia.py` | funzionano (con LLM o con regole) |
+| **TwinCIRO su WhatsApp**: skill OpenClaw, cioè città (`twinciro-citta`), dati reali (`napoli-citta-dati`, dall'API [`citta-api`](../citta-api/README.md)) e riserva (`napoli-fonti-riserva`, fonti aperte lette direttamente) | [`openclaw/skills/`](openclaw/skills/README.md) | la skill della città funziona sull'agente OpenClaw; le altre due sono da caricare |
+| Agenti della città, assistenti personali, API per TwinCIRO su WhatsApp | `citta/`, `avvia.py` | funzionano (con LLM o con regole) |
 | Dispositivi veri: **badge WHY2025** e **scheda Tasmota** (letture e stato nel formato `napoli/`) | [`../firmware/`](../firmware/README.md) | la città li legge: Folla, Meteo&Mare, sala (pannello "Sensori reali"), `GET /stato`; provati con messaggi finti, da provare con i dispositivi veri |
 | **Napoli 3D navigabile** (regata, folla, barche, dialogo tra agenti) | [`visore3d/`](https://robertodisanto.it/hackathon_2026_a/c5-agentic-city/visore3d/) | funziona; dati da `visore3d/prepara_dati.py` |
 | Gemello digitale SUMO | `citta/gemello/` | funziona |
@@ -27,12 +27,12 @@ Incontro con Fastweb e Vodafone:
 | Parte | Giudizio |
 |---|---|
 | IoT (sensori veri: oggi badge WHY2025 e scheda Tasmota) | piaciuta |
-| **CiroGPT** (agente OpenClaw su WhatsApp con le skill di `openclaw/skills/`) | **la più apprezzata**: va messa al centro |
-| Gemello digitale | piaciuto, ma meno di CiroGPT |
+| **TwinCIRO su WhatsApp** (agente OpenClaw con le skill di `openclaw/skills/`) | **la più apprezzata**: va messa al centro |
+| Gemello digitale | piaciuto, ma meno dell'assistente su WhatsApp |
 | Traffico e semafori | **non piaciuto**: ridimensionato, resta solo come simulazione nel gemello SUMO |
 | Video 3D della regata (`media/regata_3d.mp4`) | piaciuto |
 
-**Consegna:** un **video di massimo 3 minuti**. La live demo è facoltativa: c'è un gruppo WhatsApp con CiroGPT dentro.
+**Consegna:** un **video di massimo 3 minuti**. La live demo è facoltativa: c'è un gruppo WhatsApp con TwinCIRO dentro.
 
 ## Il brief (in sintesi)
 
@@ -125,7 +125,7 @@ Il codice è in `citta/sensori.py`. Gli agenti ragionano con l'LLM **solo quando
 
   L'operatore può approvare o bloccare le decisioni.
 - **Cittadini e turisti:** WhatsApp tramite una **skill OpenClaw** che chiama l'API HTTP della città (`/chiedi`). In alternativa `strumenti/chat.py` da terminale.
-- **La giuria dentro la demo:** il gruppo WhatsApp con CiroGPT. *"Sei un crocerista sbarcato alle 10, hai 6 ore."*
+- **La giuria dentro la demo:** il gruppo WhatsApp con TwinCIRO. *"Sei un crocerista sbarcato alle 10, hai 6 ore."*
 
 ## Topic MQTT (contratto tra agenti, dispositivi e strumenti)
 
@@ -159,7 +159,7 @@ c5-agentic-city/
   avvia.py                  # avvia città, agenti e gemello (bus in memoria o MQTT)
   citta/
     bus.py                  # bus in memoria o MQTT, stessa interfaccia
-    llm/                    # provider intercambiabili: claude.py, codex.py (+ regole senza LLM)
+    llm/                    # provider intercambiabili: claude.py, codex.py, compatibile.py (API compatibili OpenAI, es. MIIA), più le regole senza LLM
     agenti/                 # meteo, eventi, folla, traffico, turismo, imprese, orchestratore, assistente
     gemello/                # SUMO: domanda di traffico, controllo semafori, KPI
     api.py                  # HTTP per la skill OpenClaw (/chiedi, /stato)
@@ -170,18 +170,40 @@ c5-agentic-city/
   strumenti/                # chat.py, operatore.py, drone_osserva.py, taratura.py, video (video_demo.py, video3d/)
   visore3d/                 # Napoli 3D navigabile nel browser
   media/                    # video e immagini della simulazione
-  openclaw/skills/          # skill di CiroGPT: città, dati reali (citta-api) e riserva (fonti aperte)
+  openclaw/skills/          # skill di TwinCIRO: città, dati reali (citta-api) e riserva (fonti aperte)
 ```
 
-Fuori da questa cartella: il firmware dei dispositivi veri ([`../firmware/`](../firmware/README.md)), l'API dati città usata da CiroGPT ([`../citta-api/`](../citta-api/README.md)) e il video di consegna ([`../c5-presentazione/`](../c5-presentazione/README.md)).
+Fuori da questa cartella: il firmware dei dispositivi veri ([`../firmware/`](../firmware/README.md)), l'API dati città usata da TwinCIRO ([`../citta-api/`](../citta-api/README.md)) e il video di consegna ([`../c5-presentazione/`](../c5-presentazione/README.md)).
 
 ## LLM
 
-- I provider sono intercambiabili e si scelgono con `--llm`:
+- I provider sono intercambiabili e si scelgono con `--llm` (o con la variabile `C5_LLM`):
   - `claude`: SDK Anthropic, legge `ANTHROPIC_API_KEY`;
   - `codex`: CLI `codex exec` con l'abbonamento ChatGPT;
+  - `compatibile` (alias `miia`): qualsiasi LLM dietro un'API Chat Completions compatibile con OpenAI (vLLM, SGLang, Ollama, LM Studio, LiteLLM, piattaforme aziendali o on-premise), configurato solo con variabili d'ambiente (`citta/llm/compatibile.py`, solo libreria standard). È la strada per **MIIA**, l'LLM italiano di Fastweb + Vodafone: [sotto](#miia-di-fastweb--vodafone);
   - `regole`: nessun LLM, decisioni a regole. Serve per provare tutto senza chiavi e come piano B in demo.
+- `auto`, il predefinito: l'API compatibile se c'è `C5_LLM_URL`, poi Claude se c'è `ANTHROPIC_API_KEY`, poi Codex se c'è la CLI, altrimenti le regole.
 - Gli agenti chiedono all'LLM **JSON strutturato**: decisione + motivazione leggibile. La motivazione è quella mostrata in sala.
+- Se l'LLM non risponde o risponde male (rete assente, timeout, JSON senza un campo obbligatorio), l'agente decide con le regole: la demo non resta appesa.
+
+### MIIA di Fastweb + Vodafone
+
+**[FastwebMIIA-7B su Hugging Face](https://huggingface.co/Fastweb/FastwebMIIA-7B)**: il modello italiano di Fastweb + Vodafone (7,4 miliardi di parametri, architettura Mistral, italiano e inglese, contesto di 16k token), addestrato su un corpus soprattutto italiano. Il repository è pubblico, ma i file si scaricano dopo aver accettato la licenza, che è **non commerciale** (ricerca, didattica, uso interno): per un servizio vero serve la licenza commerciale di Fastweb.
+
+Come collegarlo alla città:
+
+1. servirlo con un'API compatibile con OpenAI, come indica la sua pagina su Hugging Face (servono l'accesso al modello e una GPU):
+   ```bash
+   vllm serve Fastweb/FastwebMIIA-7B          # risponde su http://<host>:8000/v1
+   ```
+2. avviare la città con il provider `miia`:
+   ```bash
+   C5_LLM=miia C5_LLM_URL=http://<host>:8000/v1 C5_LLM_MODELLO=Fastweb/FastwebMIIA-7B python avvia.py
+   ```
+
+All'avvio una riga dice host, modello e se la chiave c'è (mai la chiave). Nella sala e tra le fonti il provider si chiama sempre "compatibile", anche con l'alias `miia`: così nessuna ripresa può far passare per MIIA un altro modello.
+
+**Stato:** provato con un server di prova (57 prove: gli schemi JSON degli agenti, risposte sporche, errori e pause) e con un server vero, llama.cpp con un modello aperto piccolo, anche con la città intera che risponde a `/chiedi` passando dall'LLM. **Non ancora con MIIA**: né servito in proprio né da un'API di Fastweb + Vodafone (se quell'API vuole un header diverso da `Authorization: Bearer`, `compatibile.py` va adattato).
 
 ## Fonti dati
 
@@ -266,7 +288,7 @@ python avvia.py --llm regole              # tutto in un processo, senza chiavi, 
 
 | Opzione | Cosa fa |
 |---|---|
-| `--llm claude` / `codex` / `regole` | provider degli agenti. Senza `--llm` vale la variabile `C5_LLM`, altrimenti `auto`: Claude se c'è `ANTHROPIC_API_KEY`, poi Codex se c'è la CLI, altrimenti le regole |
+| `--llm claude` / `codex` / `compatibile` (alias `miia`) / `regole` | provider degli agenti ([LLM](#llm)). Senza `--llm` vale la variabile `C5_LLM`, altrimenti `auto`: l'API compatibile se c'è `C5_LLM_URL`, poi Claude se c'è `ANTHROPIC_API_KEY`, poi Codex se c'è la CLI, altrimenti le regole |
 | `--velocita 20` | secondi simulati per secondo reale. Con 20, la giornata di 7,5 ore dura circa 22 minuti; con 0 va al massimo |
 | `--inizio 13:45 --fine 15:30` | finestra della demo |
 | `--broker localhost` (o `host:porta`) | bus MQTT (serve Mosquitto): così arrivano le misure vere del badge e di Tasmota. Per il broker del team servono `C5_MQTT_UTENTE` e `C5_MQTT_PASSWORD` ([sotto](#collegarsi-al-broker-del-team)) |
@@ -279,6 +301,7 @@ python avvia.py --llm regole              # tutto in un processo, senza chiavi, 
 Variabili per l'LLM:
 - Claude: `ANTHROPIC_API_KEY`, `C5_MODELLO` (default `claude-opus-5-5`), `C5_EFFORT` (default `low`).
 - Codex: `C5_CODEX_ARGS`.
+- Compatibile con OpenAI (`C5_LLM=compatibile`, alias `miia`): `C5_LLM_URL` (indirizzo base, es. `https://<host>/v1`; va bene anche quello completo con `/chat/completions`), `C5_LLM_MODELLO` (senza: il primo modello di `GET /models`), `C5_LLM_CHIAVE` (mandata come `Authorization: Bearer`, solo dall'ambiente: mai nei file né nei log), `C5_LLM_TIMEOUT` (secondi per richiesta, default 60), `C5_LLM_PARALLELE` (richieste contemporanee, default 4), `C5_LLM_MAX_TOKEN` (default 2000; 0 = non mandarlo), `C5_LLM_PAUSA` (secondi con le sole regole dopo un errore di rete o del server, default 60). Esempio con MIIA: [sopra](#miia-di-fastweb--vodafone).
 
 Altri strumenti, mentre `avvia.py` è acceso:
 
@@ -363,12 +386,13 @@ docker compose run --rm sala         # sala operativa a schermo intero nel termi
 docker compose logs -f citta         # dialogo tra agenti a righe
 ```
 
-- **Chiavi e opzioni** si prendono dall'ambiente della macchina, mai scritte nei file: `ANTHROPIC_API_KEY`, `C5_LLM`, `C5_MODELLO`, `C5_API_TOKEN`, `C5_VELOCITA` (default 20), `C5_INIZIO` (default 13:00), `C5_METEO`; per il broker `C5_BROKER` (default `mosquitto`, il Mosquitto locale), `C5_MQTT_UTENTE` e `C5_MQTT_PASSWORD` (vuote: anonimo).
+- **Chiavi e opzioni** si prendono dall'ambiente della macchina, mai scritte nei file: `ANTHROPIC_API_KEY`, `C5_LLM`, `C5_MODELLO`, `C5_LLM_URL`, `C5_LLM_MODELLO`, `C5_LLM_CHIAVE` (LLM compatibile, es. MIIA; vuote: non usato), `C5_API_TOKEN`, `C5_VELOCITA` (default 20), `C5_INIZIO` (default 13:00), `C5_METEO`; per il broker `C5_BROKER` (default `mosquitto`, il Mosquitto locale), `C5_MQTT_UTENTE` e `C5_MQTT_PASSWORD` (vuote: anonimo).
 - **Il Mosquitto di compose** (porta 1883, senza password) serve per le prove in locale: il badge e la scheda Tasmota in evento usano il broker del team ([`../firmware/README.md`](../firmware/README.md#broker)). Per collegare la città a quel broker: [Collegarsi al broker del team](#collegarsi-al-broker-del-team).
 - **Fine giornata**: alla fine della giornata simulata il servizio `citta` riparte da capo (`restart: unless-stopped`).
 - **Cosa resta fuori**:
   - `sumo-gui` (`--gui`) gira solo fuori da Docker, sul portatile con lo schermo;
   - Codex (`--llm codex`) richiede la CLI installata.
+- **LLM compatibile dal container:** un server LLM sulla stessa macchina (vLLM, llama.cpp…) si raggiunge come `host.docker.internal`, non `127.0.0.1`: per esempio `C5_LLM_URL=http://host.docker.internal:8000/v1`.
 
 Provato: costruzione dell'immagine, città + Mosquitto su MQTT, API (`/stato`, `/chiedi` con negoziazione con la pizzeria), sala in container.
 
@@ -419,7 +443,7 @@ Servono Node con Playwright e Chromium. Lo script scarica da solo l'estratto OSM
 La consegna è il **video di massimo 3 minuti** ([`../c5-presentazione/`](../c5-presentazione/README.md)). La live demo è facoltativa:
 
 1. **Il gancio**: *"Napoli 2027, America's Cup. Un sabato con due navi, la regata e la partita. Oggi ogni servizio fa da sé: noi li facciamo parlare."*
-2. **CiroGPT su WhatsApp** (il pezzo centrale): *"Siamo 4 croceristi, vogliamo una pizza vicino al Castel dell'Ovo alle 13:30."*
+2. **TwinCIRO su WhatsApp** (il pezzo centrale): *"Siamo 4 croceristi, vogliamo una pizza vicino al Castel dell'Ovo alle 13:30."*
    - L'assistente negozia con la pizzeria: "pieni, alle 14:00 sì".
    - Il giurato risponde "ok" e la prenotazione è confermata.
 3. **La sala**: `avvia.py --broker <broker> --inizio 13:40 --velocita 15`. Eventi annuncia la regata, Folla vede Castel dell'Ovo che si riempie, l'orchestratore sposta la folla con un'offerta della friggitoria o del bar al Vomero.
@@ -441,8 +465,10 @@ Da fare:
 - [x] Taratura dei pesi dei corridoi (verificata su 4 semi).
 - [ ] Controllo semaforico più evoluto (oggi semplice: estende il verde dove c'è coda).
 - [ ] Provare con un LLM vero: Claude (chiave del team) e Codex (verificare i flag di `codex exec`).
+- [x] Provider `compatibile` (alias `miia`) per le API compatibili con OpenAI: provato con un server di prova e con llama.cpp.
+- [ ] Provare il provider `compatibile` con MIIA vero (accesso al modello su Hugging Face e una GPU, oppure un'API di Fastweb + Vodafone).
 - [ ] Provare la città con il badge e la scheda Tasmota veri sul broker del team. Il collegamento con utente e password c'è (`C5_MQTT_UTENTE`, `C5_MQTT_PASSWORD`), provato con una copia del broker in Docker: [Collegarsi al broker del team](#collegarsi-al-broker-del-team).
-- [ ] Caricare su CiroGPT `napoli-citta-dati` e `napoli-fonti-riserva` (e togliere le 6 skill delle fonti di prima, se erano state caricate).
+- [ ] Caricare sull'agente OpenClaw di TwinCIRO `napoli-citta-dati` e `napoli-fonti-riserva` (e togliere le 6 skill delle fonti di prima, se erano state caricate).
 - [ ] Integrare i dati del Comune.
 - [ ] Preparare il video di riserva del drone.
 - [x] Video della simulazione (`media/demo_gemello.mp4`) e immagine Docker con compose.

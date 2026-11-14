@@ -1,4 +1,4 @@
-/* Stile comune delle scene generate del video di TwinCiro (1920×1080).
+/* Stile comune delle scene generate del video di TwinCIRO (1920×1080).
    Regola di impaginazione: i 130 px in basso restano liberi per i sottotitoli. */
 :root {
   --fondo: #0a1020;
@@ -8,7 +8,7 @@
   --testo: #eef2fb;
   --tenue: #9fb0d3;
   --twin: #38d6f0;      /* azzurro: gemello digitale, dati */
-  --ciro: #ffb547;      /* sole: CiroGPT, persone */
+  --ciro: #ffb547;      /* sole: CIRO, l'assistente, persone */
   --corallo: #ff7a7a;
   --verde: #4ade80;
   --viola: #a78bfa;

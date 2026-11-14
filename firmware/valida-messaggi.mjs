@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Controlla che dei messaggi MQTT rispettino il formato unico di TwinCiro (firmware/README.md).
+// Controlla che dei messaggi MQTT rispettino il formato unico di TwinCIRO (firmware/README.md).
 // Legge righe "<topic> <payload>" (come le stampa `mosquitto_sub -v`) da stdin o da un file:
 //
 //   mosquitto_sub -h ... -t 'napoli/#' -v | node firmware/valida-messaggi.mjs

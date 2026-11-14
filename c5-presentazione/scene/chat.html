@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<title>CiroGPT · chat</title>
+<title>TwinCIRO · chat</title>
 <link rel="stylesheet" href="stile.css">
 <style>
   /* Telefono generico (nessun marchio): cornice scura, chat chiara, colori neutri */
@@ -15,6 +15,8 @@
   .avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--twin), var(--ciro));
     display: grid; place-items: center; font-weight: 800; font-size: 24px; color: #0a1020; flex: none; }
   .testata .nome { font-size: 21px; font-weight: 700; }
+  /* TwinCIRO con i colori del marchio, come il telefono di adesso.html */
+  .testata .nome .twin { color: #7fe6f7; font-weight: 800; } .testata .nome .ciro { color: var(--ciro); font-weight: 800; }
   .testata .stato { font-size: 15px; color: #b9c6e4; margin-top: 2px; }
   .messaggi { position: absolute; top: 112px; bottom: 72px; left: 0; right: 0; overflow: hidden; }
   .scorre { position: absolute; left: 0; right: 0; top: 0; }
@@ -28,7 +30,7 @@
   .bolla .titoletto { display: block; font-size: 14px; font-weight: 700; color: #b26b00; letter-spacing: 0.04em; margin-bottom: 2px; }
   .chip { display: flex; justify-content: center; }
   .chip span { background: #dde3ee; color: #475569; font-size: 14px; font-weight: 600; padding: 5px 12px; border-radius: 10px; }
-  .benvenuto .bolla { margin: 0 auto; max-width: 90%; text-align: center; background: #fff7e6; color: #6b4e16; font-size: 15px; }
+  .benvenuto .bolla { margin: 0 auto; max-width: 90%; text-align: center; text-wrap: balance; background: #fff7e6; color: #6b4e16; font-size: 15px; }
   .scrive .bolla { width: 74px; padding: 14px 16px; }
   .punti { display: flex; gap: 7px; justify-content: center; }
   .punti i { width: 9px; height: 9px; border-radius: 50%; background: #94a3b8; display: block; }
@@ -73,7 +75,7 @@
     <div class="barra-stato"><span id="ora-tel">12:10</span><span>●●● 5G ▮</span></div>
     <div class="testata">
       <div class="avatar">C</div>
-      <div><div class="nome" id="nome-contatto">CiroGPT</div><div class="stato" id="stato">online</div></div>
+      <div><div class="nome" id="nome-contatto"><span class="twin">Twin</span><span class="ciro">CIRO</span></div><div class="stato" id="stato">online</div></div>
     </div>
     <div class="messaggi"><div class="scorre" id="scorre"></div></div>
     <div class="ingresso"><div class="campo" id="campo"><span class="vuoto">Scrivi un messaggio</span></div><div class="invia">➤</div></div>
@@ -106,7 +108,8 @@ let chat, linea, voci, elRighe, totale;
 window.pronta = (async () => {
   chat = await (await fetch('chat.json', { cache: 'no-store' })).json();
   await document.fonts.ready;
-  document.getElementById('nome-contatto').textContent = chat.contatto || 'CiroGPT';
+  // Nome del contatto: TwinCIRO resta con i colori del marchio; un altro nome in chat.json va come testo
+  if (chat.contatto && chat.contatto !== 'TwinCIRO') document.getElementById('nome-contatto').textContent = chat.contatto;
   document.getElementById('didascalia-tel').textContent = VUOTO
     ? 'Registrazione reale su WhatsApp'
     : `Il telefono di ${chat.presentazione_utente || chat.utente}`;
@@ -132,7 +135,7 @@ function costruisci() {
   };
   // Prima del primo messaggio: data e presentazione del servizio
   const vData = aggiungi('chip', '<span>Oggi</span>');
-  const vBenv = aggiungi('benvenuto', '<div class="bolla">CiroGPT risponde con gli agenti della città di Napoli · TwinCiro</div>');
+  const vBenv = aggiungi('benvenuto', '<div class="bolla">TwinCIRO risponde con gli agenti della città di Napoli</div>');
   vData.t = -1; vBenv.t = -1;
 
   // Linea del tempo: segmenti fissi (scrittura, attesa) ed elastici (pause di lettura)
@@ -289,7 +292,7 @@ window.imposta = (t) => {
 function passoDi(i) { return Math.max(0, linea.passi.findLastIndex((p) => p.i <= i)); }
 function colore(nome) {
   const n = nome.toLowerCase();
-  if (n.includes('cirogpt')) return 'background:#4a3510;color:#ffd38a';
+  if (n.includes('twinciro')) return 'background:#4a3510;color:#ffd38a';
   if (n.includes('pizzeria') || n.includes('friggitoria') || n.includes('bar ') || n.includes('gozzi') || n.includes('imprese')) return 'background:#4a1f26;color:#ffb3b3';
   if (n.includes('folla')) return 'background:#123d2a;color:#9cf5c0';
   if (n.includes('orchestratore')) return 'background:#2f2457;color:#cdbcff';

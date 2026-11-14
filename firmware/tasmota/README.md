@@ -1,6 +1,6 @@
-# Scheda Tasmota per TwinCiro
+# Scheda Tasmota per TwinCIRO
 
-La seconda scheda vera di TwinCiro: un ESP32 o ESP8266 con **Tasmota** e un sensore. Non serve compilare nulla: si configura dalla **console web** di Tasmota con alcune **Rules** e **un comando `Backlog`**, e pubblica nel formato unico della città ([`../README.md`](../README.md#formato-mqtt-unico)):
+La seconda scheda vera di TwinCIRO: un ESP32 o ESP8266 con **Tasmota** e un sensore. Non serve compilare nulla: si configura dalla **console web** di Tasmota con alcune **Rules** e **un comando `Backlog`**, e pubblica nel formato unico della città ([`../README.md`](../README.md#formato-mqtt-unico)):
 
 - letture su `napoli/sensori/<topic>/<grandezza>` con `{"zona":"...","valore":...}`, scritte dalle Rules;
 - stato `{"online":true,"ruolo":"tasmota",...}` trattenuto su `napoli/nodi/<topic>/stato`, scritto da una regola a ogni connessione;

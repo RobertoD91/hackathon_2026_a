@@ -93,7 +93,7 @@
   .chip-i { font-size: 27px; font-weight: 700; padding: 10px 20px; border-radius: 30px; background: #16213b; border: 1px solid var(--bordo); }
   .fonte-r { margin-top: 34px; font-size: 24px; color: var(--tenue); }
 
-  /* notifica di CiroGPT sopra un video (telefono generico, nessun marchio) */
+  /* notifica di TwinCIRO sopra un video (telefono generico, nessun marchio) */
   .notifica { position: absolute; border-radius: 26px; background: rgb(246 248 252 / 0.97); color: #111827; padding: 18px 22px 20px;
     box-shadow: 0 24px 60px rgb(0 0 0 / 0.55), 0 0 0 2px rgb(255 181 71 / 0.85); }
   .notifica .capo { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
@@ -115,7 +115,7 @@ const id = P.get('id');
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 // `testo tra apici inversi` → <code>, per i nomi da scrivere così come sono (topic, grandezze)
 const cod = (s) => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
-const marchio = (cl = '') => `<span class="marchio ${cl}"><span class="twin">Twin</span><span class="ciro">Ciro</span></span>`;
+const marchio = (cl = '') => `<span class="marchio ${cl}"><span class="twin">Twin</span><span class="ciro">CIRO</span></span>`;
 const r = document.getElementById('radice');
 
 window.pronta = (async () => {
@@ -137,7 +137,7 @@ window.pronta = (async () => {
     r.innerHTML = `<div class="velo" style="background:${g}"></div>`
       + (numeri ? `<div class="kpi-riga">${numeri}</div><div class="kpi-nota">${esc(c.nota || '')}</div>` : '');
   } else if (s.cartelli[id]?.tipo === 'notifica') {
-    // Notifica di CiroGPT: il testo è quello dell'avviso in chat.json (lo stesso della scena della chat)
+    // Notifica di TwinCIRO: il testo è quello dell'avviso in chat.json (lo stesso della scena della chat)
     document.body.className = 'trasparente';
     const c = s.cartelli[id];
     const chat = await (await fetch('chat.json', { cache: 'no-store' })).json();
@@ -145,7 +145,7 @@ window.pronta = (async () => {
     const testo = String(c.testo || avviso.testo || '').replace(/^📣\s*/, '');
     const { x = 1400, y = 150, w = 470 } = c.posizione || {};
     r.innerHTML = `<div class="notifica" style="left:${x}px;top:${y}px;width:${w}px">
-      <div class="capo"><div class="av">C</div><div class="chi">CiroGPT</div><div class="quando">${esc(c.quando || 'adesso')}</div></div>
+      <div class="capo"><div class="av">C</div><div class="chi">TwinCIRO</div><div class="quando">${esc(c.quando || 'adesso')}</div></div>
       <div class="tit">📣 AVVISO DELLA CITTÀ</div><p>${esc(testo)}</p>${c.nota ? `<div class="nota-n">${esc(c.nota)}</div>` : ''}</div>`;
   } else {
     const c = s.cartelli[id];

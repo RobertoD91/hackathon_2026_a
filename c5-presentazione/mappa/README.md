@@ -1,6 +1,6 @@
 # Mappa "Napoli in tempo reale": il simulatore della presentazione
 
-La mappa della presentazione di TwinCiro (C5): un hub con agenti e un **simulatore**, con **folla e sensori simulati** e **meteo, aria, trasporti, eventi e allerte veri**. È vetrina: serve al video di consegna (scena «Dati reali», [`../scene/registra_mappa.mjs`](../scene/registra_mappa.mjs)) e alla demo nel browser. Non è la città agentica (quella è [`c5-agentic-city/`](../../c5-agentic-city/)) e non è il cervello dati di CiroGPT (quello è [`citta-api/`](../../citta-api/README.md)).
+La mappa della presentazione di TwinCIRO (C5): un hub con agenti e un **simulatore**, con **folla e sensori simulati** e **meteo, aria, trasporti, eventi e allerte veri**. È vetrina: serve al video di consegna (scena «Dati reali», [`../scene/registra_mappa.mjs`](../scene/registra_mappa.mjs)) e alla demo nel browser. Non è la città agentica (quella è [`c5-agentic-city/`](../../c5-agentic-city/)) e non è il cervello dati di TwinCIRO (quello è [`citta-api/`](../../citta-api/README.md)).
 
 Le fonti reali, i luoghi, il simulatore della folla e gli snapshot **non stanno qui**: la pagina e gli agenti li importano da [`../../citta-api/`](../../citta-api/README.md) (`fonti/`, `simulatore/`, `dati/`). Ne esiste una sola copia, la stessa che usa l'API dati città: una correzione alle fonti vale per mappa e API insieme.
 
@@ -107,7 +107,7 @@ mappa.update(devices);                 // a ogni lettura (lo fa app.js)
 
 ### Dati reali di Napoli
 
-La mappa di Napoli unisce la **simulazione** (folla e sensori, come prima) a **fonti reali verificate**. Ogni valore in pagina dice se è reale (con fonte e ora) o simulato, con un cartellino: *dal vivo*, *fonte di riserva*, *ultimo dato salvato*, *snapshot*, *orario programmato*, *simulato*. Se una fonte non risponde la pagina continua a funzionare e lo dichiara. La tabella "Fonti dei dati, stato e licenze" sotto la mappa mostra lo stato di ogni fonte in quel momento. Il catalogo completo della ricerca (anche le fonti valutate e non integrate, licenze, lacune) è in [`docs/fonti-dati-napoli.md`](../../docs/fonti-dati-napoli.md); le fonti sono lette con i moduli di [`citta-api/fonti/`](../../citta-api/README.md), gli stessi dell'API dati città di CiroGPT.
+La mappa di Napoli unisce la **simulazione** (folla e sensori, come prima) a **fonti reali verificate**. Ogni valore in pagina dice se è reale (con fonte e ora) o simulato, con un cartellino: *dal vivo*, *fonte di riserva*, *ultimo dato salvato*, *snapshot*, *orario programmato*, *simulato*. Se una fonte non risponde la pagina continua a funzionare e lo dichiara. La tabella "Fonti dei dati, stato e licenze" sotto la mappa mostra lo stato di ogni fonte in quel momento. Il catalogo completo della ricerca (anche le fonti valutate e non integrate, licenze, lacune) è in [`docs/fonti-dati-napoli.md`](../../docs/fonti-dati-napoli.md); le fonti sono lette con i moduli di [`citta-api/fonti/`](../../citta-api/README.md), gli stessi dell'API dati città di TwinCIRO.
 
 | Dato | Fonte | Come arriva | Licenza | Se non risponde |
 |---|---|---|---|---|
@@ -374,7 +374,7 @@ Con `json: true` l'adattatore chiede un JSON e lo estrae in modo tollerante (blo
 
 ## Notifiche e chat
 
-Le notifiche "WhatsApp" della mappa sono **simulate**: restano nel hub (`GET /api/notifications?since=<next>&channel=whatsapp`, oppure SSE su `/api/stream?types=notify`) e nella dashboard. CiroGPT vero (OpenClaw su WhatsApp) non passa da qui: legge i dati della città dall'API [`citta-api/`](../../citta-api/README.md) con la skill `napoli-citta-dati`.
+Le notifiche "WhatsApp" della mappa sono **simulate**: restano nel hub (`GET /api/notifications?since=<next>&channel=whatsapp`, oppure SSE su `/api/stream?types=notify`) e nella dashboard. TwinCIRO vero (OpenClaw su WhatsApp) non passa da qui: legge i dati della città dall'API [`citta-api/`](../../citta-api/README.md) con la skill `napoli-citta-dati`.
 
 ## Test
 

@@ -9,7 +9,7 @@
 # - le righe "deny" vincono sui permessi;
 # - "#" non comprende i topic di sistema $SYS/...: vanno dati a parte.
 #
-# Formato MQTT unico di TwinCiro (specifica completa: firmware/README.md della repo):
+# Formato MQTT unico di TwinCIRO (specifica completa: firmware/README.md della repo):
 #   napoli/sensori/<id>/<grandezza>   letture {"zona","valore"} di badge e Tasmota
 #   napoli/nodi/<id>/stato            stato del nodo, trattenuto, last will {"online":false}
 #   napoli/nodi/<id>/cmd              comandi al badge

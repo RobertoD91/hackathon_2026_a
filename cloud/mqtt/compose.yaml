@@ -7,7 +7,7 @@
 #   ./scripts/prova.sh                                 prova completa (anonimo, formato napoli/, ACL; TLS se acceso)
 #   docker compose --profile monitor run --rm monitor  stampa tutti i messaggi (Ctrl+C per uscire)
 #
-# Topic: solo il formato unico napoli/ di TwinCiro (firmware/README.md e config/acl).
+# Topic: solo il formato unico napoli/ di TwinCIRO (firmware/README.md e config/acl).
 # Client: badge WHY2025 e scheda Tasmota (firmware/), città c5-agentic-city (utente c5).
 #
 # Porte sul server (modificabili in .env):

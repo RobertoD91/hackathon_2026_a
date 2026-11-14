@@ -1,6 +1,6 @@
-# C5 · presentazione di TwinCiro: video di consegna e mappa
+# C5 · presentazione di TwinCIRO: video di consegna e mappa
 
-Qui sta la **parte di vetrina** di TwinCiro (Challenge 05, Fastweb + Vodafone): il video da consegnare e la mappa «Napoli in tempo reale» che compare nel video. Quello che è simulato sta qui e lo dichiara. La città agentica vera è in [`c5-agentic-city/`](../c5-agentic-city/). Il cervello dati di CiroGPT è l'API [`citta-api/`](../citta-api/README.md).
+Qui sta la **parte di vetrina** di TwinCIRO (Challenge 05, Fastweb + Vodafone): il video da consegnare e la mappa «Napoli in tempo reale» che compare nel video. Quello che è simulato sta qui e lo dichiara. La città agentica vera è in [`c5-agentic-city/`](../c5-agentic-city/). Il cervello dati di TwinCIRO è l'API [`citta-api/`](../citta-api/README.md).
 
 | Cosa | Dove | Reale o simulato |
 |---|---|---|
@@ -13,8 +13,8 @@ Qui sta la **parte di vetrina** di TwinCiro (Challenge 05, Fastweb + Vodafone): 
 La mappa è il **simulatore della presentazione**. Mostra i luoghi di Napoli con affollamento, temperatura, meteo, aria, metro e funicolari, eventi del giorno e allerte, più una dashboard con agenti, decisioni e notifiche.
 
 - **Simulati:** la folla e i sensori. Li genera il simulatore (`citta-api/simulatore/sim-config.json`), con la scala presa dai dati veri e gli scenari accesi dagli eventi reali. In produzione la folla sarebbe il dato anonimo e aggregato della rete mobile di Fastweb + Vodafone. La mappa non legge MQTT e non riceve dati dai dispositivi reali.
-- **Veri:** meteo, aria, trasporti, eventi e allerte. Arrivano dagli stessi moduli dell'API dati città (`citta-api/fonti/`, snapshot in `citta-api/dati/`): ne esiste una sola copia, quindi mappa e CiroGPT vedono gli stessi dati. Ogni valore in pagina ha il suo cartellino (*dal vivo*, *fonte di riserva*, *snapshot*, *simulato*...). Il catalogo delle 59 fonti provate è in [`docs/fonti-dati-napoli.md`](../docs/fonti-dati-napoli.md).
-- **Notifiche WhatsApp:** simulate, restano nella dashboard. CiroGPT vero risponde su WhatsApp con la skill `napoli-citta-dati`, che legge da `citta-api`.
+- **Veri:** meteo, aria, trasporti, eventi e allerte. Arrivano dagli stessi moduli dell'API dati città (`citta-api/fonti/`, snapshot in `citta-api/dati/`): ne esiste una sola copia, quindi mappa e TwinCIRO vedono gli stessi dati. Ogni valore in pagina ha il suo cartellino (*dal vivo*, *fonte di riserva*, *snapshot*, *simulato*...). Il catalogo delle fonti (oltre 50 fonti pubbliche, verificate una per una) è in [`docs/fonti-dati-napoli.md`](../docs/fonti-dati-napoli.md).
+- **Notifiche WhatsApp:** simulate, restano nella dashboard. TwinCIRO vero risponde su WhatsApp con la skill `napoli-citta-dati`, che legge da `citta-api`.
 
 ### Aprirla
 
@@ -37,24 +37,24 @@ In modalità demo la console mostra un 404 su `/api/state`: è normale, perché 
   - la chat ricostruita, con le risposte vere dell'API;
   - per l'IoT, due riquadri di riserva: i due dispositivi reali (badge WHY2025 e scheda Tasmota) e il formato unico dei messaggi MQTT.
 
-  **Da rimontare:** nella risposta sul meteo il pannello «dietro le quinte» della bozza mostra ancora «skill napoli-meteo-allerte», una skill che non esiste più. Ora il meteo per CiroGPT arriva dall'API dati città con la skill `napoli-citta-dati`: `scene/chat.json` e `scene/chat_da_api.py` sono già corretti, e il nome giusto compare al prossimo rimontaggio (basta `./monta.sh`: `chat.json` è nella chiave di cache della scena della chat, che quindi si rigenera da sola). Il video sarà rifatto a breve.
+  **Da rimontare:** nella risposta sul meteo il pannello «dietro le quinte» della bozza mostra ancora «skill napoli-meteo-allerte», una skill che non esiste più. Ora il meteo per TwinCIRO arriva dall'API dati città con la skill `napoli-citta-dati`: `scene/chat.json` e `scene/chat_da_api.py` sono già corretti, e il nome giusto compare al prossimo rimontaggio (basta `./monta.sh`: `chat.json` è nella chiave di cache della scena della chat, che quindi si rigenera da sola). Il video sarà rifatto a breve.
 - [`copione.md`](copione.md): scene con i tempi, testi a schermo, voce fuori campo da leggere, **riprese da girare** e tabella di cosa è reale e cosa è simulato.
 
 ### Brief
 
-Il feedback dei partner del 14/11 chiede di mettere **CiroGPT al centro**: circa due terzi del video, cioè titolo, chat, architettura vista da CiroGPT, mappa come sue fonti e il suo avviso sul gemello. Chiede anche di ridimensionare traffico e semafori. Il racconto quindi è questo:
+Il feedback dei partner del 14/11 chiede di mettere **l'assistente su WhatsApp al centro** (oggi TwinCIRO): circa due terzi del video, cioè titolo, chat, architettura vista dall'assistente, mappa come sue fonti e il suo avviso sul gemello. Chiede anche di ridimensionare traffico e semafori. Il racconto quindi è questo:
 
-1. una crocerista scrive a CiroGPT su WhatsApp;
-2. CiroGPT chiede agli agenti della città e **negozia con la pizzeria**: alle 13:00 è piena, propone le 14:00;
+1. una crocerista scrive a TwinCIRO su WhatsApp;
+2. TwinCIRO chiede agli agenti della città e **negozia con la pizzeria**: alle 13:00 è piena, propone le 14:00;
 3. prenota con un «ok»;
 4. usa i dati veri e cita la fonte;
 5. **avvisa per primo** quando la Rotonda Diaz si riempie.
 
 Dopo vengono:
-- l'architettura, a partire da CiroGPT;
-- i dati reali (mappa), presentati come le fonti di CiroGPT;
+- l'architettura, a partire da TwinCIRO;
+- i dati reali (mappa), presentati come le fonti di TwinCIRO;
 - l'IoT: il badge WHY2025 e la scheda Tasmota sull'hotspot Wi-Fi, che parlano MQTT nel formato degli agenti (`napoli/sensori/<id>/<grandezza>`, `napoli/nodi/<id>/stato`). Si mostrano le riprese vere, oppure i riquadri di riserva;
-- il gemello digitale (regata 3D, piaciuta ai partner), con la notifica di CiroGPT;
+- il gemello digitale (regata 3D, piaciuta ai partner), con la notifica di TwinCIRO;
 - i benefici con i numeri e il perché Napoli dovrebbe adottarla.
 
 Il traffico resta solo in un riquadro dei benefici (−9% medio, con l'intervallo). La scena SUMO affiancata è pronta ma esclusa con `"salta": true` in `scene/scaletta.json`.
@@ -88,7 +88,7 @@ Con `--segnaposto` mostra invece i cartelli che dicono cosa girare. Per provare 
 #### Cambiare testi e tempi
 
 - **Scene, durate, testate, voce e sottotitoli, cartelli:** [`scene/scaletta.json`](scene/scaletta.json). Dopo una modifica usa `./monta.sh --rigenera` e aggiorna `copione.md`.
-- **Chat di CiroGPT:**
+- **Chat di TwinCIRO:**
   - i messaggi dell'utente sono in [`scene/chat_domande.json`](scene/chat_domande.json);
   - `python3 scene/chat_da_api.py` avvia la città di `c5-agentic-city` (agenti a regole, senza SUMO, porta 8805), manda i messaggi a `/chiedi`, aspetta l'avviso proattivo (circa 5 minuti) e scrive [`scene/chat.json`](scene/chat.json) con le risposte vere e i messaggi tra agenti;
   - i **ritocchi di forma** (chi parla nella controproposta, preposizioni, accordi) sono regole in `chat_domande.json`, applicate da `chat_da_api.py`; in `chat.json` il testo originale dell'API resta in `testo_api`. Dopo aver cambiato le regole basta `python3 scene/chat_da_api.py --solo-ritocchi`, senza riavviare la città. Dalla chat del 14/11 pomeriggio, generata dopo le correzioni di `c5-agentic-city` (commit b32bcf6), i testi sono quelli dell'API: le regole restano come rete di sicurezza ma oggi non cambiano nulla, e `testo_api` non compare;
@@ -104,7 +104,7 @@ Con `--segnaposto` mostra invece i cartelli che dicono cosa girare. Per provare 
 | `scene/rendi_html.mjs` | rende una pagina HTML in video fotogramma per fotogramma, con tempo deterministico: testo nitido e sincronia esatta con la voce |
 | `scene/registra_mappa.mjs` | registra la mappa reale (`mappa/`) con lo screencast di Chromium e una sequenza di azioni: ricerca, scheda, Meteo, Aria, «Oggi a Napoli» |
 | `scene/chat.html` | telefono generico (nessun marchio WhatsApp) con la chat, più il pannello «dietro le quinte» a destra; `?telefono=vuoto` lascia lo schermo nero per la ripresa vera |
-| `scene/cartelli.html`, `scene/architettura.html`, `scene/stile.css` | cartelli, testate, veli, notifica di CiroGPT, riquadri di riserva dell'IoT (dispositivi e formato MQTT) e schema dell'architettura |
+| `scene/cartelli.html`, `scene/architettura.html`, `scene/stile.css` | cartelli, testate, veli, notifica di TwinCIRO, riquadri di riserva dell'IoT (dispositivi e formato MQTT) e schema dell'architettura |
 | `scene/chat_da_api.py` | genera `chat.json` dall'API vera della città |
 
 Ogni pagina si apre anche nel browser, per un'anteprima: per esempio `python3 -m http.server -d scene 8000` e poi http://localhost:8000/chat.html?durata=50 o http://localhost:8000/cartelli.html?id=riserva-formato.
@@ -120,18 +120,18 @@ Cosa è reale e cosa è simulato: tabella in fondo a [`copione.md`](copione.md#c
 ### Stato
 
 - [x] Copione con tempi, voce e riprese da girare
-- [x] Scene generate: titolo, chat di CiroGPT con risposte vere, architettura, mappa reale, riserve IoT, benefici, perché Napoli, chiusura
+- [x] Scene generate: titolo, chat di TwinCIRO con risposte vere, architettura, mappa reale, riserve IoT, benefici, perché Napoli, chiusura
 - [x] Montaggio riproducibile con sottotitoli, riserve o segnaposto, voce e musica facoltative
-- [x] Revisione del 14/11 pomeriggio: CiroGPT a circa due terzi del video, scena SUMO esclusa, ritocchi di forma dichiarati, «59 fonti pubbliche» invece di «aperte», voce a circa 150 parole al minuto
+- [x] Revisione del 14/11 pomeriggio: l'assistente su WhatsApp a circa due terzi del video, scena SUMO esclusa, ritocchi di forma dichiarati, «fonti pubbliche» invece di «aperte», voce a circa 150 parole al minuto
 - [x] Hardware del 14/11 sera: scene IoT con i due dispositivi reali (badge WHY2025 e scheda Tasmota sull'hotspot) e il formato unico `napoli/...`; niente più flasher né nodi ESP32 generici
-- [ ] Riprese vere: chat di CiroGPT su WhatsApp (R1), badge WHY2025 (R2), scheda Tasmota (R3)
+- [ ] Riprese vere: chat di TwinCIRO su WhatsApp (R1), badge WHY2025 (R2), scheda Tasmota (R3)
 - [ ] Voce fuori campo (R4)
 - [ ] Controllo finale dei fotogrammi con le riprese vere
 
 ### Problemi noti (risolti in `c5-agentic-city`)
 
 Su WhatsApp vero la skill `twinciro-citta` inoltra la risposta dell'API senza riscriverla, quindi la ripresa R1 mostra i testi originali. Questi tre punti li ha corretti `c5-agentic-city` nel commit b32bcf6 (con `citta/testi.py`):
-- la controproposta cominciava con «Alle 13:00 siamo pieni. Alle 14:00 c'è posto per 4. Confermo?»: sembrava parlare la pizzeria, non CiroGPT (`citta/agenti/assistente.py`);
+- la controproposta cominciava con «Alle 13:00 siamo pieni. Alle 14:00 c'è posto per 4. Confermo?»: sembrava parlare la pizzeria, non l'assistente (`citta/agenti/assistente.py`);
 - l'avviso diceva «A Rotonda Diaz (village) c'è il pienone: in questo momento Piazza del Plebiscito e Palazzo Reale è molto più tranquillo» (preposizione, nome interno della zona, accordo: `citta/agenti/turismo.py` e i nomi in `dati/`);
 - il percorso diceva «oppure Linea 6 della metro se attiva» (`dati/luoghi.json`), mentre la Linea 6 c'è nel GTFS di ANM.
 

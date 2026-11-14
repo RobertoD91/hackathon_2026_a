@@ -754,7 +754,7 @@ export function creaCitta(o) {
     const nota = notaVicino(p);
     const nome = p.zona ? LUOGHI[p.zona].nome : p.nome;
     const parti = [testoMeteo(nome, mt).replace(/\.$/, ` (${citazione(m.fonte, t, nomeMeteo(m.fonte))}).`)];
-    // maiuscolo come in /citta/allerta e nel riassunto: la skill di CiroGPT cerca "ALLERTA"
+    // maiuscolo come in /citta/allerta e nel riassunto: la skill di TwinCIRO cerca "ALLERTA"
     if (all.regionale?.attiva) parti.unshift(`ALLERTA ${all.regionale.colore.toUpperCase()} per Napoli: ${all.regionale.fenomeni_tipo || all.regionale.descrizione}.`);
     if (ar) parti.push(`Aria ${ar.classe_nome}${ar.origine.startsWith('centralina') ? ` (centralina ARPAC ${ar.centralina.nome}, misura ${delle(ar.centralina.ts, t)})` : ` (${conStato('modello CAMS', am.fonte, t)})`}.`);
     if (stazioni.length) parti.push(`Stazioni vicine: ${stazioni.slice(0, 3).map((s) => `${s.nome} (${s.linee.join(', ')}) ${s.minuti_a_piedi} min a piedi`).join('; ')}.`);

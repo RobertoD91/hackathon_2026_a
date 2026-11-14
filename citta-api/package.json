@@ -2,7 +2,7 @@
   "name": "citta-api",
   "version": "1.0.0",
   "private": true,
-  "description": "API dati città di Napoli per CiroGPT (The Big Hack 2026): fonti reali con cache, riserve dichiarate e rispetto delle quote. Nessuna dipendenza.",
+  "description": "API dati città di Napoli per TwinCIRO (The Big Hack 2026): fonti reali con cache, riserve dichiarate e rispetto delle quote. Nessuna dipendenza.",
   "type": "module",
   "engines": { "node": ">=20" },
   "scripts": {

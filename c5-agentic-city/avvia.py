@@ -44,7 +44,9 @@ def main() -> None:
     p.add_argument("--broker", default="memoria",
                    help="memoria (default) oppure host[:porta] del broker MQTT; utente e password dalle variabili "
                         "C5_MQTT_UTENTE e C5_MQTT_PASSWORD (senza: anonimo)")
-    p.add_argument("--llm", help="auto | claude | codex | regole (default: la variabile C5_LLM, altrimenti auto)")
+    p.add_argument("--llm", help="auto | claude | codex | compatibile (alias miia: API compatibile OpenAI, "
+                                 "variabili C5_LLM_URL, C5_LLM_MODELLO, C5_LLM_CHIAVE) | regole "
+                                 "(default: la variabile C5_LLM, altrimenti auto)")
     p.add_argument("--velocita", type=float, default=20, help="secondi simulati per secondo reale (0 = massimo)")
     p.add_argument("--inizio", help="ora di inizio (default dallo scenario, es. 13:00)")
     p.add_argument("--fine", help="ora di fine (default dallo scenario)")

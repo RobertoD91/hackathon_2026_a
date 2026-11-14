@@ -4,7 +4,7 @@ Broker MQTT del team per The Big Hack 2026: **Eclipse Mosquitto 2.1.2 in Docker*
 
 **Scelte del 14/11:** MQTT **in chiaro** sulla 1883, con utente e password, **senza TLS** (`MQTT_CERTIFICATI=nessuno`, predefinito). Sul server **non abbiamo root**: basta un utente che possa usare Docker. TLS (8883 e `wss://` 8884) resta pronto e si accende cambiando una riga di `.env`, con i certificati resi leggibili dall'amministratore (sezione [TLS](#tls-facoltativo-spento-di-serie)).
 
-Lo usano i **due dispositivi veri** di TwinCiro, il badge Cyber Saiyan WHY2025 e la scheda Tasmota (collegati all'hotspot del team, firmware e configurazione in [`../../firmware/`](../../firmware/README.md)), e la città agentica `c5-agentic-city`. **Un solo formato**, quello della città: topic `napoli/...` (specifica completa in [`firmware/README.md`](../../firmware/README.md#formato-mqtt-unico)). I vecchi `bighack/...` e `tele/...` fuori da `napoli/` non sono più permessi.
+Lo usano i **due dispositivi veri** di TwinCIRO, il badge Cyber Saiyan WHY2025 e la scheda Tasmota (collegati all'hotspot del team, firmware e configurazione in [`../../firmware/`](../../firmware/README.md)), e la città agentica `c5-agentic-city`. **Un solo formato**, quello della città: topic `napoli/...` (specifica completa in [`firmware/README.md`](../../firmware/README.md#formato-mqtt-unico)). I vecchi `bighack/...` e `tele/...` fuori da `napoli/` non sono più permessi.
 
 | Porta | Protocollo | Per chi |
 |---|---|---|

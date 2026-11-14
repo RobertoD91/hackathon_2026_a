@@ -1,4 +1,4 @@
-// payload: topic MQTT e JSON della telemetria del badge, nel formato unico di TwinCiro
+// payload: topic MQTT e JSON della telemetria del badge, nel formato unico di TwinCIRO
 // (specifica completa: firmware/README.md della repo).
 //
 //   napoli/sensori/<id>/<grandezza>   {"zona":"rotonda_diaz","valore":23.5}
@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-/** Radice di tutti i topic di TwinCiro. */
+/** Radice di tutti i topic di TwinCIRO. */
 #define PAYLOAD_RADICE "napoli"
 
 /** Last will e stato "offline": sempre questo testo, trattenuto, su napoli/nodi/<id>/stato. */

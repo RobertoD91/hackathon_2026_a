@@ -34,6 +34,12 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       C5_LLM: ${C5_LLM:-auto}
       C5_MODELLO: ${C5_MODELLO:-claude-opus-5-5}
+      # LLM con API compatibile OpenAI (C5_LLM=compatibile o miia; con auto basta C5_LLM_URL). Vuote = non usato.
+      # Es. MIIA servito con vLLM: C5_LLM_URL=http://<host>:8000/v1 C5_LLM_MODELLO=Fastweb/FastwebMIIA-7B
+      # (un server sulla stessa macchina, dal container, è host.docker.internal e non 127.0.0.1).
+      C5_LLM_URL: ${C5_LLM_URL:-}
+      C5_LLM_MODELLO: ${C5_LLM_MODELLO:-}
+      C5_LLM_CHIAVE: ${C5_LLM_CHIAVE:-}
       C5_API_TOKEN: ${C5_API_TOKEN:-}
       # Utente e password del broker: vuoti = anonimo (Mosquitto locale); per il broker del team, c5.
       C5_MQTT_UTENTE: ${C5_MQTT_UTENTE:-}

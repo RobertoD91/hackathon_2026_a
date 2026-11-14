@@ -1,6 +1,6 @@
 {
-  "nota": "Lato utente della chat di CiroGPT per la scena simulata. chat_da_api.py manda questi messaggi all'API /chiedi della città (c5-agentic-city, LLM a regole) e scrive le risposte vere in chat.json. Con le regole l'intento si capisce dalle parole chiave: 'prenot' + 'pizzeria' sceglie la Pizzeria 'O Scoglio, 'andare a' chiede un percorso. Non usare parole di cibo (pranzo, pizza, mangiare) nei messaggi che non riguardano il cibo. Con le regole l'ora va scritta staccata (\"alle 13:00 \"): \"13:00?\" o \"13:00,\" non viene riconosciuta.",
-  "contatto": "CiroGPT",
+  "nota": "Lato utente della chat di TwinCIRO per la scena simulata. chat_da_api.py manda questi messaggi all'API /chiedi della città (c5-agentic-city, LLM a regole) e scrive le risposte vere in chat.json. Con le regole l'intento si capisce dalle parole chiave: 'prenot' + 'pizzeria' sceglie la Pizzeria 'O Scoglio, 'andare a' chiede un percorso. Non usare parole di cibo (pranzo, pizza, mangiare) nei messaggi che non riguardano il cibo. Con le regole l'ora va scritta staccata (\"alle 13:00 \"): \"13:00?\" o \"13:00,\" non viene riconosciuta.",
+  "contatto": "TwinCIRO",
   "utente": "Marta",
   "presentazione_utente": "Marta, crocerista, gruppo di 4",
   "citta": {
@@ -8,12 +8,12 @@
     "velocita": 30,
     "nota": "Ora simulata di partenza e velocità (secondi simulati per secondo reale). Alle 12:10 la pizzeria è piena alle 13:00 e propone le 14:00; l'avviso sulla folla della regata arriva dopo le 14:00 simulate (circa 4 minuti reali)."
   },
-  "ritocchi_nota": "Ritocchi di FORMA applicati da chat_da_api.py ai testi di CiroGPT (regex Python). Non cambiano fatti, numeri o orari: chiariscono chi parla e correggono l'italiano. In chat.json il testo originale dell'API resta in 'testo_api'. Su WhatsApp vero (skill twinciro-citta, che inoltra la risposta senza riscriverla) si vede il testo originale finché non lo corregge c5-agentic-city.",
+  "ritocchi_nota": "Ritocchi di FORMA applicati da chat_da_api.py ai testi di TwinCIRO (regex Python). Non cambiano fatti, numeri o orari: chiariscono chi parla e correggono l'italiano. In chat.json il testo originale dell'API resta in 'testo_api'. Su WhatsApp vero (skill twinciro-citta, che inoltra la risposta senza riscriverla) si vede il testo originale finché non lo corregge c5-agentic-city.",
   "ritocchi": [
     {
       "regex": "^Alle (\\d\\d:\\d\\d) siamo pieni\\. Alle (\\d\\d:\\d\\d) c'è posto per (\\d+)\\.",
       "con": "La Pizzeria 'O Scoglio alle \\1 è piena, ma alle \\2 ha posto per \\3.",
-      "perche": "l'API inoltra la frase della pizzeria e sembra che parli CiroGPT"
+      "perche": "l'API inoltra la frase della pizzeria e sembra che parli TwinCIRO"
     },
     {
       "regex": "\\bA Rotonda Diaz \\(village\\)",
@@ -52,7 +52,7 @@
       "testo": "Ciao Ciro! Siamo 4 croceristi: vogliamo prenotare in una pizzeria vicino al Castel dell'Ovo alle 13:00 🍕",
       "etichetta": {
         "titolo": "Negozia con le imprese",
-        "sotto": "CiroGPT chiede all'API della città: l'agente della pizzeria è pieno alle 13:00 e fa una controproposta."
+        "sotto": "TwinCIRO chiede all'API della città: l'agente della pizzeria è pieno alle 13:00 e fa una controproposta."
       }
     },
     {

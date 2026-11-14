@@ -1,5 +1,5 @@
 {
-  "nota": "Scaletta del video di consegna di TwinCiro (C5). È l'unica fonte di durate, testi a schermo e voce fuori campo: monta.py la legge, cartelli.html prende da qui i testi dei cartelli. Tempi della voce in secondi dall'inizio della scena, a circa 150 parole al minuto contando le sigle come si pronunciano (WHY2025 = 'uài duemilaventicinque', MQTT = 'emme cu ti ti'). Una scena con \"salta\": true resta descritta ma non entra nel video. Se cambi qualcosa qui, aggiorna anche copione.md.",
+  "nota": "Scaletta del video di consegna di TwinCIRO (C5). È l'unica fonte di durate, testi a schermo e voce fuori campo: monta.py la legge, cartelli.html prende da qui i testi dei cartelli. Tempi della voce in secondi dall'inizio della scena, a circa 150 parole al minuto contando le sigle come si pronunciano (WHY2025 = 'uài duemilaventicinque', MQTT = 'emme cu ti ti'). Una scena con \"salta\": true resta descritta ma non entra nel video. Se cambi qualcosa qui, aggiorna anche copione.md.",
   "fps": 30,
   "dissolvenza": 0.2,
   "scene": [
@@ -24,7 +24,7 @@
       "durata": 7,
       "sorgente": { "tipo": "cartello", "id": "titolo" },
       "voce": [
-        { "da": 0.3, "a": 6.6, "testo": "Per questo abbiamo creato TwinCiro: una città che pensa, e che ti parla su WhatsApp." }
+        { "da": 0.3, "a": 6.6, "testo": "Per questo abbiamo creato TwinCIRO: una città che pensa, e che ti parla su WhatsApp." }
       ]
     },
     {
@@ -33,12 +33,12 @@
       "sorgente": { "tipo": "chat" },
       "girato": { "file": "cirogpt", "modo": "telefono", "da": 0 },
       "voce": [
-        { "da": 0.5, "a": 5.3, "testo": "Marta è in crociera, e scrive a CiroGPT come a un amico." },
-        { "da": 5.6, "a": 11.8, "testo": "CiroGPT chiede agli agenti: la pizzeria alle 13 è piena, e propone le 14." },
+        { "da": 0.5, "a": 5.3, "testo": "Marta è in crociera, e scrive a TwinCIRO come a un amico." },
+        { "da": 5.6, "a": 11.8, "testo": "TwinCIRO chiede agli agenti: la pizzeria alle 13 è piena, e propone le 14." },
         { "da": 15.0, "a": 19.4, "testo": "Marta risponde «ok», e il tavolo è prenotato. Nessuna telefonata." },
-        { "da": 23.6, "a": 29.2, "testo": "Poi CiroGPT le dice come arrivare alla regata, e quanta gente c'è adesso." },
+        { "da": 23.6, "a": 29.2, "testo": "Poi TwinCIRO le dice come arrivare alla regata, e quanta gente c'è adesso." },
         { "da": 36.4, "a": 42.0, "testo": "Per il meteo usa dati veri, e cita la fonte: domani c'è allerta arancione." },
-        { "da": 47.2, "a": 55.6, "testo": "E quando la Rotonda Diaz si riempie, è CiroGPT a scrivere per primo: c'è un posto più tranquillo, con un'offerta." }
+        { "da": 47.2, "a": 55.6, "testo": "E quando la Rotonda Diaz si riempie, è TwinCIRO a scrivere per primo: c'è un posto più tranquillo, con un'offerta." }
       ]
     },
     {
@@ -46,7 +46,7 @@
       "durata": 16,
       "sorgente": { "tipo": "pagina", "pagina": "architettura.html" },
       "voce": [
-        { "da": 0.4, "a": 4.4, "testo": "Quando Marta scrive, CiroGPT chiama l'API della città." },
+        { "da": 0.4, "a": 4.4, "testo": "Quando Marta scrive, TwinCIRO chiama l'API della città." },
         { "da": 4.7, "a": 9.6, "testo": "L'orchestratore interroga sei agenti: meteo, eventi, folla, traffico, turismo e imprese." },
         { "da": 9.8, "a": 15.6, "testo": "Si parlano su un bus MQTT, e ogni decisione ha la sua motivazione." }
       ]
@@ -55,9 +55,9 @@
       "id": "05-mappa",
       "durata": 19,
       "sorgente": { "tipo": "mappa", "da": 0.6 },
-      "testata": { "etichetta": "Dati reali · le fonti di CiroGPT", "testo": "Mappa «Napoli in tempo reale»: le stesse fonti pubbliche delle skill di CiroGPT" },
+      "testata": { "etichetta": "Dati reali · le fonti di TwinCIRO", "testo": "Mappa «Napoli in tempo reale»: le stesse fonti pubbliche delle skill di TwinCIRO" },
       "voce": [
-        { "da": 0.4, "a": 7.0, "testo": "CiroGPT risponde con dati veri: un catalogo di cinquantanove fonti pubbliche, provate una per una." },
+        { "da": 0.4, "a": 7.0, "testo": "TwinCIRO risponde con dati veri: un catalogo di oltre cinquanta fonti pubbliche, verificate una per una." },
         { "da": 7.3, "a": 11.4, "testo": "Meteo e aria, metro e funicolari, eventi del giorno, allerte." },
         { "da": 11.7, "a": 18.6, "testo": "La folla è simulata: è il dato che la rete di Fastweb e Vodafone può dare, anonimo." }
       ]
@@ -98,7 +98,7 @@
       "testata": { "etichetta": "Gemello digitale", "testo": "La giornata della regata simulata sulle strade vere: folla per zona e barche" },
       "voce": [
         { "da": 0.4, "a": 6.0, "testo": "Il gemello digitale prova la giornata della regata, sulle strade vere del lungomare." },
-        { "da": 6.3, "a": 12.4, "testo": "Mostra dove si forma la folla, e quante persone sposta un avviso di CiroGPT." }
+        { "da": 6.3, "a": 12.4, "testo": "Mostra dove si forma la folla, e quante persone sposta un avviso di TwinCIRO." }
       ]
     },
     {
@@ -136,7 +136,7 @@
       "durata": 7,
       "sorgente": { "tipo": "cartello", "id": "chiusura" },
       "voce": [
-        { "da": 0.5, "a": 5.0, "testo": "TwinCiro. Napoli ci pensa. Scrivi a CiroGPT." }
+        { "da": 0.5, "a": 5.0, "testo": "TwinCIRO. Napoli ci pensa. Scrivigli su WhatsApp." }
       ]
     }
   ],
@@ -145,7 +145,7 @@
       "tipo": "titolo",
       "sopra": "The Big Hack 2026 · Challenge 05 Fastweb + Vodafone",
       "sotto": "La città che ci pensa. E te lo dice su WhatsApp.",
-      "spiega": "Twin = il gemello digitale della città · Ciro = CiroGPT, l'assistente che parla con le persone"
+      "spiega": "Twin = il gemello digitale della città · CIRO = City Intelligence & Responsive Orchestration"
     },
     "qui-badge": {
       "tipo": "segnaposto",
@@ -165,7 +165,7 @@
       "tipo": "riserva-dispositivi",
       "nota_uso": "Scena 06 quando manca girato/badge.mp4: i due dispositivi reali e il percorso dei messaggi, senza valori inventati. Con --segnaposto si vede invece il cartello qui-badge.",
       "titolo": "Due dispositivi veri, un solo bus",
-      "sotto": "Sull'hotspot Wi-Fi, verso il broker MQTT di TwinCiro",
+      "sotto": "Sull'hotspot Wi-Fi, verso il broker MQTT di TwinCIRO",
       "dispositivi": [
         { "icona": "📛", "nome": "Badge WHY2025", "testo": "Cyber Saiyan, ESP32-C3: luce, temperatura e umidità da sensori I2C" },
         { "icona": "🔌", "nome": "Scheda Tasmota", "testo": "ESP32 con Tasmota: sensori e regole dalla console web" }
@@ -235,7 +235,7 @@
       "titolo": "Perché Napoli dovrebbe adottarla",
       "voci": [
         { "icona": "📱", "titolo": "Nessuna app nuova", "testo": "Si usa WhatsApp, che hanno già tutti: turisti e cittadini." },
-        { "icona": "🗂️", "titolo": "I dati ci sono", "testo": "59 fonti pubbliche su Napoli, provate una per una: meteo, aria, trasporti, eventi, allerte." },
+        { "icona": "🗂️", "titolo": "I dati ci sono", "testo": "Oltre 50 fonti pubbliche su Napoli, verificate una per una: meteo, aria, trasporti, eventi, allerte." },
         { "icona": "⛵", "titolo": "Il 2027 è vicino", "testo": "America's Cup, navi da crociera, stadio: la città va messa alla prova adesso." },
         { "icona": "📶", "titolo": "Con Fastweb + Vodafone", "testo": "Presenze anonime e aggregate dalla rete mobile, sensori collegati in 5G." },
         { "icona": "🧩", "titolo": "Si parte piccoli", "testo": "Un quartiere, un evento, codice aperto: si misura e si allarga." }
@@ -244,7 +244,7 @@
     "chiusura": {
       "tipo": "chiusura",
       "sotto": "Napoli ci pensa.",
-      "invito": "Scrivi a CiroGPT",
+      "invito": "Scrivi a TwinCIRO",
       "squadra": "Roberto D'Isanto · Mario Varlese",
       "evento": "The Big Hack 2026 · Challenge 05 Fastweb + Vodafone",
       "link": "robertodisanto.it/hackathon_2026_a"

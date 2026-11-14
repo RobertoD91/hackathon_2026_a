@@ -100,7 +100,7 @@ Provider scelto con variabili d'ambiente:
 
 ## 5. Notifiche (WhatsApp simulato)
 
-Le notifiche della mappa sono **simulate**: gli eventi `notify` con `channel: "whatsapp"` restano nel hub e si vedono nella dashboard. CiroGPT vero (OpenClaw su WhatsApp) non passa da qui: legge i dati della città dall'API [`citta-api/`](../../citta-api/README.md) con la skill `napoli-citta-dati`.
+Le notifiche della mappa sono **simulate**: gli eventi `notify` con `channel: "whatsapp"` restano nel hub e si vedono nella dashboard. TwinCIRO vero (OpenClaw su WhatsApp) non passa da qui: legge i dati della città dall'API [`citta-api/`](../../citta-api/README.md) con la skill `napoli-citta-dati`.
 - `GET /api/notifications?since=<ts>&channel=whatsapp` (polling) e SSE (`/api/stream?types=notify`).
   - Risposta: `{ "ok": true, "now": <ts>, "next": <ts>, "notifications": [ <evento notify>, ... ] }`. Il testo è in `data.text`, il destinatario in `data.to`.
   - `since` è esclusivo (eventi con `ts > since`). Alla chiamata successiva si passa `since=<next>`: nessun messaggio perso o duplicato.

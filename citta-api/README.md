@@ -1,9 +1,9 @@
 # API dati città di Napoli (`citta-api`)
 
-Il **cervello dati di CiroGPT**. Una sola API, sempre accesa su `twinciro.robertodisanto.it`, che legge le fonti reali di Napoli già verificate (catalogo: [`docs/fonti-dati-napoli.md`](../docs/fonti-dati-napoli.md)) e le restituisce **già "masticate" per un LLM**: JSON compatto, campi in italiano con l'unità nel nome, orari locali, la fonte con licenza e **stato del dato** (reale, riserva, salvato, snapshot, programmato, simulato) e un campo `testo` pronto da citare in WhatsApp.
+Il **cervello dati di TwinCIRO**. Una sola API, sempre accesa su `twinciro.robertodisanto.it`, che legge le fonti reali di Napoli già verificate (catalogo: [`docs/fonti-dati-napoli.md`](../docs/fonti-dati-napoli.md)) e le restituisce **già "masticate" per un LLM**: JSON compatto, campi in italiano con l'unità nel nome, orari locali, la fonte con licenza e **stato del dato** (reale, riserva, salvato, snapshot, programmato, simulato) e un campo `testo` pronto da citare in WhatsApp.
 
 Perché esiste:
-- **quote**: CiroGPT, la mappa e il video chiedono le stesse cose decine di volte. L'API le legge una volta sola, le tiene in cache e, dopo un **429**, non richiama la fonte per 15 minuti (passa alla riserva e lo dice);
+- **quote**: TwinCIRO, la mappa e il video chiedono le stesse cose decine di volte. L'API le legge una volta sola, le tiene in cache e, dopo un **429**, non richiama la fonte per 15 minuti (passa alla riserva e lo dice);
 - **niente dati inventati**: ogni risposta dice da dove viene il dato e di quando è; se una fonte è giù si usa la riserva dichiarata (altra fonte o ultimo dato salvato), mai un numero a caso;
 - **reale e simulato separati**: la folla per luogo è una stima del simulatore e l'API lo scrive sempre.
 
@@ -14,7 +14,7 @@ Perché esiste:
 ```bash
 node citta-api/server.js                           # http://localhost:8791, snapshot della repo
 curl -s 'localhost:8791/citta/riassunto?formato=testo'
-cd citta-api && npm test                           # 57 test (node:test, fetch finto): API, fonti, snapshot, simulatore
+cd citta-api && npm test                           # 59 test (node:test, fetch finto): API, fonti, snapshot, simulatore
 node --test citta-api/test/                        # gli stessi dalla radice della repo
 ```
 
@@ -48,7 +48,7 @@ Solo `GET`, risposte `application/json; charset=utf-8`.
 - **Orari**: locali di Napoli, formato `AAAA-MM-GG HH:MM` (`ora_dato` = istante della misura o della previsione, non della richiesta).
 - **Unità nel nome del campo**: `temperatura_c`, `vento_kmh`, `vento_nodi`, `pioggia_mm`, `umidita_pct`, `distanza_m`, `minuti_a_piedi`, `pm10_ugm3`...
 - **`fonte`** (o `fonti`): `{ nome, stato, ora_dato, licenza, nota? }`. Con `aggiornamento_in_corso: true` il dato è quello della lettura precedente e il nuovo sta arrivando.
-- **`testo`**: la stessa informazione in una o due frasi italiane, con fonte e ora. CiroGPT può citarlo così com'è.
+- **`testo`**: la stessa informazione in una o due frasi italiane, con fonte e ora. TwinCIRO può citarlo così com'è.
 - **`?formato=testo`**: restituisce solo `testo` (`text/plain`), comodo per il contesto dell'LLM. **`?leggibile=1`**: JSON indentato.
 - **Alias**: gli stessi percorsi funzionano senza `/citta` (`/meteo?luogo=vomero`), più `/citta/eventi/oggi`, `/citta/eventi/domani`, `/citta/eventi/2026-11-21`. Maiuscole, barre doppie e barra finale non contano (`//citta//meteo/` = `/citta/meteo`).
 - **Errori**: `{ "errore": "…", ... }` con 400 (parametro mancante o non valido), 401 (token), 404 (luogo, stazione o percorso sconosciuto: con `suggerimenti` o `endpoint`), 405 (non GET), 500.
@@ -127,9 +127,9 @@ Con `CITTA_TIENI_CALDO=1` e nessuno che chiede niente, l'API fa al giorno circa 
 
 Con la cartella predefinita (`CITTA_DATI` non impostata) il rinfresco, se attivo, riscrive gli snapshot della repo, come lo script `aggiorna-dati-napoli.js`: in sviluppo lascia `CITTA_AGGIORNA` vuota o usa una cartella a parte.
 
-## Usarla da CiroGPT
+## Usarla da TwinCIRO
 
-Variabili per OpenClaw: `CITTA_API` (es. `https://twinciro.robertodisanto.it/citta-api` o `http://twinciro.robertodisanto.it:8791`, senza barra finale) e `CITTA_API_TOKEN`. Il testo qui sotto è la skill **`napoli-citta-dati`** così come è installata in [`c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md`](../c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md): se cambia uno dei due, va cambiato anche l'altro. I comandi sono stati provati così come sono contro l'API in esecuzione. Le altre due skill di CiroGPT sono `twinciro-citta` (agenti della città) e [`napoli-fonti-riserva`](../c5-agentic-city/openclaw/skills/napoli-fonti-riserva/SKILL.md), da usare solo se l'API non risponde o per i dati che non ha (mare, farmacie, indirizzi qualsiasi, percorsi in auto); elenco e ordine d'uso in [`c5-agentic-city/openclaw/skills/README.md`](../c5-agentic-city/openclaw/skills/README.md).
+Variabili per OpenClaw: `CITTA_API` (es. `https://twinciro.robertodisanto.it/citta-api` o `http://twinciro.robertodisanto.it:8791`, senza barra finale) e `CITTA_API_TOKEN`. Il testo qui sotto è la skill **`napoli-citta-dati`** così come è installata in [`c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md`](../c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md): se cambia uno dei due, va cambiato anche l'altro. I comandi sono stati provati così come sono contro l'API in esecuzione. Le altre due skill di TwinCIRO sono `twinciro-citta` (agenti della città) e [`napoli-fonti-riserva`](../c5-agentic-city/openclaw/skills/napoli-fonti-riserva/SKILL.md), da usare solo se l'API non risponde o per i dati che non ha (mare, farmacie, indirizzi qualsiasi, percorsi in auto); elenco e ordine d'uso in [`c5-agentic-city/openclaw/skills/README.md`](../c5-agentic-city/openclaw/skills/README.md).
 
 ````markdown
 ---
@@ -193,7 +193,7 @@ Se il luogo non si trova, il JSON ha `errore`, `suggerimenti` e `altri_luoghi_no
 7. Se l'API non risponde (errore di curl o timeout), usa la skill `napoli-fonti-riserva` e dillo ("dato letto direttamente dalla fonte, l'API non risponde"). La stessa skill serve per i dati che l'API non ha: mare (onde e temperatura dell'acqua), farmacie, indirizzi qualsiasi, percorsi in auto.
 ````
 
-Il contesto della giornata (`riassunto` con `formato=testo`) costa una chiamata e circa 500 token: conviene metterlo nel prompt di CiroGPT a ogni heartbeat, così risponde subito alle domande generiche e usa gli altri endpoint solo per i dettagli.
+Il contesto della giornata (`riassunto` con `formato=testo`) costa una chiamata e circa 500 token: conviene metterlo nel prompt di TwinCIRO a ogni heartbeat, così risponde subito alle domande generiche e usa gli altri endpoint solo per i dettagli.
 
 ## File
 

@@ -1,4 +1,4 @@
-// telemetry: il badge pubblica via MQTT (ESP-MQTT di ESP-IDF 4.4) nel formato unico di TwinCiro
+// telemetry: il badge pubblica via MQTT (ESP-MQTT di ESP-IDF 4.4) nel formato unico di TwinCIRO
 // (specifica: firmware/README.md della repo).
 //
 //   napoli/sensori/<id>/<grandezza>  {"zona","valore"}: temperatura, umidita, luce, pressione (se c'è

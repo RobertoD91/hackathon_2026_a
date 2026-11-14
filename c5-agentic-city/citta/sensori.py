@@ -1,4 +1,4 @@
-"""Misure vere dei dispositivi di TwinCiro (badge WHY2025 e scheda Tasmota), lette dal bus.
+"""Misure vere dei dispositivi di TwinCIRO (badge WHY2025 e scheda Tasmota), lette dal bus.
 
 Formato unico (vedi firmware/README.md nella radice della repo):
 - letture  napoli/sensori/<id>/<grandezza>   {"zona": "rotonda_diaz", "valore": 21.5}

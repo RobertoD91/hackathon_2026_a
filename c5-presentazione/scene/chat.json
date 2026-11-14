@@ -5,7 +5,7 @@
     "api": "c5-agentic-city/avvia.py --llm regole --senza-gemello --inizio 12:10 --velocita 30",
     "nota": "Folla, offerte e imprese sono SIMULATE (imprese di fantasia); il meteo è reale."
   },
-  "contatto": "CiroGPT",
+  "contatto": "TwinCIRO",
   "utente": "Marta",
   "presentazione_utente": "Marta, crocerista, gruppo di 4",
   "messaggi": [
@@ -16,7 +16,7 @@
       "testo": "Ciao Ciro! Siamo 4 croceristi: vogliamo prenotare in una pizzeria vicino al Castel dell'Ovo alle 13:00 🍕",
       "etichetta": {
         "titolo": "Negozia con le imprese",
-        "sotto": "CiroGPT chiede all'API della città: l'agente della pizzeria è pieno alle 13:00 e fa una controproposta."
+        "sotto": "TwinCIRO chiede all'API della città: l'agente della pizzeria è pieno alle 13:00 e fa una controproposta."
       }
     },
     {
@@ -28,26 +28,26 @@
       "dietro_le_quinte": [
         {
           "ora": "12:10",
-          "da": "CiroGPT",
+          "da": "TwinCIRO",
           "a": "Pizzeria 'O Scoglio",
           "testo": "Avete posto per 4 alle 13:00?"
         },
         {
           "ora": "12:10",
           "da": "Pizzeria 'O Scoglio",
-          "a": "CiroGPT",
+          "a": "TwinCIRO",
           "testo": "Alle 13:00 siamo pieni. Alle 14:00 c'è posto per 4"
         },
         {
           "ora": "12:10",
           "da": "Folla",
-          "a": "CiroGPT",
+          "a": "TwinCIRO",
           "testo": "Castel dell'Ovo: 1.921 persone, livello basso (stima simulata, letta dal bus)"
         }
       ],
       "etichetta": {
         "titolo": "Negozia con le imprese",
-        "sotto": "CiroGPT chiede all'API della città: l'agente della pizzeria è pieno alle 13:00 e fa una controproposta."
+        "sotto": "TwinCIRO chiede all'API della città: l'agente della pizzeria è pieno alle 13:00 e fa una controproposta."
       }
     },
     {
@@ -70,7 +70,7 @@
         {
           "ora": "12:10",
           "da": "Pizzeria 'O Scoglio",
-          "a": "CiroGPT",
+          "a": "TwinCIRO",
           "testo": "Confermato per 4 alle 14:00"
         }
       ],
@@ -99,7 +99,7 @@
         {
           "ora": "12:11",
           "da": "Folla",
-          "a": "CiroGPT",
+          "a": "TwinCIRO",
           "testo": "Rotonda Diaz: 3.377 persone, livello basso (stima simulata, letta dal bus)"
         }
       ],
@@ -127,20 +127,20 @@
       "dietro_le_quinte": [
         {
           "ora": "12:11",
-          "da": "CiroGPT",
+          "da": "TwinCIRO",
           "a": "skill napoli-citta-dati",
           "testo": "meteo attuale e pioggia nelle prossime 6 ore a Napoli"
         },
         {
           "ora": "12:11",
           "da": "Open-Meteo",
-          "a": "CiroGPT",
+          "a": "TwinCIRO",
           "testo": "18,9 °C, quasi sereno, vento 10,2 km/h, pioggia al massimo 18% nelle prossime 6 ore (dato reale)"
         },
         {
           "ora": "12:11",
           "da": "Meteoalarm",
-          "a": "CiroGPT",
+          "a": "TwinCIRO",
           "testo": "Campania, domani 07:00–18:59: allerta arancione per temporali"
         }
       ],

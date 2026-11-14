@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// API dati città di Napoli: il "cervello dati" di CiroGPT.
+// API dati città di Napoli: il "cervello dati" di TwinCIRO.
 //
 //   node citta-api/server.js                        # porta 8791, snapshot della repo
 //   PORT=8791 CITTA_API_TOKEN=… CITTA_AGGIORNA=si node citta-api/server.js

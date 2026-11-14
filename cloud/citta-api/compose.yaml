@@ -1,4 +1,4 @@
-# API dati città di Napoli (citta-api/): il "cervello dati" di CiroGPT.
+# API dati città di Napoli (citta-api/): il "cervello dati" di TwinCIRO.
 # Guida completa: README.md in questa cartella.
 #
 #   cp .env.example .env && chmod 600 .env     configurazione (token, porta, CORS, rinfresco)

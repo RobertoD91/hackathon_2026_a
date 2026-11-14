@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Genera scene/chat.json, la conversazione con CiroGPT della scena simulata, con risposte VERE.
+"""Genera scene/chat.json, la conversazione con TwinCIRO della scena simulata, con risposte VERE.
 
 - Avvia la città di c5-agentic-city in locale (agenti con LLM a regole, senza SUMO, API su --porta),
   oppure usa un'API già accesa (--api http://host:porta).
@@ -8,7 +8,7 @@
 - Per il turno "meteo_reale" legge il meteo vero da Open-Meteo (riserva: lo snapshot della mappa
   in citta-api/dati/meteo.json) e l'allerta Meteoalarm dallo snapshot.
 - Per il turno "avviso" aspetta un avviso proattivo della città per l'utente (/notifiche).
-- Applica ai testi di CiroGPT i "ritocchi" di forma di chat_domande.json (es. chi parla nella
+- Applica ai testi di TwinCIRO i "ritocchi" di forma di chat_domande.json (es. chi parla nella
   controproposta della pizzeria, accordi grammaticali). Ogni messaggio ritoccato conserva in
   chat.json il testo originale dell'API in "testo_api", così il ritocco resta dichiarato.
 
@@ -41,7 +41,7 @@ REPO = QUI.parent.parent
 C5 = REPO / "c5-agentic-city"
 SNAPSHOT_METEO = REPO / "citta-api" / "dati" / "meteo.json"
 PLEBISCITO = (40.8359, 14.2488)
-UA = "TwinCiro/1.0"
+UA = "TwinCIRO/1.0"
 
 CIELO = {0: "sereno", 1: "quasi sereno", 2: "poco nuvoloso", 3: "coperto", 45: "nebbia", 48: "nebbia",
          51: "pioviggine", 53: "pioviggine", 55: "pioviggine", 61: "pioggia debole", 63: "pioggia", 65: "pioggia forte",
@@ -247,18 +247,18 @@ def main() -> None:
                 time.sleep(1.0)  # il dialogo tra agenti arriva sullo stdout subito dopo
                 quinte = [r for r in righe[segno:] if r["a"] != utente and r["da"] != utente
                           and "Assistente di" in (r["da"] + r["a"])]
-                quinte = [{**r, "da": r["da"].replace(f"Assistente di {utente}", "CiroGPT"),
-                           "a": r["a"].replace(f"Assistente di {utente}", "CiroGPT")} for r in quinte]
+                quinte = [{**r, "da": r["da"].replace(f"Assistente di {utente}", "TwinCIRO"),
+                           "a": r["a"].replace(f"Assistente di {utente}", "TwinCIRO")} for r in quinte]
                 # Cosa ha letto l'assistente dal bus: la stima della folla delle zone citate nella risposta
                 stato = http_json(f"{api}/stato")
                 for f in (stato.get("folla") or {}).values():
                     if f["nome"] in risposta:
-                        quinte.append({"ora": stato.get("ora", ora), "da": "Folla", "a": "CiroGPT",
+                        quinte.append({"ora": stato.get("ora", ora), "da": "Folla", "a": "TwinCIRO",
                                        "testo": f"{f['nome']}: {numero(f['persone'])} persone, livello {f['livello']} "
                                                 "(stima simulata, letta dal bus)"})
                 nuovo(da="ciro", ora=ora_api(api), testo=risposta, fonte="API della città /chiedi (agenti, LLM a regole)",
                       dietro_le_quinte=quinte)
-                print(f"[{ora}] {utente}: {turno['testo']}\n        Ciro: {risposta}", file=sys.stderr)
+                print(f"[{ora}] {utente}: {turno['testo']}\n        TwinCIRO: {risposta}", file=sys.stderr)
             elif turno["tipo"] == "meteo_reale":
                 ora = ora_api(api)
                 nuovo(da="utente", ora=ora, testo=turno["testo"])
@@ -267,9 +267,9 @@ def main() -> None:
                 testo = testo_meteo(m, al)
                 # Righe leggibili a schermo: virgola decimale, niente ora ISO (il telefono mostra l'ora simulata);
                 # l'ora vera della lettura resta nel campo "fonte" del messaggio.
-                quinte = [{"ora": ora, "da": "CiroGPT", "a": "skill napoli-citta-dati",
+                quinte = [{"ora": ora, "da": "TwinCIRO", "a": "skill napoli-citta-dati",
                            "testo": "meteo attuale e pioggia nelle prossime 6 ore a Napoli"},
-                          {"ora": ora, "da": m["fonte"], "a": "CiroGPT",
+                          {"ora": ora, "da": m["fonte"], "a": "TwinCIRO",
                            "testo": f"{decimale(m['temperatura'])} °C, {CIELO.get(int(m['codice']), 'variabile')}, "
                                     f"vento {decimale(m['vento'])} km/h"
                                     + (f", pioggia al massimo {m['prob_pioggia']}% nelle prossime 6 ore"
@@ -279,13 +279,13 @@ def main() -> None:
                     da_ = dt.datetime.fromtimestamp(al["inizio"] / 1000, ROMA)
                     a_ = dt.datetime.fromtimestamp(al["fine"] / 1000, ROMA)
                     giorno = "domani" if da_.date() > dt.datetime.now(ROMA).date() else "oggi"
-                    quinte.append({"ora": ora, "da": "Meteoalarm", "a": "CiroGPT",
+                    quinte.append({"ora": ora, "da": "Meteoalarm", "a": "TwinCIRO",
                                    "testo": f"Campania, {giorno} {da_:%H:%M}–{a_:%H:%M}: allerta {al['colore']} "
                                             f"per {al['fenomeno'].lower()}"})
                 nuovo(da="ciro", ora=ora, testo=testo, fonte=f"{m['fonte']} ({m['stato']}, {m['letto']})"
                       + (" + Meteoalarm (snapshot della mappa)" if al else "") + "; testo composto dallo script",
                       dietro_le_quinte=quinte)
-                print(f"[{ora}] {utente}: {turno['testo']}\n        Ciro: {testo}", file=sys.stderr)
+                print(f"[{ora}] {utente}: {turno['testo']}\n        TwinCIRO: {testo}", file=sys.stderr)
             elif turno["tipo"] == "avviso":
                 fino = minuti(turno.get("attendi_fino", "16:00"))
                 preferite = turno.get("zone_preferite") or []
@@ -316,7 +316,7 @@ def main() -> None:
                 nuovo(da="ciro", tipo="avviso", ora=ora_avv, testo="📣 " + scelto["testo"],
                       fonte=f"API della città /notifiche (agente {'Turismo' if scelto.get('per') == 'turisti' else 'Orchestratore'}, regole)",
                       dietro_le_quinte=vicine[-4:])
-                print(f"[{ora_avv}] Ciro (avviso): {scelto['testo']}", file=sys.stderr)
+                print(f"[{ora_avv}] TwinCIRO (avviso): {scelto['testo']}", file=sys.stderr)
 
         uscita = {
             "generato": {
@@ -328,7 +328,7 @@ def main() -> None:
                                          f"{d['citta']['inizio']} --velocita {d['citta']['velocita']}",
                 "nota": "Folla, offerte e imprese sono SIMULATE (imprese di fantasia); il meteo è reale.",
             },
-            "contatto": d.get("contatto", "CiroGPT"),
+            "contatto": d.get("contatto", "TwinCIRO"),
             "utente": utente,
             "presentazione_utente": d.get("presentazione_utente", ""),
             "messaggi": messaggi,
