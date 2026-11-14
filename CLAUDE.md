@@ -88,7 +88,7 @@ Vincoli che contano per le scelte tecniche:
 ## `cloud/` (server `twinciro.robertodisanto.it`)
 
 - Server di Roberto: si possono aprire tutte le porte, ma **non abbiamo root e non l'avremo**: solo l'utente **`openclaw`**, che usa Docker. Niente `sudo`, niente nginx di sistema, niente scritture in `/etc`; quello che richiede root lo fa l'amministratore, una volta (`cloud/certificati/`). Sostituisce `cloud.robertodisanto.it`, che non si usa più (la cartella `cloud/` mantiene il nome).
-- **Attivi dal 14/11 pomeriggio:** broker MQTT (`cloud/mqtt/`) e API dati città (`cloud/citta-api/`). Ogni modifica deve dire cosa fare sul server dopo il `git pull`. **Mai `docker compose down -v`** sul server (sul broker cancella i dati).
+- **Attivi dal 14/11 pomeriggio:** broker MQTT (`cloud/mqtt/`) e API dati città (`cloud/citta-api/`). Riavvio completo, con diagnosi e "COSA FARE" a ogni errore: `git pull && bash cloud/riavvia-tutto.sh` (dalla radice della repo). Ogni modifica deve dire cosa fare sul server dopo il `git pull`. **Mai `docker compose down -v`** sul server (sul broker cancella i dati).
 - Qui solo configurazione, mai segreti (`.env` e `segreti/` sono ignorati da git).
 - `cloud/mqtt/`: Mosquitto 2.1.2 (`eclipse-mosquitto:2.1.2-alpine`). **MQTT in chiaro sulla 1883 con password, TLS spento** (`MQTT_CERTIFICATI=nessuno`; facoltativo con `letsencrypt|autofirmato`: 8883 e 8884 wss). 9001 ws solo su 127.0.0.1. Nessun accesso anonimo (il healthcheck lo controlla). Guida completa e sezione "Aggiornare il server già attivo": `cloud/mqtt/README.md`.
   - Prima installazione: `cd cloud/mqtt && ./scripts/inizializza.sh && docker compose up -d && ./scripts/prova.sh` (i `chown` a uid 1883 li fanno gli script dentro un container).

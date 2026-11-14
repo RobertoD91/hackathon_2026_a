@@ -2,6 +2,12 @@
 
 Servizi da installare sul server di Roberto, **twinciro.robertodisanto.it**, con Docker e **senza root** (basta un utente che possa usare Docker). Non fanno parte del sito su GitHub Pages: qui c'è solo la loro configurazione, senza segreti (password, chiavi e `.env` restano sul server e sono nel `.gitignore`).
 
+**Riavvio completo in un comando** (spegne tutto senza toccare i dati, riavvia broker, API e città, e a ogni problema scrive COSA FARE):
+
+```bash
+cd ~/hackathon_2026_a && git pull && bash cloud/riavvia-tutto.sh
+```
+
 | Cartella | Servizio | Porte |
 |---|---|---|
 | [`mqtt/`](mqtt/README.md) | broker MQTT Eclipse Mosquitto 2.1.2, solo topic `napoli/` (formato unico in [`../firmware/`](../firmware/README.md#formato-mqtt-unico)): badge WHY2025 e scheda Tasmota sull'hotspot del team, città `c5-agentic-city` | 1883 (password, in chiaro); 8883 e 8884 solo con TLS acceso |
