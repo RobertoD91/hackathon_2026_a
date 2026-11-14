@@ -19,11 +19,15 @@
 
 // ---------------------------------------------------------------- MQTT
 #define TELEMETRY_MQTT_HOST        "cloud.robertodisanto.it"
-// Trasporto e porta: "mqtt" 1883 (con utente/password) | "mqtts" 8883 (TLS) | "wss" 443 (WebSocket TLS) | "ws".
+// Trasporto e porta: "mqtt" 1883 (con utente/password) | "mqtts" 8883 (TLS) | "wss" 8884 (WebSocket TLS,
+// oppure 443 se c'è il reverse proxy nginx di cloud/mqtt/esempi) | "ws".
 #define TELEMETRY_MQTT_TRANSPORT   "mqtt"
 #define TELEMETRY_MQTT_PORT        1883
 #define TELEMETRY_MQTT_WS_PATH     "/mqtt"           // solo per ws/wss
-#define TELEMETRY_MQTT_USER        ""                // utente del dispositivo sul broker
+// Broker del team (cloud/mqtt): l'utente di un badge È il suo deviceId (l'ACL gli fa scrivere solo
+// bighack/+/<deviceId>/#). Si crea con ./scripts/aggiungi-utente.sh <deviceId>. Con l'utente vuoto
+// e la password piena si usa il deviceId; con TELEMETRY_DEVICE_ID vuoto il deviceId è l'utente.
+#define TELEMETRY_MQTT_USER        ""
 #define TELEMETRY_MQTT_PASSWORD    ""
 // TLS: con 0 il certificato del broker è verificato con il bundle di CA di ESP-IDF (va bene per
 // Let's Encrypt). Per un certificato autofirmato metti la CA in TELEMETRY_MQTT_CA_PEM, oppure
@@ -35,13 +39,15 @@
 #define TELEMETRY_TOPIC_PREFIX     "bighack"         // bighack/<zona>/<deviceId>/readings|status|cmd
 
 // Copia anche nel formato di c5-agentic-city: napoli/sensori/<deviceId>/<grandezza> {"valore": n}
-// e il pulsante su napoli/eventi/manuale. Serve il permesso di scrittura su napoli/# sul broker.
+// e il pulsante su napoli/eventi/manuale. Con l'ACL di cloud/mqtt napoli/sensori/<deviceId>/# è già
+// permesso; napoli/eventi/manuale va concesso badge per badge (vedi cloud/mqtt/config/acl).
 #define TELEMETRY_C5_COMPAT        0
 #define TELEMETRY_C5_PREFIX        "napoli"
 #define TELEMETRY_C5_EVENT         "segnalazione_badge"
 
 // ---------------------------------------------------------------- identità e posizione
-// "" = "badge-<ultimi 4 caratteri del MAC>": ogni badge ha un id diverso con lo stesso firmware.
+// "" = l'utente MQTT, oppure (senza utente) "badge-<ultime 4 cifre esadecimali del MAC>": ogni badge
+// ha un id diverso con lo stesso firmware; lo mostra la schermata SENSORI.
 #define TELEMETRY_DEVICE_ID        ""
 #define TELEMETRY_ZONE             "citta-della-scienza"
 // Città della Scienza, Napoli (circa). Metti NAN per non inviare le coordinate.

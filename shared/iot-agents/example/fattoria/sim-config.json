@@ -1,0 +1,618 @@
+{
+  "name": "fattoria-acqua-comune",
+  "seed": 15,
+  "intervalSec": 3,
+  "speed": 300,
+  "start": "15:00",
+  "timezone": "Europe/Rome",
+  "loopSec": 288,
+  "devices": [
+    {
+      "id": "campo-01",
+      "location": {
+        "lat": 40.765992,
+        "lon": 14.596345,
+        "zone": "campo_01"
+      },
+      "readings": {
+        "soil_moisture_pct": {
+          "kind": "constant",
+          "value": 21.6,
+          "noise": 0.1
+        },
+        "temperature_c": {
+          "kind": "daily",
+          "min": 20.3,
+          "max": 32.4,
+          "peakHour": 15,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 6,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": -2,
+              "rampSec": 20
+            }
+          }
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 95000,
+          "min": 0,
+          "sunrise": 5.6,
+          "sunset": 20.5,
+          "noise": 1200,
+          "round": 0,
+          "effects": {
+            "pioggia_in_arrivo": {
+              "multiply": 0.5,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "campo-02",
+      "location": {
+        "lat": 40.766019,
+        "lon": 14.598054,
+        "zone": "campo_02"
+      },
+      "readings": {
+        "soil_moisture_pct": {
+          "kind": "constant",
+          "value": 22.7,
+          "noise": 0.1
+        },
+        "temperature_c": {
+          "kind": "daily",
+          "min": 20.6,
+          "max": 32.8,
+          "peakHour": 15,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 6,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": -2,
+              "rampSec": 20
+            }
+          }
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 95000,
+          "min": 0,
+          "sunrise": 5.6,
+          "sunset": 20.5,
+          "noise": 1200,
+          "round": 0,
+          "effects": {
+            "pioggia_in_arrivo": {
+              "multiply": 0.5,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "campo-03",
+      "location": {
+        "lat": 40.766232,
+        "lon": 14.600568,
+        "zone": "campo_03"
+      },
+      "readings": {
+        "soil_moisture_pct": {
+          "kind": "constant",
+          "value": 17.1,
+          "noise": 0.1
+        },
+        "temperature_c": {
+          "kind": "daily",
+          "min": 20,
+          "max": 33.2,
+          "peakHour": 15,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 6,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": -2,
+              "rampSec": 20
+            }
+          }
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 95000,
+          "min": 0,
+          "sunrise": 5.6,
+          "sunset": 20.5,
+          "noise": 1200,
+          "round": 0,
+          "effects": {
+            "pioggia_in_arrivo": {
+              "multiply": 0.5,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "campo-04",
+      "location": {
+        "lat": 40.766224,
+        "lon": 14.601753,
+        "zone": "campo_04"
+      },
+      "readings": {
+        "soil_moisture_pct": {
+          "kind": "constant",
+          "value": 24.4,
+          "noise": 0.1
+        },
+        "temperature_c": {
+          "kind": "daily",
+          "min": 20.3,
+          "max": 32,
+          "peakHour": 15,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 6,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": -2,
+              "rampSec": 20
+            }
+          }
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 95000,
+          "min": 0,
+          "sunrise": 5.6,
+          "sunset": 20.5,
+          "noise": 1200,
+          "round": 0,
+          "effects": {
+            "pioggia_in_arrivo": {
+              "multiply": 0.5,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "campo-05",
+      "location": {
+        "lat": 40.766215,
+        "lon": 14.602864,
+        "zone": "campo_05"
+      },
+      "readings": {
+        "soil_moisture_pct": {
+          "kind": "constant",
+          "value": 28.6,
+          "noise": 0.1
+        },
+        "temperature_c": {
+          "kind": "daily",
+          "min": 20.6,
+          "max": 32.4,
+          "peakHour": 15,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 6,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": -2,
+              "rampSec": 20
+            }
+          }
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 95000,
+          "min": 0,
+          "sunrise": 5.6,
+          "sunset": 20.5,
+          "noise": 1200,
+          "round": 0,
+          "effects": {
+            "pioggia_in_arrivo": {
+              "multiply": 0.5,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "campo-06",
+      "location": {
+        "lat": 40.766207,
+        "lon": 14.603974,
+        "zone": "campo_06"
+      },
+      "readings": {
+        "soil_moisture_pct": {
+          "kind": "constant",
+          "value": 19.7,
+          "noise": 0.1
+        },
+        "temperature_c": {
+          "kind": "daily",
+          "min": 20,
+          "max": 32.8,
+          "peakHour": 15,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 6,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": -2,
+              "rampSec": 20
+            }
+          }
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 95000,
+          "min": 0,
+          "sunrise": 5.6,
+          "sunset": 20.5,
+          "noise": 1200,
+          "round": 0,
+          "effects": {
+            "pioggia_in_arrivo": {
+              "multiply": 0.5,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "campo-07",
+      "location": {
+        "lat": 40.766199,
+        "lon": 14.605079,
+        "zone": "campo_07"
+      },
+      "readings": {
+        "soil_moisture_pct": {
+          "kind": "constant",
+          "value": 31.9,
+          "noise": 0.1
+        },
+        "temperature_c": {
+          "kind": "daily",
+          "min": 20.3,
+          "max": 33.2,
+          "peakHour": 15,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 6,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": -2,
+              "rampSec": 20
+            }
+          }
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 95000,
+          "min": 0,
+          "sunrise": 5.6,
+          "sunset": 20.5,
+          "noise": 1200,
+          "round": 0,
+          "effects": {
+            "pioggia_in_arrivo": {
+              "multiply": 0.5,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "campo-08",
+      "location": {
+        "lat": 40.765018,
+        "lon": 14.601142,
+        "zone": "campo_08"
+      },
+      "readings": {
+        "soil_moisture_pct": {
+          "kind": "constant",
+          "value": 25.1,
+          "noise": 0.1
+        },
+        "temperature_c": {
+          "kind": "daily",
+          "min": 20.6,
+          "max": 32,
+          "peakHour": 15,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 6,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": -2,
+              "rampSec": 20
+            }
+          }
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 95000,
+          "min": 0,
+          "sunrise": 5.6,
+          "sunset": 20.5,
+          "noise": 1200,
+          "round": 0,
+          "effects": {
+            "pioggia_in_arrivo": {
+              "multiply": 0.5,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "campo-09",
+      "location": {
+        "lat": 40.765028,
+        "lon": 14.602477,
+        "zone": "campo_09"
+      },
+      "readings": {
+        "soil_moisture_pct": {
+          "kind": "constant",
+          "value": 36,
+          "noise": 0.1
+        },
+        "temperature_c": {
+          "kind": "daily",
+          "min": 20,
+          "max": 32.4,
+          "peakHour": 15,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 6,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": -2,
+              "rampSec": 20
+            }
+          }
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 95000,
+          "min": 0,
+          "sunrise": 5.6,
+          "sunset": 20.5,
+          "noise": 1200,
+          "round": 0,
+          "effects": {
+            "pioggia_in_arrivo": {
+              "multiply": 0.5,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "campo-10",
+      "location": {
+        "lat": 40.764984,
+        "lon": 14.603915,
+        "zone": "campo_10"
+      },
+      "readings": {
+        "soil_moisture_pct": {
+          "kind": "constant",
+          "value": 26.4,
+          "noise": 0.1
+        },
+        "temperature_c": {
+          "kind": "daily",
+          "min": 20.3,
+          "max": 32.8,
+          "peakHour": 15,
+          "noise": 0.15,
+          "effects": {
+            "ondata_calore": {
+              "add": 6,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": -2,
+              "rampSec": 20
+            }
+          }
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 95000,
+          "min": 0,
+          "sunrise": 5.6,
+          "sunset": 20.5,
+          "noise": 1200,
+          "round": 0,
+          "effects": {
+            "pioggia_in_arrivo": {
+              "multiply": 0.5,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "vasca-consortile",
+      "location": {
+        "lat": 40.767248,
+        "lon": 14.601646,
+        "zone": "serbatoio"
+      },
+      "readings": {
+        "fill_pct": {
+          "kind": "constant",
+          "value": 62
+        }
+      }
+    },
+    {
+      "id": "stazione-meteo",
+      "location": {
+        "lat": 40.7645,
+        "lon": 14.605026,
+        "zone": "stazione_meteo"
+      },
+      "readings": {
+        "temperature_c": {
+          "kind": "daily",
+          "min": 20,
+          "max": 32,
+          "peakHour": 15,
+          "noise": 0.1,
+          "effects": {
+            "ondata_calore": {
+              "add": 6,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": -2,
+              "rampSec": 20
+            }
+          }
+        },
+        "humidity_pct": {
+          "kind": "daily",
+          "min": 42,
+          "max": 85,
+          "peakHour": 5,
+          "noise": 1,
+          "round": 0,
+          "effects": {
+            "ondata_calore": {
+              "multiply": 0.75,
+              "rampSec": 15
+            },
+            "pioggia_in_arrivo": {
+              "add": 12,
+              "rampSec": 20
+            }
+          }
+        },
+        "light_lux": {
+          "kind": "daylight",
+          "max": 95000,
+          "min": 0,
+          "sunrise": 5.6,
+          "sunset": 20.5,
+          "noise": 1200,
+          "round": 0,
+          "effects": {
+            "pioggia_in_arrivo": {
+              "multiply": 0.5,
+              "rampSec": 15
+            }
+          }
+        }
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "at": 15,
+      "name": "ondata_calore",
+      "params": {
+        "fonte": "timeline"
+      },
+      "duration": 120
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "ondata_calore",
+      "label": "Ondata di calore",
+      "description": "+6 °C sui campi, evapotraspirazione ×1,4: i campi si asciugano e il consorzio ricalcola i turni",
+      "params": {},
+      "duration": 120
+    },
+    {
+      "name": "pioggia_in_arrivo",
+      "label": "Pioggia in arrivo",
+      "description": "per domani sono previsti 18 mm: il consorzio annulla i turni che la pioggia rende inutili",
+      "params": {
+        "mm": 18
+      },
+      "duration": 150
+    },
+    {
+      "name": "riduzione_acqua",
+      "label": "Riduzione dell'acqua disponibile",
+      "description": "dotazione del consorzio −40 % e pozzo a metà potenza: l'acqua va prima ai campi in stress e alle fasi sensibili",
+      "params": {
+        "quota": 0.6
+      },
+      "duration": 150
+    },
+    {
+      "name": "meteo_reale",
+      "label": "Previsione reale (Open-Meteo)",
+      "description": "usa la previsione vera di oggi per San Marzano sul Sarno, anche fuori dalla stagione irrigua",
+      "params": {},
+      "duration": 150
+    }
+  ],
+  "fisica": {
+    "nota": "Bilancio idrico semplificato (fattoria/simulatore.js), valori indicativi: ET0 di una giornata di luglio nella piana del Sarno, alba e tramonto di metà luglio.",
+    "et0": 5.6,
+    "alba": 5.6,
+    "tramonto": 20.5,
+    "efficienza": 0.9,
+    "drenaggioOre": 6,
+    "effetti": {
+      "ondata_calore": {
+        "et0": 1.4
+      },
+      "pioggia_in_arrivo": {
+        "et0": 0.8
+      },
+      "riduzione_acqua": {
+        "ricarica": 0.5
+      }
+    }
+  }
+}

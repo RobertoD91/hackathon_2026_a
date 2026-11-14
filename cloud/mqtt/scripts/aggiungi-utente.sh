@@ -11,7 +11,7 @@
 # Ruoli fissi (permessi in config/acl): admin, ponte, c5, c5-plastico, dashboard, monitor.
 #
 # La password non passa mai sulla riga di comando: arriva a mosquitto_passwd (dentro il
-# container, hash argon2id) tramite stdin.
+# container, che la salva come hash PBKDF2-SHA512) tramite stdin.
 . "$(dirname "$0")/_comune.sh"
 
 [ $# -ge 1 ] && [ $# -le 2 ] || { sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }

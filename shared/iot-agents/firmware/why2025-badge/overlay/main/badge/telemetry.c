@@ -264,7 +264,8 @@ static void mqtt_setup(void) {
     esp_mqtt_client_config_t cfg = {
         .uri = uri,
         .client_id = device_id,
-        .username = strlen(TELEMETRY_MQTT_USER) ? TELEMETRY_MQTT_USER : NULL,
+        // utente vuoto ma password presente: l'utente è il deviceId (come vuole l'ACL del broker)
+        .username = strlen(TELEMETRY_MQTT_USER) ? TELEMETRY_MQTT_USER : (strlen(TELEMETRY_MQTT_PASSWORD) ? device_id : NULL),
         .password = strlen(TELEMETRY_MQTT_PASSWORD) ? TELEMETRY_MQTT_PASSWORD : NULL,
         .lwt_topic = topic_status,
         .lwt_msg = lwt_msg,
@@ -481,8 +482,12 @@ void telemetry_start(void) {
     snap.badges_nearby = -1;
     snap.interval_s = interval_s;
 
+    // deviceId: quello configurato; altrimenti l'utente MQTT (l'ACL di cloud/mqtt fa scrivere ogni
+    // utente solo sotto bighack/+/<utente>/#); altrimenti "badge-<MAC>".
     if (strlen(TELEMETRY_DEVICE_ID) > 0) {
         strlcpy(device_id, TELEMETRY_DEVICE_ID, sizeof(device_id));
+    } else if (strlen(TELEMETRY_MQTT_USER) > 0) {
+        strlcpy(device_id, TELEMETRY_MQTT_USER, sizeof(device_id));
     } else {
         snprintf(device_id, sizeof(device_id), "badge-%04x", badge_obj.short_mac);
     }
