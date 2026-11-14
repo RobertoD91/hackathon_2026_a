@@ -308,6 +308,26 @@ xvfb-run -a -s "-screen 0 1920x1080x24" python strumenti/video_demo.py --inizio 
 
 Sul portatile con lo schermo basta `python strumenti/video_demo.py`, senza `xvfb-run`.
 
+### Video 3D della regata
+
+`media/regata_3d.mp4`: la finestra della regata (13:35–14:50) vista dall'alto in 3D, a 1 minuto simulato per secondo di video.
+- La camera arriva da lontano, ruota lentamente attorno al lungomare e alla fine si allarga.
+- **Città notturna**: edifici estrusi da OpenStreetMap (altezze stimate dove mancano), mare dalla linea di costa.
+- **Traffico**: i veicoli della simulazione "con agenti" (azzurro = scorre, arancione = lento, rosso = fermo).
+- **Folla**: colonne per zona, alte quanto le persone stimate dall'agente Folla e colorate per livello.
+- **Mare**: barche degli spettatori e due AC75 sul campo di regata (percorso ipotizzato).
+- **Riquadri**:
+  - veicoli fermi e ore perse in coda nella finestra, oggi contro agenti;
+  - dialogo tra gli agenti;
+  - evento in corso e piano dei semafori.
+- Il pilota del drone è simulato.
+
+```bash
+strumenti/video3d/fai_video.sh 13:35 14:50 media/regata_3d.mp4
+```
+
+Servono Node con Playwright e Chromium. Lo script scarica da solo l'estratto OSM e deck.gl. Senza GPU va a circa un fotogramma al secondo, cioè 40 minuti per la regata.
+
 ## La demo (4 minuti)
 
 1. **Il gancio** (30 s): *"Napoli 2027, America's Cup. Un sabato con due navi, la regata e la partita. Oggi ogni servizio fa da sé: noi li facciamo parlare."*

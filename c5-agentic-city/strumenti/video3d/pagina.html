@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Napoli Agentic City 3D</title>
+<style>
+  :root { --testo: #e2e8f0; --grigio: #94a3b8; --verde: #4ade80; --rosso: #f87171; }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #081123; font-family: "DejaVu Sans", sans-serif; color: var(--testo); }
+  #mappa { position: absolute; inset: 0; }
+  .hud { position: absolute; pointer-events: none; text-shadow: 0 2px 8px rgba(0,0,0,.8); }
+  #titolo { top: 28px; left: 36px; }
+  #titolo h1 { margin: 0; font-size: 44px; letter-spacing: 2px; }
+  #titolo p { margin: 6px 0 0; font-size: 22px; color: var(--grigio); }
+  #orologio { top: 28px; right: 36px; text-align: right; }
+  #ora { font-size: 64px; font-weight: bold; background: rgba(37,99,235,.85); padding: 6px 22px; border-radius: 12px; display: inline-block; }
+  #evento { margin-top: 10px; font-size: 24px; color: #facc15; }
+  #piano { margin-top: 6px; font-size: 20px; color: #67e8f9; }
+  #kpi { left: 36px; bottom: 36px; background: rgba(8,17,35,.78); border: 1px solid rgba(148,163,184,.25); border-radius: 14px; padding: 18px 24px; width: 680px; }
+  .riga span { white-space: nowrap; }
+  #kpi h2 { margin: 0 0 12px; font-size: 20px; color: var(--grigio); font-weight: normal; }
+  .riga { display: flex; align-items: baseline; justify-content: space-between; margin: 8px 0; font-size: 24px; }
+  .riga b { font-size: 30px; }
+  .oggi { color: var(--rosso); } .agenti { color: var(--verde); }
+  #delta { font-size: 46px; font-weight: bold; color: var(--verde); margin-top: 8px; }
+  #delta small { font-size: 20px; color: var(--grigio); font-weight: normal; }
+  #dialogo { right: 36px; bottom: 36px; width: 820px; background: rgba(8,17,35,.78); border: 1px solid rgba(148,163,184,.25); border-radius: 14px; padding: 16px 22px; }
+  #dialogo h2 { margin: 0 0 8px; font-size: 20px; color: var(--grigio); font-weight: normal; }
+  .msg { font-size: 21px; line-height: 1.35; margin: 8px 0; }
+  .msg .chi { font-weight: bold; }
+  #legenda { left: 36px; top: 150px; font-size: 19px; color: var(--grigio); line-height: 1.7; }
+  .pallino { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 8px; vertical-align: -1px; }
+  #cartello { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; background: rgba(8,17,35,.0); text-align: center; }
+  #cartello > div { background: rgba(8,17,35,.88); border: 1px solid rgba(148,163,184,.3); border-radius: 20px; padding: 36px 56px; box-shadow: 0 10px 60px rgba(0,0,0,.6); }
+  #cartello h1 { font-size: 72px; margin: 0; letter-spacing: 3px; }
+  #cartello p { font-size: 30px; color: var(--grigio); margin: 18px 0 0; }
+  #cartello .grande { font-size: 44px; color: var(--verde); font-weight: bold; }
+</style>
+<script src="lib/deck.min.js"></script>
+</head>
+<body>
+<div id="mappa"></div>
+<div class="hud" id="titolo"><h1>NAPOLI AGENTIC CITY</h1><p>Regata dell'America's Cup · gemello digitale con gli agenti al lavoro</p></div>
+<div class="hud" id="legenda">
+  <div><span class="pallino" style="background:#78dcff"></span>veicolo che scorre</div>
+  <div><span class="pallino" style="background:#ffaa28"></span>lento</div>
+  <div><span class="pallino" style="background:#ff323c"></span>fermo</div>
+  <div><span class="pallino" style="background:#facc15;border-radius:2px"></span>colonne: persone per zona</div>
+</div>
+<div class="hud" id="orologio"><div id="ora">--:--</div><div id="evento"></div><div id="piano"></div></div>
+<div class="hud" id="kpi">
+  <h2>Stessi veicoli, stessa giornata: semafori di oggi vs agenti</h2>
+  <div class="riga"><span>Veicoli fermi adesso</span><span><b class="oggi" id="fo">–</b> &nbsp;vs&nbsp; <b class="agenti" id="fa">–</b></span></div>
+  <div class="riga"><span>Ore perse in coda in questa finestra</span><span><b class="oggi" id="oo">–</b> &nbsp;vs&nbsp; <b class="agenti" id="oa">–</b></span></div>
+  <div id="delta">–</div>
+</div>
+<div class="hud" id="dialogo"><h2>Cosa si dicono gli agenti</h2><div id="righe"></div></div>
+<div id="cartello"></div>
+<script>
+const COLORI_AGENTE = {"Orchestratore":"#e879f9","Traffico":"#67e8f9","Folla":"#facc15","Eventi":"#86efac","Meteo&Mare":"#93c5fd","Turismo":"#4ade80","Imprese":"#fde047","Pilota drone":"#93c5fd"};
+const NOME_BREVE = {beverello:'Beverello', municipio:'Municipio', rotonda_diaz:'Rotonda Diaz', piazza_vittoria:'Piazza Vittoria', castel_ovo:"Castel dell'Ovo", mergellina:'Mergellina', vomero:'Vomero'};
+const SPOSTA = {municipio:[-70,0], beverello:[70,0]};
+const LIVELLO = {basso:[52,211,153], medio:[250,204,21], alto:[249,115,22], critico:[239,68,68]};
+const VEICOLO = [[120,220,255],[255,170,40],[255,50,60]];
+let scena, deckgl, finitoRender = null;
+
+const luce = new deck.LightingEffect({
+  ambiente: new deck.AmbientLight({color:[255,255,255], intensity:1.25}),
+  luna: new deck.DirectionalLight({color:[190,210,255], intensity:1.5, direction:[-2,-6,-4]}),
+  lampioni: new deck.DirectionalLight({color:[255,190,120], intensity:0.6, direction:[3,2,-1]}),
+});
+
+function altezza(p){ return 3.2 * Math.sqrt(Math.max(0, p)); }
+function escape(s){ return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+function barche(t) {
+  // Due AC75 che girano tra le boe (ipotesi di percorso), giro di 14 minuti, la seconda insegue.
+  const [a, b] = scena.boe, out = [], scie = [];
+  for (const [i, ritardo] of [[0, 0], [1, 25]]) {
+    const pos = s => {
+      const fase = (((s - ritardo) / 840) % 1 + 1) % 1;
+      const u = fase < .5 ? fase * 2 : 2 - fase * 2;
+      const lato = (fase < .5 ? 1 : -1) * 0.0007 * Math.sin(Math.PI * u) + (i ? 0.00025 : 0);
+      return [a[0] + (b[0]-a[0]) * u, a[1] + (b[1]-a[1]) * u + lato];
+    };
+    out.push({pos: pos(t), colore: i ? [255,80,80] : [255,255,255]});
+    const scia = []; for (let k = 0; k <= 40; k += 2) scia.push(pos(t - k * 2));
+    scie.push({path: scia, colore: i ? [255,120,120] : [200,230,255]});
+  }
+  return {out, scie};
+}
+
+function spettatori(t) {
+  // Barche degli spettatori ai lati del campo di regata (deterministiche).
+  const out = [];
+  for (let i = 0; i < 70; i++) {
+    const x = 14.226 + (i * 0.000271) % 0.02, y = 40.8236 + ((i * 7919) % 100) / 100 * 0.0012 + (i % 2 ? 0.0052 : 0);
+    out.push([x + 0.00004 * Math.sin(t / 60 + i), y]);
+  }
+  return out;
+}
+
+function strati(f) {
+  const t = f.t;
+  const {out, scie} = barche(t);
+  const colonne = Object.entries(f.folla || {}).map(([z, v]) => ({z, pos: scena.zone[z].pos, persone: v[0], livello: v[1], nome: scena.zone[z].nome}));
+  return [
+    new deck.SolidPolygonLayer({id:'terra', data:[{p:scena.terra}], getPolygon:d=>d.p, getFillColor:[30,40,60], material:false}),
+    new deck.PathLayer({id:'strade', data:scena.strade, getPath:d=>d.p, getWidth:d=>d.w*1.4, widthMinPixels:1.2, getColor:[105,130,175], capRounded:true, jointRounded:true}),
+    new deck.PolygonLayer({id:'edifici', data:scena.edifici, getPolygon:d=>d.p, extruded:true, wireframe:false,
+      getElevation:d=>d.h, getFillColor:d=>d.chiesa?[140,120,180]:[78,96,132], material:{ambient:0.45, diffuse:0.7, shininess:16, specularColor:[50,60,80]}}),
+    new deck.PathLayer({id:'scie', data:scie, getPath:d=>d.path, getWidth:6, widthMinPixels:2, getColor:d=>[...d.colore,140]}),
+    new deck.ScatterplotLayer({id:'spettatori', data:spettatori(t), getPosition:d=>d, getRadius:5, radiusMinPixels:1.5, getFillColor:[226,232,240,200]}),
+    new deck.ColumnLayer({id:'vele', data:out, getPosition:d=>d.pos, diskResolution:3, radius:22, extruded:true, getElevation:70, getFillColor:d=>d.colore, material:{ambient:0.8, diffuse:0.5}}),
+    new deck.ScatterplotLayer({id:'alone', data:f.v, getPosition:d=>[d[0],d[1]], getRadius:26, radiusMinPixels:4, getFillColor:d=>[...VEICOLO[d[2]],60], parameters:{depthTest:false}}),
+    new deck.ScatterplotLayer({id:'veicoli', data:f.v, getPosition:d=>[d[0],d[1]], getRadius:8, radiusMinPixels:2.2, getFillColor:d=>VEICOLO[d[2]], parameters:{depthTest:false}}),
+    new deck.ColumnLayer({id:'folla', data:colonne, getPosition:d=>d.pos, diskResolution:32, radius:75, extruded:true,
+      getElevation:d=>altezza(d.persone), getFillColor:d=>[...LIVELLO[d.livello]||[148,163,184],190], material:{ambient:0.6, diffuse:0.6},
+      updateTriggers:{getElevation:t, getFillColor:t}}),
+    new deck.TextLayer({id:'nomi', data:colonne, getPosition:d=>[d.pos[0], d.pos[1], altezza(d.persone)+30],
+      getText:d=>`${NOME_BREVE[d.z] || d.nome}\n${d.persone.toLocaleString('it-IT')}`, getPixelOffset:d=>SPOSTA[d.z] || [0,0], getSize:20, getColor:[255,255,255],
+      fontFamily:'DejaVu Sans', fontWeight:'bold', outlineWidth:4, outlineColor:[8,17,35], fontSettings:{sdf:true},
+      billboard:true, getTextAnchor:'middle', getAlignmentBaseline:'bottom', parameters:{depthTest:false}, updateTriggers:{getText:t, getPosition:t}}),
+  ];
+}
+
+function hud(f) {
+  document.getElementById('ora').textContent = f.ora;
+  document.getElementById('evento').textContent = f.evento || '';
+  document.getElementById('piano').textContent = f.piano ? `Semafori: ${f.piano}` : '';
+  const k = f.kpi;
+  document.getElementById('fo').textContent = f.fermi[0];
+  document.getElementById('fa').textContent = f.fermi[1];
+  if (k && k.oggi >= 1.5) {
+    document.getElementById('fo').textContent = f.fermi[0];
+    document.getElementById('fa').textContent = f.fermi[1];
+    document.getElementById('oo').textContent = k.oggi.toFixed(1) + ' h';
+    document.getElementById('oa').textContent = k.agenti.toFixed(1) + ' h';
+    const d = k.oggi > 0 ? 100 * (k.oggi - k.agenti) / k.oggi : 0;
+    document.getElementById('delta').innerHTML = `${d >= 0 ? '−' : '+'}${Math.abs(d).toFixed(0)}% <small>ore perse in coda con gli agenti</small>`;
+  }
+  document.getElementById('righe').innerHTML = (f.dialogo || []).slice(-3).reverse().map(m =>
+    `<div class="msg"><span class="chi" style="color:${COLORI_AGENTE[m.da] || '#e2e8f0'}">${escape(m.ora)} ${escape(m.da)} → ${escape(m.a)}:</span> ${escape(m.testo.length > 170 ? m.testo.slice(0, 167) + '…' : m.testo)}</div>`).join('');
+}
+
+window.prepara = async () => {
+  scena = await (await fetch('scena.json')).json();
+  deckgl = new deck.Deck({
+    parent: document.getElementById('mappa'), width: 1920, height: 1080,
+    views: new deck.MapView({farZMultiplier: 3}),
+    initialViewState: {longitude: 14.238, latitude: 40.832, zoom: 14.5, pitch: 55, bearing: 0},
+    controller: false, effects: [luce], useDevicePixels: false,
+    parameters: {clearColor: [8/255, 17/255, 35/255, 1]},
+    glOptions: {preserveDrawingBuffer: true},
+    onAfterRender: () => { if (finitoRender) { const r = finitoRender; finitoRender = null; r(); } },
+  });
+};
+
+window.disegna = (f, cam, cartello) => new Promise(ok => {
+  hud(f);
+  const c = document.getElementById('cartello');
+  if (cartello) { c.style.display = 'flex'; c.style.background = `rgba(8,17,35,${cartello.opacita})`; c.innerHTML = cartello.html; }
+  else c.style.display = 'none';
+  finitoRender = () => requestAnimationFrame(() => ok());
+  deckgl.setProps({layers: strati(f), viewState: cam});
+});
+</script>
+</body>
+</html>

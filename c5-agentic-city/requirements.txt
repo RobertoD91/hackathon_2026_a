@@ -6,3 +6,5 @@ pyproj                 # conversione coordinate per sumolib
 paho-mqtt>=2.0         # bus MQTT verso gli ESP32
 rich>=13               # console della sala operativa
 anthropic>=0.70        # provider LLM Claude (opzionale: senza chiave si usano le regole)
+numpy                  # solo per strumenti/video3d (esportazione posizioni)
+pillow                 # solo per gli strumenti di screenshot e video
