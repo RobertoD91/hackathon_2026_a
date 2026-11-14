@@ -282,6 +282,21 @@ describe('conversioni verso il contratto', () => {
     assert.ok(createConverter({ tasmota: false }).convert('tele/x/SENSOR', Buffer.from('{}')).skip);
   });
 
+  test('c5-agentic-city: stato dei nodi TwinCiro (napoli/nodi/<id>/stato)', () => {
+    const c = createConverter({ c5: true });
+    const on = c.convert('napoli/nodi/nodo-01/stato', Buffer.from(JSON.stringify({ online: true, ruolo: 'sensore', zona: 'mergellina', versione: '1.2.0', ip: '10.0.0.5', rssi: -61 })), { retain: true });
+    assert.equal(on.readings.length, 1);
+    assert.equal(on.readings[0].deviceId, 'nodo-01');
+    assert.deepEqual(on.readings[0].readings, { online: true });
+    assert.equal(on.readings[0].location.zone, 'mergellina');
+    assert.equal(on.readings[0].meta.ruolo, 'sensore');
+    assert.equal(on.readings[0].meta.ip, undefined, "l'IP del nodo non viene inoltrato");
+    const off = c.convert('napoli/nodi/nodo-01/stato', Buffer.from('{"online":false,"ruolo":"semaforo"}'));
+    assert.deepEqual(off.readings[0].readings, { online: false });
+    assert.ok(c.convert('napoli/nodi/nodo-01/stato', Buffer.from('{"ruolo":"x"}')).skip);
+    assert.ok(createConverter({}).convert('napoli/nodi/nodo-01/stato', Buffer.from('{"online":true}')).skip, 'c5 spento di default');
+  });
+
   test('c5-agentic-city: persone × moltiplicatore, luce, copie dei badge saltate', () => {
     let { readings: [r] } = one('napoli/sensori/varco_rotonda/persone', { zona: 'rotonda_diaz', valore: 7, moltiplicatore: 200 });
     assert.deepEqual(r.readings, { people_count: 1400 });
@@ -300,7 +315,7 @@ describe('conversioni verso il contratto', () => {
     assert.equal(sanitizeKey('CarbonDioxide'), 'carbon_dioxide');
     assert.equal(sanitizeKey('1wire'), 'x_1wire');
     assert.deepEqual(createConverter({ prefix: 'test/bighack' }).parseTopic('test/bighack/z/id/readings'), { kind: 'readings', zone: 'z', id: 'id' });
-    assert.deepEqual(createConverter({ c5: true }).topics(), ['bighack/#', 'tele/+/SENSOR', 'tele/+/STATE', 'tele/+/LWT', 'napoli/sensori/+/+']);
+    assert.deepEqual(createConverter({ c5: true }).topics(), ['bighack/#', 'tele/+/SENSOR', 'tele/+/STATE', 'tele/+/LWT', 'napoli/sensori/+/+', 'napoli/nodi/+/stato']);
   });
 });
 
@@ -451,7 +466,7 @@ describe('ponte MQTT → hub', () => {
     assert.equal(c.hubUrl, 'http://localhost:8701');
     assert.equal(c.tasmota, true);
     assert.equal(c.c5, false);
-    assert.deepEqual(bridge.topics, ['bighack/#', 'tele/+/SENSOR', 'tele/+/STATE', 'tele/+/LWT', 'napoli/sensori/+/+']);
+    assert.deepEqual(bridge.topics, ['bighack/#', 'tele/+/SENSOR', 'tele/+/STATE', 'tele/+/LWT', 'napoli/sensori/+/+', 'napoli/nodi/+/stato']);
     assert.equal(configFromEnv({ MQTT_TASMOTA: '0', MQTT_TOPICS: 'a/#, b/+' }).topics.join('|'), 'a/#|b/+');
   });
 

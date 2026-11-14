@@ -142,6 +142,7 @@ Alternativa a `POST /api/readings` per i dispositivi: pubblicano sul broker e il
 | `tele/<topic>/SENSOR`, `STATE`, `LWT` | Tasmota (FullTopic predefinito) | telemetria Tasmota, convertita dal ponte (sotto) |
 | `bighack/<zona>/<topic>/tele/SENSOR` | Tasmota con `FullTopic bighack/<zona>/%topic%/%prefix%/` | come sopra, con la zona presa dal topic |
 | `napoli/sensori/<nodo>/<grandezza>` | ESP32 di `c5-agentic-city` | `{"valore": n, "zona": "...", "moltiplicatore": m}`: letto dal ponte solo con `MQTT_C5=1` |
+| `napoli/nodi/<nodo>/stato` | nodi TwinCiro (`c5-agentic-city/firmware/twinciro-nodo/`), retained con last will | `{"online": bool, "ruolo", "zona", "versione", "ip", "rssi"}` → lettura `{ online }` con zona e ruolo (l'IP non viene inoltrato); solo con `MQTT_C5=1` |
 
 - `<zona>` e `<deviceId>` sono un livello di topic ciascuno: niente `/`, `+`, `#`, spazi (il firmware li sostituisce con `_`). Zona sconosciuta: `senza-zona`.
 - Sul broker del team (`cloud/mqtt/`) il **nome utente MQTT di un dispositivo è il suo deviceId** (o il Topic di Tasmota): l'ACL gli fa scrivere solo `bighack/+/<utente>/#`, `tele/<utente>/#`, `stat/<utente>/#` e `napoli/sensori/<utente>/#`. Il ponte usa l'utente `ponte` (lettura di `bighack/#`, `tele/#`, `stat/#`). Porte: 1883 (utente e password), 8883 (TLS), 8884 (WebSocket TLS).
@@ -157,7 +158,7 @@ Alternativa a `POST /api/readings` per i dispositivi: pubblicano sul broker e il
 |---|---|---|
 | `MQTT_URL` | `mqtt://cloud.robertodisanto.it:1883` | anche `mqtts://`, `ws://`, `wss://` |
 | `MQTT_USER`, `MQTT_PASSWORD` | — | |
-| `MQTT_TOPICS` | `bighack/#` + `tele/+/SENSOR,STATE,LWT` + (`napoli/sensori/+/+`) | filtri separati da virgola |
+| `MQTT_TOPICS` | `bighack/#` + `tele/+/SENSOR,STATE,LWT` + (`napoli/sensori/+/+`, `napoli/nodi/+/stato`) | filtri separati da virgola |
 | `MQTT_TASMOTA`, `MQTT_C5`, `MQTT_STATUS` | 1, 0, 1 | quali formati leggere |
 | `MQTT_MAP` / `MQTT_MAP_FILE` | — | `{"<deviceId o topic Tasmota o nodo c5>": {"zone", "lat", "lon", "deviceId"}}`: posizione (vince su quella del dispositivo) e nome nel hub |
 | `MQTT_DEFAULT_ZONE` | — | zona dei Tasmota/c5 senza mappa |

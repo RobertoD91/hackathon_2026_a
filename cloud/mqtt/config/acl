@@ -55,6 +55,7 @@ topic read tele/#
 topic read stat/#
 # Solo se il ponte ha PONTE_C5=1 (legge anche il formato c5 napoli/sensori/<id>/<grandezza>).
 topic read napoli/sensori/#
+topic read napoli/nodi/+/stato
 # Per mandare comandi dal hub ai dispositivi togli il commento:
 # topic write bighack/+/+/cmd
 # topic write cmnd/#
@@ -66,6 +67,8 @@ topic readwrite napoli/#
 # ESP32 del plastico di c5 (sensori di passaggio, pulsanti, semafori), un utente condiviso.
 user c5-plastico
 topic write napoli/sensori/#
+# stato dei nodi TwinCiro (firmware unico c5-agentic-city/firmware/twinciro-nodo), retained con last will
+topic write napoli/nodi/+/stato
 topic write napoli/eventi/manuale
 topic read napoli/semafori/#
 topic write napoli/semafori/+/riflesso

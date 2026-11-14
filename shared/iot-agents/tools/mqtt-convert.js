@@ -8,6 +8,7 @@
 //   tele/<topic>/SENSOR|STATE|LWT           telemetria Tasmota (FullTopic predefinito %prefix%/%topic%/)
 //   bighack/<zona>/<topic>/tele/SENSOR|...  Tasmota con FullTopic bighack/<zona>/%topic%/%prefix%/
 //   napoli/sensori/<nodo>/<grandezza>       formato di c5-agentic-city {"valore": n, "zona": "..."}
+//   napoli/nodi/<nodo>/stato                stato dei nodi TwinCiro {"online", "ruolo", "zona", ...} → lettura { online }
 //
 //   const conv = createConverter({ map, defaultZone });
 //   const { readings, skip } = conv.convert(topic, payloadBuffer, { retain });
@@ -197,6 +198,9 @@ export function createConverter(o = {}) {
     if (t.length === c5.length + 3 && c5.every((p, i) => t[i] === p) && t[c5.length] === 'sensori') {
       return { kind: 'c5', node: t[c5.length + 1], quantity: t[c5.length + 2] };
     }
+    if (t.length === c5.length + 3 && c5.every((p, i) => t[i] === p) && t[c5.length] === 'nodi' && t[c5.length + 2] === 'stato') {
+      return { kind: 'c5stato', node: t[c5.length + 1] };
+    }
     return { kind: 'ignore', reason: 'topic non riconosciuto' };
   }
 
@@ -301,6 +305,21 @@ export function createConverter(o = {}) {
       return { readings: [], skip: `tele/${info.leaf} non letto dal ponte` };
     }
 
+    if (info.kind === 'c5stato') {
+      // firmware unico dei nodi TwinCiro (c5-agentic-city/firmware/twinciro-nodo): stato retained con last will
+      if (!opts.c5) return { readings: [], skip: 'c5 disattivato (MQTT_C5=0)' };
+      if (!opts.status) return { readings: [], skip: 'stato disattivato (MQTT_STATUS=0)' };
+      const v = j.ok && isObj(j.value) ? j.value : {};
+      if (typeof v.online !== 'boolean') return { readings: [], skip: 'stato del nodo senza "online"' };
+      const meta = { source: 'c5-stato', retained: retain };
+      if (typeof v.ruolo === 'string') meta.ruolo = v.ruolo.slice(0, 32);
+      if (typeof v.versione === 'string') meta.fw = v.versione.slice(0, 32);
+      if (typeof v.rssi === 'number') meta.rssi = v.rssi;
+      const body = { deviceId: info.node, readings: { online: v.online }, meta };
+      if (typeof v.zona === 'string' && v.zona) body.location = { zone: v.zona };
+      return { readings: [finish(body, [info.node], undefined)] };
+    }
+
     if (info.kind === 'c5') {
       if (!opts.c5) return { readings: [], skip: 'c5 disattivato (MQTT_C5=0)' };
       const v = j.ok ? (isObj(j.value) ? j.value : { valore: j.value }) : { valore: num(j.text) };
@@ -328,7 +347,7 @@ export function createConverter(o = {}) {
   function topics() {
     const list = [`${prefix}/#`];
     if (opts.tasmota) list.push('tele/+/SENSOR', 'tele/+/STATE', 'tele/+/LWT');
-    if (opts.c5) list.push(`${c5Prefix}/sensori/+/+`);
+    if (opts.c5) list.push(`${c5Prefix}/sensori/+/+`, `${c5Prefix}/nodi/+/stato`);
     return list;
   }
 
