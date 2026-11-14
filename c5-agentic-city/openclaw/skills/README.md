@@ -23,7 +23,7 @@ Copia le tre cartelle nella cartella delle skill di OpenClaw, di solito `skills/
 Da verificare sulla nostra installazione: posizione esatta delle skill, variabili d'ambiente, heartbeat per gli avvisi proattivi.
 
 Variabili usate:
-- `CITTA_API`: indirizzo dell'API dati città, senza barra finale (`https://twinciro.robertodisanto.it/citta-api`);
+- `CITTA_API`: indirizzo dell'API dati città, senza barra finale (`https://twinciro.robertodisanto.it:8443/citta-api`);
 - `CITTA_API_TOKEN`: token dell'API dati città;
 - `C5_API`: indirizzo dell'API della città di `c5-agentic-city` (solo per `twinciro-citta`);
 - `C5_API_TOKEN`: token di quell'API, se è impostato.
