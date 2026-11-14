@@ -1,0 +1,136 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/passaggi?stazione=toledo",
+  "formato": "json",
+  "http": 200,
+  "risposta": {
+    "stazione": {
+      "id": "anm-6325",
+      "nome": "Toledo",
+      "tipo": "metro",
+      "linee": [
+        "L1"
+      ],
+      "operatore": "ANM",
+      "lat": 40.8427,
+      "lon": 14.25024
+    },
+    "ora": "2026-11-14 19:30",
+    "passaggi": [
+      {
+        "ora": "19:38",
+        "tra_min": 8,
+        "linea": "L1",
+        "direzione": "PISCINOLA",
+        "operatore": "ANM",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:38",
+        "tra_min": 8,
+        "linea": "L1",
+        "direzione": "TRIBUNALE",
+        "operatore": "ANM",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:47",
+        "tra_min": 17,
+        "linea": "L1",
+        "direzione": "PISCINOLA",
+        "operatore": "ANM",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:47",
+        "tra_min": 17,
+        "linea": "L1",
+        "direzione": "TRIBUNALE",
+        "operatore": "ANM",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:56",
+        "tra_min": 26,
+        "linea": "L1",
+        "direzione": "PISCINOLA",
+        "operatore": "ANM",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:56",
+        "tra_min": 26,
+        "linea": "L1",
+        "direzione": "TRIBUNALE",
+        "operatore": "ANM",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "20:05",
+        "tra_min": 35,
+        "linea": "L1",
+        "direzione": "PISCINOLA",
+        "operatore": "ANM",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "20:05",
+        "tra_min": 35,
+        "linea": "L1",
+        "direzione": "TRIBUNALE",
+        "operatore": "ANM",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "20:14",
+        "tra_min": 44,
+        "linea": "L1",
+        "direzione": "PISCINOLA",
+        "operatore": "ANM",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "20:14",
+        "tra_min": 44,
+        "linea": "L1",
+        "direzione": "TRIBUNALE",
+        "operatore": "ANM",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      }
+    ],
+    "fonte": {
+      "nome": "Transitous (prossimi passaggi)",
+      "stato": "reale",
+      "ora_dato": "2026-11-14 19:30",
+      "licenza": "servizio comunitario per progetti open source non commerciali",
+      "nota": "orari programmati (nessun dato in tempo reale per questa fermata); citare transitous.org/sources"
+    },
+    "programmato": {
+      "corse_in_quest_ora": 14,
+      "corse_nell_ora_dopo": 14,
+      "tipo_giorno": "sabato",
+      "fonte": "GTFS ANM ed EAV (orario programmato)"
+    },
+    "testo": "Prossime partenze da Toledo (L1): 19:38 L1 per PISCINOLA, 19:38 L1 per TRIBUNALE, 19:47 L1 per PISCINOLA, 19:47 L1 per TRIBUNALE, 19:56 L1 per PISCINOLA. Fonte: Transitous (orari programmati, senza tempo reale)."
+  }
+}

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>TwinCIRO × Fastweb + Vodafone</title>
+<link rel="stylesheet" href="stile.css">
+<style>
+  /* Cosa aggiunge Fastweb + Vodafone: tre schede che entrano una dopo l'altra (circa 16 s), con la voce.
+     Quando entra una scheda le precedenti si attenuano; in chiusura tornano tutte accese con la riga
+     "TwinCIRO × Fastweb + Vodafone". Solo testo: nessun logo di Fastweb, Vodafone o Hugging Face.
+     Fonti dei fatti: comunicati Istat del 9/5/2023 (Istat e Vodafone Business, turismo, Vodafone Analytics)
+     e del 17/3/2026 (MNO-MINDS: "per l'Italia ha partecipato alla sperimentazione Fastweb + Vodafone");
+     crowdsupply.com/dptechnics/walter; huggingface.co/Fastweb/FastwebMIIA-7B; corrierecomunicazioni.it/?p=349938.
+     Tempi (secondi dall'inizio della scena): schede a 0,35 · 5,0 · 9,5; chiusura a 12,9. */
+  .testa { position: absolute; left: 90px; right: 90px; top: 40px; }
+  .testa h1 { margin: 0; font-size: 54px; font-weight: 800; letter-spacing: -0.02em; }
+  .tre { position: absolute; left: 90px; right: 90px; top: 132px; height: 700px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr); gap: 24px; }
+  .posto { position: relative; min-height: 0; animation: attenua 0.6s ease forwards var(--spegni, 99s), ravviva 0.6s ease forwards var(--riaccendi, 99s); }
+  @keyframes attenua { from { opacity: 1; } to { opacity: 0.58; } }
+  @keyframes ravviva { from { opacity: 0.58; } to { opacity: 1; } }
+  .blocco { position: relative; height: 100%; display: flex; flex-direction: column; background: rgb(22 33 59 / 0.94); border: 2px solid var(--bordo);
+    border-top: 6px solid var(--c); border-radius: 28px; padding: 24px 32px 26px; overflow: hidden; }
+  .blocco::before { content: ''; position: absolute; inset: 0; background: radial-gradient(520px 260px at 0 0, var(--alone), transparent 70%); pointer-events: none; }
+  .persone { --c: var(--ciro); --alone: rgb(255 181 71 / 0.10); }
+  .rete { --c: var(--twin); --alone: rgb(56 214 240 / 0.10); }
+  .ai { --c: var(--viola); --alone: rgb(167 139 250 / 0.12); }
+  .capo { position: relative; display: flex; align-items: center; justify-content: space-between; height: 52px; }
+  .capo .ic { font-size: 48px; line-height: 1; }
+  .capo .n { font: 800 56px/1 'Inter Display', 'Inter', sans-serif; color: var(--c); opacity: 0.3; letter-spacing: -0.02em; }
+  .blocco h2 { position: relative; margin: 12px 0 14px; font-size: 44px; line-height: 1.06; font-weight: 800; letter-spacing: -0.015em; color: var(--c); }
+  .blocco p { position: relative; margin: 0; font-size: 29px; line-height: 1.36; color: #e7edf9; }
+  .blocco p b { color: var(--testo); font-weight: 800; }
+  .dett { position: relative; margin-top: 14px; padding-top: 14px; border-top: 1px solid #2a3a62; font-size: 25px; line-height: 1.36; color: #cdd8ef; }
+  .dett b { color: var(--c); font-weight: 700; }
+  .fonte { position: relative; margin-top: auto; padding-top: 14px; font-size: 20px; line-height: 1.42; color: var(--tenue); }
+  .fonte .u { font-family: 'JetBrains Mono', 'DejaVu Sans Mono', monospace; font-size: 18px; color: #b9c6e4; white-space: nowrap; }
+  .sovrano { color: var(--viola); font-weight: 800; }
+  /* riferimento al modello su Hugging Face: ben in vista */
+  .hf { position: relative; margin-top: auto; background: #0e1530; border: 2px solid rgb(167 139 250 / 0.6); border-radius: 18px; padding: 12px 18px 13px; }
+  .hf .t { font-size: 22px; font-weight: 700; color: #e3dcff; }
+  .hf .u { margin-top: 3px; font: 600 19px/1.3 'JetBrains Mono', 'DejaVu Sans Mono', monospace; color: var(--viola); white-space: nowrap; }
+  .hf .s { margin-top: 3px; font-size: 19px; color: var(--tenue); }
+  .chiusura { position: absolute; left: 0; right: 0; top: 856px; text-align: center; font-size: 56px; font-weight: 800; letter-spacing: -0.015em; }
+  .chiusura .x { color: var(--tenue); font-weight: 500; margin: 0 22px; }
+</style>
+</head>
+<body>
+<div class="testa a" style="--d:0s"><h1>Tre passi con Fastweb + Vodafone</h1></div>
+
+<div class="tre">
+  <div class="posto" style="--spegni:5.0s;--riaccendi:12.9s">
+    <div class="blocco persone a" style="--d:.35s">
+      <div class="capo"><span class="ic">👥</span><span class="n">1</span></div>
+      <h2>Il dato che manca:<br>le persone.</h2>
+      <p>Con le analytics di rete di Fastweb&nbsp;+&nbsp;Vodafone la folla, oggi <b>simulata</b> in TwinCIRO, diventa <b>misurata</b>, zona&nbsp;per&nbsp;zona.</p>
+      <div class="dett"><b>Vodafone Analytics</b>: presenze anonime e aggregate dalle celle della rete mobile.</div>
+      <div class="fonte">Già usate da Istat per le statistiche del turismo (studio Istat–Vodafone, 2023) e nella sperimentazione Istat con gli operatori mobili, a cui ha partecipato Fastweb&nbsp;+&nbsp;Vodafone (MNO-MINDS, marzo 2026).</div>
+    </div>
+  </div>
+  <div class="posto" style="--spegni:9.5s;--riaccendi:12.9s">
+    <div class="blocco rete a" style="--d:5.0s">
+      <div class="capo"><span class="ic">📡</span><span class="n">2</span></div>
+      <h2>Sensori<br>sulla rete.</h2>
+      <p>Oggi i sensori di TwinCIRO sono su Wi&#8209;Fi; domani con <b>SIM IoT</b> sulla rete NB&#8209;IoT / LTE&#8209;M e 5G di Fastweb&nbsp;+&nbsp;Vodafone.</p>
+      <div class="dett">Per esempio con <b>Walter</b>: ESP32&#8209;S3 con modem LTE&#8209;M/NB&#8209;IoT e SIM integrata.</div>
+      <div class="fonte">Walter: scheda di DPTechnics<br><span class="u">crowdsupply.com/dptechnics/walter</span></div>
+    </div>
+  </div>
+  <div class="posto">
+    <div class="blocco ai a" style="--d:9.5s">
+      <div class="capo"><span class="ic">🇮🇹</span><span class="n">3</span></div>
+      <h2>AI italiana,<br>dati in Italia.</h2>
+      <p>TwinCIRO <b>può integrare</b> via API <b>MIIA</b>, l'LLM italiano di Fastweb&nbsp;+&nbsp;Vodafone: addestrato in italiano, alla base di FastwebAI&nbsp;Suite per imprese e PA.</p>
+      <div class="dett">Gira nell'AI Factory di Fastweb vicino a Bergamo: modello e dati della città restano in Italia. <span class="sovrano">Sovranità digitale.</span></div>
+      <div class="hf"><div class="t">FastwebMIIA-7B su Hugging Face</div><div class="u">huggingface.co/Fastweb/FastwebMIIA-7B</div><div class="s">con la documentazione per l'AI Act</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="chiusura a" style="--d:12.9s"><span class="marchio"><span class="twin">Twin</span><span class="ciro">CIRO</span></span><span class="x">×</span>Fastweb + Vodafone</div>
+
+<script>
+'use strict';
+// Solo animazioni CSS: il renderer le porta al tempo t (vedi rendi_html.mjs); nel browser si vedono da sole.
+// La riga finale resta a schermo almeno 3 s anche se in scaletta la scena si allunga o si accorcia:
+// la durata viene da ?durata= oppure da scaletta.json (la scena con "pagina": "fastweb.html"), altrimenti 16 s.
+async function durataScena(pagina, predefinita) {
+  const q = Number(new URLSearchParams(location.search).get('durata'));
+  if (q) return q;
+  try {
+    const s = await (await fetch('scaletta.json', { cache: 'no-store' })).json();
+    const sc = s.scene.find((x) => !x.salta && x.sorgente?.tipo === 'pagina' && x.sorgente.pagina === pagina);
+    if (sc) return Number(sc.durata);
+  } catch { /* anteprima senza scaletta: valore predefinito */ }
+  return predefinita;
+}
+window.pronta = (async () => {
+  const durata = await durataScena('fastweb.html', 16);
+  const chiusura = Math.max(11.5, durata - 3.1);   // 12,9 s con 16 s
+  document.querySelector('.chiusura').style.setProperty('--d', `${chiusura}s`);
+  for (const el of document.querySelectorAll('.posto[style*="--riaccendi"]')) el.style.setProperty('--riaccendi', `${chiusura}s`);
+  await document.fonts.ready;
+  return { durata };
+})();
+</script>
+</body>
+</html>

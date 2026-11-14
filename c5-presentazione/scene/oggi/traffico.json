@@ -1,0 +1,19 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/traffico",
+  "formato": "json",
+  "http": 200,
+  "risposta": {
+    "ora": "2026-11-14 19:30",
+    "eventi": [],
+    "fonte": {
+      "nome": "Autostrade per l'Italia, viabilità",
+      "stato": "reale",
+      "ora_dato": "2026-11-14 19:30",
+      "licenza": "© Autostrade per l'Italia: dato di contesto citato",
+      "nota": "nessun evento in corso nell'area di Napoli"
+    },
+    "nota": "Solo Tangenziale di Napoli e autostrade (Autostrade per l'Italia). Per il traffico delle strade cittadine non esistono dati aperti: non dare numeri.",
+    "testo": "Nessun evento di traffico su tangenziale e autostrade attorno a Napoli (Autostrade per l'Italia)."
+  }
+}

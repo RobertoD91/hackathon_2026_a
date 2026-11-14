@@ -1,0 +1,1589 @@
+{
+ "nota": "Fonti del catalogo docs/fonti-dati-napoli.md (sezione 2, verifica del 14/11/2026), una voce per riga, per le scene motivazione.html e fonti.html del video. Generato da costruisci.py: non modificare a mano. 'pubblica' è false solo per le due righe che non sono fonti pubbliche (presenze da rete mobile, stato del servizio ANM): le scene contano e mostrano le fonti pubbliche. 'funziona' è true se la verifica l'ha confermata; le altre vanno riprovate dalla rete italiana o con una chiave gratuita. Le icone sono quelle dei siti ufficiali (vedi 'loghi': indirizzo esatto e data), ridotte a PNG 128×128; null = solo il nome.",
+ "catalogo": "docs/fonti-dati-napoli.md",
+ "verifica": "2026-11-14",
+ "generato": "2026-11-14",
+ "conteggi": {
+  "righe": 58,
+  "pubbliche": 56,
+  "pubbliche_confermate": 45,
+  "pubbliche_da_riprovare": 11,
+  "con_icona": 47
+ },
+ "domini": [
+  {
+   "id": "meteo",
+   "sezione": "2.1",
+   "nome": "Meteo e ambiente",
+   "titolo_catalogo": "Meteo, allerte e ambiente",
+   "icona": "🌦️"
+  },
+  {
+   "id": "mobilita",
+   "sezione": "2.2",
+   "nome": "Mobilità",
+   "titolo_catalogo": "Mobilità e trasporti",
+   "icona": "🚇"
+  },
+  {
+   "id": "eventi",
+   "sezione": "2.3",
+   "nome": "Eventi e turismo",
+   "titolo_catalogo": "Eventi e turismo",
+   "icona": "🎟️"
+  },
+  {
+   "id": "territorio",
+   "sezione": "2.4",
+   "nome": "Territorio e servizi",
+   "titolo_catalogo": "Territorio, servizi e cataloghi",
+   "icona": "🏛️"
+  }
+ ],
+ "fonti": [
+  {
+   "id": "open-meteo-previsioni",
+   "nome": "Open-Meteo previsioni",
+   "fonte_catalogo": "Open-Meteo Forecast",
+   "ente": "Open-Meteo.com (ECMWF, DWD ICON, Météo-France, ItaliaMeteo-ARPAE ICON-2I)",
+   "dominio": "meteo",
+   "sito": "https://open-meteo.com/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON (un array se si passano più coordinate)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/open-meteo.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://open-meteo.com/apple-touch-icon.png"
+  },
+  {
+   "id": "allerta-campania",
+   "nome": "Allerta meteo Campania",
+   "fonte_catalogo": "Allerta meteo Campania",
+   "ente": "Regione Campania, Protezione Civile, Centro Funzionale Decentrato",
+   "dominio": "meteo",
+   "sito": "https://centrofunzionale.regione.campania.it/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "aperto (API interna del portale, non documentata)",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/centro-funzionale.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://centrofunzionale.regione.campania.it/assets/images/android-icon-192x192.png"
+  },
+  {
+   "id": "stazioni-campania",
+   "nome": "Stazioni meteo Campania",
+   "fonte_catalogo": "Stazioni idro-meteo Campania",
+   "ente": "Regione Campania, Centro Funzionale",
+   "dominio": "meteo",
+   "sito": "https://centrofunzionale.regione.campania.it/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "aperto (API interna)",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/centro-funzionale.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://centrofunzionale.regione.campania.it/assets/images/android-icon-192x192.png"
+  },
+  {
+   "id": "eea-aria",
+   "nome": "Centraline aria (EEA)",
+   "fonte_catalogo": "EEA E2a, centraline ARPAC",
+   "ente": "European Environment Agency (dati di ARPA Campania trasmessi tramite ISPRA)",
+   "dominio": "meteo",
+   "sito": "https://www.eea.europa.eu/",
+   "formati": [
+    "Parquet",
+    "CSV"
+   ],
+   "formato_catalogo": "CSV con gli URL, poi un file Parquet per punto di campionamento (circa 400 KB, anno in corso)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/eea.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.eea.europa.eu/android-chrome-512x512.png"
+  },
+  {
+   "id": "open-meteo-mare",
+   "nome": "Open-Meteo mare",
+   "fonte_catalogo": "Open-Meteo Marine",
+   "ente": "Open-Meteo.com (MFWAM, ECMWF WAM, Copernicus Marine)",
+   "dominio": "meteo",
+   "sito": "https://open-meteo.com/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/open-meteo.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://open-meteo.com/apple-touch-icon.png"
+  },
+  {
+   "id": "open-meteo-aria",
+   "nome": "Open-Meteo aria (CAMS)",
+   "fonte_catalogo": "Open-Meteo Air Quality (CAMS)",
+   "ente": "Open-Meteo.com su dati Copernicus CAMS",
+   "dominio": "meteo",
+   "sito": "https://open-meteo.com/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/open-meteo.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://open-meteo.com/apple-touch-icon.png"
+  },
+  {
+   "id": "arpac",
+   "nome": "ARPAC open data",
+   "fonte_catalogo": "ARPAC Open Data",
+   "ente": "ARPA Campania",
+   "dominio": "meteo",
+   "sito": "https://www.arpacampania.it/",
+   "formati": [
+    "CSV"
+   ],
+   "formato_catalogo": "CSV mensili da un catalogo CKAN",
+   "accesso": "aperto (dichiarato)",
+   "pubblica": true,
+   "esito": "non verificabile",
+   "funziona": false,
+   "icona": null,
+   "icona_sfondo": null,
+   "icona_da": null,
+   "icona_nota": "nessuna icona decente (il sito non risponde o non dichiara icone)"
+  },
+  {
+   "id": "uniparthenope",
+   "nome": "meteo@​uniparthenope",
+   "fonte_catalogo": "meteo@uniparthenope",
+   "ente": "Università di Napoli Parthenope, CMMMA",
+   "dominio": "meteo",
+   "sito": "https://meteo.uniparthenope.it/",
+   "formati": [
+    "JSON",
+    "CSV"
+   ],
+   "formato_catalogo": "JSON (anche CSV); Swagger su /swagger.json",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/uniparthenope.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://meteo.uniparthenope.it/wp-content/uploads/2026/05/cropped-meteo-uniparthenope-2019-logo-circle-192x192.png"
+  },
+  {
+   "id": "meteoalarm",
+   "nome": "Meteoalarm",
+   "fonte_catalogo": "Meteoalarm Italia",
+   "ente": "EUMETNET Meteoalarm, su dati dell'Aeronautica Militare",
+   "dominio": "meteo",
+   "sito": "https://meteoalarm.org/",
+   "formati": [
+    "CAP"
+   ],
+   "formato_catalogo": "JSON (struttura CAP)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/meteoalarm.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://meteoalarm.org/assets/favicon.svg"
+  },
+  {
+   "id": "eea-balneazione",
+   "nome": "Balneazione (EEA)",
+   "fonte_catalogo": "EEA Bathing Water 2025 (ArcGIS)",
+   "ente": "EEA (dati e coordinate delle autorità nazionali)",
+   "dominio": "meteo",
+   "sito": "https://www.eea.europa.eu/",
+   "formati": [
+    "ArcGIS"
+   ],
+   "formato_catalogo": "JSON (ArcGIS)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "aggiunta dal verificatore",
+   "funziona": true,
+   "icona": "loghi/eea.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.eea.europa.eu/android-chrome-512x512.png"
+  },
+  {
+   "id": "open-meteo-storico",
+   "nome": "Open-Meteo storico (ERA5)",
+   "fonte_catalogo": "Open-Meteo Historical (ERA5)",
+   "ente": "Open-Meteo.com su ERA5 ed ERA5-Land (Copernicus C3S)",
+   "dominio": "meteo",
+   "sito": "https://open-meteo.com/",
+   "formati": [
+    "JSON",
+    "CSV"
+   ],
+   "formato_catalogo": "JSON (CSV con &format=csv)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/open-meteo.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://open-meteo.com/apple-touch-icon.png"
+  },
+  {
+   "id": "met-norway",
+   "nome": "MET Norway",
+   "fonte_catalogo": "MET Norway Locationforecast",
+   "ente": "Norwegian Meteorological Institute",
+   "dominio": "meteo",
+   "sito": "https://www.met.no/",
+   "formati": [
+    "GeoJSON"
+   ],
+   "formato_catalogo": "JSON (GeoJSON)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/met-norway.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.met.no/_/image/66f38792-6e49-4e4d-a2dd-76d00dc682f1:4f35ecddb34ffc5862fd3f880663716dd1503178/square-192/met-logo.png"
+  },
+  {
+   "id": "ingv",
+   "nome": "INGV terremoti",
+   "fonte_catalogo": "INGV, terremoti",
+   "ente": "INGV",
+   "dominio": "meteo",
+   "sito": "https://www.ingv.it/",
+   "formati": [
+    "GeoJSON"
+   ],
+   "formato_catalogo": "GeoJSON",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "aggiunta dal verificatore",
+   "funziona": true,
+   "icona": "loghi/ingv.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.ingv.it/favicon.ico"
+  },
+  {
+   "id": "sensor-community",
+   "nome": "Sensor.​Community",
+   "fonte_catalogo": "Sensor.Community",
+   "ente": "Sensor.Community (ex Luftdaten)",
+   "dominio": "meteo",
+   "sito": "https://sensor.community/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/sensor-community.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://sensor.community/favicon.png"
+  },
+  {
+   "id": "waqi",
+   "nome": "WAQI aqicn.org",
+   "fonte_catalogo": "WAQI / aqicn.org",
+   "ente": "World Air Quality Index Project",
+   "dominio": "meteo",
+   "sito": "https://aqicn.org/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "chiave gratuita",
+   "pubblica": true,
+   "esito": "non verificabile",
+   "funziona": false,
+   "icona": "loghi/waqi.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://aqicn.org/images/iOS/ico_114.png"
+  },
+  {
+   "id": "dpc-radar",
+   "nome": "Protezione Civile radar",
+   "fonte_catalogo": "DPC, radar e bollettini",
+   "ente": "Dipartimento della Protezione Civile",
+   "dominio": "meteo",
+   "sito": "https://www.protezionecivile.gov.it/",
+   "formati": [
+    "GeoTIFF",
+    "JSON"
+   ],
+   "formato_catalogo": "JSON con GeoTIFF; repository",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "non verificabile",
+   "funziona": false,
+   "icona": "loghi/protezione-civile.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.protezionecivile.gov.it/icons/icon-144x144.png?v=8e496d3229d3c6f98cd41173c7e6d963"
+  },
+  {
+   "id": "eea-rumore",
+   "nome": "Rumore (EEA)",
+   "fonte_catalogo": "EEA END, rumore",
+   "ente": "EEA",
+   "dominio": "meteo",
+   "sito": "https://www.eea.europa.eu/",
+   "formati": [
+    "ArcGIS"
+   ],
+   "formato_catalogo": "JSON (ArcGIS)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "aggiunta dal verificatore",
+   "funziona": true,
+   "icona": "loghi/eea.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.eea.europa.eu/android-chrome-512x512.png"
+  },
+  {
+   "id": "anm-gtfs",
+   "nome": "ANM orari",
+   "fonte_catalogo": "GTFS ANM",
+   "ente": "ANM (pubblicato anche come dataset del Comune)",
+   "dominio": "mobilita",
+   "sito": "https://www.anm.it/",
+   "formati": [
+    "GTFS"
+   ],
+   "formato_catalogo": "GTFS zip (senza feed_info)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": null,
+   "icona_sfondo": null,
+   "icona_da": null,
+   "icona_nota": "nessuna icona decente (la più grande è 16x16)"
+  },
+  {
+   "id": "busone-anm",
+   "nome": "ANM live (BusOne)",
+   "fonte_catalogo": "ANM in tempo reale (BusOne)",
+   "ente": "BusOne, aggregatore privato: non è una fonte ufficiale ANM",
+   "dominio": "mobilita",
+   "sito": "https://busone.app/",
+   "formati": [
+    "GTFS-RT"
+   ],
+   "formato_catalogo": "GTFS-RT (protobuf e JSON)",
+   "accesso": "aperto senza chiave; il limite di richieste è dichiarato in due modi diversi",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/busone.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://busone.app/icon.png?icon.df2d6b91.png"
+  },
+  {
+   "id": "viaggiatreno",
+   "nome": "ViaggiaTreno",
+   "fonte_catalogo": "ViaggiaTreno",
+   "ente": "RFI / Trenitalia",
+   "dominio": "mobilita",
+   "sito": "https://www.viaggiatreno.it/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "aperto ma non documentato. Senza un User-Agent da browser Akamai risponde 403",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": null,
+   "icona_sfondo": null,
+   "icona_da": null,
+   "icona_nota": "nessuna icona decente (il sito non risponde o non dichiara icone)"
+  },
+  {
+   "id": "transitous",
+   "nome": "Transitous",
+   "fonte_catalogo": "Transitous (MOTIS)",
+   "ente": "Progetto comunitario Transitous",
+   "dominio": "mobilita",
+   "sito": "https://transitous.org/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "aggiunta dal verificatore",
+   "funziona": true,
+   "icona": "loghi/transitous.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://transitous.org/images/logo.svg"
+  },
+  {
+   "id": "eav-gtfs",
+   "nome": "EAV orari",
+   "fonte_catalogo": "GTFS EAV",
+   "ente": "EAV srl",
+   "dominio": "mobilita",
+   "sito": "https://www.eavsrl.it/",
+   "formati": [
+    "GTFS"
+   ],
+   "formato_catalogo": "GTFS zip",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/eav.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.eavsrl.it/wp-content/uploads/2022/10/cropped-favicon-192x192.webp"
+  },
+  {
+   "id": "eav-avvisi",
+   "nome": "EAV avvisi",
+   "fonte_catalogo": "Infomobilità EAV",
+   "ente": "EAV srl (API REST di WordPress)",
+   "dominio": "mobilita",
+   "sito": "https://www.eavsrl.it/",
+   "formati": [
+    "RSS",
+    "JSON"
+   ],
+   "formato_catalogo": "JSON, RSS 2.0",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/eav.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.eavsrl.it/wp-content/uploads/2022/10/cropped-favicon-192x192.webp"
+  },
+  {
+   "id": "aspi",
+   "nome": "Autostrade e Tangenziale",
+   "fonte_catalogo": "Eventi ASPI e Tangenziale",
+   "ente": "Autostrade per l'Italia",
+   "dominio": "mobilita",
+   "sito": "https://www.autostrade.it/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "aperto (endpoint interno)",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/autostrade.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.autostrade.it/o/aspi-rebrand-24-theme/images/favicon/apple-touch-icon.png"
+  },
+  {
+   "id": "busone-treni",
+   "nome": "Trenitalia e Italo (BusOne)",
+   "fonte_catalogo": "Trenitalia e Italo (BusOne)",
+   "ente": "BusOne, sul NeTEx Trenitalia del NAP",
+   "dominio": "mobilita",
+   "sito": "https://busone.app/",
+   "formati": [
+    "GTFS",
+    "SIRI"
+   ],
+   "formato_catalogo": "GTFS, GTFS-RT, SIRI-ET",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/busone.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://busone.app/icon.png?icon.df2d6b91.png"
+  },
+  {
+   "id": "nap-netex",
+   "nome": "NAP Italia (aliscafi)",
+   "fonte_catalogo": "NAP Italia, NeTEx Campania",
+   "ente": "MIT, CCISS (dati del RAP Regione Campania)",
+   "dominio": "mobilita",
+   "sito": "https://www.cciss.it/",
+   "formati": [
+    "NeTEx"
+   ],
+   "formato_catalogo": "NeTEx XML compresso con gzip",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/cciss.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.cciss.it/cciss-theme/images/favicon.ico"
+  },
+  {
+   "id": "openstreetmap",
+   "nome": "OpenStreetMap",
+   "fonte_catalogo": "OpenStreetMap via Overpass",
+   "ente": "OpenStreetMap",
+   "dominio": "mobilita",
+   "sito": "https://www.openstreetmap.org/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "bloccata dalla sandbox",
+   "funziona": false,
+   "icona": "loghi/openstreetmap.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.openstreetmap.org/assets/favicon-194x194-79d3fb0152c735866e64b1d7535d504483cd13c2fad0131a6142bd9629d30de2.png"
+  },
+  {
+   "id": "tomtom-here",
+   "nome": "TomTom / HERE traffico",
+   "fonte_catalogo": "TomTom / HERE Traffic",
+   "ente": "TomTom; HERE Technologies",
+   "dominio": "mobilita",
+   "sito": null,
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "chiave gratuita",
+   "pubblica": true,
+   "esito": "non verificabile",
+   "funziona": false,
+   "icona": null,
+   "icona_sfondo": null,
+   "icona_da": null,
+   "icona_nota": "due aziende nella stessa riga: solo il nome, nessun logo"
+  },
+  {
+   "id": "assaeroporti",
+   "nome": "Assaeroporti",
+   "fonte_catalogo": "Assaeroporti",
+   "ente": "Assaeroporti",
+   "dominio": "mobilita",
+   "sito": "https://assaeroporti.com/",
+   "formati": [
+    "XLSX"
+   ],
+   "formato_catalogo": "XLSX",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/assaeroporti.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://assaeroporti.com/wp-content/uploads/2024/06/favicon_1.png"
+  },
+  {
+   "id": "opensky",
+   "nome": "OpenSky Network",
+   "fonte_catalogo": "OpenSky Network",
+   "ente": "OpenSky Network",
+   "dominio": "mobilita",
+   "sito": "https://opensky-network.org/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "anonimo con 400 crediti al giorno",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/opensky.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://opensky-network.org/static/favicon.ico"
+  },
+  {
+   "id": "validazioni-tpl",
+   "nome": "Validazioni TPL Campania",
+   "fonte_catalogo": "Validazioni TPL Campania",
+   "ente": "Regione Campania (con ACaMIR)",
+   "dominio": "mobilita",
+   "sito": "https://www.regione.campania.it/",
+   "formati": [
+    "CSV"
+   ],
+   "formato_catalogo": "JSON / CSV",
+   "accesso": "aperto (dai metadati)",
+   "pubblica": true,
+   "esito": "non verificabile",
+   "funziona": false,
+   "icona": "loghi/regione-campania.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.regione.campania.it/themes/custom/res/logo-regione-campania.png"
+  },
+  {
+   "id": "anm-stato",
+   "nome": "ANM stato del servizio",
+   "fonte_catalogo": "ANM, stato del servizio e parcheggi",
+   "ente": "ANM",
+   "dominio": "mobilita",
+   "sito": "https://www.anm.it/",
+   "formati": [],
+   "formato_catalogo": "n/d",
+   "accesso": "non pubblico",
+   "pubblica": false,
+   "esito": "non funziona",
+   "funziona": false,
+   "icona": null,
+   "icona_sfondo": null,
+   "icona_da": null,
+   "icona_nota": "nessuna icona decente (la più grande è 16x16)"
+  },
+  {
+   "id": "aisstream",
+   "nome": "AIS Stream (navi)",
+   "fonte_catalogo": "AIS Stream",
+   "ente": "aisstream.io",
+   "dominio": "mobilita",
+   "sito": "https://aisstream.io/",
+   "formati": [
+    "WebSocket"
+   ],
+   "formato_catalogo": "WebSocket con messaggi JSON",
+   "accesso": "chiave gratuita",
+   "pubblica": true,
+   "esito": "non verificabile",
+   "funziona": false,
+   "icona": "loghi/aisstream.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://aisstream.io/favicon.ico"
+  },
+  {
+   "id": "comune-agenda",
+   "nome": "Agenda del Comune",
+   "fonte_catalogo": "Agenda eventi del Comune",
+   "ente": "Comune di Napoli",
+   "dominio": "eventi",
+   "sito": "https://www.comune.napoli.it/",
+   "formati": [
+    "JSON",
+    "RSS"
+   ],
+   "formato_catalogo": "JSON (API WordPress personalizzata), RSS",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/comune-napoli.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://static-www.comune.napoli.it/wp-content/uploads/2025/11/cropped-favicon-192x192.png"
+  },
+  {
+   "id": "openfootball",
+   "nome": "Serie A (openfootball)",
+   "fonte_catalogo": "Calendario Serie A (openfootball)",
+   "ente": "openfootball",
+   "dominio": "eventi",
+   "sito": "https://github.com/openfootball",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON (servito come text/plain)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/openfootball.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://avatars.githubusercontent.com/openfootball?s=200"
+  },
+  {
+   "id": "thesportsdb",
+   "nome": "TheSportsDB",
+   "fonte_catalogo": "TheSportsDB",
+   "ente": "TheSportsDB",
+   "dominio": "eventi",
+   "sito": "https://www.thesportsdb.com/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "chiave pubblica di prova \"123\"",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/thesportsdb.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.thesportsdb.com/images/ico/android-icon-192x192.png"
+  },
+  {
+   "id": "comune-visitatori",
+   "nome": "Visitatori siti comunali",
+   "fonte_catalogo": "Visitatori dei siti comunali",
+   "ente": "Comune di Napoli (CKAN dati.comune.napoli.it)",
+   "dominio": "eventi",
+   "sito": "https://dati.comune.napoli.it/",
+   "formati": [
+    "CSV"
+   ],
+   "formato_catalogo": "CSV con ;, JSON CKAN",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/opendata-comune.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://dati.comune.napoli.it/base/images/Favicon.svg"
+  },
+  {
+   "id": "adsp-porto",
+   "nome": "Porto di Napoli (AdSP)",
+   "fonte_catalogo": "Bollettini del Porto di Napoli",
+   "ente": "AdSP del Mar Tirreno Centrale",
+   "dominio": "eventi",
+   "sito": "https://adsptirrenocentrale.it/",
+   "formati": [
+    "PDF"
+   ],
+   "formato_catalogo": "PDF",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/adsp.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://adsptirrenocentrale.it/wp-content/uploads/2019/02/favicon-adsp-tirreno-centrale-152x152.png"
+  },
+  {
+   "id": "cruise-timetables",
+   "nome": "Cruise Timetables",
+   "fonte_catalogo": "Cruise Timetables",
+   "ente": "sito privato, non ufficiale",
+   "dominio": "eventi",
+   "sito": "https://www.cruisetimetables.com/",
+   "formati": [
+    "RSS"
+   ],
+   "formato_catalogo": "RSS (ISO-8859-1)",
+   "accesso": "aperto, con un User-Agent da browser (altrimenti 403 del sito)",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/cruisetimetables.png",
+   "icona_sfondo": "scuro",
+   "icona_da": "https://www.cruisetimetables.com/android-chrome-256x256.png"
+  },
+  {
+   "id": "mic-musei",
+   "nome": "Musei statali (MiC)",
+   "fonte_catalogo": "Musei statali (MiC)",
+   "ente": "Ministero della Cultura, Ufficio di Statistica",
+   "dominio": "eventi",
+   "sito": "https://www.cultura.gov.it/",
+   "formati": [
+    "PDF"
+   ],
+   "formato_catalogo": "PDF",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "bloccata dalla sandbox",
+   "funziona": false,
+   "icona": "loghi/cultura.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://cultura.gov.it/fe/mibact/image/favicon_MiC.png"
+  },
+  {
+   "id": "istat-turismo",
+   "nome": "ISTAT turismo",
+   "fonte_catalogo": "ISTAT, turismo e capacità ricettiva",
+   "ente": "ISTAT (SDMX REST, esploradati)",
+   "dominio": "eventi",
+   "sito": "https://www.istat.it/",
+   "formati": [
+    "SDMX"
+   ],
+   "formato_catalogo": "SDMX-CSV",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/istat.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.istat.it/wp-content/uploads/2024/06/faviconIstat.ico"
+  },
+  {
+   "id": "inside-airbnb",
+   "nome": "Inside Airbnb",
+   "fonte_catalogo": "Inside Airbnb",
+   "ente": "Inside Airbnb",
+   "dominio": "eventi",
+   "sito": "https://insideairbnb.com/",
+   "formati": [
+    "CSV",
+    "GeoJSON"
+   ],
+   "formato_catalogo": "CSV, GeoJSON",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/insideairbnb.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://insideairbnb.com/favicon.ico"
+  },
+  {
+   "id": "wikipedia-visite",
+   "nome": "Wikipedia visite",
+   "fonte_catalogo": "Wikipedia pageviews",
+   "ente": "Wikimedia Foundation",
+   "dominio": "eventi",
+   "sito": "https://www.wikipedia.org/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "aperto (User-Agent obbligatorio; dal browser Api-User-Agent)",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/wikipedia.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.wikipedia.org/static/apple-touch/wikipedia.png"
+  },
+  {
+   "id": "wikidata",
+   "nome": "Wikidata",
+   "fonte_catalogo": "Wikidata SPARQL",
+   "ente": "Wikimedia Foundation",
+   "dominio": "eventi",
+   "sito": "https://www.wikidata.org/",
+   "formati": [
+    "SPARQL"
+   ],
+   "formato_catalogo": "JSON (risultati SPARQL)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/wikidata.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.wikidata.org/static/apple-touch/wikidata.png"
+  },
+  {
+   "id": "americas-cup",
+   "nome": "America's Cup 2027",
+   "fonte_catalogo": "America's Cup 2027",
+   "ente": "America's Cup (sito ufficiale); Comune di Napoli (comunicato)",
+   "dominio": "eventi",
+   "sito": "https://www.americascup.com/",
+   "formati": [
+    "JSON",
+    "PDF"
+   ],
+   "formato_catalogo": "JSON, PDF",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/americascup.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.americascup.com/favicon.ico"
+  },
+  {
+   "id": "nager-date",
+   "nome": "Nager.Date festività",
+   "fonte_catalogo": "Nager.Date",
+   "ente": "Nager.Date",
+   "dominio": "eventi",
+   "sito": "https://date.nager.at/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "aggiunta dal verificatore",
+   "funziona": true,
+   "icona": null,
+   "icona_sfondo": null,
+   "icona_da": null,
+   "icona_nota": "nessuna icona decente (la più grande è 16x16)"
+  },
+  {
+   "id": "football-data",
+   "nome": "football-​data.org",
+   "fonte_catalogo": "football-data.org",
+   "ente": "football-data.org",
+   "dominio": "eventi",
+   "sito": "https://www.football-data.org/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON",
+   "accesso": "chiave gratuita",
+   "pubblica": true,
+   "esito": "non verificabile",
+   "funziona": false,
+   "icona": "loghi/football-data.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.football-data.org/assets/favicons/android-icon-192x192.png"
+  },
+  {
+   "id": "presenze-rete-mobile",
+   "nome": "Persone per zona (rete mobile)",
+   "fonte_catalogo": "Presenze da rete mobile",
+   "ente": "Fastweb + Vodafone (sponsor della C5: un'unica azienda)",
+   "dominio": "eventi",
+   "sito": null,
+   "formati": [],
+   "formato_catalogo": "n/d",
+   "accesso": "non pubblico",
+   "pubblica": false,
+   "esito": "non verificabile",
+   "funziona": false,
+   "icona": null,
+   "icona_sfondo": null,
+   "icona_da": null,
+   "icona_nota": "dato non pubblico: nessun sito da cui prendere un'icona"
+  },
+  {
+   "id": "istat-quartieri",
+   "nome": "ISTAT quartieri",
+   "fonte_catalogo": "Basi territoriali ISTAT (ASC 2021)",
+   "ente": "ISTAT",
+   "dominio": "territorio",
+   "sito": "https://www.istat.it/",
+   "formati": [
+    "Shapefile",
+    "CSV"
+   ],
+   "formato_catalogo": "Shapefile in UTM 32N, tabelle CSV (separate da TAB), XLSX, ODS",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/istat.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.istat.it/wp-content/uploads/2024/06/faviconIstat.ico"
+  },
+  {
+   "id": "istat-popolazione",
+   "nome": "ISTAT popolazione",
+   "fonte_catalogo": "ISTAT, popolazione residente",
+   "ente": "ISTAT (SDMX)",
+   "dominio": "territorio",
+   "sito": "https://www.istat.it/",
+   "formati": [
+    "SDMX"
+   ],
+   "formato_catalogo": "SDMX-CSV",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/istat.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.istat.it/wp-content/uploads/2024/06/faviconIstat.ico"
+  },
+  {
+   "id": "farmacie",
+   "nome": "Farmacie (Min. Salute)",
+   "fonte_catalogo": "Farmacie",
+   "ente": "Ministero della Salute",
+   "dominio": "territorio",
+   "sito": "https://www.salute.gov.it/",
+   "formati": [
+    "CSV",
+    "JSON",
+    "XML"
+   ],
+   "formato_catalogo": "CSV con ;, JSON, XML",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": null,
+   "icona_sfondo": null,
+   "icona_da": null,
+   "icona_nota": "nessuna icona decente (il sito non risponde o non dichiara icone)"
+  },
+  {
+   "id": "parcheggi-anm",
+   "nome": "Parcheggi ANM",
+   "fonte_catalogo": "Parcheggi ANM",
+   "ente": "Comune di Napoli / ANM (CKAN)",
+   "dominio": "territorio",
+   "sito": "https://dati.comune.napoli.it/",
+   "formati": [
+    "CSV"
+   ],
+   "formato_catalogo": "CSV con ; (cp1252)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/opendata-comune.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://dati.comune.napoli.it/base/images/Favicon.svg"
+  },
+  {
+   "id": "indicepa",
+   "nome": "IndicePA",
+   "fonte_catalogo": "IndicePA",
+   "ente": "AgID / IndicePA",
+   "dominio": "territorio",
+   "sito": "https://www.indicepa.gov.it/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON (CKAN)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": "loghi/indicepa.png",
+   "icona_sfondo": "scuro",
+   "icona_da": "https://www.indicepa.gov.it/ipa-portale/favicon.ico"
+  },
+  {
+   "id": "comune-ckan",
+   "nome": "Open data del Comune",
+   "fonte_catalogo": "Altri dataset del CKAN comunale",
+   "ente": "Comune di Napoli",
+   "dominio": "territorio",
+   "sito": "https://dati.comune.napoli.it/",
+   "formati": [
+    "CSV"
+   ],
+   "formato_catalogo": "CSV con ;",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": "loghi/opendata-comune.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://dati.comune.napoli.it/base/images/Favicon.svg"
+  },
+  {
+   "id": "dati-gov",
+   "nome": "dati.gov.it",
+   "fonte_catalogo": "dati.gov.it",
+   "ente": "AgID",
+   "dominio": "territorio",
+   "sito": "https://www.dati.gov.it/",
+   "formati": [
+    "JSON"
+   ],
+   "formato_catalogo": "JSON (CKAN)",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "confermata",
+   "funziona": true,
+   "icona": null,
+   "icona_sfondo": null,
+   "icona_da": null,
+   "icona_nota": "nessuna icona decente (la più grande è 21x24)"
+  },
+  {
+   "id": "regione-opendata",
+   "nome": "Open data Regione",
+   "fonte_catalogo": "Open data Regione Campania",
+   "ente": "Regione Campania",
+   "dominio": "territorio",
+   "sito": "https://www.regione.campania.it/",
+   "formati": [
+    "GeoJSON",
+    "CSV"
+   ],
+   "formato_catalogo": "GeoJSON, CSV, JSON",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "bloccata dalla sandbox",
+   "funziona": false,
+   "icona": "loghi/regione-campania.png",
+   "icona_sfondo": "chiaro",
+   "icona_da": "https://www.regione.campania.it/themes/custom/res/logo-regione-campania.png"
+  },
+  {
+   "id": "citta-metropolitana",
+   "nome": "Città Metropolitana",
+   "fonte_catalogo": "Città Metropolitana di Napoli",
+   "ente": "Città Metropolitana di Napoli",
+   "dominio": "territorio",
+   "sito": "https://www.cittametropolitana.na.it/",
+   "formati": [
+    "CSV",
+    "JSON"
+   ],
+   "formato_catalogo": "CSV, JSON",
+   "accesso": "aperto",
+   "pubblica": true,
+   "esito": "bloccata dalla sandbox",
+   "funziona": false,
+   "icona": null,
+   "icona_sfondo": null,
+   "icona_da": null,
+   "icona_nota": "nessuna icona decente (il sito non risponde o non dichiara icone)"
+  },
+  {
+   "id": "tim-big-data",
+   "nome": "TIM Big Data (Milano 2013)",
+   "fonte_catalogo": "TIM Big Data Challenge (Milano 2013)",
+   "ente": "Telecom Italia / Harvard Dataverse",
+   "dominio": "territorio",
+   "sito": "https://dataverse.harvard.edu/",
+   "formati": [
+    "TSV"
+   ],
+   "formato_catalogo": "TXT/TSV giornalieri (circa 320 MB l'uno)",
+   "accesso": "aperto, ma il download chiede di compilare un guestbook (nome, email, istituzione)",
+   "pubblica": true,
+   "esito": "confermata con correzioni",
+   "funziona": true,
+   "icona": null,
+   "icona_sfondo": null,
+   "icona_da": null,
+   "icona_nota": "nessuna icona decente (il sito non risponde o non dichiara icone)"
+  }
+ ],
+ "loghi": {
+  "adsp": {
+   "file": "loghi/adsp.png",
+   "da": "https://adsptirrenocentrale.it/wp-content/uploads/2019/02/favicon-adsp-tirreno-centrale-152x152.png",
+   "originale": "152x152",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://adsptirrenocentrale.it/",
+   "scaricata": "2026-11-14"
+  },
+  "aisstream": {
+   "file": "loghi/aisstream.png",
+   "da": "https://aisstream.io/favicon.ico",
+   "originale": "256x256",
+   "trovata_in": "predefinita",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://aisstream.io/",
+   "scaricata": "2026-11-14"
+  },
+  "americascup": {
+   "file": "loghi/americascup.png",
+   "da": "https://www.americascup.com/favicon.ico",
+   "originale": "134x134",
+   "trovata_in": "predefinita",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.americascup.com/",
+   "scaricata": "2026-11-14"
+  },
+  "anm": {
+   "file": null,
+   "esito": "nessuna icona decente (la più grande è 16x16)",
+   "tentativi": [
+    "https://www.anm.it/s/login/?language=it&startURL=%2Fapple-touch-icon.png: è una pagina HTML, non un'immagine",
+    "https://www.anm.it/s/login/?language=it&startURL=%2FFavicon.ico: è una pagina HTML, non un'immagine",
+    "https://www.anm.it/Favicon.ico: è una pagina HTML, non un'immagine",
+    "https://www.anm.it/apple-touch-icon.png: è una pagina HTML, non un'immagine"
+   ],
+   "sito": "https://www.anm.it/",
+   "scaricata": "2026-11-14"
+  },
+  "arpac": {
+   "file": null,
+   "esito": "nessuna icona decente (il sito non risponde o non dichiara icone)",
+   "tentativi": [
+    "https://www.arpacampania.it/: https://www.arpacampania.it/: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate "
+   ],
+   "sito": "https://www.arpacampania.it/",
+   "scaricata": "2026-11-14"
+  },
+  "assaeroporti": {
+   "file": "loghi/assaeroporti.png",
+   "da": "https://assaeroporti.com/wp-content/uploads/2024/06/favicon_1.png",
+   "originale": "115x115",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://assaeroporti.com/",
+   "scaricata": "2026-11-14"
+  },
+  "autostrade": {
+   "file": "loghi/autostrade.png",
+   "da": "https://www.autostrade.it/o/aspi-rebrand-24-theme/images/favicon/apple-touch-icon.png",
+   "originale": "180x180",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.autostrade.it/",
+   "scaricata": "2026-11-14"
+  },
+  "busone": {
+   "file": "loghi/busone.png",
+   "da": "https://busone.app/icon.png?icon.df2d6b91.png",
+   "originale": "160x160",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://busone.app/",
+   "scaricata": "2026-11-14"
+  },
+  "cciss": {
+   "file": "loghi/cciss.png",
+   "da": "https://www.cciss.it/cciss-theme/images/favicon.ico",
+   "originale": "64x64",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.cciss.it/",
+   "scaricata": "2026-11-14"
+  },
+  "centro-funzionale": {
+   "file": "loghi/centro-funzionale.png",
+   "da": "https://centrofunzionale.regione.campania.it/assets/images/android-icon-192x192.png",
+   "originale": "192x192",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://centrofunzionale.regione.campania.it/",
+   "scaricata": "2026-11-14"
+  },
+  "citta-metropolitana": {
+   "file": null,
+   "esito": "nessuna icona decente (il sito non risponde o non dichiara icone)",
+   "tentativi": [
+    "https://www.cittametropolitana.na.it/: https://www.cittametropolitana.na.it/: <urlopen error [Errno 104] Connection reset by peer"
+   ],
+   "sito": "https://www.cittametropolitana.na.it/",
+   "scaricata": "2026-11-14"
+  },
+  "comune-napoli": {
+   "file": "loghi/comune-napoli.png",
+   "da": "https://static-www.comune.napoli.it/wp-content/uploads/2025/11/cropped-favicon-192x192.png",
+   "originale": "192x192",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.comune.napoli.it/",
+   "scaricata": "2026-11-14"
+  },
+  "cruisetimetables": {
+   "file": "loghi/cruisetimetables.png",
+   "da": "https://www.cruisetimetables.com/android-chrome-256x256.png",
+   "originale": "256x256",
+   "trovata_in": "manifest",
+   "sfondo": "scuro",
+   "esito": "ok",
+   "sito": "https://www.cruisetimetables.com/",
+   "scaricata": "2026-11-14"
+  },
+  "cultura": {
+   "file": "loghi/cultura.png",
+   "da": "https://cultura.gov.it/fe/mibact/image/favicon_MiC.png",
+   "originale": "600x600",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.cultura.gov.it/",
+   "scaricata": "2026-11-14"
+  },
+  "dataverse": {
+   "file": null,
+   "esito": "nessuna icona decente (il sito non risponde o non dichiara icone)",
+   "tentativi": [
+    "https://dataverse.harvard.edu/apple-touch-icon.png: cannot identify image file <_io.BytesIO object at 0x7f6c9ac1a2a0>",
+    "https://dataverse.harvard.edu/favicon.ico: cannot identify image file <_io.BytesIO object at 0x7f6c9ac19e90>"
+   ],
+   "sito": "https://dataverse.harvard.edu/",
+   "scaricata": "2026-11-14"
+  },
+  "dati-gov": {
+   "file": null,
+   "esito": "nessuna icona decente (la più grande è 21x24)",
+   "tentativi": [
+    "https://www.dati.gov.it/apple-touch-icon.png: https://www.dati.gov.it/apple-touch-icon.png: HTTP Error 404: Not Foun",
+    "https://www.dati.gov.it/favicon.ico: https://www.dati.gov.it/favicon.ico: HTTP Error 404: Not Found"
+   ],
+   "sito": "https://www.dati.gov.it/",
+   "scaricata": "2026-11-14"
+  },
+  "eav": {
+   "file": "loghi/eav.png",
+   "da": "https://www.eavsrl.it/wp-content/uploads/2022/10/cropped-favicon-192x192.webp",
+   "originale": "192x192",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.eavsrl.it/",
+   "scaricata": "2026-11-14"
+  },
+  "eea": {
+   "file": "loghi/eea.png",
+   "da": "https://www.eea.europa.eu/android-chrome-512x512.png",
+   "originale": "512x512",
+   "trovata_in": "manifest",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.eea.europa.eu/",
+   "scaricata": "2026-11-14"
+  },
+  "football-data": {
+   "file": "loghi/football-data.png",
+   "da": "https://www.football-data.org/assets/favicons/android-icon-192x192.png",
+   "originale": "192x192",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.football-data.org/",
+   "scaricata": "2026-11-14"
+  },
+  "indicepa": {
+   "file": "loghi/indicepa.png",
+   "da": "https://www.indicepa.gov.it/ipa-portale/favicon.ico",
+   "originale": "48x48",
+   "trovata_in": "pagina",
+   "sfondo": "scuro",
+   "esito": "ok",
+   "sito": "https://www.indicepa.gov.it/",
+   "scaricata": "2026-11-14"
+  },
+  "ingv": {
+   "file": "loghi/ingv.png",
+   "da": "https://www.ingv.it/favicon.ico",
+   "originale": "48x48",
+   "trovata_in": "predefinita",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.ingv.it/",
+   "scaricata": "2026-11-14"
+  },
+  "insideairbnb": {
+   "file": "loghi/insideairbnb.png",
+   "da": "https://insideairbnb.com/favicon.ico",
+   "originale": "32x32",
+   "trovata_in": "predefinita",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://insideairbnb.com/",
+   "scaricata": "2026-11-14"
+  },
+  "istat": {
+   "file": "loghi/istat.png",
+   "da": "https://www.istat.it/wp-content/uploads/2024/06/faviconIstat.ico",
+   "originale": "256x256",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.istat.it/",
+   "scaricata": "2026-11-14"
+  },
+  "met-norway": {
+   "file": "loghi/met-norway.png",
+   "da": "https://www.met.no/_/image/66f38792-6e49-4e4d-a2dd-76d00dc682f1:4f35ecddb34ffc5862fd3f880663716dd1503178/square-192/met-logo.png",
+   "originale": "192x192",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.met.no/",
+   "scaricata": "2026-11-14"
+  },
+  "meteoalarm": {
+   "file": "loghi/meteoalarm.png",
+   "da": "https://meteoalarm.org/assets/favicon.svg",
+   "originale": "svg",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://meteoalarm.org/",
+   "scaricata": "2026-11-14"
+  },
+  "nager": {
+   "file": null,
+   "esito": "nessuna icona decente (la più grande è 16x16)",
+   "tentativi": [
+    "https://nagerholidays.com/apple-touch-icon.png: https://nagerholidays.com/apple-touch-icon.png: HTTP Error 404: Not Fo"
+   ],
+   "sito": "https://date.nager.at/",
+   "scaricata": "2026-11-14"
+  },
+  "open-meteo": {
+   "file": "loghi/open-meteo.png",
+   "da": "https://open-meteo.com/apple-touch-icon.png",
+   "originale": "180x180",
+   "trovata_in": "predefinita",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://open-meteo.com/",
+   "scaricata": "2026-11-14"
+  },
+  "opendata-comune": {
+   "file": "loghi/opendata-comune.png",
+   "da": "https://dati.comune.napoli.it/base/images/Favicon.svg",
+   "originale": "svg",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://dati.comune.napoli.it/",
+   "scaricata": "2026-11-14"
+  },
+  "openfootball": {
+   "file": "loghi/openfootball.png",
+   "da": "https://avatars.githubusercontent.com/openfootball?s=200",
+   "originale": "200x200",
+   "trovata_in": "indirizzo ufficiale scritto a mano",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://github.com/openfootball",
+   "scaricata": "2026-11-14"
+  },
+  "opensky": {
+   "file": "loghi/opensky.png",
+   "da": "https://opensky-network.org/static/favicon.ico",
+   "originale": "48x48",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://opensky-network.org/",
+   "scaricata": "2026-11-14"
+  },
+  "openstreetmap": {
+   "file": "loghi/openstreetmap.png",
+   "da": "https://www.openstreetmap.org/assets/favicon-194x194-79d3fb0152c735866e64b1d7535d504483cd13c2fad0131a6142bd9629d30de2.png",
+   "originale": "194x194",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.openstreetmap.org/",
+   "scaricata": "2026-11-14"
+  },
+  "protezione-civile": {
+   "file": "loghi/protezione-civile.png",
+   "da": "https://www.protezionecivile.gov.it/icons/icon-144x144.png?v=8e496d3229d3c6f98cd41173c7e6d963",
+   "originale": "144x144",
+   "trovata_in": "pagina (Chromium)",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.protezionecivile.gov.it/",
+   "scaricata": "2026-11-14"
+  },
+  "regione-campania": {
+   "file": "loghi/regione-campania.png",
+   "da": "https://www.regione.campania.it/themes/custom/res/logo-regione-campania.png",
+   "originale": "1000x955",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.regione.campania.it/",
+   "scaricata": "2026-11-14"
+  },
+  "salute": {
+   "file": null,
+   "esito": "nessuna icona decente (il sito non risponde o non dichiara icone)",
+   "tentativi": [
+    "https://www.salute.gov.it/apple-touch-icon.png: è una pagina HTML, non un'immagine",
+    "https://www.salute.gov.it/favicon.ico: https://www.salute.gov.it/favicon.ico: HTTP Error 404: Not Found"
+   ],
+   "sito": "https://www.salute.gov.it/",
+   "scaricata": "2026-11-14"
+  },
+  "sensor-community": {
+   "file": "loghi/sensor-community.png",
+   "da": "https://sensor.community/favicon.png",
+   "originale": "216x216",
+   "trovata_in": "pagina (Chromium)",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://sensor.community/",
+   "scaricata": "2026-11-14"
+  },
+  "thesportsdb": {
+   "file": "loghi/thesportsdb.png",
+   "da": "https://www.thesportsdb.com/images/ico/android-icon-192x192.png",
+   "originale": "192x192",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.thesportsdb.com/",
+   "scaricata": "2026-11-14"
+  },
+  "transitous": {
+   "file": "loghi/transitous.png",
+   "da": "https://transitous.org/images/logo.svg",
+   "originale": "svg",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://transitous.org/",
+   "scaricata": "2026-11-14"
+  },
+  "uniparthenope": {
+   "file": "loghi/uniparthenope.png",
+   "da": "https://meteo.uniparthenope.it/wp-content/uploads/2026/05/cropped-meteo-uniparthenope-2019-logo-circle-192x192.png",
+   "originale": "192x192",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://meteo.uniparthenope.it/",
+   "scaricata": "2026-11-14"
+  },
+  "viaggiatreno": {
+   "file": null,
+   "esito": "nessuna icona decente (il sito non risponde o non dichiara icone)",
+   "tentativi": [
+    "http://www.viaggiatreno.it/apple-touch-icon.png: http://www.viaggiatreno.it/apple-touch-icon.png: HTTP Error 404: Not F",
+    "http://www.viaggiatreno.it/favicon.ico: cannot identify image file <_io.BytesIO object at 0x7f6c9ac1b100>"
+   ],
+   "sito": "https://www.viaggiatreno.it/",
+   "scaricata": "2026-11-14"
+  },
+  "waqi": {
+   "file": "loghi/waqi.png",
+   "da": "https://aqicn.org/images/iOS/ico_114.png",
+   "originale": "114x114",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://aqicn.org/",
+   "scaricata": "2026-11-14"
+  },
+  "wikidata": {
+   "file": "loghi/wikidata.png",
+   "da": "https://www.wikidata.org/static/apple-touch/wikidata.png",
+   "originale": "180x180",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.wikidata.org/",
+   "scaricata": "2026-11-14"
+  },
+  "wikipedia": {
+   "file": "loghi/wikipedia.png",
+   "da": "https://www.wikipedia.org/static/apple-touch/wikipedia.png",
+   "originale": "160x160",
+   "trovata_in": "pagina",
+   "sfondo": "chiaro",
+   "esito": "ok",
+   "sito": "https://www.wikipedia.org/",
+   "scaricata": "2026-11-14"
+  }
+ }
+}

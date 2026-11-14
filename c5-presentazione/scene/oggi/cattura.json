@@ -1,0 +1,131 @@
+{
+  "nota": "Dati veri di Napoli catturati dall'API dati città di TwinCIRO (citta-api) in un momento solo, per la scena adesso.html del video. Ogni file ha la richiesta, l'ora di cattura e la risposta dell'API così com'è (stato del dato in fonte.stato). Rifare: node c5-presentazione/scene/oggi/cattura.mjs",
+  "catturato_il": "2026-11-14 19:30:20",
+  "catturato_iso": "2026-11-14T18:30:20.932Z",
+  "fuso": "Europe/Rome",
+  "giorno_testo": "sabato 14 novembre 2026",
+  "ora": "19:30",
+  "durata_cattura_ms": 32,
+  "api": {
+    "dove": "locale: node citta-api/server.js su 127.0.0.1:33357, senza token",
+    "versione": "1.0.0",
+    "user_agent": "TwinCIRO/1.0 (demo hackathon; dati aperti)",
+    "snapshot_generati": {
+      "trasporti": "2026-11-14 08:40",
+      "aria": "2026-11-14 19:29",
+      "eventi": "2026-11-14 19:29",
+      "riferimenti": "2026-11-14 08:47",
+      "meteo": "2026-11-14 19:29",
+      "indice": "2026-11-14 19:29"
+    },
+    "fonti_in_pausa": [],
+    "rinfresco_snapshot": {
+      "fatto": true,
+      "sezioni": [
+        "eventi",
+        "aria",
+        "meteo"
+      ],
+      "esito": "ok",
+      "righe": [
+        "eventi: scritto eventi.json in 2.4 s",
+        "aria: scritto aria.json in 11.6 s",
+        "rete: open-meteo.com in pausa fino alle 19:45 (HTTP 429: limite di richieste)",
+        "meteo: scritto meteo.json in 7.2 s (dati del file precedente per: Meteo attuale per luogo (modello ICON-2I, 2,2 km); Indice europeo della qualità dell'aria (modello CAMS))",
+        "fatto in 21 s in <temporanea>/dati: eventi.json, aria.json, meteo.json, indice.json"
+      ]
+    }
+  },
+  "file": [
+    {
+      "file": "riassunto.json",
+      "richiesta": "/citta/riassunto",
+      "http": 200,
+      "ms": 10
+    },
+    {
+      "file": "meteo.json",
+      "richiesta": "/citta/meteo",
+      "http": 200,
+      "ms": 22
+    },
+    {
+      "file": "meteo-plebiscito.json",
+      "richiesta": "/citta/meteo?luogo=plebiscito",
+      "http": 200,
+      "ms": 10
+    },
+    {
+      "file": "meteo-castel-dell-ovo.json",
+      "richiesta": "/citta/meteo?luogo=castel dell'ovo",
+      "http": 200,
+      "ms": 12
+    },
+    {
+      "file": "meteo-citta-della-scienza.json",
+      "richiesta": "/citta/meteo?luogo=Città della Scienza",
+      "http": 200,
+      "ms": 14
+    },
+    {
+      "file": "allerta.json",
+      "richiesta": "/citta/allerta",
+      "http": 200,
+      "ms": 15
+    },
+    {
+      "file": "eventi-oggi.json",
+      "richiesta": "/citta/eventi?giorno=oggi",
+      "http": 200,
+      "ms": 24
+    },
+    {
+      "file": "trasporti-citta-della-scienza.json",
+      "richiesta": "/citta/trasporti/vicino?luogo=Città della Scienza&passaggi=1",
+      "http": 200,
+      "ms": 17
+    },
+    {
+      "file": "passaggi-montesanto.json",
+      "richiesta": "/citta/passaggi?stazione=montesanto",
+      "http": 200,
+      "ms": 25
+    },
+    {
+      "file": "passaggi-toledo.json",
+      "richiesta": "/citta/passaggi?stazione=toledo",
+      "http": 200,
+      "ms": 27
+    },
+    {
+      "file": "aria.json",
+      "richiesta": "/citta/aria",
+      "http": 200,
+      "ms": 28
+    },
+    {
+      "file": "terremoti.json",
+      "richiesta": "/citta/terremoti",
+      "http": 200,
+      "ms": 17
+    },
+    {
+      "file": "traffico.json",
+      "richiesta": "/citta/traffico",
+      "http": 200,
+      "ms": 18
+    },
+    {
+      "file": "fonti.json",
+      "richiesta": "/citta/fonti",
+      "http": 200,
+      "ms": 30
+    },
+    {
+      "file": "come-arrivo.json",
+      "richiesta": "/citta/trasporti/vicino?luogo=Città della Scienza&passaggi=1&formato=testo",
+      "http": 200,
+      "ms": 20
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/passaggi?stazione=montesanto",
+  "formato": "json",
+  "http": 200,
+  "risposta": {
+    "stazione": {
+      "id": "anm-6273",
+      "nome": "Montesanto",
+      "tipo": "metro",
+      "linee": [
+        "L2"
+      ],
+      "operatore": "Trenitalia",
+      "lat": 40.84768,
+      "lon": 14.24432
+    },
+    "altre_stazioni_con_nome_simile": [
+      {
+        "id": "eav-6801",
+        "nome": "Montesanto",
+        "linee": [
+          "Circumflegrea",
+          "Cumana"
+        ],
+        "tipo": "ferrovia"
+      }
+    ],
+    "ora": "2026-11-14 19:30",
+    "passaggi": [
+      {
+        "ora": "19:30",
+        "tra_min": 0,
+        "linea": "Cumana",
+        "direzione": "Fuorigrotta",
+        "operatore": "EAV",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:33",
+        "tra_min": 3,
+        "linea": "L2",
+        "direzione": "POZZUOLI",
+        "operatore": "Trenitalia",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:36",
+        "tra_min": 6,
+        "linea": "Circumflegrea",
+        "direzione": "Licola",
+        "operatore": "EAV",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:37",
+        "tra_min": 7,
+        "linea": "L2",
+        "direzione": "SAN GIOVANNI - BARRA",
+        "operatore": "Trenitalia",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:37",
+        "tra_min": 7,
+        "linea": "Cumana",
+        "direzione": "Fuorigrotta",
+        "operatore": "EAV",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:45",
+        "tra_min": 15,
+        "linea": "L2",
+        "direzione": "POZZUOLI",
+        "operatore": "Trenitalia",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:45",
+        "tra_min": 15,
+        "linea": "Cumana",
+        "direzione": "Torregaveta",
+        "operatore": "EAV",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:49",
+        "tra_min": 19,
+        "linea": "L2",
+        "direzione": "SAN GIOVANNI - BARRA",
+        "operatore": "Trenitalia",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:57",
+        "tra_min": 27,
+        "linea": "L2",
+        "direzione": "POZZUOLI",
+        "operatore": "Trenitalia",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      },
+      {
+        "ora": "19:59",
+        "tra_min": 29,
+        "linea": "L2",
+        "direzione": "SAN GIOVANNI - BARRA",
+        "operatore": "Trenitalia",
+        "tempo_reale": false,
+        "ritardo_min": null,
+        "soppresso": false
+      }
+    ],
+    "fonte": {
+      "nome": "Transitous (prossimi passaggi)",
+      "stato": "reale",
+      "ora_dato": "2026-11-14 19:30",
+      "licenza": "servizio comunitario per progetti open source non commerciali",
+      "nota": "orari programmati (nessun dato in tempo reale per questa fermata); citare transitous.org/sources"
+    },
+    "programmato": {
+      "corse_in_quest_ora": 12,
+      "corse_nell_ora_dopo": 10,
+      "tipo_giorno": "sabato",
+      "fonte": "GTFS ANM ed EAV (orario programmato)"
+    },
+    "testo": "Prossime partenze da Montesanto: 19:30 Cumana EAV per Fuorigrotta, 19:33 L2 per POZZUOLI, 19:36 Circumflegrea EAV per Licola, 19:37 L2 per SAN GIOVANNI - BARRA, 19:37 Cumana EAV per Fuorigrotta. Fonte: Transitous (orari programmati, senza tempo reale)."
+  }
+}

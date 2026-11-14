@@ -1,0 +1,63 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/allerta",
+  "formato": "json",
+  "http": 200,
+  "risposta": {
+    "ora": "2026-11-14 19:30",
+    "regionale": null,
+    "meteoalarm": [
+      {
+        "fenomeno": "Temporali",
+        "livello": 3,
+        "colore": "arancione",
+        "dal": "2026-11-15 07:00",
+        "al": "2026-11-15 18:59",
+        "in_corso": false,
+        "titolo": "Allerta Temporali Arancione per l'Italia - Campania"
+      },
+      {
+        "fenomeno": "Pioggia",
+        "livello": 2,
+        "colore": "gialla",
+        "dal": "2026-11-15 07:00",
+        "al": "2026-11-15 18:59",
+        "in_corso": false,
+        "titolo": "Allerta Pioggia Giallo per l'Italia - Campania"
+      },
+      {
+        "fenomeno": "Vento",
+        "livello": 2,
+        "colore": "gialla",
+        "dal": "2026-11-16 01:00",
+        "al": "2026-11-16 23:59",
+        "in_corso": false,
+        "titolo": "Allerta Vento Giallo per l'Italia - Campania"
+      },
+      {
+        "fenomeno": "Pioggia",
+        "livello": 2,
+        "colore": "gialla",
+        "dal": "2026-11-16 01:00",
+        "al": "2026-11-16 18:59",
+        "in_corso": false,
+        "titolo": "Allerta Pioggia Giallo per l'Italia - Campania"
+      }
+    ],
+    "fonte": {
+      "nome": "Protezione Civile Regione Campania, Centro Funzionale",
+      "stato": "reale",
+      "ora_dato": "2026-11-14 19:30",
+      "licenza": "© Regione Campania, citata come fonte",
+      "nota": "senza avvisi in vigore"
+    },
+    "fonte_meteoalarm": {
+      "nome": "Meteoalarm (EUMETNET)",
+      "stato": "snapshot",
+      "ora_dato": "2026-11-14 19:29",
+      "licenza": "attribuzione a Meteoalarm",
+      "nota": "avvisi per tutta la Campania, dallo snapshot (la fonte non ha CORS)"
+    },
+    "testo": "Allerta regionale: dato non disponibile. Meteoalarm (avvisi per tutta la Campania): temporali arancione domani dalle 07:00 alle 18:59; pioggia gialla domani dalle 07:00 alle 18:59; vento gialla il 16/11 dalle 01:00 alle 23:59. Fonte: Protezione Civile Regione Campania, dato delle 19:30."
+  }
+}

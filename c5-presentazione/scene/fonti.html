@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920">
+<title>Le fonti di TwinCIRO</title>
+<link rel="stylesheet" href="stile.css">
+<style>
+  /* Scena 4 del video: le isole della scena 2 convergono in un muro di fonti per dominio, con TwinCIRO al centro.
+     Il contatore arriva al numero di fonti pubbliche di fonti/catalogo.json; i 130 px in basso restano liberi. */
+  #mare { position: absolute; inset: 0; }
+  svg#flussi { position: absolute; inset: 0; pointer-events: none; }
+  .isola[data-dominio="meteo"] .corpo { border-color: rgb(56 214 240 / var(--tinta, 0)); }
+  .isola[data-dominio="mobilita"] .corpo { border-color: rgb(167 139 250 / var(--tinta, 0)); }
+  .isola[data-dominio="eventi"] .corpo { border-color: rgb(255 181 71 / var(--tinta, 0)); }
+  .isola[data-dominio="territorio"] .corpo { border-color: rgb(74 222 128 / var(--tinta, 0)); }
+  .dom { position: absolute; display: flex; align-items: center; gap: 12px; height: 40px; }
+  .dom .ic { font-size: 28px; line-height: 1; }
+  .dom .n { font-size: 24px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
+  .dom .q { margin-left: auto; font: 700 22px/1 'Inter', sans-serif; color: #0a1020; padding: 6px 12px; border-radius: 20px; }
+  .dom .riga { position: absolute; left: 0; right: 0; top: 44px; height: 2px; border-radius: 1px; opacity: 0.55; transform-origin: left; }
+  .alone { position: absolute; left: 960px; top: 470px; width: 760px; height: 760px; margin: -380px 0 0 -380px; border-radius: 50%;
+    background: radial-gradient(circle, rgb(56 214 240 / 0.20), rgb(56 214 240 / 0.06) 45%, transparent 68%); }
+  .hub { position: absolute; left: 680px; width: 560px; top: 212px; height: 520px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; }
+  .hub .marchio { font-size: 104px; line-height: 1; }
+  .hub .conta { margin-top: 18px; font-size: 176px; line-height: 0.9; font-weight: 800; letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
+    color: #fff; text-shadow: 0 0 40px rgb(56 214 240 / 0.35); }
+  .hub .frase { margin-top: 26px; font-size: 37px; line-height: 1.18; font-weight: 700; }
+  .hub .piede { margin-top: 22px; font-size: 20px; line-height: 1.4; color: var(--tenue); }
+  .hub .piede b { color: #dbe4f7; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="alone" id="alone"></div>
+<svg id="flussi" viewBox="0 0 1920 1080"></svg>
+<div id="domini"></div>
+<div id="mare"></div>
+<div class="hub">
+  <div class="marchio" id="marchio"><span class="twin">Twin</span><span class="ciro">CIRO</span></div>
+  <div class="conta" id="conta">0</div>
+  <div class="frase" id="frase"></div>
+  <div class="piede" id="piede"></div>
+</div>
+<script type="module">
+import { CSS, carica, creaIsola, sparse, muro, disponi, aggancio, attendiImmagini, anteprima, casuale, fumo, curva, tra, esc } from './fonti/isole.js';
+
+const P = new URLSearchParams(location.search);
+const DURATA = Number(P.get('durata')) || 8;
+const stile = document.createElement('style');
+stile.textContent = CSS;
+document.head.appendChild(stile);
+
+const COLORE = { meteo: '#38d6f0', mobilita: '#a78bfa', eventi: '#ffb547', territorio: '#4ade80' };
+const CENTRO = { x: 960, y: 470 };
+// Tempi (secondi). Le isole partono una dopo l'altra, atterrano nel muro e mandano un "dato" a TwinCIRO:
+// il contatore sale a ogni arrivo e si ferma sul numero di fonti pubbliche del catalogo.
+const T = { partenza: 0.2, passo: 0.033, volo: 0.85, viaggio: 0.42, marchio: 0.9, frase: 3.3, piede: 4.1, flusso: 3.6 };
+const outBack = (x) => { const c = 1.7; return x <= 0 ? 0 : x >= 1 ? 1 : 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+
+let isole = [], arrivi = [], blocchi = [], flusso = [], totale = 0;
+const svg = document.getElementById('flussi');
+
+function punto(colore) {
+  const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  c.setAttribute('r', '6');
+  c.setAttribute('fill', colore);
+  c.setAttribute('filter', 'url(#bagliore)');
+  svg.appendChild(c);
+  return c;
+}
+
+window.pronta = (async () => {
+  const { cat, fonti, domini, confermate, daRiprovare } = await carica();
+  totale = fonti.length;
+  svg.innerHTML = '<defs><filter id="bagliore" x="-2" y="-2" width="5" height="5"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+  const mare = document.getElementById('mare');
+  const pos = sparse(fonti);                       // stessa disposizione della scena 2 (motivazione.html)
+  const { posti, blocchi: bl } = muro(fonti);
+  const rango = fonti.map((_, i) => i).sort((a, b) => Math.abs(pos[a].x - CENTRO.x) - Math.abs(pos[b].x - CENTRO.x));
+  isole = fonti.map((f, i) => {
+    const el = creaIsola(f);
+    mare.appendChild(el);
+    const posto = posti.get(f.id);
+    const a = aggancio(el, posto);
+    const t0 = T.partenza + rango.indexOf(i) * T.passo;
+    const tA = t0 + T.volo;
+    return { f, el, p: pos[i], posto, a, t0, tA, punto: punto(COLORE[f.dominio]) };
+  });
+  arrivi = isole.map((x) => x.tA + T.viaggio).sort((a, b) => a - b);
+  // Testate dei domini: nome, icona e numero di fonti, dal catalogo
+  const contenitore = document.getElementById('domini');
+  blocchi = bl.map((b) => {
+    const d = domini.find((x) => x.id === b.dominio);
+    const el = document.createElement('div');
+    el.className = 'dom';
+    el.style.cssText = `left:${b.x}px;top:${b.y}px;width:${b.w}px`;
+    el.innerHTML = `<span class="ic">${esc(d.icona)}</span><span class="n" style="color:${COLORE[b.dominio]}">${esc(d.nome)}</span>`
+      + `<span class="q" style="background:${COLORE[b.dominio]}">${b.n}</span><div class="riga" style="background:${COLORE[b.dominio]}"></div>`;
+    contenitore.appendChild(el);
+    // la testata compare quando metà delle sue fonti è già al suo posto (prima ci volerebbero sopra le isole)
+    const atterraggi = isole.filter((x) => x.f.dominio === b.dominio).map((x) => x.tA).sort((p, q) => p - q);
+    return { el, t0: atterraggi[Math.floor(atterraggi.length / 2)] };
+  });
+  // Frase e piede: il numero arrotondato per difetto alla decina ("Oltre 50") e gli esiti della verifica
+  const decine = Math.floor((totale - 1) / 10) * 10;
+  document.getElementById('frase').innerHTML = `Oltre ${decine} fonti pubbliche,<br>verificate una per una`;
+  const [aa, mm, gg] = String(cat.verifica || '').split('-');
+  document.getElementById('piede').innerHTML = `Verifica del ${gg}/${mm}/${aa}: <b>${confermate} confermate</b>,<br>${daRiprovare} da riprovare dalla rete italiana o con una chiave`;
+  // Dopo il conteggio i dati continuano ad arrivare: un punto ogni 0,12 s da una fonte a caso (sempre la stessa sequenza)
+  const rnd = casuale(42);
+  for (let t = T.flusso; t < Math.max(DURATA, 20) + 1; t += 0.12) flusso.push({ t, i: Math.floor(rnd() * isole.length), el: null });
+  flusso.forEach((x) => { x.el = punto(COLORE[isole[x.i].f.dominio]); });
+  await attendiImmagini(document);
+  await document.fonts.ready;
+  window.imposta(0);
+  return { durata: DURATA };
+})();
+
+// Percorso di un punto: dal centro della pillola verso TwinCIRO, si spegne a 230 px dal centro
+function viaggio(el, x0, y0, k) {
+  const dx = CENTRO.x - x0, dy = CENTRO.y - y0, d = Math.hypot(dx, dy);
+  const fine = Math.max(0, d - 230) / d;
+  const e = curva(k) * fine;
+  el.setAttribute('cx', (x0 + dx * e).toFixed(1));
+  el.setAttribute('cy', (y0 + dy * e).toFixed(1));
+  el.setAttribute('opacity', (k <= 0 || k >= 1 ? 0 : Math.min(1, k * 5) * (k > 0.8 ? (1 - k) / 0.2 : 1)).toFixed(3));
+}
+
+window.imposta = (t) => {
+  for (const x of isole) {
+    const k = tra(t, x.t0, x.tA);
+    const e = curva(k);
+    const dond = (1 - e) * Math.sin((t / x.p.periodo) * Math.PI * 2 + x.p.fase) * 5;
+    const curvaArco = Math.sin(Math.PI * e) * 46 * (x.p.x < CENTRO.x ? -1 : 1);
+    const xx = x.p.x + (x.a.x - x.p.x) * e;
+    const yy = x.p.y + dond + (x.a.y - x.p.y) * e + curvaArco * 0.5;
+    const u = fumo(tra(t, x.tA - 0.12, x.tA + 0.32));
+    const atterra = t >= x.tA ? 1 + 0.05 * Math.sin(Math.PI * tra(t, x.tA, x.tA + 0.3)) : 1;
+    disponi(x.el, {
+      x: xx, y: yy, r: x.p.r * (1 - e), s: (x.p.s + (1 - x.p.s) * e) * atterra, u,
+      o: (x.p.lontana ? 0.78 : 1) + (x.p.lontana ? 0.22 * e : 0), of: 1 - fumo(tra(t, x.t0, x.t0 + 0.3)), larghezza: x.posto.w,
+    });
+    x.el.style.setProperty('--tinta', (0.55 * u).toFixed(3));
+    // il dato che parte verso TwinCIRO quando la fonte si mette al suo posto
+    const cx = x.posto.x + x.posto.w / 2, cy = x.posto.y + x.posto.h / 2;
+    viaggio(x.punto, cx, cy, tra(t, x.tA, x.tA + T.viaggio));
+  }
+  for (const f of flusso) {
+    const x = isole[f.i];
+    viaggio(f.el, x.posto.x + x.posto.w / 2, x.posto.y + x.posto.h / 2, tra(t, f.t, f.t + 0.6));
+  }
+  for (const b of blocchi) {
+    const p = fumo(tra(t, b.t0, b.t0 + 0.45));
+    b.el.style.opacity = p.toFixed(3);
+    b.el.style.transform = `translateY(${((1 - p) * 14).toFixed(1)}px)`;
+    b.el.querySelector('.riga').style.transform = `scaleX(${fumo(tra(t, b.t0 + 0.1, b.t0 + 0.7)).toFixed(3)})`;
+  }
+  // TwinCIRO al centro e contatore
+  const pm = tra(t, T.marchio, T.marchio + 0.6);
+  const marchio = document.getElementById('marchio');
+  marchio.style.opacity = fumo(pm).toFixed(3);
+  marchio.style.transform = `scale(${(0.9 + 0.1 * outBack(pm)).toFixed(4)})`;
+  const n = arrivi.filter((a) => a <= t).length;
+  const conta = document.getElementById('conta');
+  if (conta.textContent !== String(n)) conta.textContent = String(n);
+  const fine = arrivi[arrivi.length - 1] ?? 0;
+  const pc = tra(t, T.marchio + 0.2, T.marchio + 0.7);
+  const colpo = t >= fine ? 1 + 0.08 * Math.sin(Math.PI * tra(t, fine, fine + 0.35)) : 1;
+  conta.style.opacity = fumo(pc).toFixed(3);
+  conta.style.transform = `scale(${colpo.toFixed(4)})`;
+  conta.style.color = t >= fine ? '#ffffff' : '#cfe9f7';
+  for (const [id, t0] of [['frase', T.frase], ['piede', T.piede]]) {
+    const p = fumo(tra(t, t0, t0 + 0.6));
+    const el = document.getElementById(id);
+    el.style.opacity = p.toFixed(3);
+    el.style.transform = `translateY(${((1 - p) * 22).toFixed(1)}px)`;
+  }
+  const alone = document.getElementById('alone');
+  alone.style.opacity = (fumo(tra(t, 0.3, 1.4)) * (0.85 + 0.15 * Math.sin(t * 2.2))).toFixed(3);
+};
+
+window.pronta.then(() => anteprima(window.imposta, DURATA));
+</script>
+</body>
+</html>

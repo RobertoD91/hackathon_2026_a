@@ -1,0 +1,143 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/eventi?giorno=oggi",
+  "formato": "json",
+  "http": 200,
+  "risposta": {
+    "giorno": "2026-11-14",
+    "giorno_testo": "sabato 14 novembre 2026",
+    "eventi": [
+      {
+        "titolo": "Tri Gold Caracciolo 2026",
+        "tipo": "Evento sportivo",
+        "luogo": "Lungomare Caracciolo",
+        "zona": "lungomare",
+        "orario": "in corso fino al 15 nov",
+        "inizio": null,
+        "fine": null,
+        "in_corso": true,
+        "nota": "Rotonda Diaz | Lungomare Caracciolo - Napoli",
+        "fonte": "Comune di Napoli",
+        "sposta_folla": true
+      },
+      {
+        "titolo": "Vedi Napoli Sacra e Misteriosa e poi Torni - Edizione 2026",
+        "tipo": "Manifestazione artistica",
+        "luogo": "Napoli",
+        "zona": null,
+        "orario": "in corso fino al 30 dic",
+        "inizio": null,
+        "fine": null,
+        "in_corso": true,
+        "nota": "Napoli",
+        "fonte": "Comune di Napoli",
+        "sposta_folla": false
+      },
+      {
+        "titolo": "Alla prova del tempo - Storia con metamorfosi",
+        "tipo": "Evento culturale",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "orario": "in corso, ultimo giorno fino alle 20:00",
+        "inizio": null,
+        "fine": null,
+        "in_corso": true,
+        "nota": "Maschio Angioino | Sala dei Baroni",
+        "fonte": "Comune di Napoli",
+        "sposta_folla": false
+      }
+    ],
+    "prossimi": [
+      {
+        "giorno": "2026-11-15",
+        "giorno_testo": "domenica 15 novembre 2026",
+        "titolo": "Viva la Strada",
+        "tipo": "Evento sportivo",
+        "luogo": null,
+        "zona": null,
+        "nota": "Parco San Laise - Viale della Liberazione n. 1, Bagnoli"
+      },
+      {
+        "giorno": "2026-11-16",
+        "giorno_testo": "lunedì 16 novembre 2026",
+        "titolo": "3 navi da crociera",
+        "tipo": "Crociere",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "nota": "Celebrity Equinox, MSC Magnifica, Oceania Marina"
+      },
+      {
+        "giorno": "2026-11-17",
+        "giorno_testo": "martedì 17 novembre 2026",
+        "titolo": "2 navi da crociera",
+        "tipo": "Crociere",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "nota": "MSC Euribia, Viking Mira"
+      },
+      {
+        "giorno": "2026-11-18",
+        "giorno_testo": "mercoledì 18 novembre 2026",
+        "titolo": "Nave da crociera",
+        "tipo": "Crociere",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "nota": "Costa Toscana"
+      },
+      {
+        "giorno": "2026-11-19",
+        "giorno_testo": "giovedì 19 novembre 2026",
+        "titolo": "Nave da crociera",
+        "tipo": "Crociere",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "nota": "Viking Vesta"
+      },
+      {
+        "giorno": "2026-11-21",
+        "giorno_testo": "sabato 21 novembre 2026",
+        "titolo": "Napoli - Torino",
+        "tipo": "Serie A",
+        "luogo": "Stadio Diego Armando Maradona",
+        "zona": "maradona",
+        "nota": "20:45"
+      },
+      {
+        "giorno": "2026-11-21",
+        "giorno_testo": "sabato 21 novembre 2026",
+        "titolo": "Pink Up Festival",
+        "tipo": "Evento sportivo",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "nota": "Piazza Municipio - Napoli"
+      },
+      {
+        "giorno": "2026-11-22",
+        "giorno_testo": "domenica 22 novembre 2026",
+        "titolo": "Nave da crociera",
+        "tipo": "Crociere",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "nota": "Silver Nova"
+      },
+      {
+        "giorno": "2027-05-22",
+        "giorno_testo": "sabato 22 maggio 2027",
+        "titolo": "Louis Vuitton Cup · regate di flotta",
+        "tipo": "Louis Vuitton Cup",
+        "luogo": "Lungomare Caracciolo",
+        "zona": "lungomare",
+        "nota": "primo giorno di regate a Napoli"
+      }
+    ],
+    "fonte": {
+      "nome": "Comune di Napoli, openfootball, Cruise Timetables, America's Cup",
+      "stato": "snapshot",
+      "ora_dato": "2026-11-14 19:29",
+      "licenza": "Comune: CC BY 4.0; openfootball: CC0; altre citate",
+      "nota": "snapshot, partite di Serie A aggiornate dal vivo (openfootball)"
+    },
+    "nota": "Eventi del Comune: solo quelli dell'agenda corrente (10 alla volta). \"sposta_folla\" è un'ipotesi della simulazione. Navi da crociera da Cruise Timetables (fonte non ufficiale), regate dal calendario America's Cup 2027.",
+    "testo": "Sabato 14 novembre 2026 a Napoli: Tri Gold Caracciolo 2026 (Lungomare Caracciolo, in corso fino al 15 nov; Comune di Napoli); Vedi Napoli Sacra e Misteriosa e poi Torni - Edizione 2026 (Napoli, in corso fino al 30 dic; Comune di Napoli); Alla prova del tempo - Storia con metamorfosi (Molo Beverello · Stazione Marittima, in corso, ultimo giorno fino alle 20:00; Comune di Napoli). Prossimi: dom 15/11 Viva la Strada; lun 16/11 3 navi da crociera (Molo Beverello · Stazione Marittima); mar 17/11 2 navi da crociera (Molo Beverello · Stazione Marittima); mer 18/11 Nave da crociera (Molo Beverello · Stazione Marittima); gio 19/11 Nave da crociera (Molo Beverello · Stazione Marittima)."
+  }
+}

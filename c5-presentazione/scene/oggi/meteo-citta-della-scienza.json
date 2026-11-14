@@ -1,0 +1,43 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/meteo?luogo=Città della Scienza",
+  "formato": "json",
+  "http": 200,
+  "risposta": {
+    "luogo": {
+      "id": "citta_scienza",
+      "nome": "Città della Scienza",
+      "tipo": "punto",
+      "categoria": "Museo e centro congressi (Bagnoli-Coroglio)",
+      "lat": 40.8061,
+      "lon": 14.1781,
+      "trovato_con": "Città della Scienza",
+      "luogo_monitorato_vicino": {
+        "zona": "maradona",
+        "nome": "Stadio Diego Armando Maradona",
+        "km": 2.7
+      }
+    },
+    "meteo": {
+      "temperatura_c": 17.5,
+      "percepita_c": 18.1,
+      "cielo": "Parzialmente nuvoloso",
+      "pioggia_mm": 0,
+      "umidita_pct": 82,
+      "vento_kmh": 5,
+      "vento_nodi": 3,
+      "raffiche_kmh": 16,
+      "condizioni": "bel tempo",
+      "ora_dato": "2026-11-14 19:30"
+    },
+    "nota": "dati del luogo monitorato più vicino: Stadio Diego Armando Maradona (2,7 km)",
+    "fonte": {
+      "nome": "Open-Meteo (modello ICON-2I di ItaliaMeteo-ARPAE)",
+      "stato": "reale",
+      "ora_dato": "2026-11-14 19:30",
+      "licenza": "CC BY 4.0",
+      "nota": "previsione per l'ora corrente, griglia di 2,2 km"
+    },
+    "testo": "Città della Scienza: 17,5 °C, parzialmente nuvoloso, vento 5 km/h (3 nodi) con raffiche a 16 km/h, umidità 82 %. Fonte: Open-Meteo (modello ICON-2I di ItaliaMeteo-ARPAE), dato delle 19:30. (dati del luogo monitorato più vicino: Stadio Diego Armando Maradona (2,7 km))"
+  }
+}
