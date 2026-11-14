@@ -373,7 +373,8 @@ export function creaMappa(contenitore, cfg) {
     el.className = classe;
     el.innerHTML = html;
     if (titolo) el.title = titolo;
-    return new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
+    // con il rilievo MapLibre attenua i marcatori che ritiene coperti dal terreno: qui devono restare pieni
+    return new maplibregl.Marker({ element: el, anchor: 'bottom', opacityWhenCovered: '1' }).setLngLat(lngLat).addTo(map);
   }
 
   function mostraPercorso(it, { inquadra = true } = {}) {
