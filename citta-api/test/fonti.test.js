@@ -662,3 +662,18 @@ test('sim-config: ogni luogo ha l\'effetto del suo evento reale e la stagione ca
   const senza = sim.sample(t).find((r) => r.location.zone === 'beverello').readings.people_count;
   assert.ok(conBassa < senza, `${conBassa} < ${senza}`);
 });
+
+test('allertaDomaniDaCentroFunzionale: avviso per domani anche senza avvisi in vigore oggi (risposta vera del 14/11/2026)', () => {
+  const domani = { bollettinoMeteoBindList: [{ zona: null, tipoDesc: ' piogge temporali', livelloDesc: 'Livello di allerta idrogeologica e/o idraulica giallo', livello: 2 }], idBollettino: 724, dataEmissione: '10:35 - 14/11/2026', dataDa: '06:00 - 15/11/2026', dataA: '06:00 - 16/11/2026', numeroAvviso: 94 };
+  const d = N.allertaDomaniDaCentroFunzionale(domani);
+  assert.equal(d.livello, 2);
+  assert.equal(d.colore, 'gialla');
+  assert.deepEqual(d.tipi, ['piogge', 'temporali']);
+  assert.equal(d.numero, 94);
+  assert.equal(N.oraBreve(d.dal), '06:00');
+  assert.equal(N.giornoLocale(d.dal), '2026-11-15');
+  assert.equal(N.allertaDomaniDaCentroFunzionale({ bollettinoMeteoBindList: [] }), null);
+  assert.equal(N.allertaDomaniDaCentroFunzionale(null), null);
+  // e l'avviso di oggi, con la stessa risposta vuota di stasera, resta null come prima
+  assert.equal(N.allertaDaCentroFunzionale({ bollettinoMeteoBindList: [], idBollettino: null, dataDa: '14:00 - 14/11/2026', dataA: '06:00 - 15/11/2026' }, null, domani), null);
+});

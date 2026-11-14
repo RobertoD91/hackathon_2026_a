@@ -227,6 +227,28 @@ test('/citta/allerta: avviso giallo in vigore e "nessun avviso in vigore" dal vi
   }
 });
 
+test('/citta/allerta: nessun avviso in vigore oggi ma avviso già emesso per domani (14/11 sera)', async () => {
+  const o = orologio();
+  const dati = snapshotSintetici(o.t);
+  delete dati.meteo.allerta; // nessuna storia nello snapshot: prima l'API diceva "dato non disponibile"
+  const a = await avviaServizio({ orologio: o, dati, regole: fontiNormali(o.t, { allerta: { vuota: true, domani: true } }) });
+  try {
+    const r = await a.get('/citta/allerta');
+    assert.equal(r.json.regionale, null);
+    assert.equal(r.json.fonte.stato, 'reale');
+    assert.equal(r.json.domani.livello, 2);
+    assert.equal(r.json.domani.colore, 'gialla');
+    assert.equal(r.json.domani.avviso_n, 95);
+    assert.equal(r.json.domani.fenomeni_tipo, 'piogge, temporali');
+    assert.match(r.json.testo, /^Nessuna allerta meteo regionale in vigore per Napoli\. Per domani la Protezione Civile ha già emesso l'avviso n\. 95: allerta gialla per piogge, temporali, /);
+    assert.doesNotMatch(r.json.testo, /dato non disponibile/);
+    const rias = await a.get('/citta/riassunto?formato=testo');
+    assert.match(rias.testo, /Nessuna allerta meteo regionale in vigore per Napoli\. Per domani la Protezione Civile ha già emesso l'avviso n\. 95/);
+  } finally {
+    await a.chiudi();
+  }
+});
+
 test('/citta/eventi: oggi, domani, data, giorno della settimana, luogo, errori', async () => {
   const a = await avviaServizio();
   try {

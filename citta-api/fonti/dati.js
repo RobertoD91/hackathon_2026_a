@@ -267,7 +267,8 @@ export async function allerta() {
       return { ultima, zona, domani };
     });
     const a = N.allertaDaCentroFunzionale(r.valore.ultima, r.valore.zona, r.valore.domani, oraFn());
-    if (a) return { dati: { regionale: a, meteoalarm }, fonte: fonte('allerta', r.daCache ? 'cache' : 'live', { ts: a.emissione, letto: r.letto }) };
+    const domani = N.allertaDomaniDaCentroFunzionale(r.valore.domani);
+    if (a) return { dati: { regionale: a, domani, meteoalarm }, fonte: fonte('allerta', r.daCache ? 'cache' : 'live', { ts: a.emissione, letto: r.letto }) };
     if (r.valore.ultima) {
       // Il Centro Funzionale ha risposto ma senza avvisi in vigore: è un dato vero ("nessun avviso"),
       // non un guasto. L'ultimo avviso salvato resta solo come storia (scaduto, non mostrato nel banner).
@@ -275,7 +276,8 @@ export async function allerta() {
       const storia = g ? N.allertaDaCentroFunzionale(g.ultima, g.zona, g.domani, oraFn()) : null;
       return {
         // Senza avvisi in vigore l'ultimo avviso è chiuso per tutti (banner, agenti, API), anche se le sue date dicono altro.
-        dati: { regionale: storia ? { ...storia, inCorso: false, scaduta: true } : null, meteoalarm, nessunAvvisoInVigore: true },
+        // L'avviso per domani invece viene dal vivo: il Centro Funzionale lo emette anche quando oggi non c'è nulla.
+        dati: { regionale: storia ? { ...storia, inCorso: false, scaduta: true } : null, domani, meteoalarm, nessunAvvisoInVigore: true },
         fonte: fonte('allerta', r.daCache ? 'cache' : 'live', { ts: oraFn(), letto: r.letto, nota: 'senza avvisi in vigore' }),
       };
     }
@@ -283,8 +285,9 @@ export async function allerta() {
   } catch (err) {
     const g = s?.allerta?.grezzo;
     const a = g ? N.allertaDaCentroFunzionale(g.ultima, g.zona, g.domani, oraFn()) : null;
+    const domani = g ? N.allertaDomaniDaCentroFunzionale(g.domani) : null;
     return {
-      dati: { regionale: a, meteoalarm },
+      dati: { regionale: a, domani: domani && domani.al > oraFn() ? domani : null, meteoalarm },
       fonte: fonte('allerta', a ? 'salvato' : 'assente', { ts: a?.emissione ?? null, nota: `${err.message}${a ? ': ultimo avviso salvato' : ''}` }),
     };
   }

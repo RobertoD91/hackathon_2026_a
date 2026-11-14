@@ -292,6 +292,28 @@ export function classeCentralina(misure) {
 
 const COLORI_ALLERTA = { 1: 'verde', 2: 'gialla', 3: 'arancione', 4: 'rossa' };
 
+/**
+ * Avviso del Centro Funzionale per domani (findAllertaDomaniNew), letto da solo: serve anche quando
+ * oggi non c'è nessun avviso in vigore (allora allertaDaCentroFunzionale restituisce null).
+ * null se per domani non c'è nessun avviso (lista vuota o livello assente).
+ */
+export function allertaDomaniDaCentroFunzionale(domani) {
+  const b = domani?.bollettinoMeteoBindList?.find((x) => x.zona === 1 || x.zona == null);
+  const livello = Number(b?.livello);
+  if (!b || !livello) return null;
+  return {
+    fonte: 'centro-funzionale',
+    livello,
+    colore: COLORI_ALLERTA[livello] || 'n/d',
+    descrizione: b.livelloDesc || `Livello ${livello}`,
+    tipi: String(b.tipoDesc || '').trim().split(/\s+/).filter(Boolean),
+    dal: daDataCf(domani.dataDa),
+    al: daDataCf(domani.dataA),
+    numero: domani.numeroAvviso ?? null,
+    emissione: daDataCf(domani.dataEmissione),
+  };
+}
+
 const NOMI_TIPI_ALLERTA = { piogge: 'piogge', temporali: 'temporali', neve: 'neve', vento: 'vento forte', mare: 'mare agitato', calore: 'caldo intenso', freddo: 'freddo intenso' };
 /** Tipi dell'avviso del Centro Funzionale in parole per i cittadini (['mare'] → 'mare agitato'). */
 export function descriviTipiAllerta(tipi) {

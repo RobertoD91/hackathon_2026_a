@@ -70,8 +70,12 @@ export function metNo(t) {
   };
 }
 
-export function allertaCf(t, { livello = 2, vuota = false } = {}) {
-  if (vuota) return { ultima: { bollettinoMeteoBindList: [], idBollettino: null, dataDa: dataCf(t - H), dataA: dataCf(t + H) }, zona: null, domani: { bollettinoMeteoBindList: [] } };
+export function allertaCf(t, { livello = 2, vuota = false, domani = false } = {}) {
+  // Avviso per domani com'è arrivato il 14/11/2026 sera: lista con zona null, livello 2, piogge e temporali.
+  const avvisoDomani = domani
+    ? { idBollettino: 724, numeroAvviso: 95, dataEmissione: dataCf(t - 9 * H), dataDa: dataCf(t + 11 * H), dataA: dataCf(t + 35 * H), bollettinoMeteoBindList: [{ zona: null, livello: 2, livelloDesc: 'Livello di allerta idrogeologica e/o idraulica giallo', tipoDesc: ' piogge temporali' }] }
+    : { bollettinoMeteoBindList: [] };
+  if (vuota) return { ultima: { bollettinoMeteoBindList: [], idBollettino: null, dataDa: dataCf(t - H), dataA: dataCf(t + H) }, zona: null, domani: avvisoDomani };
   return {
     ultima: { idBollettino: 7, numeroAvviso: 94, dataEmissione: dataCf(t - 4 * H), dataDa: dataCf(t - 3 * H), dataA: dataCf(t + 6 * H), bollettinoMeteoBindList: [{ zona: 1, livello, livelloDesc: 'Livello di allerta giallo', tipoDesc: 'mare' }] },
     zona: { bollettinoMeteoBindList: [{ zona: 1, livello, livelloDesc: 'Livello di allerta giallo', tipoDesc: 'mare vento', fenomeni: 'Mare agitato, venti forti.' }] },

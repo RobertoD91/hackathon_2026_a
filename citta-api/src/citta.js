@@ -177,10 +177,24 @@ export function allertaDi(d, ora) {
         zona: 'Zona 1 (Napoli, isole, area vesuviana)',
       }
     : null;
+  const dm = d?.domani;
+  const domani = dm
+    ? {
+        livello: dm.livello,
+        colore: dm.colore,
+        fenomeni_tipo: N.descriviTipiAllerta(dm.tipi) || null,
+        descrizione: dm.descrizione,
+        dal: oraLocale(dm.dal),
+        al: oraLocale(dm.al),
+        avviso_n: dm.numero,
+        emesso: oraLocale(dm.emissione),
+        zona: 'Zona 1 (Napoli, isole, area vesuviana)',
+      }
+    : null;
   const meteoalarm = (d?.meteoalarm || [])
     .filter((w) => w.fine > ora)
     .map((w) => ({ fenomeno: w.fenomeno, livello: w.livello, colore: w.colore, dal: oraLocale(w.inizio), al: oraLocale(w.fine), in_corso: w.inizio <= ora, titolo: w.titolo }));
-  return { regionale, meteoalarm };
+  return { regionale, domani, meteoalarm };
 }
 
 /** Testo dell'allerta dai dati grezzi di fonti/dati.js (`d`) e dalla forma compatta (`x`). */
@@ -196,8 +210,15 @@ function testoAllerta(d, x, ora) {
   } else if (r) {
     const ultimo = r.avviso_n ? `l'ultimo avviso (n. ${r.avviso_n}, ${r.colore}) ${r.scaduta ? `è scaduto ${quando(a.al, ora).replace(/^alle/, 'oggi alle')}` : 'non è più in vigore'}` : null;
     parti.push(`Nessuna allerta meteo regionale in corso per Napoli${ultimo ? `: ${ultimo}` : ''}.`);
-  } else parti.push('Allerta regionale: dato non disponibile.');
-  if (r?.domani?.livello >= 2) parti.push(`Domani: ${r.domani.descrizione || `livello ${r.domani.livello}`}.`);
+  } else if (d?.nessunAvvisoInVigore) parti.push('Nessuna allerta meteo regionale in vigore per Napoli.');
+  else parti.push('Allerta regionale: dato non disponibile.');
+  const dm = x.domani;
+  if (dm?.livello >= 2 && d?.domani) {
+    parti.push(
+      `Per domani la Protezione Civile ha già emesso l'avviso n. ${dm.avviso_n ?? 'n/d'}: allerta ${dm.colore} per ${dm.fenomeni_tipo || dm.descrizione}` +
+        `${d.domani.dal && d.domani.al ? `, ${intervallo(d.domani.dal, d.domani.al, ora)}` : ''}.`,
+    );
+  } else if (r?.domani?.livello >= 2) parti.push(`Domani: ${r.domani.descrizione || `livello ${r.domani.livello}`}.`);
   const ma = (d?.meteoalarm || []).filter((w) => w.fine > ora && w.livello >= 2);
   if (ma.length) {
     const frase = (w) => `${w.fenomeno.toLowerCase()} ${w.colore} ${w.inizio <= ora ? `in corso ${finoA(w.fine, ora)}` : intervallo(w.inizio, w.fine, ora)}`;
