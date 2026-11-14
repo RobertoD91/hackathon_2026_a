@@ -40,5 +40,9 @@ rm -f "$DIR/server.csr" "$DIR/server.ext" "$DIR/server.crt" "$DIR/ca.srl"
 chmod 644 "$DIR/ca.crt"
 
 echo "Certificato del broker: $DIR/fullchain.pem (nomi: $SAN)"
-echo "Per usarlo, in .env: MQTT_CERTIFICATI=autofirmato e LETSENCRYPT_DIR=./segreti"
-if [ "$(env_valore MQTT_CERTIFICATI letsencrypt)" = autofirmato ]; then ricarica_broker; fi
+if [ "$(env_valore MQTT_CERTIFICATI letsencrypt)" != autofirmato ]; then
+    echo "Per usarlo, in .env: MQTT_CERTIFICATI=autofirmato e LETSENCRYPT_DIR=./segreti, poi"
+    echo "docker compose up -d --force-recreate"
+elif broker_attivo; then
+    ricarica_broker
+fi

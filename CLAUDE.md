@@ -75,3 +75,13 @@ Base comune IoT + agenti (contratto: `shared/iot-agents/CONTRATTO.md`, uso e API
 - LLM: `LLM_PROVIDER=mock` predefinito; `anthropic` o `openai-compatible` con variabili d'ambiente, mai chiavi nei file. Il testo deterministico va sempre passato come `fallback`.
 - L'esempio include la mappa "Napoli in tempo reale" stile Seoul Real-Time City Data (`example/mappa.js` + `example/luoghi.js`, Leaflet da cdnjs, tessere OpenStreetMap: CARTO ora chiede una chiave) e l'agente `folla`; scenari `crociere` e `partita` in `example/sim-config.json` (11 dispositivi simulati: il test in `test/sim.test.js` ne controlla il numero).
 - Firmware ESP32 in `shared/iot-agents/firmware/esp32-sensor/` (`config.h` non versionato; non ancora compilato su scheda vera). Ponte OpenClaw simulato: `node shared/iot-agents/tools/openclaw-bridge-sim.js`.
+
+## `cloud/`
+
+Servizi Docker per il server di Roberto (`cloud.robertodisanto.it`). Qui solo configurazione, mai segreti (`.env` e `segreti/` sono ignorati da git). Guida completa: `cloud/mqtt/README.md`.
+- `cloud/mqtt/`: Mosquitto 2.1.2 (`eclipse-mosquitto:2.1.2-alpine`). Porte 1883 (password), 8883 (TLS), 8884 (wss), 9001 ws solo su 127.0.0.1. Nessun accesso anonimo (il healthcheck lo controlla).
+- Avvio sul server: `cd cloud/mqtt && sudo ./scripts/inizializza.sh && docker compose up -d && ./scripts/prova.sh`; hook di rinnovo Let's Encrypt: `scripts/rinnova-certificati.sh`.
+- Utenti: uno per dispositivo con nome = deviceId (badge/ESP32) o Topic Tasmota (`./scripts/aggiungi-utente.sh <id>`); permessi dai pattern `%u` di `config/acl`. Ruoli fissi: admin, ponte, c5, c5-plastico, dashboard (sola lettura: la sua password finisce nel browser), monitor.
+- Dopo una modifica a `config/acl` usa `./scripts/ricarica.sh` (un SIGHUP a mano non rilegge l'ACL: Mosquitto usa una copia in tmpfs fatta da `config/avvio.sh`, come per i certificati Let's Encrypt, che la 2.1 legge come uid 1883 e senza symlink).
+- Ponte MQTT → hub: servizio `ponte` (profilo compose `ponte`) con `shared/iot-agents/tools/mqtt-bridge.js`. Per `c5-agentic-city` (il suo `BusMQTT` non supporta utente/password/TLS) c'è il bridge Mosquitto `cloud/mqtt/esempi/ponte-c5-verso-cloud.conf`.
+- Mai `docker compose down -v` sul server (cancella i dati). Se Docker Hub risponde 429: `docker pull mirror.gcr.io/library/<immagine>` e `docker tag`.

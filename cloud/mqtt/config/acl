@@ -53,6 +53,8 @@ user ponte
 topic read bighack/#
 topic read tele/#
 topic read stat/#
+# Solo se il ponte ha PONTE_C5=1 (legge anche il formato c5 napoli/sensori/<id>/<grandezza>).
+topic read napoli/sensori/#
 # Per mandare comandi dal hub ai dispositivi togli il commento:
 # topic write bighack/+/+/cmd
 # topic write cmnd/#

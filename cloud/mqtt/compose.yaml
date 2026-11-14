@@ -5,7 +5,8 @@
 #   docker compose up -d                               broker
 #   docker compose logs -f mosquitto                   log del broker
 #   ./scripts/prova.sh                                 prova completa (anonimo, ACL, TLS, WSS)
-#   docker compose --profile monitor up monitor        stampa tutti i messaggi (Ctrl+C per uscire)
+#   docker compose --profile monitor run --rm monitor  stampa tutti i messaggi (Ctrl+C per uscire)
+#   docker compose --profile ponte up -d               ponte MQTT -> hub (shared/iot-agents)
 #
 # Porte sul server (modificabili in .env):
 #   1883 MQTT con password · 8883 MQTT su TLS · 8884 WebSocket su TLS (wss://)
@@ -44,6 +45,9 @@ services:
       - /mosquitto/run:mode=0700,size=1m
       # File temporanei di mosquitto_passwd (script in scripts/).
       - /tmp:mode=1777,size=4m
+      # Log su stdout: tmpfs evita un volume anonimo (VOLUME /mosquitto/log dell'immagine)
+      # a ogni avvio e a ogni "docker compose run" degli script.
+      - /mosquitto/log:size=1m
     healthcheck:
       # Il broker è sano se risponde a MQTT E rifiuta la connessione anonima:
       # se qualcuno riaprisse l'accesso anonimo, il container risulterebbe "unhealthy".
@@ -71,8 +75,8 @@ services:
 
   # Client di prova: si iscrive a MONITOR_TOPIC (predefinito: tutto) e stampa ogni messaggio
   # con data, topic e contenuto. Stessa immagine del broker, nessun download in più.
-  #   docker compose --profile monitor up monitor
-  #   MONITOR_TOPIC='bighack/#' docker compose --profile monitor up monitor
+  #   docker compose --profile monitor run --rm monitor
+  #   MONITOR_TOPIC='bighack/#' docker compose --profile monitor run --rm monitor
   monitor:
     image: eclipse-mosquitto:2.1.2-alpine
     profiles: ["monitor"]
@@ -87,6 +91,9 @@ services:
       - >-
         exec mosquitto_sub -h mosquitto -p 1883 -u "$$MQTT_USER" -P "$$MQTT_PASSWORD"
         -i "monitor-$$(hostname)" -t "$$MONITOR_TOPIC" -F '%I %t %p'
+    # L'immagine dichiara VOLUME /mosquitto/data e /mosquitto/log: tmpfs per non lasciare
+    # volumi anonimi a ogni avvio.
+    tmpfs: [/mosquitto/data, /mosquitto/log]
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
@@ -94,42 +101,53 @@ services:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
 
-  # Ponte MQTT -> hub (shared/iot-agents): vedi README, sezione "Ponte MQTT -> hub".
-  # Legge bighack/# e tele/# con l'utente "ponte" e inoltra le letture al hub (POST /api/readings).
-  # Usa shared/iot-agents della repo in sola lettura: sul server serve la repo intera
-  # (cloud/ e shared/ allo stesso livello). DA ATTIVARE quando il ponte è pronto:
-  # 1. togli il commento al blocco qui sotto e metti il nome del file al posto di <ponte>.js;
-  # 2. in .env controlla HUB_URL e HUB_TOKEN (MQTT_PONTE_PASSWORD la scrive inizializza.sh);
-  # 3. docker compose --profile ponte up -d   (log: docker compose logs -f ponte)
-  #
-  # ponte:
-  #   image: node:22.23.5-alpine
-  #   profiles: ["ponte"]
-  #   restart: unless-stopped
-  #   depends_on:
-  #     mosquitto: { condition: service_healthy }
-  #   user: node
-  #   working_dir: /repo
-  #   volumes:
-  #     - ../../shared/iot-agents:/repo/shared/iot-agents:ro
-  #   environment:
-  #     MQTT_URL: mqtt://mosquitto:1883
-  #     MQTT_USER: ponte
-  #     MQTT_PASSWORD: ${MQTT_PONTE_PASSWORD:-}
-  #     HUB_URL: ${HUB_URL:-http://host.docker.internal:8701}
-  #     HUB_TOKEN: ${HUB_TOKEN:-}
-  #   # host.docker.internal = il server stesso (hub avviato fuori da Docker).
-  #   extra_hosts: ["host.docker.internal:host-gateway"]
-  #   command: ["node", "shared/iot-agents/tools/<ponte>.js"]
-  #   read_only: true
-  #   cap_drop: [ALL]
-  #   security_opt: ["no-new-privileges:true"]
-  #   deploy:
-  #     resources:
-  #       limits: { cpus: "0.5", memory: 128M }
-  #   logging:
-  #     driver: json-file
-  #     options: { max-size: "10m", max-file: "3" }
+  # Ponte MQTT -> hub: shared/iot-agents/tools/mqtt-bridge.js (Node, nessuna dipendenza npm).
+  # Legge bighack/# e tele/# con l'utente "ponte" e inoltra le letture al hub (POST /api/readings,
+  # shared/iot-agents/CONTRATTO.md). Usa shared/iot-agents della repo in sola lettura: sul
+  # server serve la repo intera (cloud/ e shared/ allo stesso livello).
+  #   in .env: HUB_URL e HUB_TOKEN (MQTT_PONTE_PASSWORD la scrive inizializza.sh)
+  #   docker compose --profile ponte up -d      log: docker compose logs -f ponte
+  ponte:
+    image: node:22.23.5-alpine
+    profiles: ["ponte"]
+    restart: unless-stopped
+    depends_on:
+      mosquitto: { condition: service_healthy }
+    user: node
+    working_dir: /repo
+    volumes:
+      - ../../shared/iot-agents:/repo/shared/iot-agents:ro
+    environment:
+      MQTT_URL: mqtt://mosquitto:1883
+      MQTT_USER: ponte
+      MQTT_PASSWORD: ${MQTT_PONTE_PASSWORD:-}
+      HUB_URL: ${HUB_URL:-http://host.docker.internal:8701}
+      HUB_TOKEN: ${HUB_TOKEN:-}
+      # Facoltative (vedi l'intestazione di mqtt-bridge.js): zona dei Tasmota senza zona nel
+      # topic, mappa JSON dispositivo -> zona/coordinate, anche napoli/sensori/+/+ di c5.
+      MQTT_DEFAULT_ZONE: ${PONTE_ZONA_PREDEFINITA:-}
+      MQTT_MAP: ${PONTE_MAPPA:-}
+      MQTT_C5: ${PONTE_C5:-0}
+      HEALTH_PORT: "8080"
+    # host.docker.internal = il server stesso (hub avviato fuori da Docker, in ascolto su 0.0.0.0).
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    command: ["node", "shared/iot-agents/tools/mqtt-bridge.js"]
+    healthcheck:
+      # GET /health del ponte: 200 se è connesso al broker.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 128M }
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
 
 volumes:
   # Persistenza di Mosquitto (mosquitto.db). Backup: README, sezione "Backup".

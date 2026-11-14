@@ -17,7 +17,7 @@ Nessun accesso anonimo su nessuna porta: se qualcuno lo riattivasse, il containe
 
 ```
 cloud/mqtt/
-  compose.yaml              broker (servizio mosquitto), monitor (profilo "monitor"), ponte (da attivare)
+  compose.yaml              broker (servizio mosquitto), monitor (profilo "monitor"), ponte (profilo "ponte")
   .env.example              configurazione: dominio, certificati, porte, password di ponte e monitor
   config/
     mosquitto.conf          porte, limiti, persistenza, log, plugin di autenticazione e ACL
@@ -46,7 +46,7 @@ cloud/mqtt/
 - Server Linux con **Docker Engine** e il plugin **Compose v2** (`docker compose version`), `openssl`, `git`.
 - Record DNS `A` (ed eventualmente `AAAA`) di `cloud.robertodisanto.it` verso l'IP del server.
 - Certificato Let's Encrypt per `cloud.robertodisanto.it` in `/etc/letsencrypt/live/cloud.robertodisanto.it/` (già presente sul server; per le prove bastano quelli autofirmati).
-- La repo intera clonata sul server se si attiva il ponte (usa `shared/iot-agents/`).
+- La repo intera clonata sul server se si usa il ponte (monta `shared/iot-agents/`).
 
 Gli script vanno lanciati da un utente che può usare Docker (root, `sudo` o gruppo `docker`) e funzionano da qualsiasi cartella.
 
@@ -123,7 +123,7 @@ Il **nome utente di un dispositivo è il suo deviceId** (badge, ESP32) o il suo 
 |---|---|---|
 | dispositivo `<id>` (badge, ESP32) | `bighack/+/<id>/#` (es. `.../cmd`) | `bighack/+/<id>/#` (`readings`, `status`), `napoli/sensori/<id>/#` |
 | dispositivo Tasmota `<topic>` | `cmnd/<topic>/#` | `tele/<topic>/#`, `stat/<topic>/#` |
-| `ponte` | `bighack/#`, `tele/#`, `stat/#` | niente (comandi ai dispositivi: righe commentate nell'ACL) |
+| `ponte` | `bighack/#`, `tele/#`, `stat/#`, `napoli/sensori/#` | niente (comandi ai dispositivi: righe commentate nell'ACL) |
 | `c5` | `napoli/#` | `napoli/#` |
 | `c5-plastico` (ESP32 di c5) | `napoli/semafori/#` | `napoli/sensori/#`, `napoli/eventi/manuale`, `napoli/semafori/+/riflesso` |
 | `dashboard` (browser) | `bighack/#`, `tele/#`, `napoli/#` | niente: la sua password è pubblica |
@@ -243,21 +243,22 @@ Dalla console web del dispositivo (un comando, `<password>` da `aggiungi-utente.
 Backlog MqttHost cloud.robertodisanto.it; MqttPort 1883; MqttUser tasmota-serra; MqttPassword <password>; Topic tasmota-serra; FullTopic %prefix%/%topic%/; TelePeriod 60
 ```
 
-Il **Topic deve essere uguale al nome utente**: Tasmota pubblica `tele/tasmota-serra/SENSOR`, `STATE` e `LWT` (trattenuto `Online`/`Offline`), `stat/tasmota-serra/...` e ascolta `cmnd/tasmota-serra/...`. Il topic di gruppo `cmnd/tasmotas/...` non è concesso. Le build ESP32 di Tasmota supportano TLS (`SetOption103 1` e `MqttPort 8883`, poi `Restart 1`); le build ESP8266 standard no, quindi 1883. Se la verifica del certificato fallisce, resta la 1883 con password.
+Il **Topic deve essere uguale al nome utente**: Tasmota pubblica `tele/tasmota-serra/SENSOR`, `STATE` e `LWT` (trattenuto `Online`/`Offline`), `stat/tasmota-serra/...` e ascolta `cmnd/tasmota-serra/...`. Il topic di gruppo `cmnd/tasmotas/...` non è concesso. Con il FullTopic predefinito il topic non dice la zona: il ponte usa `PONTE_ZONA_PREDEFINITA` o `PONTE_MAPPA` di `.env`. In alternativa `FullTopic bighack/serra/%topic%/%prefix%/` mette la zona nel topic (`bighack/serra/tasmota-serra/tele/SENSOR`): lo riconoscono sia l'ACL sia il ponte. Le build ESP32 di Tasmota supportano TLS (`SetOption103 1` e `MqttPort 8883`, poi `Restart 1`); le build ESP8266 standard no, quindi 1883. Se la verifica del certificato fallisce, resta la 1883 con password.
 
 Prova dal PC: `mosquitto_pub ... -u admin -t cmnd/tasmota-serra/POWER -m TOGGLE`.
 
 ### Ponte MQTT → hub
 
-Il ponte (in preparazione in `shared/iot-agents/tools/`) legge `bighack/#` e `tele/#` con l'utente `ponte` e inoltra le letture al hub con `POST /api/readings` (`shared/iot-agents/CONTRATTO.md`). In `compose.yaml` c'è il servizio `ponte`, commentato finché il file non esiste: togli il commento e metti il nome del file, poi
+Il ponte `shared/iot-agents/tools/mqtt-bridge.js` si iscrive a `bighack/#` e ai topic Tasmota con l'utente `ponte`, converte e inoltra le letture al hub con `POST /api/readings` (`shared/iot-agents/CONTRATTO.md`). In `compose.yaml` è il servizio `ponte` (profilo `ponte`, quindi non parte con un semplice `up`):
 
 ```bash
 # in .env: HUB_URL (e HUB_TOKEN se il hub lo richiede); MQTT_PONTE_PASSWORD c'è già
 docker compose --profile ponte up -d
-docker compose logs -f ponte
+docker compose --profile ponte ps          # ponte "healthy" = connesso al broker
+docker compose logs -f ponte               # una riga "→ hub <deviceId> ..." per lettura
 ```
 
-Il container riceve `MQTT_URL=mqtt://mosquitto:1883` (rete interna di Docker), `MQTT_USER=ponte`, `MQTT_PASSWORD`, `HUB_URL`, `HUB_TOKEN` e lancia `node shared/iot-agents/tools/<ponte>.js` con la cartella `shared/iot-agents` montata in sola lettura (Node 22, nessuna dipendenza npm, come vuole il contratto). Se il hub gira sullo stesso server fuori da Docker usa `HUB_URL=http://host.docker.internal:8701`, con il hub in ascolto su `0.0.0.0` (non solo su 127.0.0.1). Il ponte si può anche lanciare fuori da Docker, da un portatile: `MQTT_URL=mqtts://cloud.robertodisanto.it:8883`.
+Il container (Node 22, nessuna dipendenza npm) monta `shared/iot-agents` in sola lettura e riceve `MQTT_URL=mqtt://mosquitto:1883` (rete interna di Docker), `MQTT_USER=ponte`, `MQTT_PASSWORD`, `HUB_URL`, `HUB_TOKEN` (inviato come `Authorization: Bearer`) e le facoltative `PONTE_ZONA_PREDEFINITA`, `PONTE_MAPPA`, `PONTE_C5` di `.env` (le altre opzioni sono nell'intestazione di `mqtt-bridge.js`). Il healthcheck interroga `GET /health` del ponte. Se il hub gira sullo stesso server fuori da Docker usa `HUB_URL=http://host.docker.internal:8701`, con il hub in ascolto su `0.0.0.0` (non solo su 127.0.0.1). Il ponte si può anche lanciare fuori da Docker, da un portatile: `MQTT_URL=mqtts://cloud.robertodisanto.it:8883 MQTT_USER=ponte MQTT_PASSWORD=... HUB_URL=http://localhost:8701 node shared/iot-agents/tools/mqtt-bridge.js`.
 
 ### c5-agentic-city
 
@@ -357,6 +358,7 @@ Con Docker in un ambiente di prova, su porte 18840-18843 al posto di 1883/8883/8
 - una finta `/etc/letsencrypt` identica a quella di certbot (link simbolici, `archive/` 0700, chiave 0600) e il rinnovo con l'hook: nuovo certificato su 8883 e 8884 senza riavvio, con un client TLS rimasto connesso;
 - wss con mqtt.js (il client delle dashboard), anche attraverso nginx sulla 443 con `esempi/nginx-mqtt-websocket.conf`;
 - il bridge di `esempi/ponte-c5-verso-cloud.conf` con la `mosquitto.conf` di c5, nei due sensi;
-- il servizio `ponte` (scommentato) con uno script finto: variabili d'ambiente, connessione al broker come `ponte`, hub raggiungibile via `host.docker.internal`.
+- il servizio `ponte` con `mqtt-bridge.js` vero e un hub finto raggiungibile via `host.docker.internal`: lettura di un badge, stato trattenuto e telemetria Tasmota arrivati al hub convertiti nel formato del contratto, con `HUB_TOKEN` come `Authorization: Bearer` e healthcheck `healthy`;
+- nessun volume anonimo lasciato dagli script e dal monitor.
 
 Non provati: certificati Let's Encrypt veri, il server di Roberto, dispositivi reali (badge, ESP32, Tasmota).
