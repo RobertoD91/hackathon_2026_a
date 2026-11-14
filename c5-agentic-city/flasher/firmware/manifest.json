@@ -1,0 +1,10 @@
+{
+  "name": "TwinCiro nodo (semaforo o sensore)",
+  "version": "20261114-1235-abb3bcd",
+  "new_install_prompt_erase": true,
+  "builds": [
+    { "chipFamily": "ESP32",    "parts": [{ "path": "twinciro-nodo-esp32.bin",   "offset": 0 }] },
+    { "chipFamily": "ESP32-S3", "parts": [{ "path": "twinciro-nodo-esp32s3.bin", "offset": 0 }] },
+    { "chipFamily": "ESP32-C3", "parts": [{ "path": "twinciro-nodo-esp32c3.bin", "offset": 0 }] }
+  ]
+}
