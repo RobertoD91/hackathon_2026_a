@@ -4,7 +4,10 @@ L'API di [`shared/citta-api/`](../../shared/citta-api/README.md) (il "cervello d
 
 | Porta | Protocollo | Per chi |
 |---|---|---|
-| **8791** | HTTP (JSON) | CiroGPT (OpenClaw), la mappa "Napoli in tempo reale", il video. Dietro un reverse proxy può restare su 127.0.0.1 |
+| **443** | HTTPS (profilo `https`: nginx in un container) | CiroGPT (OpenClaw): `https://twinciro.robertodisanto.it/citta-api` |
+| 8791 | HTTP (JSON) | prove e rete interna; con il profilo `https` può restare su 127.0.0.1 |
+
+Sul server **non abbiamo root**: niente nginx di sistema né `sudo`. HTTPS lo fa un nginx in Docker con i certificati che l'amministratore rende leggibili ([`../certificati/`](../certificati/README.md)).
 
 ## Contenuto
 
@@ -12,10 +15,11 @@ L'API di [`shared/citta-api/`](../../shared/citta-api/README.md) (il "cervello d
 cloud/citta-api/
   Dockerfile                immagine: shared/citta-api + i moduli condivisi di shared/iot-agents
   Dockerfile.dockerignore   contesto di build ridotto ai soli file che servono (pochi KB)
-  compose.yaml              servizio citta-api: porta, token, CORS, volume, healthcheck, limiti
+  compose.yaml              servizio citta-api (porta, token, CORS, volume, healthcheck, limiti) e https (profilo)
+  nginx/https.conf          nginx del profilo "https": /citta-api/ → citta-api:8791, certificati da CITTA_CERTIFICATI_DIR
   .env.example              configurazione (token, porta, CORS, User-Agent, rinfresco)
   prova.sh                  prova: /salute, token, riassunto, luogo, passaggi, fonti
-  esempi/nginx-citta-api.conf   HTTPS sulla 443 con nginx (opzionale)
+  esempi/nginx-citta-api.conf   alternativa: l'nginx di sistema (solo per chi ha root sul server)
 ```
 
 `.env` è nel `.gitignore`: **il token non va mai nella repo**.
@@ -37,7 +41,7 @@ docker compose up -d --build
 ./prova.sh                                   # /salute, 401 senza token, riassunto, luogo, passaggi, fonti
 ```
 
-Apri nel firewall del provider la porta **TCP 8791** (o niente, se usi il reverse proxy). Come per il broker: le porte pubblicate da Docker scavalcano ufw; per non esporre la 8791 metti `CITTA_API_INDIRIZZO=127.0.0.1` in `.env`.
+Apri nel firewall del provider la porta **TCP 443** per il profilo `https` (qui sotto) e, solo se vuoi l'accesso diretto in HTTP, la **8791**. Come per il broker: le porte pubblicate da Docker scavalcano ufw; per non esporre la 8791 metti `CITTA_API_INDIRIZZO=127.0.0.1` in `.env`.
 
 Da fuori:
 
@@ -46,17 +50,20 @@ curl -s http://twinciro.robertodisanto.it:8791/salute            # HTTP: per HTT
 curl -s -H "Authorization: Bearer <token>" 'http://twinciro.robertodisanto.it:8791/citta/riassunto?formato=testo'
 ```
 
-### HTTPS con nginx (consigliato se il token passa da Internet)
+### HTTPS senza root (consigliato: il token passa da Internet)
 
-Il token viaggia in un header: su HTTP in chiaro si può leggere. Con nginx già sul server, [`esempi/nginx-citta-api.conf`](esempi/nginx-citta-api.conf) pubblica l'API su `https://twinciro.robertodisanto.it/citta-api/` (oppure su un sottodominio) con il certificato Let's Encrypt esistente:
+Il token viaggia in un header: su HTTP in chiaro si può leggere. Il profilo `https` di `compose.yaml` mette davanti all'API un **nginx in un container**, sulla 443, con i certificati di `twinciro.robertodisanto.it`. Prima, una volta, l'amministratore del server deve rendere i certificati leggibili: comandi in [`../certificati/README.md`](../certificati/README.md). Poi, da utente normale:
 
 ```bash
-# in .env: CITTA_API_INDIRIZZO=127.0.0.1, poi
-docker compose up -d
-sudo cp esempi/nginx-citta-api.conf /etc/nginx/snippets/citta-api.conf   # e "include snippets/citta-api.conf;" nel server 443
-sudo nginx -t && sudo systemctl reload nginx
+ls -l /srv/certificati/twinciro.robertodisanto.it/       # fullchain.pem e privkey.pem
+# in .env: CITTA_API_INDIRIZZO=127.0.0.1 (la 8791 resta interna) e, se serve, CITTA_HTTPS_PORTA
+docker compose --profile https up -d --build
 ./prova.sh https://twinciro.robertodisanto.it/citta-api
 ```
+
+nginx rilegge i certificati da solo ogni 12 ore, quindi dopo un rinnovo non serve fare nulla (per farlo subito: `docker compose exec https nginx -s reload`). Se la 443 è già occupata sul server, oppure se Docker è rootless e non può pubblicare porte sotto la 1024, usa `CITTA_HTTPS_PORTA=8443` e l'indirizzo `https://twinciro.robertodisanto.it:8443/citta-api`. `https://twinciro.robertodisanto.it/salute` risponde `ok` da nginx stesso.
+
+Provato il 14/11 con un certificato autofirmato, con la chiave 0640 di un altro utente come la lascia `copia-certificati.sh`: container `healthy`, `prova.sh` 6 su 6 attraverso nginx e ricaricamento a caldo.
 
 Per CiroGPT: `CITTA_API=https://twinciro.robertodisanto.it/citta-api` e `CITTA_API_TOKEN=<token>` (skill d'esempio nel [README dell'API](../../shared/citta-api/README.md#usarla-da-cirogpt)).
 
@@ -65,7 +72,9 @@ Per CiroGPT: `CITTA_API=https://twinciro.robertodisanto.it/citta-api` e `CITTA_A
 | Variabile | Predefinito | Note |
 |---|---|---|
 | `CITTA_API_PORTA` | `8791` | porta sul server |
-| `CITTA_API_INDIRIZZO` | `0.0.0.0` | `127.0.0.1` dietro un reverse proxy |
+| `CITTA_API_INDIRIZZO` | `0.0.0.0` | `127.0.0.1` dietro il profilo `https` |
+| `CITTA_CERTIFICATI_DIR` | `/srv/certificati/twinciro.robertodisanto.it` | profilo `https`: cartella con `fullchain.pem` e `privkey.pem` |
+| `CITTA_HTTPS_PORTA` | `443` | profilo `https`: porta sul server (`8443` se la 443 non si può usare) |
 | `CITTA_API_TOKEN` | vuoto | Bearer per tutto tranne `/salute`. Vuoto = API aperta |
 | `CITTA_API_CORS` | `https://robertodisanto.it` | origini del browser ammesse (la mappa su GitHub Pages); `*` per tutte |
 | `NAPOLI_UA` | vuoto | User-Agent verso le fonti; generico, senza dati personali |
@@ -73,7 +82,7 @@ Per CiroGPT: `CITTA_API=https://twinciro.robertodisanto.it/citta-api` e `CITTA_A
 | `CITTA_TIENI_CALDO` | `1` | fonti del riassunto rilette in anticipo (solo se scadute) |
 | `CITTA_PAUSA_429` | `15m` | pausa di un dominio dopo un 429 |
 
-La mappa nel browser e CiroGPT possono usare la stessa API solo se il token è vuoto (una pagina pubblica non può tenere un segreto). Se serve il token per CiroGPT e l'accesso libero per la mappa, metti l'API dietro nginx e aggiungi lì l'header `Authorization` solo per il percorso usato da CiroGPT, oppure avvia una seconda istanza senza token con `CITTA_TIENI_CALDO=0`.
+La mappa nel browser e CiroGPT possono usare la stessa API solo se il token è vuoto (una pagina pubblica non può tenere un segreto). Se serve il token per CiroGPT e l'accesso libero per la mappa, aggiungi in `nginx/https.conf` un percorso che inserisce l'header `Authorization` solo per la mappa, oppure avvia una seconda istanza senza token con `CITTA_TIENI_CALDO=0`.
 
 Dopo una modifica a `.env`: `docker compose up -d` (ricrea il container, il volume resta).
 

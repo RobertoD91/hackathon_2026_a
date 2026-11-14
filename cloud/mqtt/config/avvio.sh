@@ -4,9 +4,12 @@
 #
 # 1. Copia in /mosquitto/run (tmpfs, solo in memoria), con proprietario uid 1883 e
 #    permessi 0600, i file che Mosquitto legge DOPO aver lasciato root:
-#    - i certificati TLS. Mosquitto 2.1 rifiuta i percorsi con link simbolici e gira come
+#    - i certificati TLS, solo se TLS è acceso (MQTT_CERTIFICATI diverso da "nessuno"), insieme
+#      a conf.d/tls.conf con le porte 8883 e 8884. Con "nessuno" (predefinito) conf.d resta
+#      vuota e il broker ascolta solo in chiaro (1883 con password, 9001 per il proxy locale). Mosquitto 2.1 rifiuta i percorsi con link simbolici e gira come
 #      uid 1883, mentre /etc/letsencrypt/live/<dominio>/ contiene link simbolici verso
 #      archive/, leggibile solo da root: così i permessi di /etc/letsencrypt restano intatti.
+#        MQTT_CERTIFICATI=nessuno      niente TLS (predefinito)
 #        MQTT_CERTIFICATI=letsencrypt  /etc/letsencrypt/live/$MQTT_DOMINIO/{fullchain,privkey}.pem
 #        MQTT_CERTIFICATI=autofirmato  /mosquitto/segreti/certs-autofirmati/{fullchain,privkey}.pem
 #    - l'ACL (config/acl): Mosquitto 2.1 avverte che le versioni future rifiuteranno un'ACL
@@ -22,7 +25,7 @@ set -eu
 UID_MOSQ="${PUID:-1883}"
 GID_MOSQ="${PGID:-1883}"
 DOMINIO="${MQTT_DOMINIO:-twinciro.robertodisanto.it}"
-SORGENTE="${MQTT_CERTIFICATI:-letsencrypt}"
+SORGENTE="${MQTT_CERTIFICATI:-nessuno}"
 RUN=/mosquitto/run
 PASSWD=/mosquitto/utenti/passwd
 
@@ -46,22 +49,43 @@ copia() { # sorgente destinazione
 
 copia_file() {
     case "$SORGENTE" in
-        letsencrypt) dir="/etc/letsencrypt/live/$DOMINIO" ;;
+        nessuno) dir="" ;;
+        # Struttura di certbot (live/<dominio>/) oppure la copia "piatta" fatta da
+        # cloud/certificati/copia-certificati.sh (<dominio>/), con LETSENCRYPT_DIR=/srv/certificati.
+        letsencrypt) dir="/etc/letsencrypt/live/$DOMINIO"; [ -d "$dir" ] || dir="/etc/letsencrypt/$DOMINIO" ;;
         autofirmato) dir="/mosquitto/segreti/certs-autofirmati" ;;
-        *) errore "MQTT_CERTIFICATI deve essere 'letsencrypt' o 'autofirmato' (ora: '$SORGENTE')" ;;
+        *) errore "MQTT_CERTIFICATI deve essere 'nessuno', 'letsencrypt' o 'autofirmato' (ora: '$SORGENTE')" ;;
     esac
-    for f in fullchain.pem privkey.pem; do
-        [ -r "$dir/$f" ] || errore "manca $dir/$f (MQTT_CERTIFICATI=$SORGENTE, MQTT_DOMINIO=$DOMINIO). \
-Con Let's Encrypt controlla LETSENCRYPT_DIR in .env; per le prove: ./scripts/certificati-autofirmati.sh"
-    done
+    if [ -n "$dir" ]; then
+        for f in fullchain.pem privkey.pem; do
+            [ -r "$dir/$f" ] || errore "manca $dir/$f (MQTT_CERTIFICATI=$SORGENTE, MQTT_DOMINIO=$DOMINIO). \
+Con Let's Encrypt controlla LETSENCRYPT_DIR in .env; per le prove: ./scripts/certificati-autofirmati.sh; \
+senza TLS: MQTT_CERTIFICATI=nessuno"
+        done
+    fi
     umask 077
-    mkdir -p "$RUN"
+    mkdir -p "$RUN" "$RUN/conf.d"
     chown 0:0 "$RUN"
-    copia "$dir/fullchain.pem" "$RUN/fullchain.pem"
-    copia "$dir/privkey.pem" "$RUN/privkey.pem"
     copia /mosquitto/config/acl "$RUN/acl"
+    if [ -n "$dir" ]; then
+        copia "$dir/fullchain.pem" "$RUN/fullchain.pem"
+        copia "$dir/privkey.pem" "$RUN/privkey.pem"
+        printf '%s\n' \
+            "# Scritto da avvio.sh (MQTT_CERTIFICATI=$SORGENTE): porte TLS." \
+            "listener 8883" "protocol mqtt" \
+            "certfile $RUN/fullchain.pem" "keyfile $RUN/privkey.pem" \
+            "listener 8884" "protocol websockets" \
+            "certfile $RUN/fullchain.pem" "keyfile $RUN/privkey.pem" > "$RUN/conf.d/tls.conf.nuovo"
+        a_mosquitto 0600 "$RUN/conf.d/tls.conf.nuovo"
+        mv -f "$RUN/conf.d/tls.conf.nuovo" "$RUN/conf.d/tls.conf"
+        msg="i certificati di $dir (porte TLS 8883 e 8884 accese) e config/acl"
+    else
+        rm -f "$RUN/conf.d/tls.conf" "$RUN/fullchain.pem" "$RUN/privkey.pem"
+        msg="config/acl (TLS spento: MQTT_CERTIFICATI=nessuno, solo 1883 e 9001)"
+    fi
+    a_mosquitto 0700 "$RUN/conf.d"
     a_mosquitto 0700 "$RUN"
-    echo "avvio.sh: copiati in $RUN i certificati di $dir e config/acl"
+    echo "avvio.sh: copiati in $RUN $msg"
 }
 
 copia_file

@@ -1,15 +1,17 @@
 # Broker MQTT su twinciro.robertodisanto.it
 
-Broker MQTT del team per The Big Hack 2026: **Eclipse Mosquitto 2.1.2 in Docker**, con autenticazione obbligatoria, permessi per ruolo, TLS con i certificati Let's Encrypt del server, WebSocket su TLS per le dashboard nel browser, persistenza, log, healthcheck e limiti.
+Broker MQTT del team per The Big Hack 2026: **Eclipse Mosquitto 2.1.2 in Docker**, con autenticazione obbligatoria, permessi per ruolo, persistenza, log, healthcheck e limiti.
+
+**Scelte del 14/11:** MQTT **in chiaro** sulla 1883, con utente e password, **senza TLS** (`MQTT_CERTIFICATI=nessuno`, predefinito). Sul server **non abbiamo root**: basta un utente che possa usare Docker. TLS (8883 e `wss://` 8884) resta pronto e si accende cambiando una riga di `.env`, con i certificati resi leggibili dall'amministratore (sezione [TLS](#tls-facoltativo-spento-di-serie)).
 
 Lo usano i badge WHY2025 e gli ESP32 (`shared/iot-agents/firmware/`), i dispositivi Tasmota, il ponte MQTT → hub (`shared/iot-agents/tools/`) e la città agentica `c5-agentic-city` (topic `napoli/#`).
 
 | Porta | Protocollo | Per chi |
 |---|---|---|
-| **1883** | MQTT con utente e password (in chiaro) | Tasmota su ESP8266, firmware senza TLS |
-| **8883** | MQTT su TLS | badge, ESP32, ponte, c5, amministrazione (**consigliata**) |
-| **8884** | MQTT su WebSocket con TLS (`wss://`) | dashboard nel browser (anche da GitHub Pages) |
-| 9001 | WebSocket in chiaro, **solo su 127.0.0.1** del server | eventuale reverse proxy sulla 443 (opzionale) |
+| **1883** | MQTT con utente e password (in chiaro) | **tutti**: badge, ESP32, Tasmota, ponte, c5, amministrazione |
+| 8883 | MQTT su TLS | solo con TLS acceso (`MQTT_CERTIFICATI=letsencrypt`) |
+| 8884 | MQTT su WebSocket con TLS (`wss://`) | solo con TLS acceso: dashboard nel browser (una pagina https usa solo `wss://`) |
+| 9001 | WebSocket in chiaro, **solo su 127.0.0.1** del server | eventuale reverse proxy (opzionale) |
 
 Nessun accesso anonimo su nessuna porta: se qualcuno lo riattivasse, il container risulterebbe `unhealthy`.
 
@@ -22,16 +24,16 @@ cloud/mqtt/
   config/
     mosquitto.conf          porte, limiti, persistenza, log, plugin di autenticazione e ACL
     acl                     permessi sui topic per ruolo (versionato, nessun segreto)
-    avvio.sh                avvio del container: copia certificati e ACL, sistema i permessi
+    avvio.sh                avvio del container: copia ACL (e certificati, se TLS è acceso), sistema i permessi
   scripts/
-    inizializza.sh          prima installazione: .env, controllo TLS, utenti di servizio
+    inizializza.sh          prima installazione: .env, utenti di servizio (e controllo TLS, se acceso)
     aggiungi-utente.sh      crea un utente o ne cambia la password (mosquitto_passwd nel container)
     rimuovi-utente.sh       elimina un utente
     elenca-utenti.sh        elenco degli utenti
     ricarica.sh             dopo una modifica all'ACL: controlla e ricarica senza disconnettere
     certificati-autofirmati.sh  CA e certificato di prova
     rinnova-certificati.sh  hook di certbot: nuovi certificati senza riavviare
-    prova.sh                prova completa: anonimo rifiutato, ACL, MQTT, TLS, WSS
+    prova.sh                prova completa: anonimo rifiutato, ACL, MQTT (TLS e WSS se accesi)
     stato.sh                stato, scadenza del certificato, statistiche $SYS
   esempi/
     ponte-c5-verso-cloud.conf   bridge dal Mosquitto del plastico di c5 al cloud
@@ -43,12 +45,12 @@ cloud/mqtt/
 
 ## Requisiti
 
-- Server Linux con **Docker Engine** e il plugin **Compose v2** (`docker compose version`), `openssl`, `git`.
-- Record DNS `A` (ed eventualmente `AAAA`) di `twinciro.robertodisanto.it` verso l'IP del server.
-- Certificato Let's Encrypt per `twinciro.robertodisanto.it` in `/etc/letsencrypt/live/twinciro.robertodisanto.it/` (già presente sul server; per le prove bastano quelli autofirmati).
+- Server Linux con **Docker Engine** e il plugin **Compose v2** (`docker compose version`), `git`. Un utente **senza root** va bene, purché possa usare Docker (gruppo `docker`, oppure Docker rootless).
+- Record DNS `A` di `twinciro.robertodisanto.it` verso l'IP del server (oggi 34.154.255.49).
 - La repo intera clonata sul server se si usa il ponte (monta `shared/iot-agents/`).
+- Solo se si accende TLS: i certificati di `twinciro.robertodisanto.it` leggibili dall'utente (vedi [`../certificati/`](../certificati/README.md)).
 
-Gli script vanno lanciati da un utente che può usare Docker (root, `sudo` o gruppo `docker`) e funzionano da qualsiasi cartella.
+Gli script non usano mai `sudo`: quello che richiede root (proprietario uid 1883 dei file di Mosquitto) lo fanno dentro un container. Funzionano da qualsiasi cartella.
 
 ## Installazione sul server, passo per passo
 
@@ -58,29 +60,24 @@ Gli script vanno lanciati da un utente che può usare Docker (root, `sudo` o gru
 dig +short twinciro.robertodisanto.it      # deve rispondere con l'IP del server
 ```
 
-Apri nel firewall del provider (pannello cloud / security group) le porte **TCP 1883, 8883, 8884**. In più: 80 se certbot rinnova in modalità `standalone`, 443 solo se usi l'opzione WSS sulla 443 (vedi sotto).
+Apri nel firewall del provider (pannello cloud / security group) la porta **TCP 1883**. Le porte 8883 e 8884 servono solo con TLS acceso.
 
-> **Attenzione a ufw:** Docker scrive regole iptables proprie e le porte pubblicate da un container sono raggiungibili **anche se ufw le blocca**. Il filtro vero è il firewall del provider, oppure le porte in `.env` (per esempio non pubblicare la 1883 se nessuno la usa: `MQTT_PORTA=127.0.0.1:1883`). La 9001 è già legata a 127.0.0.1.
+> **Attenzione a ufw:** Docker scrive regole iptables proprie e le porte pubblicate da un container sono raggiungibili **anche se ufw le blocca**. Il filtro vero è il firewall del provider, oppure le porte in `.env`. La 9001 è già legata a 127.0.0.1.
 
-### 2. Codice e certificati
+### 2. Codice
 
 ```bash
 git clone https://github.com/RobertoD91/hackathon_2026_a.git
 cd hackathon_2026_a/cloud/mqtt
-sudo ls /etc/letsencrypt/live/twinciro.robertodisanto.it/     # fullchain.pem privkey.pem ...
 ```
-
-Se il certificato non c'è ancora: `sudo certbot certonly --standalone -d twinciro.robertodisanto.it` (serve la porta 80 libera) oppure `--webroot` se c'è già un web server. Nessun permesso di `/etc/letsencrypt` va cambiato (vedi [TLS](#tls)).
 
 ### 3. Prima inizializzazione
 
 ```bash
-sudo ./scripts/inizializza.sh
+./scripts/inizializza.sh
 ```
 
-Crea `.env` (da `.env.example`), controlla i certificati e crea gli **utenti di servizio con password casuali**: `admin`, `ponte`, `c5`, `c5-plastico`, `dashboard`, `monitor`. Le password vengono stampate una volta e salvate in `segreti/credenziali-iniziali.txt` (permessi 0600): distribuiscile al team in modo privato e poi **cancella il file**. Quelle di `ponte` e `monitor` finiscono anche in `.env`, dove le leggono i servizi. Si può rilanciare: gli utenti esistenti non vengono toccati.
-
-Senza Let's Encrypt (prove, portatile): `./scripts/inizializza.sh --autofirmato`.
+Crea `.env` (da `.env.example`: TLS spento) e gli **utenti di servizio con password casuali**: `admin`, `ponte`, `c5`, `c5-plastico`, `dashboard`, `monitor`. Le password vengono stampate una volta e salvate in `segreti/credenziali-iniziali.txt` (permessi 0600): distribuiscile al team in modo privato e poi **cancella il file**. Quelle di `ponte` e `monitor` finiscono anche in `.env`, dove le leggono i servizi. Si può rilanciare: gli utenti esistenti non vengono toccati.
 
 ### 4. Avvio e prova
 
@@ -91,16 +88,11 @@ docker compose logs -f mosquitto   # Ctrl+C per uscire
 ./scripts/prova.sh                 # deve finire con "Tutte le prove sono passate."
 ```
 
-`prova.sh` crea un utente-dispositivo temporaneo e verifica: anonimo e password errata rifiutati, pubblicazione e iscrizione su 1883, 8883 e 8884 (wss), ACL che nega i topic di un altro dispositivo e `napoli/...`. Poi elimina l'utente.
+`prova.sh` crea un utente-dispositivo temporaneo e verifica: anonimo e password errata rifiutati, pubblicazione e iscrizione sulla 1883 (e su 8883 e 8884 se TLS è acceso), ACL che nega i topic di un altro dispositivo e `napoli/...`. Poi elimina l'utente.
 
-### 5. Rinnovo automatico dei certificati
+### 5. (Solo con TLS) certificati e rinnovo
 
-```bash
-sudo ln -s "$PWD/scripts/rinnova-certificati.sh" /etc/letsencrypt/renewal-hooks/deploy/bighack-mqtt.sh
-sudo certbot renew --dry-run
-```
-
-Dopo ogni rinnovo certbot lancia l'hook, che ricopia i certificati nel container e ricarica Mosquitto con SIGHUP: **nessun riavvio, nessun client disconnesso**.
+Vedi [TLS](#tls-facoltativo-spento-di-serie). Con TLS spento non c'è nulla da rinnovare.
 
 ### 6. Un utente per ogni dispositivo
 
@@ -134,19 +126,26 @@ Un'iscrizione più ampia dei permessi (es. `#`) viene accettata, ma il client ri
 
 Per cambiare i permessi modifica `config/acl` e lancia `./scripts/ricarica.sh`: avvia un broker di prova con la nuova configurazione e ricarica quello vero **solo se è valida** (un'ACL sbagliata ricaricata con SIGHUP farebbe uscire Mosquitto). Un SIGHUP mandato a mano non rilegge l'ACL: Mosquitto usa una copia in `/mosquitto/run`, aggiornata da `ricarica.sh`.
 
-## TLS
+## TLS (facoltativo, spento di serie)
 
-### Let's Encrypt (produzione)
+Di serie (`MQTT_CERTIFICATI=nessuno`) il broker ascolta solo sulla 1883 in chiaro, con password, e sulla 9001 locale. È la scelta del team: la password di ogni dispositivo viaggia in chiaro, quindi **un utente per dispositivo** e niente password riusate.
 
-Il container monta `/etc/letsencrypt` **in sola lettura** (`LETSENCRYPT_DIR` in `.env`). Mosquitto 2.1 legge certificati e password **dopo** essere sceso da root all'utente `mosquitto` (uid 1883) e **rifiuta i percorsi con link simbolici**, mentre `live/<dominio>/` contiene link verso `archive/`, leggibile solo da root. Per non cambiare i permessi di `/etc/letsencrypt`, `config/avvio.sh` (che gira come root all'avvio del container) copia `fullchain.pem` e `privkey.pem` in un tmpfs (`/mosquitto/run`, solo in memoria) con proprietario uid 1883 e permessi 0600.
+Per accendere TLS (8883 e `wss://` 8884) servono i certificati leggibili dall'utente che usa Docker. Sul server non abbiamo root, quindi l'amministratore li copia con l'hook di [`../certificati/`](../certificati/README.md), in `/srv/certificati/twinciro.robertodisanto.it/`. Poi in `.env`:
 
-Al rinnovo i file nuovi vanno ricopiati: lo fa l'hook `scripts/rinnova-certificati.sh` (passo 5) seguito da SIGHUP. In alternativa basta `docker compose restart mosquitto` (i client si riconnettono da soli). La scadenza del certificato in uso si vede con `./scripts/stato.sh`.
+```bash
+MQTT_CERTIFICATI=letsencrypt
+LETSENCRYPT_DIR=/srv/certificati          # avvio.sh cerca <dir>/live/<dominio>/ oppure <dir>/<dominio>/
+```
+
+e `./scripts/inizializza.sh && docker compose up -d --force-recreate`. `config/avvio.sh` copia `fullchain.pem` e `privkey.pem` in un tmpfs (`/mosquitto/run`, solo in memoria) con proprietario uid 1883, e scrive `conf.d/tls.conf` con le porte 8883 e 8884, che `mosquitto.conf` include. Con `nessuno` la cartella resta vuota.
+
+Al rinnovo i file nuovi vanno ricopiati nel container: `docker compose restart mosquitto` (i client si riconnettono da soli), oppure `./scripts/rinnova-certificati.sh`, che li ricarica con SIGHUP senza disconnettere nessuno. La scadenza del certificato in uso si vede con `./scripts/stato.sh`.
 
 ### Autofirmati (prove)
 
 ```bash
 ./scripts/certificati-autofirmati.sh [altri nomi o IP]   # es. l'IP del portatile in rete locale
-# in .env: MQTT_CERTIFICATI=autofirmato e LETSENCRYPT_DIR=./segreti
+# in .env: MQTT_CERTIFICATI=autofirmato (LETSENCRYPT_DIR=./segreti va bene)
 docker compose up -d --force-recreate
 ```
 
@@ -173,15 +172,14 @@ mosquitto_sub -h $H -p 1883 -u admin -P '<password>' -t 'bighack/#' -v
 mosquitto_pub -h $H -p 1883 -u esp32-plebiscito-01 -P '<password>' \
   -t bighack/plebiscito/esp32-plebiscito-01/readings \
   -m '{"deviceId":"esp32-plebiscito-01","readings":{"temperature_c":24.1}}'
-# TLS (8883): verifica con le CA di sistema (Let's Encrypt)
-mosquitto_sub -h $H -p 8883 --tls-use-os-certs -u admin -P '<password>' -t '#' -v
-# WebSocket su TLS (8884)
-mosquitto_sub -h $H -p 8884 --ws --tls-use-os-certs -u dashboard -P '<password>' -t 'bighack/#' -v
 # ACL: pubblicazione vietata, MQTT 5 + QoS 1 risponde "Not authorized"
-mosquitto_pub -h $H -p 8883 --tls-use-os-certs -V 5 -q 1 -u esp32-plebiscito-01 -P '<password>' -t napoli/kpi -m x
+mosquitto_pub -h $H -p 1883 -V 5 -q 1 -u esp32-plebiscito-01 -P '<password>' -t napoli/kpi -m x
+# solo con TLS acceso: 8883 (CA di sistema) e WebSocket su TLS 8884
+mosquitto_sub -h $H -p 8883 --tls-use-os-certs -u admin -P '<password>' -t '#' -v
+mosquitto_sub -h $H -p 8884 --ws --tls-use-os-certs -u dashboard -P '<password>' -t 'bighack/#' -v
 ```
 
-Strumenti grafici: [MQTT Explorer](https://mqtt-explorer.com/) o [MQTTX](https://mqttx.app/) con host `twinciro.robertodisanto.it`, porta 8883, TLS attivo, utente `admin`.
+Strumenti grafici: [MQTT Explorer](https://mqtt-explorer.com/) o [MQTTX](https://mqttx.app/) con host `twinciro.robertodisanto.it`, porta 1883, TLS spento, utente `admin`.
 
 ## Configurazione dei client
 
@@ -191,34 +189,32 @@ In `telemetry_config.h` (copia di `telemetry_config.example.h`, non versionata):
 
 ```c
 #define TELEMETRY_MQTT_HOST        "twinciro.robertodisanto.it"
-#define TELEMETRY_MQTT_TRANSPORT   "mqtts"          // consigliato; oppure "mqtt" con porta 1883
-#define TELEMETRY_MQTT_PORT        8883
+#define TELEMETRY_MQTT_TRANSPORT   "mqtt"           // broker del team: in chiaro ("mqtts" 8883 solo con TLS acceso)
+#define TELEMETRY_MQTT_PORT        1883
 #define TELEMETRY_DEVICE_ID        "badge-ab12"     // meglio esplicito: deve essere = utente MQTT
 #define TELEMETRY_MQTT_USER        "badge-ab12"
 #define TELEMETRY_MQTT_PASSWORD    "<password di aggiungi-utente.sh>"
-#define TELEMETRY_MQTT_TLS_INSECURE 0               // Let's Encrypt: basta il bundle di CA di ESP-IDF
+#define TELEMETRY_MQTT_TLS_INSECURE 0               // conta solo con "mqtts"/"wss"
 ```
 
 Il badge pubblica `bighack/<zona>/<deviceId>/readings`, lo stato trattenuto (e LWT) su `.../status` e ascolta `.../cmd`: tutto coperto dai pattern dell'ACL. `"wss"` con porta 443 funziona solo con l'opzione [WebSocket sulla 443](#websocket-sulla-443-opzionale); sulla 8884 usa `"wss"` e `TELEMETRY_MQTT_PORT 8884`. Con `TELEMETRY_C5_COMPAT 1` il pulsante scrive anche su `napoli/eventi/manuale`: va concesso badge per badge in `config/acl` (esempio commentato nel file).
 
 ### ESP32 (Arduino, PubSubClient)
 
-Il firmware `esp32-sensor` oggi invia via HTTP al hub. Per uno sketch MQTT:
+Il firmware `esp32-sensor` oggi invia via HTTP al hub. Per uno sketch MQTT (broker in chiaro sulla 1883):
 
 ```cpp
-#include <WiFiClientSecure.h>
+#include <WiFi.h>
 #include <PubSubClient.h>
 
-WiFiClientSecure rete;
+WiFiClient rete;
 PubSubClient mqtt(rete);
 const char* ID = "esp32-plebiscito-01";                      // = utente MQTT
 const char* STATO = "bighack/plebiscito/esp32-plebiscito-01/status";
 
 void setup() {
   // ... Wi-Fi ...
-  rete.setCACert(CA_LETS_ENCRYPT);   // radici ISRG Root X1 e X2 (https://letsencrypt.org/certificates/)
-  // rete.setInsecure();             // solo per la demo: nessuna verifica del certificato
-  mqtt.setServer("twinciro.robertodisanto.it", 8883);
+  mqtt.setServer("twinciro.robertodisanto.it", 1883);
   mqtt.setBufferSize(1024);          // il predefinito (256 byte) è poco per il JSON delle letture
   mqtt.setKeepAlive(30);             // massimo accettato dal broker: 300 s
 }
@@ -233,7 +229,7 @@ bool connetti() {
 // letture: mqtt.publish("bighack/plebiscito/esp32-plebiscito-01/readings", json);
 ```
 
-Per sapere quale radice usa il certificato del server: `openssl s_client -connect twinciro.robertodisanto.it:8883 -showcerts </dev/null | grep -E '^ *[si]:'`. Senza TLS: `WiFiClient` e porta 1883 (stessa password, ma in chiaro).
+Con TLS acceso sul broker: `WiFiClientSecure`, `rete.setCACert(...)` con le radici di Let's Encrypt (ISRG Root X1 e X2) e porta 8883.
 
 ### Tasmota
 
@@ -243,7 +239,7 @@ Dalla console web del dispositivo (un comando, `<password>` da `aggiungi-utente.
 Backlog MqttHost twinciro.robertodisanto.it; MqttPort 1883; MqttUser tasmota-serra; MqttPassword <password>; Topic tasmota-serra; FullTopic %prefix%/%topic%/; TelePeriod 60
 ```
 
-Il **Topic deve essere uguale al nome utente**: Tasmota pubblica `tele/tasmota-serra/SENSOR`, `STATE` e `LWT` (trattenuto `Online`/`Offline`), `stat/tasmota-serra/...` e ascolta `cmnd/tasmota-serra/...`. Il topic di gruppo `cmnd/tasmotas/...` non è concesso. Con il FullTopic predefinito il topic non dice la zona: il ponte usa `PONTE_ZONA_PREDEFINITA` o `PONTE_MAPPA` di `.env`. In alternativa `FullTopic bighack/serra/%topic%/%prefix%/` mette la zona nel topic (`bighack/serra/tasmota-serra/tele/SENSOR`): lo riconoscono sia l'ACL sia il ponte. Le build ESP32 di Tasmota supportano TLS (`SetOption103 1` e `MqttPort 8883`, poi `Restart 1`); le build ESP8266 standard no, quindi 1883. Se la verifica del certificato fallisce, resta la 1883 con password.
+Il **Topic deve essere uguale al nome utente**: Tasmota pubblica `tele/tasmota-serra/SENSOR`, `STATE` e `LWT` (trattenuto `Online`/`Offline`), `stat/tasmota-serra/...` e ascolta `cmnd/tasmota-serra/...`. Il topic di gruppo `cmnd/tasmotas/...` non è concesso. Con il FullTopic predefinito il topic non dice la zona: il ponte usa `PONTE_ZONA_PREDEFINITA` o `PONTE_MAPPA` di `.env`. In alternativa `FullTopic bighack/serra/%topic%/%prefix%/` mette la zona nel topic (`bighack/serra/tasmota-serra/tele/SENSOR`): lo riconoscono sia l'ACL sia il ponte. Il broker del team è in chiaro sulla 1883, che va bene per tutte le build (con TLS acceso, le build ESP32 possono usare `SetOption103 1` e `MqttPort 8883`).
 
 Prova dal PC: `mosquitto_pub ... -u admin -t cmnd/tasmota-serra/POWER -m TOGGLE`.
 
@@ -258,18 +254,18 @@ docker compose --profile ponte ps          # ponte "healthy" = connesso al broke
 docker compose logs -f ponte               # una riga "→ hub <deviceId> ..." per lettura
 ```
 
-Il container (Node 22, nessuna dipendenza npm) monta `shared/iot-agents` in sola lettura e riceve `MQTT_URL=mqtt://mosquitto:1883` (rete interna di Docker), `MQTT_USER=ponte`, `MQTT_PASSWORD`, `HUB_URL`, `HUB_TOKEN` (inviato come `Authorization: Bearer`) e le facoltative `PONTE_ZONA_PREDEFINITA`, `PONTE_MAPPA`, `PONTE_C5` di `.env` (le altre opzioni sono nell'intestazione di `mqtt-bridge.js`). Il healthcheck interroga `GET /health` del ponte. Se il hub gira sullo stesso server fuori da Docker usa `HUB_URL=http://host.docker.internal:8701`, con il hub in ascolto su `0.0.0.0` (non solo su 127.0.0.1). Il ponte si può anche lanciare fuori da Docker, da un portatile: `MQTT_URL=mqtts://twinciro.robertodisanto.it:8883 MQTT_USER=ponte MQTT_PASSWORD=... HUB_URL=http://localhost:8701 node shared/iot-agents/tools/mqtt-bridge.js`.
+Il container (Node 22, nessuna dipendenza npm) monta `shared/iot-agents` in sola lettura e riceve `MQTT_URL=mqtt://mosquitto:1883` (rete interna di Docker), `MQTT_USER=ponte`, `MQTT_PASSWORD`, `HUB_URL`, `HUB_TOKEN` (inviato come `Authorization: Bearer`) e le facoltative `PONTE_ZONA_PREDEFINITA`, `PONTE_MAPPA`, `PONTE_C5` di `.env` (le altre opzioni sono nell'intestazione di `mqtt-bridge.js`). Il healthcheck interroga `GET /health` del ponte. Se il hub gira sullo stesso server fuori da Docker usa `HUB_URL=http://host.docker.internal:8701`, con il hub in ascolto su `0.0.0.0` (non solo su 127.0.0.1). Il ponte si può anche lanciare fuori da Docker, da un portatile: `MQTT_URL=mqtt://twinciro.robertodisanto.it:1883 MQTT_USER=ponte MQTT_PASSWORD=... HUB_URL=http://localhost:8701 node shared/iot-agents/tools/mqtt-bridge.js`.
 
 ### c5-agentic-city
 
 c5 usa un Mosquitto locale anonimo sul portatile del plastico (`c5-agentic-city/docker/mosquitto.conf`) e il suo `BusMQTT` (Python, paho-mqtt) oggi **non** passa utente e password né usa TLS. Due strade:
 
-1. **Bridge (consigliato, nessuna modifica al codice):** il broker del plastico copia `napoli/#` nei due sensi verso il cloud con l'utente `c5` su TLS. Il plastico continua a funzionare anche senza internet. Istruzioni in `esempi/ponte-c5-verso-cloud.conf`: un file non versionato con la password, un volume in più e la riga `include_dir /mosquitto/config/conf.d` in fondo alla loro `mosquitto.conf`. Provato con la loro configurazione: plastico → cloud e cloud → plastico.
-2. **Collegamento diretto:** il gruppo c5 dovrebbe aggiungere in `citta/bus.py`, prima di `connect`, `self._mqtt.username_pw_set(os.environ["C5_MQTT_UTENTE"], os.environ["C5_MQTT_PASSWORD"])` e, sulla 8883, `self._mqtt.tls_set()`; poi `python avvia.py --broker twinciro.robertodisanto.it:8883`. Gli ESP32 del plastico (`firmware/semaforo`, `firmware/sensore`) userebbero `mqtt.connect(id, "c5-plastico", password)`.
+1. **Bridge (consigliato, nessuna modifica al codice):** il broker del plastico copia `napoli/#` nei due sensi verso il cloud con l'utente `c5` sulla 1883. Il plastico continua a funzionare anche senza internet. Istruzioni in `esempi/ponte-c5-verso-cloud.conf`: un file non versionato con la password, un volume in più e la riga `include_dir /mosquitto/config/conf.d` in fondo alla loro `mosquitto.conf`. Provato con la loro configurazione: plastico → cloud e cloud → plastico.
+2. **Collegamento diretto:** il gruppo c5 dovrebbe aggiungere in `citta/bus.py`, prima di `connect`, `self._mqtt.username_pw_set(os.environ["C5_MQTT_UTENTE"], os.environ["C5_MQTT_PASSWORD"])` poi `python avvia.py --broker twinciro.robertodisanto.it:1883`. Gli ESP32 del plastico (`firmware/semaforo`, `firmware/sensore`) userebbero `mqtt.connect(id, "c5-plastico", password)`.
 
 ### Dashboard nel browser
 
-Le pagine servite in https (GitHub Pages) possono aprire solo `wss://`. Con [mqtt.js](https://github.com/mqttjs/MQTT.js):
+Le pagine servite in https (GitHub Pages) possono aprire solo `wss://`: **serve TLS acceso** (oggi è spento; la mappa usa il hub via SSE, non MQTT). Con [mqtt.js](https://github.com/mqttjs/MQTT.js):
 
 ```js
 import mqtt from 'https://cdn.jsdelivr.net/npm/mqtt@5.16.1/+esm';
@@ -299,12 +295,14 @@ Da salvare: `.env`, `segreti/` (password, credenziali, certificati autofirmati) 
 
 ```bash
 docker compose kill -s USR1 mosquitto     # scrive subito il database su disco
-sudo tar czf ~/backup-mqtt-$(date +%F).tgz .env segreti
+tar czf ~/backup-mqtt-$(date +%F).tgz .env segreti/credenziali-iniziali.txt segreti/certs-autofirmati 2>/dev/null
+# segreti/utenti è di uid 1883 (0700): si salva da un container, senza root sul server
+docker compose run --rm --no-deps -T --entrypoint tar mosquitto czf - -C /mosquitto utenti > ~/backup-mqtt-utenti-$(date +%F).tgz
 docker run --rm -v bighack-mqtt_dati:/dati:ro -v ~/:/backup --entrypoint tar eclipse-mosquitto:2.1.2-alpine \
   czf /backup/backup-mqtt-dati-$(date +%F).tgz -C /dati .
 ```
 
-Ripristino: estrai il primo archivio in `cloud/mqtt/`, poi con il broker fermo (`docker compose stop mosquitto`)
+Ripristino: estrai il primo archivio in `cloud/mqtt/`; gli utenti con `docker compose run --rm --no-deps -T --entrypoint tar mosquitto xzf - -C /mosquitto < ~/backup-mqtt-utenti-AAAA-MM-GG.tgz` (poi `./scripts/ricarica.sh` ne sistema i permessi). Il volume, con il broker fermo (`docker compose stop mosquitto`):
 
 ```bash
 docker run --rm -v bighack-mqtt_dati:/dati -v ~/:/backup --entrypoint tar eclipse-mosquitto:2.1.2-alpine \
@@ -328,11 +326,11 @@ Se Docker Hub risponde `429 Too Many Requests`, si scarica la stessa immagine da
 
 - **Nessun accesso anonimo** (`allow_anonymous false`); il healthcheck lo verifica di continuo.
 - **Un utente per dispositivo**, che scrive solo sotto il proprio nome: un dispositivo rubato o una password trapelata non permettono di impersonare gli altri. Password generate a caso (24 caratteri alfanumerici, circa 140 bit), salvate come hash PBKDF2-SHA512 (l'immagine non supporta argon2id: con password casuali così lunghe non cambia nulla in pratica).
-- La **1883 è in chiaro**: chi intercetta il traffico legge la password di quel dispositivo. Usala solo per chi non sa fare TLS; tutto il resto su 8883/8884.
+- La **1883 è in chiaro** ed è la porta del team (scelta del 14/11, TLS spento): chi intercetta il traffico legge la password di quel dispositivo. Per questo un utente per dispositivo, nessuna password riusata, e `rimuovi-utente.sh` a fine evento. Se serve più protezione: TLS (sezione sopra).
 - La password di `dashboard` è pubblica per natura: solo lettura.
 - Limiti: 1000 connessioni contemporanee, pacchetti fino a 256 KB (oltre, il client viene disconnesso), keepalive massimo 300 s, code limitate per i client lenti, sessioni abbandonate eliminate dopo 14 giorni.
 - Container indurito: file system in sola lettura, solo 4 capability (servono ad `avvio.sh`; Mosquitto gira come uid 1883 senza capability), `no-new-privileges`, limiti di CPU e memoria, log con rotazione (5 × 10 MB).
-- La chiave privata TLS resta in `/etc/letsencrypt`; nel container esiste solo in memoria (tmpfs).
+- Con TLS acceso, la chiave privata nel container esiste solo in memoria (tmpfs).
 - Docker scavalca ufw (vedi [DNS e porte](#1-dns-e-porte)): filtra con il firewall del provider.
 - Fine evento: elimina gli utenti dei dispositivi con `rimuovi-utente.sh`, oppure ferma tutto con `docker compose down` (senza `-v`, per tenere i dati).
 
@@ -345,11 +343,13 @@ Se Docker Hub risponde `429 Too Many Requests`, si scarica la stessa immagine da
 | `The connection was lost` subito dopo una pubblicazione | messaggio oltre 256 KB (`max_packet_size`) |
 | messaggi pubblicati che non arrivano | ACL: con MQTT 3.1.1 il rifiuto è silenzioso, anche nei log; riprova con `mosquitto_pub -V 5 -q 1` per vedere `Not authorized` |
 | errori di certificato sull'ESP32 | CA sbagliata (radice di Let's Encrypt) oppure ora non sincronizzata (serve NTP prima del TLS) |
-| container `unhealthy` o in riavvio | `docker compose logs mosquitto`: di solito mancano i certificati (`avvio.sh: ERRORE`) o il file delle password |
+| container `unhealthy` o in riavvio | `docker compose logs mosquitto`: di solito manca il file delle password, oppure TLS è acceso e mancano i certificati (`avvio.sh: ERRORE`) |
 
 ## Cosa è stato verificato
 
-Con Docker in un ambiente di prova, su porte 18840-18843 al posto di 1883/8883/8884/9001, eseguendo gli script così come sono:
+Il 14/11 pomeriggio, dopo il passaggio a TLS facoltativo: `inizializza.sh`, avvio `healthy` e `prova.sh` con TLS spento (7 prove su 7), con certificati autofirmati (10 su 10) e con `LETSENCRYPT_DIR` nella forma "piatta" di `../certificati/` (chiave 0640 di un altro utente).
+
+In precedenza, con Docker in un ambiente di prova, su porte 18840-18843 al posto di 1883/8883/8884/9001, eseguendo gli script così come sono:
 - `docker compose config` della repo; `inizializza.sh` (autofirmato e Let's Encrypt), avvio e stato `healthy`;
 - `prova.sh`: anonimo e password errata rifiutati, andata e ritorno su MQTT, MQTT su TLS, wss e ws locale, ACL negate;
 - ogni ruolo dell'ACL (ponte, dispositivo, Tasmota, dashboard, c5, c5-plastico, monitor, admin), sia nei permessi concessi sia in quelli negati;

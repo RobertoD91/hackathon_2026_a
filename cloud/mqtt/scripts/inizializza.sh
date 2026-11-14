@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # Prima installazione del broker (si può rilanciare: non tocca gli utenti già esistenti).
-#   ./scripts/inizializza.sh                 con i certificati Let's Encrypt del server
-#   ./scripts/inizializza.sh --autofirmato   con certificati autofirmati (prove, portatile)
+# Non serve root sul server: basta un utente che possa usare Docker.
+#   ./scripts/inizializza.sh                 come dice .env (predefinito: MQTT in chiaro, niente TLS)
+#   ./scripts/inizializza.sh --autofirmato   accende TLS con certificati autofirmati (prove, portatile)
 #
 # 1. crea .env da .env.example (se manca) e la cartella segreti/ (0700);
-# 2. controlla i certificati TLS (o genera quelli autofirmati);
+# 2. se TLS è acceso, controlla i certificati (o genera quelli autofirmati);
 # 3. crea gli utenti di servizio con password casuali: admin, ponte, c5, c5-plastico,
 #    dashboard, monitor. Le password di ponte e monitor vanno anche in .env; tutte sono
 #    stampate una volta e salvate in segreti/credenziali-iniziali.txt (0600): distribuiscile
@@ -26,24 +27,26 @@ if [ "$AUTOFIRMATO" = 1 ]; then
     env_imposta LETSENCRYPT_DIR ./segreti
 fi
 DOMINIO="$(env_valore MQTT_DOMINIO twinciro.robertodisanto.it)"
-CERTIFICATI="$(env_valore MQTT_CERTIFICATI letsencrypt)"
-LE_DIR="$(env_valore LETSENCRYPT_DIR /etc/letsencrypt)"
+CERTIFICATI="$(env_valore MQTT_CERTIFICATI nessuno)"
+LE_DIR="$(env_valore LETSENCRYPT_DIR ./segreti)"
 
 # ------------------------------------------------------------------ 2. certificati
 echo "Immagine: $IMMAGINE"
 docker image inspect "$IMMAGINE" >/dev/null 2>&1 || docker compose pull mosquitto
 case "$CERTIFICATI" in
+    nessuno)
+        echo "TLS spento (MQTT_CERTIFICATI=nessuno): solo MQTT in chiaro sulla $(env_valore MQTT_PORTA 1883), con password."
+        ;;
     letsencrypt)
-        # Controllo fatto da un container (root): /etc/letsencrypt/live è leggibile solo da root.
+        # Controllo fatto da un container: è lui che deve leggere i certificati.
         [ -d "$LE_DIR" ] || errore "la cartella $LE_DIR non esiste (LETSENCRYPT_DIR in .env)"
         if ! docker run --rm -v "$(cd "$LE_DIR" && pwd):/le:ro" --entrypoint /bin/sh "$IMMAGINE" \
-                -c "test -r /le/live/$DOMINIO/fullchain.pem && test -r /le/live/$DOMINIO/privkey.pem"; then
-            errore "non trovo $LE_DIR/live/$DOMINIO/{fullchain,privkey}.pem.
-  Ottieni il certificato (README, sezione TLS), ad esempio:
-    sudo certbot certonly --standalone -d $DOMINIO
-  oppure, per provare subito: ./scripts/inizializza.sh --autofirmato"
+                -c "for d in /le/live/$DOMINIO /le/$DOMINIO; do test -r \$d/fullchain.pem && test -r \$d/privkey.pem && exit 0; done; exit 1"; then
+            errore "non trovo {fullchain,privkey}.pem in $LE_DIR/live/$DOMINIO/ né in $LE_DIR/$DOMINIO/.
+  Chiedi all'amministratore del server la copia leggibile dei certificati (README, \"TLS senza root\"),
+  oppure torna senza TLS: MQTT_CERTIFICATI=nessuno in .env"
         fi
-        echo "Certificati Let's Encrypt trovati: $LE_DIR/live/$DOMINIO/"
+        echo "Certificati Let's Encrypt trovati in $LE_DIR (dominio $DOMINIO)"
         ;;
     autofirmato)
         if [ ! -f segreti/certs-autofirmati/fullchain.pem ]; then
@@ -52,7 +55,7 @@ case "$CERTIFICATI" in
             echo "Certificati autofirmati già presenti: segreti/certs-autofirmati/"
         fi
         ;;
-    *) errore "MQTT_CERTIFICATI in .env deve essere 'letsencrypt' o 'autofirmato'" ;;
+    *) errore "MQTT_CERTIFICATI in .env deve essere 'nessuno', 'letsencrypt' o 'autofirmato'" ;;
 esac
 
 # ------------------------------------------------------------------ 3. utenti di servizio
@@ -95,6 +98,6 @@ cat <<EOF
 Pronto. Prossimi passi:
   docker compose up -d                    avvia il broker
   docker compose ps                       deve risultare "healthy" dopo qualche secondo
-  ./scripts/prova.sh                      prova anonimo rifiutato, ACL, MQTT, TLS e WSS
+  ./scripts/prova.sh                      prova anonimo rifiutato, ACL, MQTT (TLS e WSS se accesi)
   ./scripts/aggiungi-utente.sh <deviceId> un utente per ogni dispositivo
 EOF

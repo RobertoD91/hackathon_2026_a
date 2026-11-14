@@ -50,7 +50,7 @@ Soluzioni esistenti:
 ## Infrastruttura
 
 - **Docker è disponibile** nelle sessioni cloud di Claude Code, demone compreso (`docker`, `docker compose`, `buildx`): usalo per provare davvero container e compose prima di consegnarli.
-- **Server `twinciro.robertodisanto.it`** (di Roberto): ci girano i servizi del team (broker MQTT in `cloud/mqtt/`, API dati città in `cloud/citta-api/`). Si possono aprire tutte le porte. Dal 14/11 pomeriggio sostituisce `cloud.robertodisanto.it`, che **non si usa più**: la cartella `cloud/` mantiene il nome, l'host no.
+- **Server `twinciro.robertodisanto.it`** (di Roberto): ci girano i servizi del team (broker MQTT in `cloud/mqtt/`, API dati città in `cloud/citta-api/`). Si possono aprire tutte le porte. **Lì non abbiamo root e non l'avremo**: niente `sudo`, niente nginx di sistema, niente scritture in `/etc`; solo un utente che usa Docker. Quello che richiede root lo fa l'amministratore, una volta (es. `cloud/certificati/`). Dal 14/11 pomeriggio sostituisce `cloud.robertodisanto.it`, che **non si usa più**: la cartella `cloud/` mantiene il nome, l'host no.
 
 ## Hosting
 
@@ -103,9 +103,10 @@ Base comune IoT + agenti (contratto: `shared/iot-agents/CONTRATTO.md`, uso e API
 
 ## `cloud/`
 
-Servizi Docker per il server di Roberto (`twinciro.robertodisanto.it`). Qui solo configurazione, mai segreti (`.env` e `segreti/` sono ignorati da git). Guida completa: `cloud/mqtt/README.md`.
-- `cloud/mqtt/`: Mosquitto 2.1.2 (`eclipse-mosquitto:2.1.2-alpine`). Porte 1883 (password), 8883 (TLS), 8884 (wss), 9001 ws solo su 127.0.0.1. Nessun accesso anonimo (il healthcheck lo controlla).
-- Avvio sul server: `cd cloud/mqtt && sudo ./scripts/inizializza.sh && docker compose up -d && ./scripts/prova.sh`; hook di rinnovo Let's Encrypt: `scripts/rinnova-certificati.sh`.
+Servizi Docker per il server di Roberto (`twinciro.robertodisanto.it`), da gestire **senza root**. Qui solo configurazione, mai segreti (`.env` e `segreti/` sono ignorati da git). Guida completa: `cloud/mqtt/README.md`.
+- `cloud/mqtt/`: Mosquitto 2.1.2 (`eclipse-mosquitto:2.1.2-alpine`). **MQTT in chiaro sulla 1883 con password, TLS spento** (scelta del 14/11, `MQTT_CERTIFICATI=nessuno`). 9001 ws solo su 127.0.0.1. Nessun accesso anonimo (il healthcheck lo controlla). TLS facoltativo: con `MQTT_CERTIFICATI=letsencrypt|autofirmato` `config/avvio.sh` scrive `/mosquitto/run/conf.d/tls.conf` (8883 e 8884 wss), incluso da `mosquitto.conf` con `include_dir`; `LETSENCRYPT_DIR` accetta `live/<dominio>/` o la cartella piatta `<dominio>/` di `cloud/certificati/`.
+- Avvio sul server: `cd cloud/mqtt && ./scripts/inizializza.sh && docker compose up -d && ./scripts/prova.sh` (nessun `sudo`: i `chown` a uid 1883 li fanno gli script dentro un container).
+- `cloud/certificati/copia-certificati.sh`: hook di certbot che l'amministratore installa una volta; copia i certificati di `twinciro.robertodisanto.it` in `/srv/certificati/<dominio>/` (privkey 0640 `<utente>:certificati`). Comandi in `cloud/certificati/README.md`.
 - Utenti: uno per dispositivo con nome = deviceId (badge/ESP32) o Topic Tasmota (`./scripts/aggiungi-utente.sh <id>`); permessi dai pattern `%u` di `config/acl`. Ruoli fissi: admin, ponte, c5, c5-plastico, dashboard (sola lettura: la sua password finisce nel browser), monitor.
 - Dopo una modifica a `config/acl` usa `./scripts/ricarica.sh` (un SIGHUP a mano non rilegge l'ACL: Mosquitto usa una copia in tmpfs fatta da `config/avvio.sh`, come per i certificati Let's Encrypt, che la 2.1 legge come uid 1883 e senza symlink).
 - Ponte MQTT → hub: servizio `ponte` (profilo compose `ponte`) con `shared/iot-agents/tools/mqtt-bridge.js`. Per `c5-agentic-city` (il suo `BusMQTT` non supporta utente/password/TLS) c'è il bridge Mosquitto `cloud/mqtt/esempi/ponte-c5-verso-cloud.conf`.
@@ -120,7 +121,7 @@ Servizi Docker per il server di Roberto (`twinciro.robertodisanto.it`). Qui solo
 - Ogni risposta ha `fonte.stato` (reale, riserva, salvato, snapshot, programmato, simulato, assente) e un `testo` pronto da citare, con stato e ora del dato. La folla è sempre "simulato".
 - Cache per fonte (meteo 15 min, aria 60, allerta 20, passaggi 1, eventi 6 h), richieste uguali coalizzate, dopo un 429 il dominio va in pausa 15 minuti (`src/rete.js`) con la riserva dichiarata. Gli snapshot cambiati su disco si ricaricano da soli.
 - Variabili: `PORT`, `CITTA_API_TOKEN` (Bearer), `CITTA_API_CORS`, `NAPOLI_UA` (mai dati personali), `CITTA_DATI`, `CITTA_AGGIORNA` (rinfresco degli snapshot nel processo; con la cartella predefinita riscrive quelli della repo), `CITTA_TIENI_CALDO`, `CITTA_PAUSA_429`. Rigenerazione a mano: `node shared/citta-api/aggiorna.js --solo eventi`.
-- Docker per il server in `cloud/citta-api/`: `cp .env.example .env && docker compose up -d --build && ./prova.sh` (build dalla radice della repo con `Dockerfile.dockerignore`; volume `/dati` rigenerabile; healthcheck su `/salute`; nel container non c'è curl, quindi `aggiorna.js --curl` va lanciato fuori). HTTPS consigliato con `esempi/nginx-citta-api.conf` (token non in chiaro).
+- Docker per il server in `cloud/citta-api/`: `cp .env.example .env && docker compose up -d --build && ./prova.sh` (build dalla radice della repo con `Dockerfile.dockerignore`; volume `/dati` rigenerabile; healthcheck su `/salute`; nel container non c'è curl, quindi `aggiorna.js --curl` va lanciato fuori). HTTPS senza root con il profilo `https` (nginx 1.29 in un container, `nginx/https.conf`: `/citta-api/` → `citta-api:8791`, certificati da `CITTA_CERTIFICATI_DIR`, ricarica da solo ogni 12 ore): `docker compose --profile https up -d --build`. Per CiroGPT: `CITTA_API=https://twinciro.robertodisanto.it/citta-api`.
 
 ## `c5-video/` (video di consegna della C5)
 

@@ -8,6 +8,11 @@
 #   docker compose exec citta-api node shared/citta-api/aggiorna.js --solo eventi   rigenera uno snapshot
 #
 # Porta sul server (modificabile in .env): 8791. Dietro un reverse proxy: CITTA_API_INDIRIZZO=127.0.0.1.
+#
+# HTTPS senza root (profilo "https"): nginx in un container davanti all'API, sulla 443.
+#   in .env: CITTA_CERTIFICATI_DIR (cartella con fullchain.pem e privkey.pem, vedi ../certificati/)
+#   docker compose --profile https up -d --build
+#   ./prova.sh https://twinciro.robertodisanto.it/citta-api
 name: bighack-citta-api
 
 services:
@@ -55,6 +60,50 @@ services:
       resources:
         # 512 MB: il rinfresco dei trasporti legge i GTFS di ANM ed EAV (decine di MB).
         limits: { cpus: "1.0", memory: 512M }
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  # HTTPS davanti all'API (profilo "https"): nginx/https.conf, certificati in sola lettura da
+  # CITTA_CERTIFICATI_DIR. Rilegge i certificati da solo ogni 12 ore (rinnovi di Let's Encrypt).
+  https:
+    image: nginx:1.29-alpine
+    profiles: ["https"]
+    restart: unless-stopped
+    depends_on:
+      citta-api: { condition: service_healthy }
+    ports:
+      - "${CITTA_HTTPS_INDIRIZZO:-0.0.0.0}:${CITTA_HTTPS_PORTA:-443}:443"
+    volumes:
+      - ./nginx/https.conf:/etc/nginx/conf.d/default.conf:ro
+      - ${CITTA_CERTIFICATI_DIR:-./certificati-mancanti}:/certificati:ro
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        test -r /certificati/fullchain.pem && test -r /certificati/privkey.pem
+        || { echo "Mancano fullchain.pem e privkey.pem leggibili in CITTA_CERTIFICATI_DIR (vedi cloud/certificati/README.md)" >&2; exit 1; };
+        (while sleep 43200; do nginx -s reload; done) &
+        exec nginx -g 'daemon off;'
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "--no-check-certificate", "https://127.0.0.1/salute"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=8m
+      - /var/run:size=1m
+      - /tmp:size=4m
+    # nginx parte come root nel container (porta 443) e i worker scendono all'utente nginx.
+    # DAC_READ_SEARCH: leggere privkey.pem anche se è 0640 di un altro utente (Docker con root).
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE, SETUID, SETGID, CHOWN, DAC_READ_SEARCH]
+    security_opt: ["no-new-privileges:true"]
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 64M }
     logging:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }

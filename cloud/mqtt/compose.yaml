@@ -1,16 +1,18 @@
 # Broker MQTT del team (The Big Hack 2026) per twinciro.robertodisanto.it.
 # Guida completa: README.md in questa cartella.
 #
-#   cp .env.example .env && ./scripts/inizializza.sh   prima installazione (utenti, .env, TLS)
+#   ./scripts/inizializza.sh                           prima installazione (.env, utenti; niente root)
 #   docker compose up -d                               broker
 #   docker compose logs -f mosquitto                   log del broker
-#   ./scripts/prova.sh                                 prova completa (anonimo, ACL, TLS, WSS)
+#   ./scripts/prova.sh                                 prova completa (anonimo, ACL, MQTT; TLS se acceso)
 #   docker compose --profile monitor run --rm monitor  stampa tutti i messaggi (Ctrl+C per uscire)
 #   docker compose --profile ponte up -d               ponte MQTT -> hub (shared/iot-agents)
 #
 # Porte sul server (modificabili in .env):
-#   1883 MQTT con password · 8883 MQTT su TLS · 8884 WebSocket su TLS (wss://)
+#   1883 MQTT con password, in chiaro: la porta del team (TLS spento di serie)
+#   8883 MQTT su TLS · 8884 WebSocket su TLS (wss://): solo con MQTT_CERTIFICATI=letsencrypt|autofirmato
 #   9001 WebSocket in chiaro solo su 127.0.0.1 (per un eventuale reverse proxy)
+# Non serve root sul server: basta un utente che possa usare Docker.
 name: bighack-mqtt
 
 services:
@@ -18,15 +20,16 @@ services:
     # Versione fissata (2.1.2 = "eclipse-mosquitto:2" a novembre 2026, la stessa di c5-agentic-city).
     image: eclipse-mosquitto:2.1.2-alpine
     restart: unless-stopped
-    # avvio.sh (root): copia certificati TLS e ACL in /mosquitto/run e sistema i permessi,
-    # poi avvia Mosquitto, che scende all'utente mosquitto (uid 1883).
+    # avvio.sh (root nel container, non sul server): copia ACL e, se TLS è acceso, certificati in
+    # /mosquitto/run e sistema i permessi, poi avvia Mosquitto, che scende all'utente mosquitto (uid 1883).
     entrypoint: ["/bin/sh", "/mosquitto/config/avvio.sh"]
     command: ["/usr/sbin/mosquitto", "-c", "/mosquitto/config/mosquitto.conf"]
     environment:
       MQTT_DOMINIO: ${MQTT_DOMINIO:-twinciro.robertodisanto.it}
-      MQTT_CERTIFICATI: ${MQTT_CERTIFICATI:-letsencrypt}
+      MQTT_CERTIFICATI: ${MQTT_CERTIFICATI:-nessuno}
     ports:
       - "${MQTT_PORTA:-1883}:1883"
+      # Attive solo con TLS acceso (MQTT_CERTIFICATI≠nessuno); altrimenti nessuno risponde.
       - "${MQTTS_PORTA:-8883}:8883"
       - "${WSS_PORTA:-8884}:8884"
       - "${WS_INDIRIZZO:-127.0.0.1}:${WS_PORTA:-9001}:9001"
@@ -36,9 +39,10 @@ services:
       - ./segreti/utenti:/mosquitto/utenti
       # Certificati autofirmati (se MQTT_CERTIFICATI=autofirmato), in sola lettura.
       - ./segreti:/mosquitto/segreti:ro
-      # Certificati Let's Encrypt del server, in sola lettura. Con MQTT_CERTIFICATI=autofirmato
-      # metti LETSENCRYPT_DIR=./segreti in .env (qualsiasi cartella esistente va bene).
-      - ${LETSENCRYPT_DIR:-/etc/letsencrypt}:/etc/letsencrypt:ro
+      # Certificati Let's Encrypt, in sola lettura: servono solo con MQTT_CERTIFICATI=letsencrypt.
+      # Predefinito ./segreti (una cartella che esiste e basta). Con TLS acceso, LETSENCRYPT_DIR
+      # va puntata a una cartella con live/<dominio>/{fullchain,privkey}.pem leggibile dall'utente.
+      - ${LETSENCRYPT_DIR:-./segreti}:/etc/letsencrypt:ro
       - dati:/mosquitto/data
     tmpfs:
       # Copie di certificati e ACL fatte da avvio.sh: solo in memoria, mai su disco.

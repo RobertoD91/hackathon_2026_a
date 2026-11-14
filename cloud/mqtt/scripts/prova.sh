@@ -3,7 +3,7 @@
 #   ./scripts/prova.sh [host]        host predefinito: MQTT_DOMINIO di .env
 # Crea un utente-dispositivo temporaneo (prova-XXXX), verifica e poi lo elimina:
 #   - connessione anonima e password errata rifiutate (1883);
-#   - pubblicazione e iscrizione sui propri topic bighack/... (1883, 8883 TLS, 8884 WSS);
+#   - pubblicazione e iscrizione sui propri topic bighack/... (1883; 8883 TLS e 8884 WSS se TLS è acceso);
 #   - ACL: scrittura negata sui topic di un altro dispositivo e su napoli/...;
 #   - WebSocket in chiaro su 9001 (solo se l'host è questo server).
 # I client girano in un container (stessa immagine del broker): sul server basta Docker.
@@ -12,7 +12,7 @@
 
 DOMINIO="$(env_valore MQTT_DOMINIO twinciro.robertodisanto.it)"
 HOST="${1:-$DOMINIO}"
-CERTIFICATI="$(env_valore MQTT_CERTIFICATI letsencrypt)"
+CERTIFICATI="$(env_valore MQTT_CERTIFICATI nessuno)"
 broker_attivo || errore "il broker non è attivo (docker compose up -d)"
 
 # Fiducia nel certificato: CA di sistema per Let's Encrypt, ca.crt per gli autofirmati.
@@ -45,7 +45,7 @@ sleep 1
 
 echo "Prove su $HOST con l'utente temporaneo $UTENTE (certificati: $CERTIFICATI)"
 docker run --rm -i --network host "${CA_MONTA[@]}" \
-    -e H="$HOST" -e U="$UTENTE" -e PW="$PW" -e TLS="$TLS" -e WS_LOCALE="$WS_LOCALE" \
+    -e H="$HOST" -e U="$UTENTE" -e PW="$PW" -e TLS="$TLS" -e WS_LOCALE="$WS_LOCALE" -e CERT="$CERTIFICATI" \
     -e P1="$(env_valore MQTT_PORTA 1883)" -e P2="$(env_valore MQTTS_PORTA 8883)" \
     -e P3="$(env_valore WSS_PORTA 8884)" -e P4="$(env_valore WS_PORTA 9001)" \
     --entrypoint /bin/sh "$IMMAGINE" -s <<'PROVE'
@@ -81,11 +81,15 @@ negato() { # descrizione, topic
 echo "Autenticazione"
 rifiuto "anonimo rifiutato su $P1" -p "$P1"
 rifiuto "password errata rifiutata su $P1" -p "$P1" -u "$U" -P sbagliata
-rifiuto "anonimo rifiutato su $P2 (TLS)" -p "$P2" $TLS
+if [ "$CERT" != nessuno ]; then rifiuto "anonimo rifiutato su $P2 (TLS)" -p "$P2" $TLS; fi
 echo "Pubblicazione e iscrizione"
 giro "MQTT $P1" -p "$P1"
-giro "MQTT su TLS $P2" -p "$P2" $TLS
-giro "WebSocket su TLS $P3 (wss://)" -p "$P3" --ws $TLS
+if [ "$CERT" != nessuno ]; then
+    giro "MQTT su TLS $P2" -p "$P2" $TLS
+    giro "WebSocket su TLS $P3 (wss://)" -p "$P3" --ws $TLS
+else
+    echo "  --      TLS spento (MQTT_CERTIFICATI=nessuno): niente prove su $P2 e $P3"
+fi
 if [ "$WS_LOCALE" = 1 ]; then giro "WebSocket in chiaro $P4 (solo locale)" -p "$P4" --ws; fi
 echo "Permessi (ACL)"
 negato "negato: topic di un altro dispositivo" "bighack/prova/altro-dispositivo/readings"
