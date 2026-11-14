@@ -1,0 +1,12 @@
+{
+  "name": "c5-twinciro-3d",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TwinCiro 3D: gemello digitale 3D di Napoli con agenti (The Big Hack 2026, challenge 05 Fastweb + Vodafone). Nessuna dipendenza, nessuna build.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/"
+  }
+}
