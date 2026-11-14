@@ -15,6 +15,14 @@ Team (dal 13/11 sera): **Roberto D'Isanto e Mario Varlese**. Francesca Morra, Gi
 
 **Priorità del nostro team:** C5 Fastweb + Vodafone è la challenge **principale**, C2 Meditech quella **di riserva**, C1 Bhblasted molto improbabile. C4 (`c4-jrpg/`) ora è dell'altro gruppo: la cartella resta qui com'è, non va più modificata.
 
+**Scelta definitiva (14/11): C5 "Napoli Agentic City".** Cosa ne pensano i partner (Fastweb e Vodafone, incontro del 14/11):
+- la parte **IoT è piaciuta**;
+- **CiroGPT** (l'agente OpenClaw di Roberto, già collegato con la skill `c5-agentic-city/openclaw/napoli-agentic-city/SKILL.md`, che funziona) è il pezzo **più apprezzato**: va messo al centro;
+- il **gemello digitale** è piaciuto, ma meno di CiroGPT;
+- la parte **traffico/semafori non è piaciuta**: ridimensionarla. Il video 3D della regata (`c5-agentic-city/media/regata_3d.mp4`) invece è piaciuto.
+
+**Regole di consegna C5:** si consegna un **video di massimo 3 minuti**. La live demo è facoltativa: c'è un gruppo WhatsApp con CiroGPT dentro.
+
 Vincoli che contano per le scelte tecniche:
 - **Consegna: domenica 15/11 ore 12:00.** Sabato si lavora 11:00–20:30, domenica dalle 8:30. Privilegia soluzioni che arrivano a una demo funzionante, non architetture complete.
 - **Criteri della giuria:** utilità/valore, aderenza alla challenge, chiarezza e completezza del progetto, design/UX, creatività/innovazione. La UX della demo pesa quanto il backend.

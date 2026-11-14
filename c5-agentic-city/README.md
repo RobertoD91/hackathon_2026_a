@@ -4,6 +4,20 @@ Challenge 05 di The Big Hack 2026, promossa da **Fastweb + Vodafone**: *"Napoli 
 
 > **In una frase:** un ecosistema di agenti AI che **negoziano tra loro**. Ci sono gli agenti della città, gli agenti personali di cittadini e turisti, e gli agenti delle imprese. Hanno un sistema nervoso fisico (semafori ESP32 su un plastico, sensori, droni) e un **gemello digitale sulle strade vere di Napoli** che misura quanto si guadagna rispetto a una città senza agenti.
 
+## Feedback dei partner e consegna (14/11)
+
+Incontro con Fastweb e Vodafone:
+
+| Parte | Giudizio |
+|---|---|
+| IoT (ESP32, sensori, plastico) | piaciuta |
+| **CiroGPT** (agente OpenClaw su WhatsApp con la skill di `openclaw/`) | **la più apprezzata**: va messa al centro |
+| Gemello digitale | piaciuto, ma meno di CiroGPT |
+| Traffico e semafori | **non piaciuto**: da ridimensionare |
+| Video 3D della regata (`media/regata_3d.mp4`) | piaciuto |
+
+**Consegna:** un **video di massimo 3 minuti**. La live demo è facoltativa: c'è un gruppo WhatsApp con CiroGPT dentro.
+
 ## Il brief (in sintesi)
 
 - Un **sistema di agenti AI che collaborano**: ognuno segue un servizio o un problema (mobilità, turismo, servizi pubblici, ambiente) e un **agente orchestratore** li coordina, mette insieme le informazioni e propone risposte anche quando la situazione cambia.

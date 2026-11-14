@@ -28,6 +28,7 @@ Diario delle decisioni e di quello che sappiamo sull'ambiente di lavoro. Aggiorn
 | 14/11 | Confermato: Docker con demone disponibile nelle sessioni cloud; su `cloud.robertodisanto.it` si possono aprire tutte le porte. |
 | 14/11 notte | Consegnati: Docker MQTT in `cloud/mqtt/`; firmware del badge WHY2025 (ESP32-C3, **senza sensore di luce**: serve un BH1750/VEML7700 I2C) con MQTT e ponte MQTT → hub (Tasmota sì per ESP32 generici, no sul badge); versione Fattoria "Acqua comune" della mappa. |
 | 14/11 mattina | Fonti dati di Napoli: 59 fonti in 4 domini, verificate da agenti scettici, catalogo in `docs/fonti-dati-napoli.md`. Integrate nella mappa di Napoli: meteo e aria reali, allerta, metro/funicolari/treni con prossimi passaggi, eventi di oggi, visitatori e riferimenti, traffico ASPI. Mancano (e restano simulati): presenze da rete mobile (da chiedere a Fastweb + Vodafone) e traffico urbano. |
+| 14/11 | **Scelta C5.** Feedback di Fastweb e Vodafone: IoT piaciuto; CiroGPT (agente OpenClaw di Roberto con la skill di `c5-agentic-city`, funzionante) il più apprezzato; gemello digitale piaciuto ma meno; traffico/semafori non piaciuto; video 3D della regata piaciuto. Consegna: **video di massimo 3 minuti**, live demo facoltativa (gruppo WhatsApp con CiroGPT). |
 | — | Tower defense per C4: non più nostro (altro gruppo). |
 
 ## Punti di forza del team
