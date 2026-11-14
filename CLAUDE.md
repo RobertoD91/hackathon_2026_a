@@ -45,6 +45,7 @@ Soluzioni esistenti:
 - `c2-cer-quartiere/`: C2 Meditech / Federico II, comunità energetica rinnovabile di quartiere sopra `shared/iot-agents` (porta 8703; online in modalità demo). Avvio `node c2-cer-quartiere/server.js`, test `cd c2-cer-quartiere && npm test`, KPI di una giornata `npm run giornata`. Parametri con fonti e stato (verificato/indicativo) in `model/parametri.js`, quartiere in `model/quartiere.js`, ottimizzatore in `model/ottimizzatore.js`; la dashboard riceve il dettaglio dall'evento personalizzato `cer.stato` (via SSE, non in `/api/state`).
 - `c4-jrpg/`: C4 Consorzio Clara, JRPG a turni red team vs blue team (giocabile). Un tower defense per C4 è previsto più avanti. `jrpg/index.html` è solo un redirect al vecchio URL.
 - `c5-agentic-city/`: C5 Fastweb + Vodafone, "Napoli Agentic City". Brief e decisioni nel suo README. Non è una webapp: agenti + sensori IoT (ESP32, modulo 5G) + droni. Per un proxy/worker serve un Worker Cloudflare nuovo: **non usare `mbl-privato`**. Avvio: `python avvia.py` (venv con `requirements.txt`) oppure `docker compose up -d` dalla cartella (Mosquitto + città); video della simulazione con `strumenti/video_demo.py`. Firmware ESP32 unico in `firmware/twinciro-nodo/` (ruolo semaforo/sensore, Wi-Fi e MQTT si configurano dopo il flash dal portale `TwinCiro-XXXXXX`); flasher web in `flasher/` (ESP Web Tools), binari compilati **solo a mano** dall'action `.github/workflows/firmware-twinciro.yml`, che li committa in `flasher/firmware/` e rilancia Pages.
+- `shared/citta-api/`: API dati città, il cervello dati di CiroGPT (sezione sotto). `c5-video/`: video di consegna della C5 (sezione sotto).
 
 ## Infrastruttura
 
@@ -109,3 +110,22 @@ Servizi Docker per il server di Roberto (`cloud.robertodisanto.it`). Qui solo co
 - Dopo una modifica a `config/acl` usa `./scripts/ricarica.sh` (un SIGHUP a mano non rilegge l'ACL: Mosquitto usa una copia in tmpfs fatta da `config/avvio.sh`, come per i certificati Let's Encrypt, che la 2.1 legge come uid 1883 e senza symlink).
 - Ponte MQTT → hub: servizio `ponte` (profilo compose `ponte`) con `shared/iot-agents/tools/mqtt-bridge.js`. Per `c5-agentic-city` (il suo `BusMQTT` non supporta utente/password/TLS) c'è il bridge Mosquitto `cloud/mqtt/esempi/ponte-c5-verso-cloud.conf`.
 - Mai `docker compose down -v` sul server (cancella i dati). Se Docker Hub risponde 429: `docker pull mirror.gcr.io/library/<immagine>` e `docker tag`.
+
+## `shared/citta-api/` (API dati città, cervello dati di CiroGPT)
+
+- Server Node ≥ 20 senza dipendenze sopra i moduli della mappa: `example/fonti/` (normalizza.js, dati.js), `luoghi.js`, `sim/sim-core.js`, `tools/aggiorna-dati-napoli.js`. Li importa, non li copia: una correzione alle fonti vale per mappa e API insieme.
+- Avvio: `node shared/citta-api/server.js` (porta 8791). Test: `node --test shared/citta-api/test/` (43). Contratto e skill pronta per CiroGPT (`napoli-citta-dati`, sezione "Usarla da CiroGPT"): `shared/citta-api/README.md`.
+- Endpoint GET sotto `/citta/`: `riassunto` (`?formato=testo` per il contesto dell'agente), `luoghi`, `luogo?nome=|lat&lon`, `meteo`, `aria`, `allerta`, `trasporti/vicino`, `passaggi?stazione=`, `eventi?giorno=`, `terremoti`, `traffico`, `fonti`; più `/salute` (senza token) e gli alias senza `/citta`. Barre doppie e maiuscole nel percorso non contano.
+- Ricerca dei luoghi: i 10 di `luoghi.js`, poi i luoghi noti senza sensori di `src/punti.js` (Città della Scienza, aeroporto, Parco Virgiliano, Marechiaro; coordinate indicative), poi le stazioni. Fuori dai 10 luoghi meteo e aria vengono dal luogo monitorato più vicino, dichiarato.
+- Ogni risposta ha `fonte.stato` (reale, riserva, salvato, snapshot, programmato, simulato, assente) e un `testo` pronto da citare, con stato e ora del dato. La folla è sempre "simulato".
+- Cache per fonte (meteo 15 min, aria 60, allerta 20, passaggi 1, eventi 6 h), richieste uguali coalizzate, dopo un 429 il dominio va in pausa 15 minuti (`src/rete.js`) con la riserva dichiarata. Gli snapshot cambiati su disco si ricaricano da soli.
+- Variabili: `PORT`, `CITTA_API_TOKEN` (Bearer), `CITTA_API_CORS`, `NAPOLI_UA` (mai dati personali), `CITTA_DATI`, `CITTA_AGGIORNA` (rinfresco degli snapshot nel processo; con la cartella predefinita riscrive quelli della repo), `CITTA_TIENI_CALDO`, `CITTA_PAUSA_429`. Rigenerazione a mano: `node shared/citta-api/aggiorna.js --solo eventi`.
+- Docker per il server in `cloud/citta-api/`: `cp .env.example .env && docker compose up -d --build && ./prova.sh` (build dalla radice della repo con `Dockerfile.dockerignore`; volume `/dati` rigenerabile; healthcheck su `/salute`; nel container non c'è curl, quindi `aggiorna.js --curl` va lanciato fuori). HTTPS consigliato con `esempi/nginx-citta-api.conf` (token non in chiaro).
+
+## `c5-video/` (video di consegna della C5)
+
+- Massimo 3:00. Bozza attuale `bozza.mp4`: 2:54, 1920×1080, 32 MB, muta con sottotitoli impressi; CiroGPT occupa circa due terzi del tempo. La scena SUMO (traffico) è esclusa con `"salta": true`.
+- Copione, voce, riprese da girare e tabella reale/simulato: `copione.md`. Scene, durate, testate, voce e sottotitoli: `scene/scaletta.json` (`salta`, `sovrapposti`, `pezzi`).
+- Rimontaggio: `cd c5-video && ./monta.sh [--rigenera] [--rigenera-mappa] [--controllo] [--segnaposto]` (ffmpeg, Node con Playwright, python3; da zero circa 10 minuti). Le scene HTML sono rese fotogramma per fotogramma, non con recordVideo.
+- Riprese vere, voce e musica vanno in `girato/` (ignorata da git tranne `LEGGIMI.md`): quando un file c'è prende il posto della scena generata. Senza riprese l'IoT usa riquadri di riserva senza valori inventati.
+- La chat di CiroGPT si rigenera dall'API vera di `c5-agentic-city` con `python3 scene/chat_da_api.py` (circa 6 minuti, porta 8805, sola lettura) → `scene/chat.json`. I ritocchi di forma dichiarati sono in `scene/chat_domande.json`, il testo originale in `testo_api`; `--solo-ritocchi` li riapplica senza avviare la città. Se si rigenera la chat, rigenerare anche la mappa nello stesso momento (meteo coerente).

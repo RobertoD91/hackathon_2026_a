@@ -30,7 +30,18 @@ Diario delle decisioni e di quello che sappiamo sull'ambiente di lavoro. Aggiorn
 | 14/11 mattina | Fonti dati di Napoli: 59 fonti in 4 domini, verificate da agenti scettici, catalogo in `docs/fonti-dati-napoli.md`. Integrate nella mappa di Napoli: meteo e aria reali, allerta, metro/funicolari/treni con prossimi passaggi, eventi di oggi, visitatori e riferimenti, traffico ASPI. Mancano (e restano simulati): presenze da rete mobile (da chiedere a Fastweb + Vodafone) e traffico urbano. |
 | 14/11 | **Scelta C5.** Feedback di Fastweb e Vodafone: IoT piaciuto; CiroGPT (agente OpenClaw di Roberto con la skill di `c5-agentic-city`, funzionante) il più apprezzato; gemello digitale piaciuto ma meno; traffico/semafori non piaciuto; video 3D della regata piaciuto. Consegna: **video di massimo 3 minuti**, live demo facoltativa (gruppo WhatsApp con CiroGPT). |
 | 14/11 pomeriggio | Riordino e divisione del lavoro tra le due sessioni Claude di Roberto: "Hackathon napoli" possiede `c5-agentic-city/` (TwinCiro, skill di CiroGPT, flasher); "hackathon-2026-a" possiede `shared/`, `cloud/`, `c5-video/`, `docs/`. La mappa "Napoli in tempo reale" diventa il **cervello dati di CiroGPT**: in costruzione `shared/citta-api/` (una API con cache sopra le 59 fonti verificate, Docker in `cloud/citta-api/`) e il **video di consegna** in `c5-video/`. |
+| 14/11 pomeriggio | Pronti, con revisione indipendente: **API dati città** `shared/citta-api/` (43 test, Docker in `cloud/citta-api/` provato in locale, non ancora sul server) e **bozza del video** `c5-video/bozza.mp4` (2:54, muta con sottotitoli, CiroGPT per circa due terzi; scena SUMO esclusa; IoT con riquadri di riserva finché non arrivano le riprese). La mappa ora tratta "nessun avviso in vigore" della Protezione Civile come dato vero e non come guasto. |
 | — | Tower defense per C4: non più nostro (altro gruppo). |
+
+## Richieste tra le sessioni
+
+Richieste da una sessione Claude all'altra (vedi la divisione del lavoro in `CLAUDE.md`). Chi la chiude la segna come fatta.
+
+| Da → a | Richiesta | Stato |
+|---|---|---|
+| hackathon-2026-a → Hackathon napoli | Installare la skill **`napoli-citta-dati`** in `c5-agentic-city/openclaw/skills/` (o fonderla con `twinciro-citta`). Testo pronto e curl provati in `shared/citta-api/README.md`, sezione "Usarla da CiroGPT". Variabili su OpenClaw: `CITTA_API` e `CITTA_API_TOKEN`. | aperta |
+| hackathon-2026-a → Hackathon napoli | Testi dell'API `/chiedi` che su WhatsApp si vedono così come sono (la skill li inoltra): la prima risposta inoltra il testo della pizzeria («Alle 13:00 siamo pieni…») e sembra parlare la pizzeria; «A Rotonda Diaz (village)… è molto più tranquillo»; «Linea 6 della metro se attiva»; il messaggio al drone «volo di verifica? verifica affluenza». File: `c5-agentic-city/citta/agenti/assistente.py`, `citta/agenti/turismo.py`, `citta/agenti/orchestratore.py` (drone), `dati/luoghi.json`. Nel video sono corretti con ritocchi dichiarati (`c5-video/scene/chat_domande.json`); se li correggete nell'API, la chat del video si rigenera con `python3 c5-video/scene/chat_da_api.py`. | aperta |
+| hackathon-2026-a → Hackathon napoli | Verificare che l'heartbeat di OpenClaw legga `/notifiche`: senza, l'avviso proattivo («Rotonda Diaz piena…») non arriva su WhatsApp vero. | aperta |
 
 ## Punti di forza del team
 

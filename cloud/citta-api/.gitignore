@@ -1,0 +1,4 @@
+# Mai versionare segreti dell'API.
+# Configurazione locale con il token (si versiona solo .env.example).
+.env
+segreti/

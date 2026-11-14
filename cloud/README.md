@@ -5,6 +5,7 @@ Servizi da installare sul server di Roberto, **cloud.robertodisanto.it**, con Do
 | Cartella | Servizio | Porte |
 |---|---|---|
 | [`mqtt/`](mqtt/README.md) | broker MQTT Eclipse Mosquitto 2.1.2: badge, ESP32, Tasmota, ponte MQTT → hub, c5-agentic-city, dashboard nel browser | 1883 (password), 8883 (TLS), 8884 (WebSocket TLS) |
+| [`citta-api/`](citta-api/README.md) | API dati città di Napoli per CiroGPT (Node, cache, riserve dichiarate, pause dopo i 429) | 8791 (HTTP con token; HTTPS consigliato via nginx) |
 
 Installazione rapida del broker (dettagli, utenti e TLS in [`mqtt/README.md`](mqtt/README.md)):
 

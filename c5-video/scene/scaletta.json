@@ -1,0 +1,257 @@
+{
+  "nota": "Scaletta del video di consegna di TwinCiro (C5). È l'unica fonte di durate, testi a schermo e voce fuori campo: monta.py la legge, cartelli.html prende da qui i testi dei cartelli. Tempi della voce in secondi dall'inizio della scena, a circa 150 parole al minuto contando le sigle come si pronunciano (ESP32 = 'esse pi trentadue'). Una scena con \"salta\": true resta descritta ma non entra nel video. Se cambi qualcosa qui, aggiorna anche copione.md.",
+  "fps": 30,
+  "dissolvenza": 0.2,
+  "scene": [
+    {
+      "id": "01-apertura",
+      "durata": 14,
+      "sorgente": {
+        "tipo": "video",
+        "file": "../../c5-agentic-city/media/regata_3d.mp4",
+        "da": 5.0,
+        "ritaglio": [0, 120, 1600, 900],
+        "velo": "velo-apertura"
+      },
+      "testata": { "etichetta": "Napoli 2027 · lo scenario", "testo": "America's Cup, due navi da crociera, la partita al Maradona: lo stesso sabato" },
+      "voce": [
+        { "da": 0.6, "a": 7.4, "testo": "Napoli, 2027. Lo stesso sabato: l'America's Cup, due navi da crociera e la partita al Maradona." },
+        { "da": 7.7, "a": 13.6, "testo": "Migliaia di persone, ognuna con una domanda. E ogni servizio della città fa da sé." }
+      ]
+    },
+    {
+      "id": "02-titolo",
+      "durata": 7,
+      "sorgente": { "tipo": "cartello", "id": "titolo" },
+      "voce": [
+        { "da": 0.3, "a": 6.6, "testo": "Per questo abbiamo creato TwinCiro: una città che pensa, e che ti parla su WhatsApp." }
+      ]
+    },
+    {
+      "id": "03-cirogpt",
+      "durata": 58,
+      "sorgente": { "tipo": "chat" },
+      "girato": { "file": "cirogpt", "modo": "telefono", "da": 0 },
+      "voce": [
+        { "da": 0.5, "a": 5.3, "testo": "Marta è in crociera, e scrive a CiroGPT come a un amico." },
+        { "da": 5.6, "a": 11.8, "testo": "CiroGPT chiede agli agenti: la pizzeria alle 13 è piena, e propone le 14." },
+        { "da": 15.0, "a": 19.4, "testo": "Marta risponde «ok», e il tavolo è prenotato. Nessuna telefonata." },
+        { "da": 23.6, "a": 29.2, "testo": "Poi CiroGPT le dice come arrivare alla regata, e quanta gente c'è adesso." },
+        { "da": 36.4, "a": 42.0, "testo": "Per il meteo usa dati veri, e cita la fonte: domani c'è allerta arancione." },
+        { "da": 47.2, "a": 55.6, "testo": "E quando la Rotonda Diaz si riempie, è CiroGPT a scrivere per primo: c'è un posto più tranquillo, con un'offerta." }
+      ]
+    },
+    {
+      "id": "04-architettura",
+      "durata": 16,
+      "sorgente": { "tipo": "pagina", "pagina": "architettura.html" },
+      "voce": [
+        { "da": 0.4, "a": 4.4, "testo": "Quando Marta scrive, CiroGPT chiama l'API della città." },
+        { "da": 4.7, "a": 9.6, "testo": "L'orchestratore interroga sei agenti: meteo, eventi, folla, traffico, turismo e imprese." },
+        { "da": 9.8, "a": 15.6, "testo": "Si parlano su un bus MQTT, e ogni decisione ha la sua motivazione." }
+      ]
+    },
+    {
+      "id": "05-mappa",
+      "durata": 19,
+      "sorgente": { "tipo": "mappa", "da": 0.6 },
+      "testata": { "etichetta": "Dati reali · le fonti di CiroGPT", "testo": "Mappa «Napoli in tempo reale»: le stesse fonti pubbliche delle skill di CiroGPT" },
+      "voce": [
+        { "da": 0.4, "a": 7.0, "testo": "CiroGPT risponde con dati veri: un catalogo di cinquantanove fonti pubbliche, provate una per una." },
+        { "da": 7.3, "a": 11.4, "testo": "Meteo e aria, metro e funicolari, eventi del giorno, allerte." },
+        { "da": 11.7, "a": 18.6, "testo": "La folla è simulata: è il dato che la rete di Fastweb e Vodafone può dare, anonimo." }
+      ]
+    },
+    {
+      "id": "06-badge",
+      "durata": 7,
+      "sorgente": { "tipo": "cartello", "id": "riserva-nodo" },
+      "segnaposto": "qui-badge",
+      "girato": { "file": "badge", "modo": "pieno", "da": 0 },
+      "testata": { "etichetta": "IoT · i sensi della città", "testo": "Nodi ESP32 e badge WHY2025 → MQTT → agenti" },
+      "voce": [
+        { "da": 0.3, "a": 6.4, "testo": "La città ha anche i sensi: nodi ESP32 che parlano MQTT." }
+      ]
+    },
+    {
+      "id": "07-plastico",
+      "durata": 6,
+      "sorgente": { "tipo": "cartello", "id": "riserva-flasher" },
+      "segnaposto": "qui-plastico",
+      "girato": { "file": "plastico", "modo": "pieno", "da": 0 },
+      "testata": { "etichetta": "IoT · i sensi della città", "testo": "Oggi su Wi-Fi, domani su 5G: firmware unico, installato dal browser" },
+      "voce": [
+        { "da": 0.1, "a": 5.6, "testo": "Oggi su Wi-Fi, domani sul 5G. Il firmware si installa dal browser." }
+      ]
+    },
+    {
+      "id": "08-gemello-3d",
+      "durata": 13,
+      "sorgente": {
+        "tipo": "video",
+        "file": "../../c5-agentic-city/media/regata_3d.mp4",
+        "da": 40.0,
+        "ritaglio": [320, 100, 1440, 810],
+        "velo": "velo-regata"
+      },
+      "sovrapposti": [ { "id": "notifica-avviso", "da": 6.3, "a": 13.0 } ],
+      "testata": { "etichetta": "Gemello digitale", "testo": "La giornata della regata simulata sulle strade vere: folla per zona e barche" },
+      "voce": [
+        { "da": 0.4, "a": 6.0, "testo": "Il gemello digitale prova la giornata della regata, sulle strade vere del lungomare." },
+        { "da": 6.3, "a": 12.4, "testo": "Mostra dove si forma la folla, e quante persone sposta un avviso di CiroGPT." }
+      ]
+    },
+    {
+      "id": "09-gemello-sumo",
+      "salta": true,
+      "nota": "Traffico e semafori non sono piaciuti ai partner (14/11): la scena resta pronta ma fuori dal video. I numeri del traffico restano solo nel riquadro dei benefici. Per rimetterla togli \"salta\" e accorcia un'altra scena di 7 s.",
+      "durata": 7,
+      "sorgente": { "tipo": "video", "file": "../../c5-agentic-city/media/demo_gemello.mp4", "da": 40.0, "velo": "velo-sumo" },
+      "testata": { "etichetta": "Gemello digitale · SUMO", "testo": "A sinistra i semafori di oggi, a destra gli agenti: stessi veicoli, stessa giornata" },
+      "voce": [
+        { "da": 0.2, "a": 6.8, "testo": "Sul traffico, con onestà: in media il 9% di ore in coda in meno, su quattro simulazioni." }
+      ]
+    },
+    {
+      "id": "10-benefici",
+      "durata": 15,
+      "sorgente": { "tipo": "cartello", "id": "benefici" },
+      "voce": [
+        { "da": 0.4, "a": 5.4, "testo": "Per chi visita: risposte in pochi secondi, e un tavolo senza telefonate." },
+        { "da": 5.7, "a": 9.6, "testo": "Le imprese riempiono le ore vuote, con offerte mirate." },
+        { "da": 9.9, "a": 14.4, "testo": "E un solo avviso sposta circa millenovecento persone, prima del pienone." }
+      ]
+    },
+    {
+      "id": "11-perche",
+      "durata": 12,
+      "sorgente": { "tipo": "cartello", "id": "perche" },
+      "voce": [
+        { "da": 0.4, "a": 5.2, "testo": "Perché Napoli? WhatsApp ce l'hanno tutti, e i dati pubblici ci sono." },
+        { "da": 5.5, "a": 11.6, "testo": "Il 2027 è vicino: con Fastweb e Vodafone si parte da un quartiere." }
+      ]
+    },
+    {
+      "id": "12-chiusura",
+      "durata": 7,
+      "sorgente": { "tipo": "cartello", "id": "chiusura" },
+      "voce": [
+        { "da": 0.5, "a": 5.0, "testo": "TwinCiro. Napoli ci pensa. Scrivi a CiroGPT." }
+      ]
+    }
+  ],
+  "cartelli": {
+    "titolo": {
+      "tipo": "titolo",
+      "sopra": "The Big Hack 2026 · Challenge 05 Fastweb + Vodafone",
+      "sotto": "La città che ci pensa. E te lo dice su WhatsApp.",
+      "spiega": "Twin = il gemello digitale della città · Ciro = CiroGPT, l'assistente che parla con le persone"
+    },
+    "qui-badge": {
+      "tipo": "segnaposto",
+      "cosa": "Badge WHY2025 o nodo ESP32 in mano, mentre misura e pubblica",
+      "come": "Primo piano orizzontale: il display con i valori, poi il portatile che riceve il messaggio MQTT",
+      "file": "girato/badge.mp4",
+      "durata": "7 s"
+    },
+    "qui-plastico": {
+      "tipo": "segnaposto",
+      "cosa": "Il plastico con i nodi ESP32, oppure il terminale con i messaggi MQTT che arrivano",
+      "come": "Carrellata lenta e stabile; se non c'è il plastico: schermo del portatile con mosquitto_sub",
+      "file": "girato/plastico.mp4",
+      "durata": "6 s"
+    },
+    "riserva-nodo": {
+      "tipo": "riserva-nodo",
+      "nota_uso": "Scena 06 quando manca girato/badge.mp4: il formato reale dei messaggi del firmware, senza valori inventati. Con --segnaposto si vede invece il cartello qui-badge.",
+      "titolo": "Un nodo, due messaggi MQTT",
+      "sotto": "Firmware unico twinciro-nodo per ESP32, ESP32-S3 ed ESP32-C3",
+      "messaggi": [
+        { "topic": "napoli/sensori/<id>/persone", "contenuto": "{ zona, valore: passaggi dell'ultimo minuto } · ogni 2 s" },
+        { "topic": "napoli/nodi/<id>/stato", "contenuto": "{ ruolo, IP, RSSI, versione } · con last will" }
+      ],
+      "fonte": "Formato dei messaggi dal firmware in c5-agentic-city/firmware: lo stesso bus degli agenti"
+    },
+    "riserva-flasher": {
+      "tipo": "riserva-flasher",
+      "nota_uso": "Scena 07 quando manca girato/plastico.mp4. Con --segnaposto si vede invece il cartello qui-plastico.",
+      "titolo": "Si installa dal browser",
+      "sotto": "Chrome o Edge, ESP32 collegato via USB: nessun programma da installare",
+      "passi": [
+        { "testo": "Apri il flasher web di TwinCiro" },
+        { "testo": "robertodisanto.it/hackathon_2026_a/c5-agentic-city/flasher", "codice": true },
+        { "testo": "«Installa»: riconosce il chip; Wi-Fi e broker si scelgono dal telefono" }
+      ],
+      "chips": ["Wi-Fi oggi", "5G domani", "ESP32 · S3 · C3", "MQTT con utente e password"]
+    },
+    "notifica-avviso": {
+      "tipo": "notifica",
+      "nota_uso": "Riquadro sopra la regata 3D (scena 08): il testo è quello dell'avviso in chat.json, così coincide con la chat. Per scriverne un altro usa \"testo\".",
+      "posizione": { "x": 1390, "y": 150, "w": 480 },
+      "quando": "adesso",
+      "nota": "avviso dell'agente Turismo · simulazione"
+    },
+    "benefici": {
+      "tipo": "elenco",
+      "titolo": "Cosa cambia, con i numeri",
+      "voci": [
+        {
+          "icona": "💬",
+          "titolo": "Per chi visita",
+          "testo": "Risposta in pochi secondi su WhatsApp. Tavolo negoziato: 13:00 pieno → 14:00 confermato.",
+          "fonte": "demo con l'API della città",
+          "d": 0.4
+        },
+        {
+          "icona": "🍕",
+          "titolo": "Per le imprese",
+          "testo": "Le ore vuote si riempiono: offerte mirate, solo dove c'è posto (dal −10% al −30%).",
+          "fonte": "imprese di fantasia, regole dichiarate",
+          "d": 5.7
+        },
+        {
+          "icona": "📣",
+          "titolo": "Per la città",
+          "testo": "Avvisi prima del pienone: circa 1.900 persone spostate dalla Rotonda Diaz.",
+          "fonte": "simulazione, adesione 6–12% (ipotesi)",
+          "d": 9.9
+        },
+        {
+          "icona": "🚦",
+          "titolo": "Per il traffico",
+          "testo": "−9% di ore perse in coda, in media su 4 simulazioni (da −1% a −18%).",
+          "fonte": "gemello SUMO su strade OpenStreetMap",
+          "d": 11.6
+        }
+      ],
+      "piede": "Numeri da simulazione, con le ipotesi scritte nel repository. Il passo successivo è un pilota su strada."
+    },
+    "perche": {
+      "tipo": "elenco",
+      "titolo": "Perché Napoli dovrebbe adottarla",
+      "voci": [
+        { "icona": "📱", "titolo": "Nessuna app nuova", "testo": "Si usa WhatsApp, che hanno già tutti: turisti e cittadini." },
+        { "icona": "🗂️", "titolo": "I dati ci sono", "testo": "59 fonti pubbliche su Napoli, provate una per una: meteo, aria, trasporti, eventi, allerte." },
+        { "icona": "⛵", "titolo": "Il 2027 è vicino", "testo": "America's Cup, navi da crociera, stadio: la città va messa alla prova adesso." },
+        { "icona": "📶", "titolo": "Con Fastweb + Vodafone", "testo": "Presenze anonime e aggregate dalla rete mobile, sensori collegati in 5G." },
+        { "icona": "🧩", "titolo": "Si parte piccoli", "testo": "Un quartiere, un evento, codice aperto: si misura e si allarga." }
+      ]
+    },
+    "chiusura": {
+      "tipo": "chiusura",
+      "sotto": "Napoli ci pensa.",
+      "invito": "Scrivi a CiroGPT",
+      "squadra": "Roberto D'Isanto · Mario Varlese",
+      "evento": "The Big Hack 2026 · Challenge 05 Fastweb + Vodafone",
+      "link": "robertodisanto.it/hackathon_2026_a"
+    },
+    "velo-sumo": {
+      "numeri": [
+        { "valore": "−9%", "testo": "ore perse in coda" },
+        { "valore": "−4%", "testo": "durata del viaggio" },
+        { "valore": "−3,5%", "testo": "CO₂" }
+      ],
+      "nota": "Media su 4 giornate simulate diverse (da −1% a −18%) · gemello SUMO sulle strade OpenStreetMap del lungomare"
+    }
+  }
+}

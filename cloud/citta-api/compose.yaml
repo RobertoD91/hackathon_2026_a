@@ -1,0 +1,64 @@
+# API dati città di Napoli (shared/citta-api): il "cervello dati" di CiroGPT.
+# Guida completa: README.md in questa cartella.
+#
+#   cp .env.example .env && chmod 600 .env     configurazione (token, porta, CORS, rinfresco)
+#   docker compose up -d --build                costruisce l'immagine e avvia
+#   docker compose logs -f citta-api            log (una riga per richiesta)
+#   ./prova.sh                                  /salute, /citta/riassunto, token
+#   docker compose exec citta-api node shared/citta-api/aggiorna.js --solo eventi   rigenera uno snapshot
+#
+# Porta sul server (modificabile in .env): 8791. Dietro un reverse proxy: CITTA_API_INDIRIZZO=127.0.0.1.
+name: bighack-citta-api
+
+services:
+  citta-api:
+    build:
+      # La radice della repo: l'immagine copia shared/citta-api e i moduli condivisi di
+      # shared/iot-agents (contesto ridotto da Dockerfile.dockerignore).
+      context: ../..
+      dockerfile: cloud/citta-api/Dockerfile
+    image: bighack/citta-api:locale
+    restart: unless-stopped
+    ports:
+      - "${CITTA_API_INDIRIZZO:-0.0.0.0}:${CITTA_API_PORTA:-8791}:8791"
+    environment:
+      # Token Bearer: se è vuoto l'API è aperta (solo /salute resta sempre senza token).
+      CITTA_API_TOKEN: ${CITTA_API_TOKEN:-}
+      # Origini ammesse dal browser (la mappa su GitHub Pages); * per tutte, vuoto per nessuna.
+      CITTA_API_CORS: ${CITTA_API_CORS:-https://robertodisanto.it}
+      # User-Agent verso le fonti (generico, mai dati personali; vuoto = predefinito dell'API).
+      NAPOLI_UA: ${NAPOLI_UA:-}
+      # Rinfresco degli snapshot dentro il processo: età massima di ogni sezione.
+      CITTA_AGGIORNA: ${CITTA_AGGIORNA:-eventi=6h,aria=1h,meteo=3h,riferimenti=24h,trasporti=72h}
+      # Fonti del riassunto rilette in anticipo ogni 5 minuti (solo quelle scadute).
+      CITTA_TIENI_CALDO: ${CITTA_TIENI_CALDO:-1}
+      # Pausa di un dominio dopo un 429 (limite di richieste della fonte).
+      CITTA_PAUSA_429: ${CITTA_PAUSA_429:-15m}
+    volumes:
+      # Snapshot di lavoro (rigenerati dal rinfresco): sopravvivono a riavvii e nuove immagini.
+      - dati:/dati
+    healthcheck:
+      # 200 se il processo risponde (non dipende dalle fonti esterne).
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8791/salute"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    # Indurimento: file system in sola lettura (scrive solo nel volume /dati e in /tmp),
+    # nessuna capability, utente node (uid 1000) dall'immagine.
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    deploy:
+      resources:
+        # 512 MB: il rinfresco dei trasporti legge i GTFS di ANM ed EAV (decine di MB).
+        limits: { cpus: "1.0", memory: 512M }
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+volumes:
+  # Snapshot di lavoro. Si possono sempre rigenerare: nessun backup necessario.
+  dati:

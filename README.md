@@ -17,6 +17,8 @@ Progetto per [The Big Hack 2026](https://go.codemotion.com/big-hack-hackathon-20
 | **Skill di CiroGPT** (OpenClaw): città e fonti aperte di Napoli | [`c5-agentic-city/openclaw/skills/`](c5-agentic-city/openclaw/skills/README.md) |
 | **Flasher web** dei nodi ESP32 (semaforo o sensore) | [robertodisanto.it/hackathon_2026_a/c5-agentic-city/flasher/](https://robertodisanto.it/hackathon_2026_a/c5-agentic-city/flasher/) |
 | Mappa "Napoli in tempo reale" con dati veri (meteo, aria, trasporti, eventi, allerta) | [`shared/iot-agents/example/`](https://robertodisanto.it/hackathon_2026_a/shared/iot-agents/example/) |
+| **API dati città** per CiroGPT (meteo, aria, allerta, trasporti, eventi, con fonte e ora di ogni dato) | [`shared/citta-api/`](shared/citta-api/README.md), Docker in [`cloud/citta-api/`](cloud/citta-api/README.md) |
+| **Video di consegna** (bozza di 2:54, copione e riprese da girare) | [`c5-video/`](c5-video/README.md) |
 | Catalogo verificato delle fonti dati di Napoli | [`docs/fonti-dati-napoli.md`](docs/fonti-dati-napoli.md) |
 | Broker MQTT del team (Docker) | [`cloud/mqtt/`](cloud/mqtt/README.md) |
 

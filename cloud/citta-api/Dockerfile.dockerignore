@@ -1,0 +1,16 @@
+# Contesto di build di cloud/citta-api/Dockerfile (radice della repo): solo i file che servono.
+# (BuildKit usa <Dockerfile>.dockerignore al posto di .dockerignore della radice.)
+*
+!shared/citta-api/
+!shared/iot-agents/package.json
+!shared/iot-agents/example/fonti/
+!shared/iot-agents/example/luoghi.js
+!shared/iot-agents/example/sim-config.json
+!shared/iot-agents/example/dati/
+!shared/iot-agents/sim/sim-core.js
+!shared/iot-agents/tools/aggiorna-dati-napoli.js
+!shared/iot-agents/tools/zip-mini.js
+!shared/iot-agents/tools/parquet-mini.js
+shared/citta-api/test/
+shared/citta-api/node_modules/
+**/.env
