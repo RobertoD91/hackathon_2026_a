@@ -2,7 +2,8 @@
 // Funzioni pure (più una piccola cache per lo stato Tasmota), usate da mqtt-bridge.js e dai test.
 //
 // Topic riconosciuti (prefisso "bighack" e "napoli" configurabili):
-//   bighack/<zona>/<deviceId>/readings      JSON del contratto (anche parziale o un array)
+//   bighack/<zona>/<deviceId>/readings      JSON del contratto (anche parziale o un array); il deviceId
+//                                           è sempre quello del topic (autenticato dall'ACL del broker)
 //   bighack/<zona>/<deviceId>/status        {"online": true|false} → lettura { online }
 //   tele/<topic>/SENSOR|STATE|LWT           telemetria Tasmota (FullTopic predefinito %prefix%/%topic%/)
 //   bighack/<zona>/<topic>/tele/SENSOR|...  Tasmota con FullTopic bighack/<zona>/%topic%/%prefix%/
@@ -232,8 +233,12 @@ export function createConverter(o = {}) {
       body.readings = readings;
     }
     if (!Object.keys(body.readings).length) return null;
-    if (body.deviceId === undefined) body.deviceId = info.id;
-    return finish(body, [body.deviceId, info.id], info.zone);
+    // L'identità è quella del topic: sul broker del team l'ACL fa scrivere ogni utente solo sotto
+    // bighack/+/<utente>/#, mentre il deviceId nel JSON non è verificato da nessuno.
+    const claimed = body.deviceId;
+    body.deviceId = info.id;
+    if (claimed !== undefined && claimed !== info.id) body.meta = { ...(isObj(body.meta) ? body.meta : {}), claimedDeviceId: String(claimed).slice(0, 64) };
+    return finish(body, [info.id], info.zone);
   }
 
   function convert(topic, payload, { retain = false } = {}) {
@@ -254,9 +259,9 @@ export function createConverter(o = {}) {
       else if (/^(online|offline|true|false|1|0)$/i.test(j.text.trim())) online = /^(online|true|1)$/i.test(j.text.trim());
       if (online === undefined) return { readings: [], skip: 'stato senza "online"' };
       const v = isObj(j.value) ? j.value : {};
-      const body = { deviceId: v.deviceId ?? info.id, readings: { online }, meta: { source: 'status', retained: retain } };
-      if (v.zone) body.location = { zone: v.zone };
-      return { readings: [finish(body, [body.deviceId, info.id], info.zone)] };
+      const body = { deviceId: info.id, readings: { online }, meta: { source: 'status', retained: retain } };
+      if (typeof v.zone === 'string' && v.zone) body.location = { zone: v.zone };
+      return { readings: [finish(body, [info.id], info.zone)] };
     }
 
     if (info.kind === 'tasmota') {

@@ -134,6 +134,20 @@ test('configurazione dell\'esempio valida', async () => {
   for (const r of sim.sample()) assert.equal(validateReading(r).ok, true);
 });
 
+test('configurazione della fattoria valida', async () => {
+  const conf = JSON.parse(await readFile(new URL('../example/fattoria/sim-config.json', import.meta.url), 'utf8'));
+  const sim = createSimulator(conf);
+  assert.equal(sim.devices.length, 12, '10 campi, la vasca e la stazione meteo');
+  const letture = sim.sample();
+  for (const r of letture) assert.equal(validateReading(r).ok, true);
+  const campi = letture.filter((r) => r.location.zone.startsWith('campo_'));
+  assert.equal(campi.length, 10);
+  for (const r of campi) for (const k of ['soil_moisture_pct', 'temperature_c', 'light_lux']) assert.equal(typeof r.readings[k], 'number', k);
+  assert.equal(typeof letture.find((r) => r.location.zone === 'serbatoio').readings.fill_pct, 'number');
+  const nomi = conf.scenarios.map((s) => s.name);
+  for (const n of ['ondata_calore', 'pioggia_in_arrivo', 'riduzione_acqua']) assert.ok(nomi.includes(n), n);
+});
+
 test('attachSimulator: letture nel hub e scenari manuali che cambiano i dati', async () => {
   const core = createCore({ log: silentLogger, llm: { provider: 'mock' } });
   const att = attachSimulator(core, cfg({ intervalSec: 0.2 }), { log: silentLogger });

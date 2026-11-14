@@ -136,7 +136,7 @@ Alternativa a `POST /api/readings` per i dispositivi: pubblicano sul broker e il
 
 | Topic | Chi pubblica | Contenuto |
 |---|---|---|
-| `bighack/<zona>/<deviceId>/readings` | badge, ESP32 | la lettura della sezione 1 (anche un array). Se mancano, `deviceId` e `location.zone` si prendono dal topic. Forma corta ammessa: `{"light_lux": 12, "button": true}` (numeri e boolean di primo livello diventano `readings`) |
+| `bighack/<zona>/<deviceId>/readings` | badge, ESP32 | la lettura della sezione 1 (anche un array). Il `deviceId` è **sempre quello del topic**, che sul broker del team è autenticato dall'ACL; uno diverso nel JSON finisce in `meta.claimedDeviceId`. Se manca `location.zone` si prende dal topic. Forma corta ammessa: `{"light_lux": 12, "button": true}` (numeri e boolean di primo livello diventano `readings`) |
 | `bighack/<zona>/<deviceId>/status` | dispositivo, **retained**, anche come last will | `{"deviceId": "...", "online": true \| false, ...}` (o il testo `online`/`offline`) → il ponte lo inoltra come lettura `{ "online": true \| false }` |
 | `bighack/<zona>/<deviceId>/cmd` | cloud/agenti → dispositivo | comandi (badge: `{"text": "..."}`, `{"read": true}`, `{"interval": 30}`); il ponte non li legge |
 | `tele/<topic>/SENSOR`, `STATE`, `LWT` | Tasmota (FullTopic predefinito) | telemetria Tasmota, convertita dal ponte (sotto) |

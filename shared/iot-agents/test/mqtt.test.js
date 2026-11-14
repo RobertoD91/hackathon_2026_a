@@ -198,6 +198,14 @@ describe('conversioni verso il contratto', () => {
     assert.deepEqual(r, { ...msg, meta: { ...msg.meta, via: 'mqtt' } });
   });
 
+  test('il deviceId è quello del topic (autenticato dall\'ACL), non quello dichiarato nel JSON', () => {
+    const { readings: [r] } = one('bighack/z/badge-vero/readings', { deviceId: 'badge-altrui', readings: { light_lux: 1 } });
+    assert.equal(r.deviceId, 'badge-vero');
+    assert.equal(r.meta.claimedDeviceId, 'badge-altrui');
+    const { readings: [st] } = one('bighack/z/badge-vero/status', { deviceId: 'badge-altrui', online: false });
+    assert.equal(st.deviceId, 'badge-vero');
+  });
+
   test('forma corta, id e zona dal topic, array, mappa che rinomina', () => {
     let { readings: [r] } = one('bighack/molo/sensore-7/readings', { light_lux: 12, button: true, note: 'testo ignorato' });
     assert.equal(r.deviceId, 'sensore-7');
