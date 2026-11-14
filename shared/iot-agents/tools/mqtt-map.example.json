@@ -1,0 +1,6 @@
+{
+  "tasmota-serra": { "zone": "plebiscito", "lat": 40.8359, "lon": 14.2488 },
+  "tasmota_ABC123": { "zone": "rotonda_diaz", "lat": 40.8315, "lon": 14.2337, "deviceId": "luce-rotonda-diaz" },
+  "badge-1a2b": { "zone": "citta-della-scienza", "lat": 40.8069, "lon": 14.1764 },
+  "varco_rotonda": { "zone": "rotonda_diaz" }
+}

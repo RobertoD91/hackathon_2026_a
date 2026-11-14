@@ -129,3 +129,56 @@ Come configurare OpenClaw è ancora da definire: tutto deve essere provabile sen
 | `c1-feed-simulato` | 8702 |
 | `c2-cer-quartiere` | 8703 |
 | `c5-regia-evento` | 8704 |
+
+## 9. MQTT (broker `cloud.robertodisanto.it`)
+
+Alternativa a `POST /api/readings` per i dispositivi: pubblicano sul broker e il **ponte** `tools/mqtt-bridge.js` inoltra al hub. Il hub non cambia: riceve sempre le letture della sezione 1.
+
+| Topic | Chi pubblica | Contenuto |
+|---|---|---|
+| `bighack/<zona>/<deviceId>/readings` | badge, ESP32 | la lettura della sezione 1 (anche un array). Se mancano, `deviceId` e `location.zone` si prendono dal topic. Forma corta ammessa: `{"light_lux": 12, "button": true}` (numeri e boolean di primo livello diventano `readings`) |
+| `bighack/<zona>/<deviceId>/status` | dispositivo, **retained**, anche come last will | `{"deviceId": "...", "online": true \| false, ...}` (o il testo `online`/`offline`) → il ponte lo inoltra come lettura `{ "online": true \| false }` |
+| `bighack/<zona>/<deviceId>/cmd` | cloud/agenti → dispositivo | comandi (badge: `{"text": "..."}`, `{"read": true}`, `{"interval": 30}`); il ponte non li legge |
+| `tele/<topic>/SENSOR`, `STATE`, `LWT` | Tasmota (FullTopic predefinito) | telemetria Tasmota, convertita dal ponte (sotto) |
+| `bighack/<zona>/<topic>/tele/SENSOR` | Tasmota con `FullTopic bighack/<zona>/%topic%/%prefix%/` | come sopra, con la zona presa dal topic |
+| `napoli/sensori/<nodo>/<grandezza>` | ESP32 di `c5-agentic-city` | `{"valore": n, "zona": "...", "moltiplicatore": m}`: letto dal ponte solo con `MQTT_C5=1` |
+
+- `<zona>` e `<deviceId>` sono un livello di topic ciascuno: niente `/`, `+`, `#`, spazi (il firmware li sostituisce con `_`). Zona sconosciuta: `senza-zona`.
+- Sul broker del team (`cloud/mqtt/`) il **nome utente MQTT di un dispositivo è il suo deviceId** (o il Topic di Tasmota): l'ACL gli fa scrivere solo `bighack/+/<utente>/#`, `tele/<utente>/#`, `stat/<utente>/#` e `napoli/sensori/<utente>/#`. Il ponte usa l'utente `ponte` (lettura di `bighack/#`, `tele/#`, `stat/#`). Porte: 1883 (utente e password), 8883 (TLS), 8884 (WebSocket TLS).
+- QoS: letture 0 o 1, stato 1 retained. Keepalive consigliato 30 s (il broker accetta fino a 300), così l'offline arriva entro ~45 s.
+- **Dimensione**: una lettura completa del badge è ~500 byte. Il firmware del badge (ESP-MQTT) ha buffer da 1024 byte, Tasmota ~1200, il broker accetta fino a 256 KB. Con **PubSubClient** (sketch Arduino) il limite predefinito è **256 byte compreso il topic**: chiama `mqtt.setBufferSize(1024)` prima di `connect()`, altrimenti `publish()` restituisce `false` senza altri errori.
+- `ts` solo se l'ora del dispositivo è sincronizzata (NTP); altrimenti lo mette il hub alla ricezione, come in sezione 1.
+
+### Il ponte MQTT → hub
+
+`node shared/iot-agents/tools/mqtt-bridge.js` (nessuna dipendenza npm; client MQTT 3.1.1 in `tools/mqtt-client.js`, conversioni in `tools/mqtt-convert.js`). Configurazione solo da variabili d'ambiente:
+
+| Variabile | Predefinito | |
+|---|---|---|
+| `MQTT_URL` | `mqtt://cloud.robertodisanto.it:1883` | anche `mqtts://`, `ws://`, `wss://` |
+| `MQTT_USER`, `MQTT_PASSWORD` | — | |
+| `MQTT_TOPICS` | `bighack/#` + `tele/+/SENSOR,STATE,LWT` + (`napoli/sensori/+/+`) | filtri separati da virgola |
+| `MQTT_TASMOTA`, `MQTT_C5`, `MQTT_STATUS` | 1, 0, 1 | quali formati leggere |
+| `MQTT_MAP` / `MQTT_MAP_FILE` | — | `{"<deviceId o topic Tasmota o nodo c5>": {"zone", "lat", "lon", "deviceId"}}`: posizione (vince su quella del dispositivo) e nome nel hub |
+| `MQTT_DEFAULT_ZONE` | — | zona dei Tasmota/c5 senza mappa |
+| `MQTT_CA_FILE`, `MQTT_INSECURE` | —, 0 | TLS con CA propria / senza verifica (solo prove) |
+| `HUB_URL`, `HUB_TOKEN` | `http://localhost:8701`, — | |
+| `DRY_RUN`, `HEALTH_PORT`, `LOG` | 0, —, `info` | stampa senza inviare; `GET /health` (200 se connesso al broker); `quiet`/`debug` |
+
+- Ogni messaggio diventa una `POST /api/readings` (una alla volta, in ordine).
+  - Il hub giù o in errore 5xx: fino a 5 tentativi, poi la lettura si scarta.
+  - Errori 4xx: si scarta e si registra.
+  - Coda massima 1000.
+- Riconnessione al broker con attesa da 1 a 30 s e nuova iscrizione.
+- A ogni lettura il ponte aggiunge `meta.via = "mqtt"`.
+- **Tasmota**: `deviceId` = Topic; `meta.source = "tasmota"`, `meta.tasmotaTopic`, `meta.sensors`, `meta.deviceTime` (il campo `Time`, ora locale senza fuso: il `ts` lo mette il hub), `meta.rssi` da `tele/<topic>/STATE`.
+  - Campi convertiti:
+    - `Illuminance` → `light_lux`; `Temperature` → `temperature_c` (°F convertiti); `Humidity` → `humidity_pct`;
+    - `Pressure` → `pressure_hpa` (mmHg/inHg convertiti); `DewPoint` → `dew_point_c`;
+    - `CarbonDioxide` → `co2_ppm`, `eCO2` → `eco2_ppm`, `TVOC` → `tvoc_ppb`; `PM2.5`/`PM10` → `pm25_ugm3`/`pm10_ugm3`; `Distance` → `distance_cm`;
+    - `ENERGY.Power` → `power_w` (multicanale: `power_w_1`... e la somma in `power_w`), `Voltage` → `voltage_v`, `Current` → `current_a`, `Today`/`Total` → `energy_today_kwh`/`energy_total_kwh`;
+    - `ANALOG.A0` → `analog_a0`; `Switch1` → `switch1`; `POWER` in STATE → `relay`; LWT `Online`/`Offline` → `online`.
+  - Più sensori dello stesso tipo: il primo prende il nome standard, gli altri `temperature_c_ds18b20_2` e simili. I campi sconosciuti si saltano.
+- **c5**: `deviceId` = nodo, `location.zone` = `zona`.
+  - `persone` → `people_count` = `valore × moltiplicatore` (come l'agente Folla); `luce` → `light_lux`, `temperatura` → `temperature_c`, `umidita` → `humidity_pct`, `tensione` → `supply_v`.
+  - I messaggi con `deviceId` sono copie di un dispositivo `bighack/` e si saltano (niente doppioni).

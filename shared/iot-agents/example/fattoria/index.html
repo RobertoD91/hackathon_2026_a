@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Acqua comune — fattoria connessa</title>
+    <meta
+      name="description"
+      content="Scenario fattoria della base comune IoT + agenti: sonde di umidità del suolo, previsione meteo, un consorzio che divide l'acqua della notte e avvisa gli agricoltori."
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="./fattoria.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  </head>
+  <body>
+    <header class="top">
+      <div class="title">
+        <h1>Acqua comune</h1>
+        <p class="subtitle">Comunità irrigua di San Marzano sul Sarno · sonde nel suolo → agenti → consorzio → agricoltori</p>
+      </div>
+      <nav class="scenari" aria-label="Scenario della demo">
+        <a href="../"><b>Napoli</b><small>città in tempo reale</small></a>
+        <a href="./" aria-current="page"><b>Fattoria</b><small>Acqua comune</small></a>
+      </nav>
+      <div class="status">
+        <span id="mode" class="badge" title="Modalità di funzionamento">…</span>
+        <span id="conn" class="conn" aria-live="polite"></span>
+        <div class="clock" title="Ora simulata (Europe/Rome)">
+          <span class="clock-label">ora simulata</span>
+          <span id="clock" class="clock-value">--:--</span>
+          <span id="speed" class="clock-speed"></span>
+        </div>
+      </div>
+    </header>
+
+    <p id="demo-note" class="demo-note" hidden>
+      Modalità demo: nessun backend raggiungibile, quindi simulatore e agenti girano nel tuo browser.
+      Avvia <code>node shared/iot-agents/example/server.js --scenario fattoria</code> e apri <code>http://localhost:8701/</code> per la versione con il hub.
+    </p>
+
+    <section class="kpis" id="kpis" aria-label="Metriche"></section>
+
+    <!-- mappa dei campi: la disegna ../mappa.js con la configurazione di scenario.js -->
+    <section class="panel citymap" id="citymap" aria-labelledby="h-map"></section>
+
+    <main class="grid">
+      <section class="panel" aria-labelledby="h-dev">
+        <h2 id="h-dev">Sensori <span class="count" id="dev-count"></span></h2>
+        <div id="devices" class="devices"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-dec">
+        <h2 id="h-dec">Decisioni degli agenti</h2>
+        <ol id="decisions" class="feed"></ol>
+      </section>
+
+      <div class="col">
+        <section class="panel" aria-labelledby="h-sc">
+          <h2 id="h-sc">Scenari</h2>
+          <div id="scenario-buttons" class="scenario-buttons"></div>
+          <div id="active-scenarios" class="chips" aria-live="polite"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="h-not">
+          <h2 id="h-not">Messaggi agli agricoltori</h2>
+          <ol id="notifications" class="notifications"></ol>
+        </section>
+
+        <section class="panel chat" aria-labelledby="h-chat">
+          <h2 id="h-chat">Chat con il consorzio</h2>
+          <ol id="chat-log" class="chat-log"></ol>
+          <div class="chat-suggerimenti" aria-label="Domande di esempio">
+            <button type="button" data-chiedi="Quando irrigo il campo 3?">Quando irrigo il campo 3?</button>
+            <button type="button" data-chiedi="Piove domani?">Piove domani?</button>
+            <button type="button" data-chiedi="Quanta acqua risparmiamo?">Quanta acqua risparmiamo?</button>
+          </div>
+          <form id="chat-form" class="chat-form" autocomplete="off">
+            <input id="chat-input" type="text" placeholder="Es. quando irrigo il campo 3?" aria-label="Messaggio" maxlength="500" />
+            <button type="submit">Invia</button>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <details class="panel events">
+      <summary>Flusso eventi (bus)</summary>
+      <ol id="events" class="event-log"></ol>
+    </details>
+
+    <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+
+    <script type="module">
+      import { avviaDashboard } from '../app.js';
+      import fattoria from './scenario.js';
+      avviaDashboard(fattoria);
+    </script>
+  </body>
+</html>

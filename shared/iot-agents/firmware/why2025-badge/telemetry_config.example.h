@@ -65,3 +65,6 @@
 #define TELEMETRY_KEEP_SCHEDULE    0
 // 1 = all'accensione mostra subito la schermata SENSORI invece del logo.
 #define TELEMETRY_START_SCREEN     1
+// 1 = sulla schermata SENSORI lo schermo non si spegne (resta a luminosità media): comodo in demo,
+// consuma più batteria. 0 = come le altre schermate (si spegne dopo 15 s).
+#define TELEMETRY_SCREEN_AWAKE     1

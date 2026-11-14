@@ -1,0 +1,7 @@
+# Configurazione locale con password Wi-Fi e MQTT: non versionare.
+telemetry_config.h
+# Copia di lavoro del repo originale del badge creata da build.sh (con la cache .pio)
+upstream/
+# Output di compilazione
+build/
+.pio/

@@ -68,7 +68,11 @@ Online (dopo il push): https://robertodisanto.it/hackathon_2026_a/shared/iot-age
 | `example/mappa.js`, `example/luoghi.js` | mappa "Napoli in tempo reale" stile [Seoul Real-Time City Data](https://data.seoul.go.kr/SeoulRtd/): 10 luoghi, 4 livelli di affollamento o di caldo, vista mappa/lista, ricerca, filtro per categoria, scheda di dettaglio, cerchio che pulsa sul luogo più critico di ogni categoria. Leaflet 1.9.4 da cdnjs, tessere OpenStreetMap. Luoghi e capienze (indicative) in `luoghi.js`; l'affollamento arriva dalla lettura `people_count` dei sensori della zona | browser |
 | `example/agents/folla.js` | agente folla: livello per luogo, quando un luogo diventa "Affollato" propone all'orchestratore l'alternativa tranquilla più vicina (notifica WhatsApp ai turisti) | Node e browser |
 | `firmware/esp32-sensor/` | sketch ESP32 ([README](firmware/esp32-sensor/README.md)) | ESP32 |
+| `firmware/why2025-badge/` | firmware MQTT per il badge Cyber Saiyan WHY2025/EMF2026 (ESP32-C3), sopra il firmware originale ([README](firmware/why2025-badge/README.md)) | badge |
 | `tools/openclaw-bridge-sim.js` | simulazione del ponte OpenClaw | Node |
+| `tools/mqtt-bridge.js` | ponte MQTT → hub (badge, ESP32, Tasmota, c5) | Node |
+| `tools/mqtt-client.js`, `tools/mqtt-convert.js` | client MQTT 3.1.1 senza dipendenze, conversioni verso il contratto | Node |
+| `tools/mqtt-pub.js` | prove MQTT da riga di comando: pubblica, ascolta, simula badge e Tasmota | Node |
 | `test/` | test `node:test` | Node |
 
 ## Creare una soluzione (C2, C5)
@@ -328,7 +332,52 @@ Se OpenClaw gira su un altro server, il hub deve essere raggiungibile da lì (se
 
 ## ESP32
 
-Vedi [`firmware/esp32-sensor/README.md`](firmware/esp32-sensor/README.md): DHT22 o DS18B20, BH1750 o fotoresistenza, pulsante; invio ogni N secondi e subito alla pressione. Per ora in Wi-Fi verso un router/hotspot 5G (dichiarato come `meta.net: "5g"`), con un punto di estensione per il modem 5G.
+Due firmware, stesso formato delle letture:
+
+| Cartella | Hardware | Verso il hub |
+|---|---|---|
+| [`firmware/esp32-sensor/`](firmware/esp32-sensor/README.md) | ESP32 DevKit con DHT22 o DS18B20, BH1750 o fotoresistenza, pulsante (Arduino) | HTTP, `POST /api/readings` |
+| [`firmware/why2025-badge/`](firmware/why2025-badge/README.md) | badge Cyber Saiyan WHY2025/EMF2026 (ESP32-C3, display, 7 LED, 2 rotelle), ESP-IDF 4.4 | MQTT, tramite il ponte |
+
+Entrambi inviano ogni N secondi e subito alla pressione del pulsante (`button: true`). Per ora sono in Wi-Fi verso un router/hotspot 5G, dichiarato come `meta.net: "5g"`.
+
+Il badge **non ha un sensore di luce**: va collegato un BH1750 o un VEML7700 al connettore I2C, alimentato a 3,3 V dal connettore POW. Il firmware lo trova da solo, insieme a SHT4x/SHT3x, AHT20 e BME280. Usa anche ciò che c'è sulla scheda: la tensione di alimentazione dal TSC2007 e i badge vicini via Bluetooth. La schermata SENSORI mostra i valori e i messaggi che arrivano dal cloud. Compilazione: `firmware/why2025-badge/build.sh` (PlatformIO).
+
+**Tasmota** va bene per gli ESP32/ESP8266 generici con sensori standard e per le prese smart (`power_w`): nessun codice, il ponte converte la sua telemetria. Non conviene sul badge: si perdono il display e le funzioni del badge. Valutazione e comandi `Backlog` in [`firmware/why2025-badge/README.md`](firmware/why2025-badge/README.md#tasmota-non-possiamo-riciclare-tasmota).
+
+## MQTT
+
+Broker del team: `cloud.robertodisanto.it` (configurazione in `cloud/mqtt/`; porte 1883 con utente e password, 8883 TLS, 8884 WebSocket TLS). Topic e formati: [`CONTRATTO.md`](CONTRATTO.md), sezione 9.
+
+| Topic | Contenuto |
+|---|---|
+| `bighack/<zona>/<deviceId>/readings` | lettura del contratto (sezione 1) |
+| `bighack/<zona>/<deviceId>/status` | `{"online": true\|false}` retained, anche come last will |
+| `bighack/<zona>/<deviceId>/cmd` | comandi al dispositivo (badge: `{"text": "..."}`) |
+| `tele/<topic>/SENSOR` | Tasmota |
+| `napoli/sensori/<nodo>/<grandezza>` | `c5-agentic-city` (facoltativo) |
+
+Il **ponte** porta tutto al hub. È un solo comando, configurato solo da variabili d'ambiente, senza dipendenze npm:
+
+```bash
+# broker del team → hub locale
+MQTT_URL=mqtt://cloud.robertodisanto.it:1883 MQTT_USER=ponte MQTT_PASSWORD=... \
+  HUB_URL=http://localhost:8701 node shared/iot-agents/tools/mqtt-bridge.js
+
+# prova in locale, senza hardware
+docker run -d --rm -p 1883:1883 eclipse-mosquitto:2 mosquitto -c /mosquitto-no-auth.conf
+MQTT_URL=mqtt://localhost:1883 node shared/iot-agents/tools/mqtt-bridge.js
+node shared/iot-agents/tools/mqtt-pub.js --url mqtt://localhost:1883 --badge --count 5 --button   # come il badge
+node shared/iot-agents/tools/mqtt-pub.js --url mqtt://localhost:1883 --tasmota tasmota_ABC123     # come un Tasmota
+node shared/iot-agents/tools/mqtt-pub.js --url mqtt://localhost:1883 --sub 'bighack/#,tele/#'     # ascolta
+```
+
+- Altre variabili:
+  - `MQTT_MAP` / `MQTT_MAP_FILE`: zona e posizione per deviceId o topic Tasmota (esempio in `tools/mqtt-map.example.json`);
+  - `MQTT_TASMOTA`, `MQTT_C5`: quali formati leggere;
+  - `HUB_TOKEN`, `DRY_RUN=1`, `HEALTH_PORT`.
+- Il ponte ha anche un'immagine Docker accanto al broker, in `cloud/mqtt/compose.yaml`, profilo `ponte`.
+- Con la variabile `MQTT_TEST_URL` i test girano anche contro un broker vero.
 
 ## Test
 

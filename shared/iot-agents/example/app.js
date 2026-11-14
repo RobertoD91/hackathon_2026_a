@@ -401,6 +401,14 @@ $('chat-form').addEventListener('submit', async (ev) => {
   }
 });
 
+// domande di esempio (pulsanti con data-chiedi, se la pagina ne ha)
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest?.('[data-chiedi]');
+  if (!b) return;
+  $('chat-input').value = b.dataset.chiedi;
+  $('chat-form').requestSubmit();
+});
+
 function onChatEvent(d) {
   if (d.from === CHAT_FROM && pending.has(d.text)) {
     const el = pending.get(d.text);

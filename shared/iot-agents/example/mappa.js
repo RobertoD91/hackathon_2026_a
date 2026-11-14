@@ -18,7 +18,8 @@
 // {
 //   titolo, sottotitolo, nota,           // testi (nota: HTML o funzione (ctx) → HTML)
 //   cerca: 'Cerca un luogo…', ariaMappa: 'Mappa di Napoli', ariaLista?: 'Luogo',
-//   vista: { centro: [lat, lon], zoom: 13, zoomMobile?: 12, zoomEtichette: 14, zoomVolo: 15 },
+//   vista: { centro: [lat, lon], zoom: 13, zoomMobile?: 12, adattaMobile?: true (su telefono inquadra tutti i luoghi),
+//            zoomSnap?: 1 (0.25 = zoom frazionario), zoomEtichette: 14, zoomVolo: 15 },
 //   tema?: { gradiente: 'linear-gradient(...)', accento: '#4a6fe0', accentoTesto: '#3f5fcf' },
 //   categorie: { id: 'Etichetta' }, tutte: 'Tutti i luoghi',
 //   luoghi: { zona: { nome, categoria, lat, lon, poligono?: [[lat, lon], ...], icona?: '…', parole?: [...], ... } },
@@ -171,8 +172,9 @@ export function createMappa(root, config, opts = {}) {
   const poligono = {};
   const strati = {}; // id sovrapposto → layer
   if (L) {
-    const zoom0 = (matchMedia(MOBILE).matches && vista.zoomMobile) || vista.zoom;
-    map = L.map(ui.map, { zoomControl: false, attributionControl: true, scrollWheelZoom: false }).setView(vista.centro, zoom0);
+    const mobile = matchMedia(MOBILE).matches;
+    const zoom0 = (mobile && vista.zoomMobile) || vista.zoom;
+    map = L.map(ui.map, { zoomControl: false, attributionControl: true, scrollWheelZoom: false, zoomSnap: vista.zoomSnap ?? 1 }).setView(vista.centro, zoom0);
     L.control.zoom({ position: 'topright' }).addTo(map);
     const scuro = matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.dataset.theme !== 'light';
     // Tessere OpenStreetMap standard (gratuite con attribuzione, adatte a una demo a basso traffico).
@@ -202,6 +204,10 @@ export function createMappa(root, config, opts = {}) {
           seleziona(zona);
         })
         .addTo(map);
+    }
+    if (mobile && vista.adattaMobile) {
+      const punti = Object.values(LUOGHI).flatMap((l) => (l.poligono?.length ? l.poligono : [[l.lat, l.lon]]));
+      map.fitBounds(L.latLngBounds(punti), { padding: [16, 16] });
     }
     // la mappa nasce dentro un layout che può cambiare dimensione
     new ResizeObserver(() => map.invalidateSize()).observe(ui.map);

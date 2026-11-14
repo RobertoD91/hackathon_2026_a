@@ -401,6 +401,7 @@ static void read_and_publish(bool button, const char *trigger) {
 
 static void telemetry_task(void *arg) {
     sensors_init();
+    vTaskDelay(pdMS_TO_TICKS(200));  // prima misura del BH1750 in modo continuo: 120-180 ms
     snap_lock();
     strlcpy(snap.sensors, sensors_found(), sizeof(snap.sensors));
     snap_unlock();
@@ -446,14 +447,12 @@ static void telemetry_task(void *arg) {
             }
         }
 
-        // 2) MQTT segue l'IP: con l'IP si avvia, senza si ferma (niente errori a raffica)
+        // 2) MQTT: si avvia al primo IP e non si ferma più; la riconnessione (ogni 5 s) la fa ESP-MQTT.
+        // Niente esp_mqtt_client_stop(): manderebbe DISCONNECT e il broker NON pubblicherebbe il
+        // last will (e se la scrittura fallisce ritorna errore senza fermare il client).
         if (mqtt && got_ip && !mqtt_started) {
             sntp_start_once();
             if (esp_mqtt_client_start(mqtt) == ESP_OK) mqtt_started = true;
-        } else if (mqtt && !got_ip && mqtt_started) {
-            esp_mqtt_client_stop(mqtt);
-            mqtt_started = false;
-            mqtt_connected = false;
         }
         if (got_ip) set_state(mqtt_connected ? TELEMETRY_ONLINE : TELEMETRY_MQTT_WAIT);
 

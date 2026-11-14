@@ -166,7 +166,8 @@ export class Consorzio extends Agent {
         `Domani ET0 ${fmt(prev.et0Domani)} mm e pioggia ${fmt(prev.pioggiaDomani)} mm, previsione ${fonte}` +
         `${this.#riduzione ? '; dotazione ridotta del 40 %' : ''}. Kc da FAO-56.`,
     });
-    ctx.metric('litri_risparmiati', piano.risparmioL, 'L', { label: 'Acqua risparmiata vs calendario' });
+    // in migliaia di litri: la dashboard mostra "248 mila L" invece di "248K L"
+    ctx.metric('litri_risparmiati', Math.round(piano.risparmioL / 1000), 'mila L', { label: 'Litri risparmiati vs calendario' });
     ctx.metric('acqua_assegnata', Math.round(piano.totaleL / 1000), 'm³', { label: 'Acqua assegnata stanotte' });
     ctx.metric('turni_tagliati', piano.tagliati, '', { label: 'Turni ridotti o rinviati' });
 
