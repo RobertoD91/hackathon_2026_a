@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TwinCiro · Flasher ESP32</title>
+<meta name="description" content="Installa il firmware del nodo TwinCiro (semaforo o sensore) su un ESP32 direttamente dal browser.">
+<script type="module" src="https://unpkg.com/esp-web-tools@10.4.0/dist/web/install-button.js?module"></script>
+<style>
+  :root {
+    --fondo: #0b1220; --pannello: #111a2e; --bordo: #24314f; --testo: #e2e8f0; --tenue: #94a3b8;
+    --accento: #38bdf8; --verde: #4ade80; --giallo: #facc15; --rosso: #f87171;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-tema="scuro"]) { --fondo: #f8fafc; --pannello: #ffffff; --bordo: #dbe3ef; --testo: #0f172a; --tenue: #475569; --accento: #0369a1; --verde: #15803d; --giallo: #a16207; --rosso: #b91c1c; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--testo); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 920px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 4px; letter-spacing: .5px; }
+  h1 span { color: var(--accento); }
+  h2 { font-size: 1.2rem; margin: 32px 0 10px; }
+  p.sotto { color: var(--tenue); margin: 0 0 24px; }
+  .pannello { background: var(--pannello); border: 1px solid var(--bordo); border-radius: 14px; padding: 20px; }
+  .installa { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between; }
+  .installa .info { color: var(--tenue); font-size: .95rem; }
+  .installa .info b { color: var(--testo); }
+  esp-web-install-button button, .bottone {
+    background: var(--accento); color: #00131f; border: 0; border-radius: 10px; padding: 12px 22px;
+    font-weight: 700; font-size: 1rem; cursor: pointer;
+  }
+  .avviso { border-left: 4px solid var(--giallo); padding: 10px 14px; background: color-mix(in srgb, var(--giallo) 10%, transparent); border-radius: 6px; margin: 14px 0; }
+  .errore { border-left-color: var(--rosso); background: color-mix(in srgb, var(--rosso) 10%, transparent); }
+  ol { padding-left: 22px; } li { margin: 6px 0; }
+  code { background: color-mix(in srgb, var(--accento) 12%, transparent); padding: 1px 6px; border-radius: 5px; font-size: .92em; }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--bordo); vertical-align: top; }
+  th { color: var(--tenue); font-weight: 600; }
+  .griglia { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .scroll { overflow-x: auto; }
+  footer { margin-top: 40px; color: var(--tenue); font-size: .9rem; }
+  a { color: var(--accento); }
+</style>
+</head>
+<body>
+<main>
+  <h1><span>TwinCiro</span> · Flasher ESP32</h1>
+  <p class="sotto">Installa il firmware del nodo del plastico (semaforo o sensore) collegando l'ESP32 via USB. Funziona con Chrome o Edge su computer.</p>
+
+  <div class="pannello installa">
+    <div class="info" id="info">Controllo il firmware disponibile…</div>
+    <esp-web-install-button id="bottone" manifest="firmware/manifest.json">
+      <button slot="activate" class="bottone">Installa sull'ESP32</button>
+      <span slot="unsupported" class="avviso errore">Il browser non supporta Web Serial: usa Chrome o Edge su computer (non su telefono).</span>
+      <span slot="not-allowed" class="avviso errore">Serve una pagina HTTPS o localhost.</span>
+    </esp-web-install-button>
+  </div>
+  <div id="manca" class="avviso" hidden>
+    Il firmware non è ancora stato compilato. Su GitHub: <b>Actions → Firmware TwinCiro → Run workflow</b>. Dopo circa 10 minuti i binari compaiono qui da soli.
+  </div>
+
+  <h2>1. Installa</h2>
+  <ol>
+    <li>Collega l'ESP32 al computer con un cavo USB <b>dati</b> (alcuni cavi caricano soltanto).</li>
+    <li>Premi <b>Installa</b> e scegli la porta seriale. Chip supportati: ESP32, ESP32-S3, ESP32-C3. Il tipo lo riconosce da solo.</li>
+    <li>Se non si collega: tieni premuto <b>BOOT</b>, premi e rilascia <b>EN/RST</b>, poi rilascia BOOT e riprova. Su Windows può servire il driver CP210x o CH340.</li>
+  </ol>
+
+  <h2>2. Configura (dal telefono)</h2>
+  <ol>
+    <li>Dopo il riavvio l'ESP32 crea la rete Wi-Fi <code>TwinCiro-XXXXXX</code> con password <code>twinciro</code>.</li>
+    <li>Collegati: si apre il portale, altrimenti vai su <code>192.168.4.1</code>. Tocca <b>Configure WiFi</b>.</li>
+    <li>Scegli il Wi-Fi del plastico e compila i campi di TwinCiro (sotto). Salva: il nodo si riavvia e si collega.</li>
+  </ol>
+  <div class="griglia">
+    <div class="pannello">
+      <b>Semaforo</b>
+      <table>
+        <tr><th>Campo</th><th>Valore</th></tr>
+        <tr><td>Ruolo</td><td><code>semaforo</code></td></tr>
+        <tr><td>Id</td><td><code>mergellina</code>, <code>chiaia_sanpasquale</code>, <code>chiaia_portico</code> o <code>vittoria_acton</code></td></tr>
+        <tr><td>Capofila</td><td><code>1</code> su un solo semaforo, <code>0</code> sugli altri</td></tr>
+        <tr><td>Ritardo onda</td><td>0, 6000, 12000, 18000 ms in ordine lungo il lungomare</td></tr>
+      </table>
+    </div>
+    <div class="pannello">
+      <b>Sensore</b>
+      <table>
+        <tr><th>Campo</th><th>Valore</th></tr>
+        <tr><td>Ruolo</td><td><code>sensore</code></td></tr>
+        <tr><td>Id</td><td>nome libero, es. <code>varco_rotonda</code></td></tr>
+        <tr><td>Zona</td><td><code>mergellina</code>, <code>rotonda_diaz</code>, <code>piazza_vittoria</code>, <code>castel_ovo</code>, <code>municipio</code>, <code>beverello</code>, <code>vomero</code></td></tr>
+        <tr><td>Persone per passaggio</td><td>200 (sul plastico una mano vale 200 persone)</td></tr>
+      </table>
+    </div>
+  </div>
+  <div>Broker MQTT:
+    <ul>
+      <li>in sede, l'IP del portatile con <code>docker compose up -d</code> di <code>c5-agentic-city</code>, porta 1883, senza utente;</li>
+      <li>in alternativa il broker del team, porta 1883 con l'utente del dispositivo (vedi <code>cloud/mqtt/README.md</code>).</li>
+    </ul>
+  </div>
+
+  <h2>3. Collegamenti</h2>
+  <div class="pannello scroll">
+    <table>
+      <tr><th>Scheda</th><th>Testa A (R, G, V)</th><th>Testa B (R, G, V)</th><th>Sensore IR</th><th>Pulsante</th><th>LED</th></tr>
+      <tr><td>ESP32 (DevKit)</td><td>16, 17, 18</td><td>19, 21, 22</td><td>34</td><td>0 (BOOT)</td><td>2</td></tr>
+      <tr><td>ESP32-S3</td><td>4, 5, 6</td><td>7, 15, 16</td><td>1</td><td>0 (BOOT)</td><td>2</td></tr>
+      <tr><td>ESP32-C3</td><td>2, 3, 4</td><td>5, 6, 7</td><td>10</td><td>9 (BOOT)</td><td>8</td></tr>
+    </table>
+    <p class="sotto" style="margin:10px 0 0">LED con resistenza da 220–330 Ω verso GND, oppure moduli semaforo da 5 V. Sensore IR tipo FC-51 (uscita LOW quando passa qualcosa). Pulsante: pressione breve = "arriva un pullman turistico"; <b>3 secondi = riapre il portale</b>.</p>
+  </div>
+
+  <h2>4. Comandi dal monitor seriale</h2>
+  <p>Dopo l'installazione premi <b>Logs &amp; Console</b> nel menu del pulsante. Comandi disponibili:</p>
+  <ul>
+    <li><code>stato</code>: mostra la configurazione;</li>
+    <li><code>portale</code>: riapre il portale di configurazione;</li>
+    <li><code>reset</code>: cancella tutto e riparte da zero.</li>
+  </ul>
+  <p>Il nodo pubblica il suo stato su <code>napoli/nodi/&lt;id&gt;/stato</code>.</p>
+
+  <footer>
+    Sorgente: <a href="https://github.com/RobertoD91/hackathon_2026_a/tree/master/c5-agentic-city/firmware/twinciro-nodo">c5-agentic-city/firmware/twinciro-nodo</a>
+    · Installazione via <a href="https://esphome.github.io/esp-web-tools/">ESP Web Tools</a> · The Big Hack 2026, challenge Fastweb + Vodafone.
+  </footer>
+</main>
+<script>
+  // Mostra versione e data del firmware, o come compilarlo se manca.
+  fetch('firmware/info.json', {cache: 'no-store'})
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(i => {
+      document.getElementById('info').innerHTML =
+        `Firmware <b>${i.versione}</b>${i.nota ? ' · ' + i.nota.replace(/[<>&]/g, '') : ''}<br>ESP32 · ESP32-S3 · ESP32-C3`;
+    })
+    .catch(() => {
+      document.getElementById('info').textContent = 'Firmware non ancora disponibile.';
+      document.getElementById('manca').hidden = false;
+      document.getElementById('bottone').hidden = true;
+    });
+</script>
+</body>
+</html>

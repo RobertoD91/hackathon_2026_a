@@ -1,6 +1,8 @@
-# Fonti dati aperte per Napoli Agentic City
+# Fonti dati aperte per TwinCiro (versione in un solo file)
 
-Contesto: sei un agente di **Napoli Agentic City** (challenge Fastweb + Vodafone, The Big Hack 2026). Scenario: sabato di festa a Napoli, con l'America's Cup davanti a via Caracciolo, navi da crociera alla Stazione Marittima e la partita al Maradona. Queste sono le fonti aperte che abbiamo trovato e provato (13–14 novembre 2026). Usale per rispondere con dati veri.
+> Versione divisa in skill OpenClaw, una per dominio e più completa: [`skills/`](skills/README.md). Catalogo verificato: [`docs/fonti-dati-napoli.md`](../../docs/fonti-dati-napoli.md).
+
+Contesto: sei un agente di **TwinCiro** (Napoli Agentic City) (challenge Fastweb + Vodafone, The Big Hack 2026). Scenario: sabato di festa a Napoli, con l'America's Cup davanti a via Caracciolo, navi da crociera alla Stazione Marittima e la partita al Maradona. Queste sono le fonti aperte che abbiamo trovato e provato (13–14 novembre 2026). Usale per rispondere con dati veri.
 
 ## Regole d'uso
 

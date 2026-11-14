@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 risultati/
 .video3d/
+firmware/twinciro-nodo/versione.h

@@ -15,9 +15,9 @@ Team (dal 13/11 sera): **Roberto D'Isanto e Mario Varlese**. Francesca Morra, Gi
 
 **Priorità del nostro team:** C5 Fastweb + Vodafone è la challenge **principale**, C2 Meditech quella **di riserva**, C1 Bhblasted molto improbabile. C4 (`c4-jrpg/`) ora è dell'altro gruppo: la cartella resta qui com'è, non va più modificata.
 
-**Scelta definitiva (14/11): C5 "Napoli Agentic City".** Cosa ne pensano i partner (Fastweb e Vodafone, incontro del 14/11):
+**Scelta definitiva (14/11): C5 "Napoli Agentic City". Nome del progetto: TwinCiro** (Twin = gemello digitale, Ciro = CiroGPT). Cosa ne pensano i partner (Fastweb e Vodafone, incontro del 14/11):
 - la parte **IoT è piaciuta**;
-- **CiroGPT** (l'agente OpenClaw di Roberto, già collegato con la skill `c5-agentic-city/openclaw/napoli-agentic-city/SKILL.md`, che funziona) è il pezzo **più apprezzato**: va messo al centro;
+- **CiroGPT** (l'agente OpenClaw di Roberto, già collegato con la skill della città, ora in `c5-agentic-city/openclaw/skills/twinciro-citta/`, che funziona; le skill delle fonti aperte sono nella stessa cartella) è il pezzo **più apprezzato**: va messo al centro;
 - il **gemello digitale** è piaciuto, ma meno di CiroGPT;
 - la parte **traffico/semafori non è piaciuta**: ridimensionarla. Il video 3D della regata (`c5-agentic-city/media/regata_3d.mp4`) invece è piaciuto.
 
@@ -39,7 +39,7 @@ Soluzioni esistenti:
 - `c1-feed-simulato/`: C1 Bhblasted, pubblico sintetico che prevede vincitore, CTR per segmento e fascia di CPM (online, modalità mock).
 - `c2-cer-quartiere/`: C2 Meditech / Federico II, comunità energetica rinnovabile di quartiere sopra `shared/iot-agents` (porta 8703; online in modalità demo). Avvio `node c2-cer-quartiere/server.js`, test `cd c2-cer-quartiere && npm test`, KPI di una giornata `npm run giornata`. Parametri con fonti e stato (verificato/indicativo) in `model/parametri.js`, quartiere in `model/quartiere.js`, ottimizzatore in `model/ottimizzatore.js`; la dashboard riceve il dettaglio dall'evento personalizzato `cer.stato` (via SSE, non in `/api/state`).
 - `c4-jrpg/`: C4 Consorzio Clara, JRPG a turni red team vs blue team (giocabile). Un tower defense per C4 è previsto più avanti. `jrpg/index.html` è solo un redirect al vecchio URL.
-- `c5-agentic-city/`: C5 Fastweb + Vodafone, "Napoli Agentic City". Brief e decisioni nel suo README. Non è una webapp: agenti + sensori IoT (ESP32, modulo 5G) + droni. Per un proxy/worker serve un Worker Cloudflare nuovo: **non usare `mbl-privato`**. Avvio: `python avvia.py` (venv con `requirements.txt`) oppure `docker compose up -d` dalla cartella (Mosquitto + città); video della simulazione con `strumenti/video_demo.py`.
+- `c5-agentic-city/`: C5 Fastweb + Vodafone, "Napoli Agentic City". Brief e decisioni nel suo README. Non è una webapp: agenti + sensori IoT (ESP32, modulo 5G) + droni. Per un proxy/worker serve un Worker Cloudflare nuovo: **non usare `mbl-privato`**. Avvio: `python avvia.py` (venv con `requirements.txt`) oppure `docker compose up -d` dalla cartella (Mosquitto + città); video della simulazione con `strumenti/video_demo.py`. Firmware ESP32 unico in `firmware/twinciro-nodo/` (ruolo semaforo/sensore, Wi-Fi e MQTT si configurano dopo il flash dal portale `TwinCiro-XXXXXX`); flasher web in `flasher/` (ESP Web Tools), binari compilati **solo a mano** dall'action `.github/workflows/firmware-twinciro.yml`, che li committa in `flasher/firmware/` e rilancia Pages.
 
 ## Infrastruttura
 

@@ -1,6 +1,22 @@
-# C5 — Napoli Agentic City
+# TwinCiro
 
-Challenge 05 di The Big Hack 2026, promossa da **Fastweb + Vodafone**: *"Napoli Agentic City: la città che Ci pensa"*.
+**TwinCiro** è il progetto del nostro team per la Challenge 05 di The Big Hack 2026, promossa da **Fastweb + Vodafone**: *"Napoli Agentic City: la città che Ci pensa"*.
+
+Il nome unisce le due anime del progetto:
+- **Twin**: il gemello digitale della città, con sensori ESP32 su un plastico e la simulazione sulle strade vere;
+- **Ciro**: **CiroGPT**, l'assistente su WhatsApp (agente OpenClaw) che parla con cittadini e turisti e con gli agenti della città.
+
+## I pezzi di TwinCiro
+
+| Pezzo | Dove | Stato |
+|---|---|---|
+| **CiroGPT**: skill OpenClaw (città + fonti aperte di Napoli) | [`openclaw/skills/`](openclaw/skills/README.md) | la skill della città funziona su CiroGPT; quelle delle fonti sono da caricare |
+| Agenti della città, assistenti personali, API per CiroGPT | `citta/`, `avvia.py` | funzionano (con LLM o con regole) |
+| Nodi ESP32 del plastico (semaforo o sensore) | [`firmware/twinciro-nodo/`](firmware/README.md) | compila per ESP32, S3 e C3; da provare su hardware |
+| **Flasher web** per gli ESP32 | [`flasher/`](https://robertodisanto.it/hackathon_2026_a/c5-agentic-city/flasher/) | binari compilati a richiesta dall'action "Firmware TwinCiro" |
+| Gemello digitale SUMO | `citta/gemello/` | funziona |
+| Video | `media/regata_3d.mp4` (regata in 3D), `media/demo_gemello.mp4` | pronti; consegna finale: video di massimo 3 minuti |
+| Docker | `compose.yaml` | provato (Mosquitto + città + API) |
 
 > **In una frase:** un ecosistema di agenti AI che **negoziano tra loro**. Ci sono gli agenti della città, gli agenti personali di cittadini e turisti, e gli agenti delle imprese. Hanno un sistema nervoso fisico (semafori ESP32 su un plastico, sensori, droni) e un **gemello digitale sulle strade vere di Napoli** che misura quanto si guadagna rispetto a una città senza agenti.
 
@@ -11,7 +27,7 @@ Incontro con Fastweb e Vodafone:
 | Parte | Giudizio |
 |---|---|
 | IoT (ESP32, sensori, plastico) | piaciuta |
-| **CiroGPT** (agente OpenClaw su WhatsApp con la skill di `openclaw/`) | **la più apprezzata**: va messa al centro |
+| **CiroGPT** (agente OpenClaw su WhatsApp con le skill di `openclaw/skills/`) | **la più apprezzata**: va messa al centro |
 | Gemello digitale | piaciuto, ma meno di CiroGPT |
 | Traffico e semafori | **non piaciuto**: da ridimensionare |
 | Video 3D della regata (`media/regata_3d.mp4`) | piaciuto |
@@ -143,8 +159,9 @@ c5-agentic-city/
     sala.py                 # console della sala operativa
   dati/                     # scenario, luoghi, imprese, rete stradale SUMO
   strumenti/                # chat.py, drone_osserva.py, confronto.py (KPI senza GUI)
-  firmware/                 # sketch ESP32: semaforo (MQTT + ESP-NOW), sensore
-  openclaw/                 # skill per collegare l'assistente WhatsApp
+  firmware/twinciro-nodo/   # firmware unico dei nodi ESP32 (ruolo semaforo o sensore scelto dal portale Wi-Fi)
+  flasher/                  # pagina web per installare il firmware dal browser (ESP Web Tools)
+  openclaw/skills/          # skill di CiroGPT: città + fonti aperte di Napoli
 ```
 
 È tutto in questa cartella. Il bus e il firmware sono scritti per poter essere spostati in `shared/` se servono anche a C2.
@@ -370,7 +387,7 @@ Da fare:
 - [x] Taratura dei pesi dei corridoi (verificata su 4 semi).
 - [ ] Controllo semaforico più evoluto (oggi semplice: estende il verde dove c'è coda).
 - [ ] Provare con un LLM vero: Claude (chiave del team) e Codex (verificare i flag di `codex exec`).
-- [ ] Provare il firmware su hardware e la skill su OpenClaw.
+- [ ] Provare il firmware su hardware (flasher web) e caricare su CiroGPT le skill delle fonti.
 - [ ] Costruire il plastico.
 - [ ] Integrare i dati del Comune.
 - [ ] Preparare il video di riserva del drone.
