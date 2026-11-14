@@ -6,3 +6,5 @@ import './core.test.js';
 import './llm.test.js';
 import './sim.test.js';
 import './http.test.js';
+import './fattoria.test.js';
+import './mqtt.test.js';

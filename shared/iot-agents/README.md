@@ -339,7 +339,7 @@ Due firmware, stesso formato delle letture:
 | [`firmware/esp32-sensor/`](firmware/esp32-sensor/README.md) | ESP32 DevKit con DHT22 o DS18B20, BH1750 o fotoresistenza, pulsante (Arduino) | HTTP, `POST /api/readings` |
 | [`firmware/why2025-badge/`](firmware/why2025-badge/README.md) | badge Cyber Saiyan WHY2025/EMF2026 (ESP32-C3, display, 7 LED, 2 rotelle), ESP-IDF 4.4 | MQTT, tramite il ponte |
 
-Entrambi inviano ogni N secondi e subito alla pressione del pulsante (`button: true`). Per ora sono in Wi-Fi verso un router/hotspot 5G, dichiarato come `meta.net: "5g"`.
+Entrambi inviano ogni N secondi e subito alla pressione del pulsante (`button: true`). Vanno in Wi-Fi; se la rete è un router/hotspot 5G si dichiara con `meta.net: "5g"` (`NET_LABEL` / `TELEMETRY_NET_LABEL`).
 
 Il badge **non ha un sensore di luce**: va collegato un BH1750 o un VEML7700 al connettore I2C, alimentato a 3,3 V dal connettore POW. Il firmware lo trova da solo, insieme a SHT4x/SHT3x, AHT20 e BME280. Usa anche ciò che c'è sulla scheda: la tensione di alimentazione dal TSC2007 e i badge vicini via Bluetooth. La schermata SENSORI mostra i valori e i messaggi che arrivano dal cloud. Compilazione: `firmware/why2025-badge/build.sh` (PlatformIO).
 
@@ -376,7 +376,7 @@ node shared/iot-agents/tools/mqtt-pub.js --url mqtt://localhost:1883 --sub 'bigh
   - `MQTT_MAP` / `MQTT_MAP_FILE`: zona e posizione per deviceId o topic Tasmota (esempio in `tools/mqtt-map.example.json`);
   - `MQTT_TASMOTA`, `MQTT_C5`: quali formati leggere;
   - `HUB_TOKEN`, `DRY_RUN=1`, `HEALTH_PORT`.
-- Il ponte ha anche un'immagine Docker accanto al broker, in `cloud/mqtt/compose.yaml`, profilo `ponte`.
+- In `cloud/mqtt/compose.yaml` è previsto un servizio per il ponte (profilo `ponte`, da attivare) con `command: node shared/iot-agents/tools/mqtt-bridge.js`.
 - Con la variabile `MQTT_TEST_URL` i test girano anche contro un broker vero.
 
 ## Test

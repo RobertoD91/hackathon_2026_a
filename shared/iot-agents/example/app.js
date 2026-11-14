@@ -70,7 +70,8 @@ export async function avviaDashboard(scenario) {
   hub = await connectHub({ simConfig: conf, demoAgents: scenario.demoAgents });
   let initial = await hub.getState();
   let altroHub = false;
-  if (hub.mode === 'live' && scenario.firma && !(scenario.firma in (initial.agents || {}))) {
+  const agenti = Array.isArray(initial.agents) ? initial.agents.map((a) => a.name) : Object.keys(initial.agents || {});
+  if (hub.mode === 'live' && scenario.firma && !agenti.includes(scenario.firma)) {
     // il hub raggiungibile esegue un altro scenario (es. Napoli mentre questa è la fattoria)
     hub.close();
     altroHub = true;
