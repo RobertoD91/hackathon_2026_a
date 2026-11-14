@@ -62,9 +62,29 @@ function aggiornaMappa() {
   mappa.mostraEventi(s.modello.eventiTra(s.ts - 2 * ORA, s.ts + 6 * ORA));
 }
 
+/**
+ * Sostituisce il contenuto di un pannello senza far perdere all'utente quello che stava facendo:
+ * restano aperti i riquadri <details>, le scelte dei menu e gli elenchi caricati a richiesta (prossimi passaggi).
+ */
+function sostituisci(el, html, chiave) {
+  const stessa = el.dataset.chiave === chiave;
+  const aperti = stessa ? [...el.querySelectorAll('details')].map((d) => d.open) : [];
+  const scelte = stessa ? Object.fromEntries([...el.querySelectorAll('form select[name]')].map((x) => [x.name, x.value])) : {};
+  const caricati = stessa ? Object.fromEntries([...el.querySelectorAll('.passaggi[id]')].filter((x) => x.innerHTML).map((x) => [x.id, x.innerHTML])) : {};
+  el.innerHTML = html;
+  el.dataset.chiave = chiave;
+  if (!stessa) return void (el.scrollTop = 0);
+  el.querySelectorAll('details').forEach((d, i) => (d.open = Boolean(aperti[i])));
+  for (const x of el.querySelectorAll('form select[name]')) if (scelte[x.name] !== undefined && [...x.options].some((o) => o.value === scelte[x.name])) x.value = scelte[x.name];
+  for (const [id, contenuto] of Object.entries(caricati)) {
+    const lista = document.getElementById(id);
+    if (lista) lista.innerHTML = contenuto;
+  }
+}
+
 function aggiornaScheda() {
-  if (s.scheda === 'luogo') $('scheda-luogo').innerHTML = s.zona ? UI.rendiSchedaLuogo(s, s.zona) : UI.rendiSchedaCitta(s);
-  else if (s.scheda === 'operatore' && !s.riproduzione) $('scheda-operatore').innerHTML = UI.rendiOperatore(s);
+  if (s.scheda === 'luogo') sostituisci($('scheda-luogo'), s.zona ? UI.rendiSchedaLuogo(s, s.zona) : UI.rendiSchedaCitta(s), s.zona || 'citta');
+  else if (s.scheda === 'operatore' && !s.riproduzione) sostituisci($('scheda-operatore'), UI.rendiOperatore(s), 'operatore');
 }
 
 function aggiornaTempo(forza = false) {
@@ -447,7 +467,10 @@ async function avvia() {
   aggiorna({ subito: true });
 
   mappa.su('luogo', (zona) => seleziona(zona, { vola: true }));
-  mappa.su('sfondo', () => {});
+  mappa.su('orbita', (on) => {
+    s.orbita = on;
+    aggiornaStrumenti();
+  });
   mappa.su('pronta', () => {
     margini();
     mappa.impostaVista(s.vista);

@@ -18,7 +18,7 @@ const TERRA = '#0b1424';
 export const VISTE = Object.freeze({
   golfo: { center: [14.2440, 40.8420], zoom: 13.05, pitch: 60, bearing: 14 },
   centro: { center: [14.2515, 40.8445], zoom: 14.35, pitch: 60, bearing: -24 },
-  vesuvio: { center: [14.262, 40.842], zoom: 12.2, pitch: 74, bearing: 102 },
+  vesuvio: { center: [14.285, 40.838], zoom: 11.9, pitch: 76, bearing: 98 },
   alto: { center: [14.238, 40.842], zoom: 12.3, pitch: 0, bearing: 0 },
 });
 
@@ -44,11 +44,12 @@ function stile({ rilievo }) {
           }
         : {}),
     },
-    sky: { 'sky-color': '#0a1730', 'horizon-color': '#22406e', 'fog-color': '#0b1424', 'fog-ground-blend': 0.6, 'horizon-fog-blend': 0.75, 'sky-horizon-blend': 0.85, 'atmosphere-blend': 0.6 },
+    // orizzonte più chiaro della terra: le colline e il Vesuvio si stagliano contro il cielo
+    sky: { 'sky-color': '#0a1730', 'horizon-color': '#3a66a8', 'fog-color': '#13233f', 'fog-ground-blend': 0.8, 'horizon-fog-blend': 0.25, 'sky-horizon-blend': 0.55, 'atmosphere-blend': 0.5 },
     light: { anchor: 'viewport', color: '#dce8ff', intensity: 0.38, position: [1.25, 205, 38] },
     layers: [
       { id: 'sfondo', type: 'background', paint: { 'background-color': TERRA } },
-      ...(rilievo ? [{ id: 'ombre', type: 'hillshade', source: 'ombre', paint: { 'hillshade-shadow-color': '#01040a', 'hillshade-highlight-color': '#27406b', 'hillshade-accent-color': '#0b1424', 'hillshade-exaggeration': 0.55 } }] : []),
+      ...(rilievo ? [{ id: 'ombre', type: 'hillshade', source: 'ombre', paint: { 'hillshade-shadow-color': '#00030a', 'hillshade-highlight-color': '#4a6ea8', 'hillshade-accent-color': '#0b1424', 'hillshade-exaggeration': 0.85, 'hillshade-illumination-anchor': 'map', 'hillshade-illumination-direction': 315 } }] : []),
       { id: 'verde', type: 'fill', source: 'omt', 'source-layer': 'landcover', filter: ['in', ['get', 'class'], ['literal', ['wood', 'grass', 'farmland']]], paint: { 'fill-color': '#0d2127', 'fill-opacity': 0.55 } },
       { id: 'parchi', type: 'fill', source: 'omt', 'source-layer': 'park', paint: { 'fill-color': '#0e262b', 'fill-opacity': 0.6 } },
       { id: 'abitato', type: 'fill', source: 'omt', 'source-layer': 'landuse', filter: ['in', ['get', 'class'], ['literal', ['residential', 'commercial', 'retail', 'industrial']]], paint: { 'fill-color': '#0f1a2e', 'fill-opacity': 0.7 } },
@@ -124,7 +125,7 @@ export function creaMappa(contenitore, cfg) {
   const { luoghi } = cfg;
   const rilievo = cfg.rilievo !== false;
   const animazioni = cfg.animazioni !== false;
-  const ascoltatori = { luogo: [], sfondo: [], stazione: [], pronta: [] };
+  const ascoltatori = { luogo: [], sfondo: [], stazione: [], pronta: [], orbita: [] };
   const emetti = (nome, ...arg) => ascoltatori[nome].forEach((f) => f(...arg));
 
   const map = new maplibregl.Map({
@@ -440,46 +441,27 @@ export function creaMappa(contenitore, cfg) {
   contenitore.appendChild(suggerimento);
 
   function collegaInterazioni() {
-    for (const strato of ['colonne', 'aura', 'luoghi-nomi']) {
-      map.on('click', strato, (e) => {
-        const zona = e.features?.[0]?.properties?.zona;
-        if (zona) {
-          e.originalEvent.cancelBubble = true;
-          emetti('luogo', zona);
-        }
-      });
-      map.on('mousemove', strato, (e) => {
-        const p = e.features?.[0]?.properties;
-        if (!p) return;
-        map.getCanvas().style.cursor = 'pointer';
-        suggerimento.hidden = false;
-        suggerimento.innerHTML = `<b>${p.nome}</b><span><i style="background:${p.colore}"></i>${p.etichetta}</span>`;
-        suggerimento.style.transform = `translate(${e.point.x + 14}px, ${e.point.y + 14}px)`;
-      });
-      map.on('mouseleave', strato, () => {
-        map.getCanvas().style.cursor = '';
-        suggerimento.hidden = true;
-      });
-    }
-    map.on('mousemove', 'stazioni', (e) => {
-      const p = e.features?.[0]?.properties;
-      if (!p) return;
-      map.getCanvas().style.cursor = 'pointer';
-      suggerimento.hidden = false;
-      suggerimento.innerHTML = `<b>${p.nome}</b><span><i style="background:${p.colore}"></i>${p.linee}</span>`;
+    const STRATI_LUOGO = ['luoghi-nomi', 'colonne', 'aura']; // precedenza del clic: etichetta, colonna, alone
+    const sotto = (punto) => {
+      const f = map.queryRenderedFeatures(punto, { layers: STRATI_LUOGO }).sort((a, b) => STRATI_LUOGO.indexOf(a.layer.id) - STRATI_LUOGO.indexOf(b.layer.id))[0];
+      if (f) return { tipo: 'luogo', p: f.properties };
+      const st = map.queryRenderedFeatures(punto, { layers: ['stazioni'] })[0];
+      return st ? { tipo: 'stazione', p: st.properties } : null;
+    };
+    map.on('click', (e) => {
+      const x = sotto(e.point);
+      if (!x) return emetti('sfondo');
+      emetti(x.tipo, x.tipo === 'luogo' ? x.p.zona : x.p.id);
+    });
+    map.on('mousemove', (e) => {
+      const x = sotto(e.point);
+      map.getCanvas().style.cursor = x ? 'pointer' : '';
+      suggerimento.hidden = !x;
+      if (!x) return;
+      suggerimento.innerHTML = `<b>${x.p.nome}</b><span><i style="background:${x.p.colore}"></i>${x.tipo === 'luogo' ? x.p.etichetta : x.p.linee}</span>`;
       suggerimento.style.transform = `translate(${e.point.x + 14}px, ${e.point.y + 14}px)`;
     });
-    map.on('mouseleave', 'stazioni', () => {
-      map.getCanvas().style.cursor = '';
-      suggerimento.hidden = true;
-    });
-    map.on('click', 'stazioni', (e) => {
-      const id = e.features?.[0]?.properties?.id;
-      if (id && !e.originalEvent.cancelBubble) emetti('stazione', id);
-    });
-    map.on('click', (e) => {
-      if (!e.originalEvent.cancelBubble && !map.queryRenderedFeatures(e.point, { layers: ['colonne', 'aura', 'luoghi-nomi', 'stazioni'] }).length) emetti('sfondo');
-    });
+    map.on('mouseout', () => (suggerimento.hidden = true));
     // colonne e celle hanno dimensioni "a schermo": si ricalcolano quando cambia lo zoom
     let attesa = null;
     map.on('zoom', () => {
@@ -489,7 +471,14 @@ export function creaMappa(contenitore, cfg) {
         ridisegnaLuoghi();
       }, 90);
     });
-    for (const ev of ['mousedown', 'touchstart', 'wheel']) map.getCanvas().addEventListener(ev, () => (stato.orbita = false), { passive: true });
+    // chi tocca la mappa ferma il giro automatico della camera
+    for (const ev of ['mousedown', 'touchstart', 'wheel']) {
+      map.getCanvas().addEventListener(ev, () => {
+        if (!stato.orbita) return;
+        stato.orbita = false;
+        emetti('orbita', false);
+      }, { passive: true });
+    }
   }
 
   function applicaVista() {
