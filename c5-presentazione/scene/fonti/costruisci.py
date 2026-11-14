@@ -111,34 +111,36 @@ SITI = {
 
 # Una voce per ogni riga della sezione 2, con la chiave uguale alla colonna "Fonte" del documento.
 # nome: come appare a schermo (​ = punto in cui può andare a capo); formati: in breve, il primo va sul cartellino;
-# sito: chiave di SITI (None = nessun sito da cui prendere l'icona); pubblica: False solo per i dati che non sono pubblici.
+# sito: chiave di SITI (None = nessun sito da cui prendere l'icona); pubblica: False solo per i dati che non sono pubblici;
+# in_uso: True per le fonti già collegate all'API dati città di TwinCIRO (citta-api/), come da sezione 0 del documento
+# ("Cosa è davvero integrato", 14/11) e dagli indirizzi che il codice di citta-api/ chiama davvero.
 VOCI = {
     # 2.1 Meteo, allerte e ambiente
-    "Open-Meteo Forecast": dict(id="open-meteo-previsioni", nome="Open-Meteo previsioni", sito="open-meteo", formati=["JSON"]),
-    "Allerta meteo Campania": dict(id="allerta-campania", nome="Allerta meteo Campania", sito="centro-funzionale", formati=["JSON"]),
+    "Open-Meteo Forecast": dict(id="open-meteo-previsioni", in_uso=True, nome="Open-Meteo previsioni", sito="open-meteo", formati=["JSON"]),
+    "Allerta meteo Campania": dict(id="allerta-campania", in_uso=True, nome="Allerta meteo Campania", sito="centro-funzionale", formati=["JSON"]),
     "Stazioni idro-meteo Campania": dict(id="stazioni-campania", nome="Stazioni meteo Campania", sito="centro-funzionale", formati=["JSON"]),
-    "EEA E2a, centraline ARPAC": dict(id="eea-aria", nome="Centraline aria (EEA)", sito="eea", formati=["Parquet", "CSV"]),
+    "EEA E2a, centraline ARPAC": dict(id="eea-aria", in_uso=True, nome="Centraline aria (EEA)", sito="eea", formati=["Parquet", "CSV"]),
     "Open-Meteo Marine": dict(id="open-meteo-mare", nome="Open-Meteo mare", sito="open-meteo", formati=["JSON"]),
-    "Open-Meteo Air Quality (CAMS)": dict(id="open-meteo-aria", nome="Open-Meteo aria (CAMS)", sito="open-meteo", formati=["JSON"]),
+    "Open-Meteo Air Quality (CAMS)": dict(id="open-meteo-aria", in_uso=True, nome="Open-Meteo aria (CAMS)", sito="open-meteo", formati=["JSON"]),
     "ARPAC Open Data": dict(id="arpac", nome="ARPAC open data", sito="arpac", formati=["CSV"]),
     "meteo@uniparthenope": dict(id="uniparthenope", nome="meteo@​uniparthenope", sito="uniparthenope", formati=["JSON", "CSV"]),
-    "Meteoalarm Italia": dict(id="meteoalarm", nome="Meteoalarm", sito="meteoalarm", formati=["CAP"]),
-    "EEA Bathing Water 2025 (ArcGIS)": dict(id="eea-balneazione", nome="Balneazione (EEA)", sito="eea", formati=["ArcGIS"]),
+    "Meteoalarm Italia": dict(id="meteoalarm", in_uso=True, nome="Meteoalarm", sito="meteoalarm", formati=["CAP"]),
+    "EEA Bathing Water 2025 (ArcGIS)": dict(id="eea-balneazione", in_uso=True, nome="Balneazione (EEA)", sito="eea", formati=["ArcGIS"]),
     "Open-Meteo Historical (ERA5)": dict(id="open-meteo-storico", nome="Open-Meteo storico (ERA5)", sito="open-meteo", formati=["JSON", "CSV"]),
-    "MET Norway Locationforecast": dict(id="met-norway", nome="MET Norway", sito="met-norway", formati=["GeoJSON"]),
-    "INGV, terremoti": dict(id="ingv", nome="INGV terremoti", sito="ingv", formati=["GeoJSON"]),
+    "MET Norway Locationforecast": dict(id="met-norway", in_uso=True, nome="MET Norway", sito="met-norway", formati=["GeoJSON"]),
+    "INGV, terremoti": dict(id="ingv", in_uso=True, nome="INGV terremoti", sito="ingv", formati=["GeoJSON"]),
     "Sensor.Community": dict(id="sensor-community", nome="Sensor.​Community", sito="sensor-community", formati=["JSON"]),
     "WAQI / aqicn.org": dict(id="waqi", nome="WAQI aqicn.org", sito="waqi", formati=["JSON"]),
     "DPC, radar e bollettini": dict(id="dpc-radar", nome="Protezione Civile radar", sito="protezione-civile", formati=["GeoTIFF", "JSON"]),
     "EEA END, rumore": dict(id="eea-rumore", nome="Rumore (EEA)", sito="eea", formati=["ArcGIS"]),
     # 2.2 Mobilità e trasporti
-    "GTFS ANM": dict(id="anm-gtfs", nome="ANM orari", sito="anm", formati=["GTFS"]),
+    "GTFS ANM": dict(id="anm-gtfs", in_uso=True, nome="ANM orari", sito="anm", formati=["GTFS"]),
     "ANM in tempo reale (BusOne)": dict(id="busone-anm", nome="ANM live (BusOne)", sito="busone", formati=["GTFS-RT"]),
     "ViaggiaTreno": dict(id="viaggiatreno", nome="ViaggiaTreno", sito="viaggiatreno", formati=["JSON"]),
-    "Transitous (MOTIS)": dict(id="transitous", nome="Transitous", sito="transitous", formati=["JSON"]),
-    "GTFS EAV": dict(id="eav-gtfs", nome="EAV orari", sito="eav", formati=["GTFS"]),
-    "Infomobilità EAV": dict(id="eav-avvisi", nome="EAV avvisi", sito="eav", formati=["RSS", "JSON"]),
-    "Eventi ASPI e Tangenziale": dict(id="aspi", nome="Autostrade e Tangenziale", sito="autostrade", formati=["JSON"]),
+    "Transitous (MOTIS)": dict(id="transitous", in_uso=True, nome="Transitous", sito="transitous", formati=["JSON"]),
+    "GTFS EAV": dict(id="eav-gtfs", in_uso=True, nome="EAV orari", sito="eav", formati=["GTFS"]),
+    "Infomobilità EAV": dict(id="eav-avvisi", in_uso=True, nome="EAV avvisi", sito="eav", formati=["RSS", "JSON"]),
+    "Eventi ASPI e Tangenziale": dict(id="aspi", in_uso=True, nome="Autostrade e Tangenziale", sito="autostrade", formati=["JSON"]),
     "Trenitalia e Italo (BusOne)": dict(id="busone-treni", nome="Trenitalia e Italo (BusOne)", sito="busone", formati=["GTFS", "SIRI"]),
     "NAP Italia, NeTEx Campania": dict(id="nap-netex", nome="NAP Italia (aliscafi)", sito="cciss", formati=["NeTEx"]),
     "OpenStreetMap via Overpass": dict(id="openstreetmap", nome="OpenStreetMap", sito="openstreetmap", formati=["JSON"]),
@@ -150,18 +152,18 @@ VOCI = {
     "ANM, stato del servizio e parcheggi": dict(id="anm-stato", nome="ANM stato del servizio", sito="anm", formati=[], pubblica=False),
     "AIS Stream": dict(id="aisstream", nome="AIS Stream (navi)", sito="aisstream", formati=["WebSocket"]),
     # 2.3 Eventi e turismo
-    "Agenda eventi del Comune": dict(id="comune-agenda", nome="Agenda del Comune", sito="comune-napoli", formati=["JSON", "RSS"]),
-    "Calendario Serie A (openfootball)": dict(id="openfootball", nome="Serie A (openfootball)", sito="openfootball", formati=["JSON"]),
-    "TheSportsDB": dict(id="thesportsdb", nome="TheSportsDB", sito="thesportsdb", formati=["JSON"]),
-    "Visitatori dei siti comunali": dict(id="comune-visitatori", nome="Visitatori siti comunali", sito="opendata-comune", formati=["CSV"]),
-    "Bollettini del Porto di Napoli": dict(id="adsp-porto", nome="Porto di Napoli (AdSP)", sito="adsp", formati=["PDF"]),
-    "Cruise Timetables": dict(id="cruise-timetables", nome="Cruise Timetables", sito="cruisetimetables", formati=["RSS"]),
+    "Agenda eventi del Comune": dict(id="comune-agenda", in_uso=True, nome="Agenda del Comune", sito="comune-napoli", formati=["JSON", "RSS"]),
+    "Calendario Serie A (openfootball)": dict(id="openfootball", in_uso=True, nome="Serie A (openfootball)", sito="openfootball", formati=["JSON"]),
+    "TheSportsDB": dict(id="thesportsdb", in_uso=True, nome="TheSportsDB", sito="thesportsdb", formati=["JSON"]),
+    "Visitatori dei siti comunali": dict(id="comune-visitatori", in_uso=True, nome="Visitatori siti comunali", sito="opendata-comune", formati=["CSV"]),
+    "Bollettini del Porto di Napoli": dict(id="adsp-porto", in_uso=True, nome="Porto di Napoli (AdSP)", sito="adsp", formati=["PDF"]),
+    "Cruise Timetables": dict(id="cruise-timetables", in_uso=True, nome="Cruise Timetables", sito="cruisetimetables", formati=["RSS"]),
     "Musei statali (MiC)": dict(id="mic-musei", nome="Musei statali (MiC)", sito="cultura", formati=["PDF"]),
-    "ISTAT, turismo e capacità ricettiva": dict(id="istat-turismo", nome="ISTAT turismo", sito="istat", formati=["SDMX"]),
-    "Inside Airbnb": dict(id="inside-airbnb", nome="Inside Airbnb", sito="insideairbnb", formati=["CSV", "GeoJSON"]),
+    "ISTAT, turismo e capacità ricettiva": dict(id="istat-turismo", in_uso=True, nome="ISTAT turismo", sito="istat", formati=["SDMX"]),
+    "Inside Airbnb": dict(id="inside-airbnb", in_uso=True, nome="Inside Airbnb", sito="insideairbnb", formati=["CSV", "GeoJSON"]),
     "Wikipedia pageviews": dict(id="wikipedia-visite", nome="Wikipedia visite", sito="wikipedia", formati=["JSON"]),
-    "Wikidata SPARQL": dict(id="wikidata", nome="Wikidata", sito="wikidata", formati=["SPARQL"]),
-    "America's Cup 2027": dict(id="americas-cup", nome="America's Cup 2027", sito="americascup", formati=["JSON", "PDF"]),
+    "Wikidata SPARQL": dict(id="wikidata", in_uso=True, nome="Wikidata", sito="wikidata", formati=["SPARQL"]),
+    "America's Cup 2027": dict(id="americas-cup", in_uso=True, nome="America's Cup 2027", sito="americascup", formati=["JSON", "PDF"]),
     "Nager.Date": dict(id="nager-date", nome="Nager.Date festività", sito="nager", formati=["JSON"]),
     "football-data.org": dict(id="football-data", nome="football-​data.org", sito="football-data", formati=["JSON"]),
     "Presenze da rete mobile": dict(id="presenze-rete-mobile", nome="Persone per zona (rete mobile)", sito=None, formati=[], pubblica=False,
@@ -541,6 +543,7 @@ def main() -> None:
             "formato_catalogo": pulisci(r["Formato"]),
             "accesso": pulisci(r["Accesso"]),
             "pubblica": v.get("pubblica", True),
+            "in_uso": v.get("in_uso", False),
             "esito": es,
             "funziona": es in ("confermata", "confermata con correzioni", "aggiunta dal verificatore"),
             "icona": (logo or {}).get("file"),
@@ -559,7 +562,8 @@ def main() -> None:
                  "per le scene motivazione.html e fonti.html del video. Generato da costruisci.py: non modificare a mano. "
                  "'pubblica' è false solo per le due righe che non sono fonti pubbliche (presenze da rete mobile, stato "
                  "del servizio ANM): le scene contano e mostrano le fonti pubbliche. 'funziona' è true se la verifica l'ha "
-                 "confermata; le altre vanno riprovate dalla rete italiana o con una chiave gratuita. Le icone sono quelle "
+                 "confermata; le altre vanno riprovate dalla rete italiana o con una chiave gratuita. 'in_uso' è true per le "
+                 "fonti già collegate all'API dati città (citta-api/, sezione 0 del catalogo). Le icone sono quelle "
                  "dei siti ufficiali (vedi 'loghi': indirizzo esatto e data), ridotte a PNG 128×128; null = solo il nome."),
         "catalogo": "docs/fonti-dati-napoli.md",
         "verifica": "2026-11-14",
@@ -569,6 +573,7 @@ def main() -> None:
             "pubbliche": len(pubbliche),
             "pubbliche_confermate": sum(f["funziona"] for f in pubbliche),
             "pubbliche_da_riprovare": sum(not f["funziona"] for f in pubbliche),
+            "in_uso": sum(f["in_uso"] for f in fonti),
             "con_icona": sum(bool(f["icona"]) for f in fonti),
         },
         "domini": DOMINI,

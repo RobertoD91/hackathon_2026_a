@@ -35,6 +35,7 @@ export async function carica() {
     domini: cat.domini,
     confermate: pubbliche.filter((f) => f.funziona).length,
     daRiprovare: pubbliche.filter((f) => !f.funziona).length,
+    inUso: pubbliche.filter((f) => f.in_uso).length,
     mancante: cat.fonti.find((f) => f.id === 'presenze-rete-mobile'),
   };
 }

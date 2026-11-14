@@ -81,8 +81,10 @@ CLIP_CRF = 20
 CLIP_VIDEO = ["-c:v", "libx264", "-preset", "slow", "-crf", str(CLIP_CRF), "-pix_fmt", "yuv420p", "-r", str(FPS)]
 FINALE_PULITO = "00-finale-senza-sottotitoli.mp4"
 VOCI = ("Roberto", "Mario")           # chi legge: campo "chi" delle voci della scaletta (predefinito il primo)
-RITMO_MAX = 170                       # parole al minuto oltre le quali una battuta è troppo veloce (obiettivo circa 150)
+RITMO_MAX = 180                       # parole al minuto (6 sillabe al secondo) oltre le quali una battuta è troppo veloce
 VOLUME_VOCE = -16.0                   # LUFS: lo stesso obiettivo di loudnorm sulla voce intera
+GUADAGNO_MAX = 25.0                   # dB: oltre, una registrazione troppo bassa porterebbe su soprattutto il rumore
+SILENZIO_PRIMA, SILENZIO_DOPO = 0.08, 0.25   # secondi di silenzio lasciati prima della prima parola e dopo l'ultima
 # Come si leggono le parole difficili (per il copione e per contare le parole); "pronuncia" nella scaletta le integra
 PRONUNCIA = {
     "TwinCIRO": "tuìn cìro",
@@ -409,6 +411,11 @@ def num(x: float, cifre: int = 1) -> str:
     return f"{x:.{cifre}f}".replace(".", ",")
 
 
+def virgola(x: float) -> str:
+    """7.25 → '7,25', 7.0 → '7'"""
+    return f"{x:g}".replace(".", ",")
+
+
 def orario(t: float) -> str:
     """81.5 → '1:21,5'"""
     t = round(t, 1)
@@ -422,24 +429,55 @@ def minuti(t: float) -> str:
     return f"{t // 60}:{t % 60:02d}"
 
 
-def parole(testo: str, pron: dict) -> int:
-    """Parole come si pronunciano: le sigle contano per quello che si dice (MQTT = 'emme cu ti ti' = 4)."""
+_UNITA = ("zero uno due tre quattro cinque sei sette otto nove dieci undici dodici tredici quattordici quindici sedici "
+          "diciassette diciotto diciannove").split()
+_DECINE = "_ _ venti trenta quaranta cinquanta sessanta settanta ottanta novanta".split()
+
+
+def in_lettere(n: int) -> str:
+    """Numero in lettere, quanto basta per contarne le sillabe (2027 → duemilaventisette)."""
+    if n < 20:
+        return _UNITA[n]
+    if n < 100:
+        d, u = divmod(n, 10)
+        return (_DECINE[d][:-1] if u in (1, 8) else _DECINE[d]) + (_UNITA[u] if u else "")
+    if n < 1000:
+        c, r = divmod(n, 100)
+        return ("cento" if c == 1 else _UNITA[c] + "cento") + (in_lettere(r) if r else "")
+    if n < 1_000_000:
+        m, r = divmod(n, 1000)
+        return ("mille" if m == 1 else in_lettere(m) + "mila") + (in_lettere(r) if r else "")
+    return "milioni"
+
+
+def sillabe(testo: str, pron: dict) -> int:
+    """Sillabe come si dicono (gruppi di vocali): sigle e numeri per esteso, MQTT = «emme cu ti ti» = 5."""
+    def gruppi(s: str) -> int:
+        s = unicodedata.normalize("NFKD", s.lower()).encode("ascii", "ignore").decode()
+        return len(re.findall(r"[aeiouy]+", s))
     n = 0
     for tok in testo.split():
         t = tok.strip(".,;:!?«»\"“”‘’()…—–")
         if not t:
             continue
-        if t in pron:
-            n += len(pron[t].replace("-", " ").split())
-        elif t.endswith("%"):
-            n += 3                      # «nove per cento»
+        dopo = re.split(r"['’]", t)[-1]            # «l'API»: conta come si dice API
+        if dopo in pron or t in pron:
+            n += gruppi(pron.get(dopo) or pron[t])
+        elif re.fullmatch(r"\d{1,3}(\.\d{3})*%?|\d+%?", t):
+            n += gruppi(in_lettere(int(t.rstrip("%").replace(".", "")))) + (3 if t.endswith("%") else 0)
         else:
-            n += 1
+            n += max(1, gruppi(t))
     return n
 
 
+def parole(testo: str) -> int:
+    return sum(1 for tok in testo.split() if re.search(r"\w", tok))
+
+
 def ritmo(b: Battuta, pron: dict) -> int:
-    return round(parole(b.testo, pron) * 60 / (b.a - b.da)) if b.a > b.da else 0
+    """Parole al minuto «equivalenti»: sillabe al secondo × 30 (in italiano circa 2 sillabe per parola), così una sigla
+    lunga da dire pesa per quello che è. 150 = 5 sillabe al secondo."""
+    return round(sillabe(b.testo, pron) * 30 / (b.a - b.da)) if b.a > b.da else 0
 
 
 def controlla_voce(piano: list[Scena], pron: dict) -> list[str]:
@@ -447,19 +485,20 @@ def controlla_voce(piano: list[Scena], pron: dict) -> list[str]:
     avvisi = []
     for sc in piano:
         if abs(sc.durata * FPS - round(sc.durata * FPS)) > 1e-6:
-            avvisi.append(f"{sc.base}: la durata ({sc.durata:g} s) non è un numero intero di fotogrammi a {FPS} fps")
+            avvisi.append(f"{sc.base}: la durata ({virgola(sc.durata)} s) non è un numero intero di fotogrammi a {FPS} fps")
         prec = None
         for b in sc.battute:
             dove = f"{sc.base}, battuta {b.k}"
             if b.a <= b.da:
-                avvisi.append(f"{dove}: finisce prima di cominciare ({b.da:g} → {b.a:g} s)")
+                avvisi.append(f"{dove}: finisce prima di cominciare ({virgola(b.da)} → {virgola(b.a)} s)")
             if b.da < 0 or b.a > sc.durata + 1e-6:
-                avvisi.append(f"{dove}: esce dalla scena ({b.da:g} → {b.a:g} s, la scena dura {sc.durata:g} s)")
+                avvisi.append(f"{dove}: esce dalla scena ({virgola(b.da)} → {virgola(b.a)} s, la scena dura {virgola(sc.durata)} s)")
             if prec and b.da < prec.a - 1e-6:
                 avvisi.append(f"{dove} ({b.chi}): comincia a {num(b.da)} s, prima che finisca la {prec.k} ({prec.chi}, {num(prec.a)} s)")
             r = ritmo(b, pron)
             if r > RITMO_MAX:
-                avvisi.append(f"{dove}: circa {r} parole al minuto, troppo veloce (obiettivo circa 150): accorcia il testo o allunga i tempi")
+                avvisi.append(f"{dove}: ritmo di circa {r} parole al minuto ({num(r / 30)} sillabe al secondo), troppo veloce"
+                              " (obiettivo circa 150): accorcia il testo o allunga i tempi")
             if b.chi not in VOCI:
                 avvisi.append(f"{dove}: «chi» è {b.chi!r}, le voci previste sono {' e '.join(VOCI)}")
             prec = b
@@ -502,6 +541,11 @@ def file_voce_battuta(sc: Scena, b: Battuta) -> str:
     return f"girato/voce/{sc.base}-{b.k}.m4a"
 
 
+def md_testo(t: str) -> str:
+    """Testo di una battuta dentro il Markdown: <id> resterebbe nascosto come tag HTML."""
+    return t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
 def scrivi_testi_voce(piano: list[Scena], totale: float, pron: dict, avvisi: list[str]) -> list[Path]:
     """voce/NN-<scena>.txt (una scena per file, da leggere al microfono) e voce/COPIONE-VOCE.md (tutto, in ordine)."""
     TESTI_VOCE.mkdir(parents=True, exist_ok=True)
@@ -517,8 +561,8 @@ def scrivi_testi_voce(piano: list[Scena], totale: float, pron: dict, avvisi: lis
             righe.append(f"{b.k} · {b.chi.upper()} · da {num(b.da)} a {num(b.a)} s della clip · durata disponibile {num(b.a - b.da)} s"
                          f" · nel video {orario(sc.inizio + b.da)} → {orario(sc.inizio + b.a)}")
             for r in b.testo.split("\n"):
-                righe += textwrap.wrap(r, 76, initial_indent="    ", subsequent_indent="    ") or [""]
-            righe += [f"    {parole(b.testo, pron)} parole, circa {ritmo(b, pron)} al minuto · registra in {file_voce_battuta(sc, b)}", ""]
+                righe += textwrap.wrap(r, 88, initial_indent="    ", subsequent_indent="    ") or [""]
+            righe += [f"    {parole(b.testo)} parole, ritmo di circa {ritmo(b, pron)} al minuto · registra in {file_voce_battuta(sc, b)}", ""]
         if sc.battute:
             righe.append(f"Tutta la scena in un file: girato/voce/{sc.base}.m4a (la prima parola va a {num(sc.battute[0].da)} s"
                          " dall'inizio della clip, il silenzio prima si toglie da solo).")
@@ -527,11 +571,11 @@ def scrivi_testi_voce(piano: list[Scena], totale: float, pron: dict, avvisi: lis
         scritti.append(f)
 
     # Copione completo
-    per_voce = {v: [(sc, b) for sc, b in tutte if b.chi == v] for v in VOCI}
+    per_voce: dict[str, list[tuple[Scena, Battuta]]] = {v: [] for v in VOCI}
     for sc, b in tutte:
-        per_voce.setdefault(b.chi, []).append((sc, b)) if b.chi not in VOCI else None
+        per_voce.setdefault(b.chi, []).append((sc, b))
     parlato = {v: sum(b.a - b.da for _, b in lista) for v, lista in per_voce.items()}
-    tot_parole = sum(parole(b.testo, pron) for _, b in tutte)
+    tot_sillabe = sum(sillabe(b.testo, pron) for _, b in tutte)
     tot_tempo = sum(b.a - b.da for _, b in tutte)
     usate = {k: v for k, v in pron.items() if any(re.search(rf"(?<![\w-]){re.escape(k)}(?![\w-])", b.testo) for _, b in tutte)}
     md = ["# Voce fuori campo di TwinCIRO", "",
@@ -540,7 +584,8 @@ def scrivi_testi_voce(piano: list[Scena], totale: float, pron: dict, avvisi: lis
           " di questa cartella si rigenerano da soli: una scena per file, con battute, tempi e chi legge.", "",
           f"**{minuti(totale)} di video · {len(tutte)} battute · "
           + " · ".join(f"{v} {len(l)} ({minuti(parlato[v])} di parlato)" for v, l in per_voce.items())
-          + f"** · ritmo medio circa {round(tot_parole * 60 / tot_tempo) if tot_tempo else 0} parole al minuto (obiettivo circa 150).", "",
+          + f"** · ritmo medio di circa {round(tot_sillabe * 30 / tot_tempo) if tot_tempo else 0} parole al minuto (obiettivo"
+          " circa 150; il ritmo si conta in sillabe, circa 2 per parola, con sigle e numeri letti per esteso).", "",
           "## Come registrare", "",
           "Tre modi, che si possono mescolare. Formati: `.m4a` (Memo Vocali), `.wav`, `.mp3`, `.aac`, `.ogg`, `.flac`. Il montaggio"
           " toglie il silenzio all'inizio e alla fine di ogni file e porta tutti i file allo stesso volume.", "",
@@ -569,10 +614,10 @@ def scrivi_testi_voce(piano: list[Scena], totale: float, pron: dict, avvisi: lis
         for b in sc.battute:
             md += [f"**{b.chi.upper()}** · {orario(sc.inizio + b.da)} → {orario(sc.inizio + b.a)} · {num(b.a - b.da)} s"
                    f" · `{file_voce_battuta(sc, b)}`", ""]
-            md += [f"> {r}" if r.strip() else ">" for r in b.testo.split("\n")] + [""]
+            md += [f"> {md_testo(r)}" if r.strip() else ">" for r in b.testo.split("\n")] + [""]
     for v, lista in per_voce.items():
-        md += [f"## Solo {v} ({len(lista)} battute, {minuti(parlato[v])} di parlato)", ""]
-        md += [f"{i}. **{sc.base}-{b.k}** · {orario(sc.inizio + b.da)} · {num(b.a - b.da)} s — {b.testo.replace(chr(10), ' ')}"
+        md += [f"## Solo {v} ({len(lista)} {'battuta' if len(lista) == 1 else 'battute'}, {minuti(parlato[v])} di parlato)", ""]
+        md += [f"{i}. **{sc.base}-{b.k}** · {orario(sc.inizio + b.da)} · {num(b.a - b.da)} s — {md_testo(b.testo.replace(chr(10), ' '))}"
                for i, (sc, b) in enumerate(lista, 1)] or [f"*Nessuna battuta: per dargliene una, metti `\"chi\": \"{v}\"` nella voce della scaletta.*"]
         md.append("")
     md += ["## Da controllare", ""]
@@ -608,7 +653,7 @@ class Pezzo:
 
     @property
     def quando(self) -> float:
-        """Secondo del video in cui va la prima parola."""
+        """Secondo del video in cui va la prima parola: quando compare il sottotitolo (della battuta, o il primo della clip)."""
         sc = self.scena
         if self.k:
             return sc.inizio + sc.battute[self.k - 1].da
@@ -616,11 +661,16 @@ class Pezzo:
 
     @property
     def spazio(self) -> float:
-        """Secondi a disposizione: fino alla battuta dopo (per battuta) o alla fine della scena (per clip)."""
+        """Secondi a disposizione dalla prima parola: fino alla battuta dopo (per battuta) o alla fine della scena (per clip)."""
         sc = self.scena
         if self.k and self.k < len(sc.battute):
             return sc.battute[self.k].da - sc.battute[self.k - 1].da
         return sc.fine - self.quando
+
+    @property
+    def parlato(self) -> float:
+        """Dalla prima all'ultima parola (senza il silenzio lasciato prima e dopo)."""
+        return max(0.0, self.durata - SILENZIO_PRIMA - SILENZIO_DOPO)
 
 
 def pezzi_voce(piano: list[Scena]) -> tuple[list[Pezzo], list[str]]:
@@ -628,17 +678,18 @@ def pezzi_voce(piano: list[Scena]) -> tuple[list[Pezzo], list[str]]:
     cart = GIRATO / "voce"
     if not cart.is_dir():
         return [], []
+    # Nomi validi, dal più preciso: NN-<scena> (posizione di adesso), id della scena, <scena> senza numero.
+    # Un nome che varrebbe per due scene diverse non vale (si usa quello con il numero davanti).
     nomi: dict[str, tuple[Scena, int | None]] = {}
-    doppi: set[str] = set()
-    for sc in piano:
-        for nome in dict.fromkeys((sc.base, sc.id.lower(), sc.nome)):
-            for chiave_, val in [(nome, (sc, None))] + [(f"{nome}-{b.k}", (sc, b.k)) for b in sc.battute]:
-                if chiave_ in nomi and nomi[chiave_] != val:
-                    doppi.add(chiave_)
-                nomi.setdefault(chiave_, val)
-    for d in doppi:     # un nome che vale per due scene diverse: va usato con il numero davanti (NN-<scena>)
-        if not any(d == sc.base or d.startswith(f"{sc.base}-") for sc in piano):
-            nomi.pop(d, None)
+    for livello in (lambda sc: sc.base, lambda sc: sc.id.lower(), lambda sc: sc.nome):
+        candidati: dict[str, list[tuple[Scena, int | None]]] = {}
+        for sc in piano:
+            nome = livello(sc)
+            for ch, val in [(nome, (sc, None))] + [(f"{nome}-{b.k}", (sc, b.k)) for b in sc.battute]:
+                candidati.setdefault(ch, []).append(val)
+        for ch, vals in candidati.items():
+            if ch not in nomi and len({(s.pos, k) for s, k in vals}) == 1:
+                nomi[ch] = vals[0]
     avvisi, trovati = [], {}
     for f in sorted(cart.iterdir()):
         if not f.is_file() or f.suffix.lower() not in ESTENSIONI_AUDIO or f.name.startswith("."):
@@ -647,14 +698,16 @@ def pezzi_voce(piano: list[Scena]) -> tuple[list[Pezzo], list[str]]:
         if not val:
             avvisi.append(f"girato/voce/{f.name}: il nome non corrisponde a nessuna scena o battuta (es. 03-cirogpt.m4a, 03-cirogpt-2.m4a): lo ignoro")
             continue
-        if val in trovati:
-            avvisi.append(f"girato/voce/{f.name}: c'è già {trovati[val].file.name} per la stessa {'battuta' if val[1] else 'clip'}: lo ignoro")
+        chiave_pezzo = (val[0].pos, val[1])
+        if chiave_pezzo in trovati:
+            avvisi.append(f"girato/voce/{f.name}: c'è già {trovati[chiave_pezzo].file.name} per la stessa"
+                          f" {'battuta' if val[1] else 'clip'}: lo ignoro")
             continue
-        trovati[val] = Pezzo(f, *val)
+        trovati[chiave_pezzo] = Pezzo(f, *val)
     pezzi = []
     for sc in piano:
-        per_battuta = [p for (s, k), p in trovati.items() if s is sc and k]
-        intera = trovati.get((sc, None))
+        per_battuta = [p for (pos, k), p in trovati.items() if pos == sc.pos and k]
+        intera = trovati.get((sc.pos, None))
         if per_battuta:
             if intera:
                 avvisi.append(f"girato/voce/{intera.file.name}: ci sono anche i file per battuta di {sc.base}: uso quelli")
@@ -678,22 +731,26 @@ def prepara_pezzo(p: Pezzo, cart: Path) -> str | None:
         return f"girato/voce/{p.file.name}: non riesco a leggerlo o è muto: lo ignoro"
     lufs = float(misure[-1])
     soglia = min(-30.0, max(-60.0, lufs - 18))        # silenzio = 18 dB sotto il volume medio della voce
-    guadagno = min(25.0, max(-15.0, VOLUME_VOCE - lufs))
+    guadagno = min(GUADAGNO_MAX, max(-15.0, VOLUME_VOCE - lufs))
     p.wav = cart / f"{p.nome}.wav"
     esegui(["ffmpeg", "-y", "-loglevel", "error", "-i", str(p.file), "-af",
             f"aresample=48000,aformat=sample_fmts=flt:channel_layouts=stereo,"
-            f"silenceremove=start_periods=1:start_threshold={soglia:.1f}dB:start_silence=0.08,areverse,"
-            f"silenceremove=start_periods=1:start_threshold={soglia:.1f}dB:start_silence=0.25,areverse,volume={guadagno:.2f}dB",
-            "-c:a", "pcm_f32le", str(p.wav)])
+            f"silenceremove=start_periods=1:start_threshold={soglia:.1f}dB:start_silence={SILENZIO_PRIMA},areverse,"
+            f"silenceremove=start_periods=1:start_threshold={soglia:.1f}dB:start_silence={SILENZIO_DOPO},areverse,"
+            f"volume={guadagno:.2f}dB", "-c:a", "pcm_f32le", str(p.wav)])
     p.durata = durata_di(p.wav)
+    avvisi = []
     if p.durata < 0.2:
         p.wav = None
         return f"girato/voce/{p.file.name}: dopo aver tolto il silenzio non resta niente: lo ignoro"
-    if p.durata > p.spazio + 0.05:
+    if VOLUME_VOCE - lufs > GUADAGNO_MAX:
+        avvisi.append(f"è molto bassa ({lufs:.0f} LUFS): l'ho alzata di {GUADAGNO_MAX:.0f} dB ma resta sotto le altre,"
+                      " riregistrala con il telefono più vicino")
+    if p.parlato > p.spazio + 0.05:
         cosa = "fino alla battuta dopo" if p.k and p.k < len(p.scena.battute) else "fino alla fine della scena"
         taglio = " (la taglio alla fine della scena)" if not p.k else ""
-        return f"girato/voce/{p.file.name}: dura {num(p.durata)} s, ma ha {num(p.spazio)} s {cosa}{taglio}: rileggila più svelta o allunga i tempi"
-    return None
+        avvisi.append(f"dura {num(p.parlato)} s, ma ha {num(p.spazio)} s {cosa}{taglio}: rileggila più svelta o allunga i tempi")
+    return f"girato/voce/{p.file.name}: " + "; ".join(avvisi) if avvisi else None
 
 
 def audio_montaggio(piano: list[Scena], totale: float, voce_da: float) -> tuple[Path, int, str]:
@@ -718,17 +775,20 @@ def audio_montaggio(piano: list[Scena], totale: float, voce_da: float) -> tuple[
         ingressi += ["-ss", str(voce_da), "-i", str(voce)]
         catena = f"[{k}:a]aresample=48000,loudnorm=I=-16:TP=-1.5:LRA=11,apad,atrim=0:{totale:.3f}"
         sostituite = sorted({p.scena.pos: (p.scena.inizio, p.scena.fine) for p in pezzi}.values())
-        if sostituite:   # nelle scene con i file di girato/voce/ la voce intera tace
-            catena += ",volume=0:enable='" + "+".join(f"between(t,{a:.3f},{b:.3f})" for a, b in sostituite) + "'"
+        if sostituite:   # nelle scene con i file di girato/voce/ la voce intera tace (a blocchi di 10 ms: loudnorm ne fa da 100)
+            catena += (",asetnsamples=n=480:p=0,volume=0:enable='"
+                       + "+".join(f"gte(t,{a:.3f})*lt(t,{b:.3f})" for a, b in sostituite) + "'")
         fa.append(catena + ("[voce]" if not pezzi else "[vint]"))
         voce_bus.append("[vint]")
         k += 1
     for p in pezzi:
         ingressi += ["-i", str(p.wav)]
         taglio = ""
-        if not p.k and p.durata > p.spazio:          # la voce di una clip non entra nella scena dopo
-            taglio = f"atrim=0:{p.spazio:.3f},afade=t=out:st={max(0.0, p.spazio - 0.05):.3f}:d=0.05,"
-        ms = int(round(p.quando * 1000))
+        if not p.k and p.parlato > p.spazio:          # la voce di una clip non entra nella scena dopo
+            fine = p.spazio + SILENZIO_PRIMA
+            taglio = f"atrim=0:{fine:.3f},afade=t=out:st={max(0.0, fine - 0.05):.3f}:d=0.05,"
+        # Il file comincia con SILENZIO_PRIMA di silenzio: lo anticipo, così la prima parola cade sul sottotitolo
+        ms = int(round(max(0.0, p.quando - SILENZIO_PRIMA) * 1000))
         fa.append(f"[{k}:a]{taglio}adelay={ms}:all=1,apad,atrim=0:{totale:.3f}[vp{k}]")
         voce_bus.append(f"[vp{k}]")
         k += 1
@@ -770,6 +830,9 @@ def audio_montaggio(piano: list[Scena], totale: float, voce_da: float) -> tuple[
 # Clip per scena, finale senza sottotitoli, LEGGIMI
 # ---------------------------------------------------------------------------------------------------------------------
 
+# audio.wav va sempre letto con apad e tagliato con -t: se l'ingresso finisce proprio alla durata del video,
+# l'AAC esce più corto di 87 ms (l'ultimo pacchetto del WAV si perde). Con apad la durata è esatta e, decodificato,
+# l'audio è identico campione per campione a quello del montaggio di prima (che aveva la voce dentro il grafo dei filtri).
 def aac(audio_k: int) -> list[str]:
     return ["-c:a", "aac", "-b:a", f"{audio_k}k", "-ar", "48000", "-ac", "2"]
 
@@ -794,8 +857,8 @@ def scrivi_clip(piano: list[Scena], file_scene: list[Path], audio: Path, audio_k
         video.append(v)
         tmp = CLIP / f".{sc.base}.tmp.mp4"
         esegui(["ffmpeg", "-y", "-loglevel", "error", "-i", str(v), "-ss", f"{sc.inizio:.3f}", "-t", f"{sc.durata:.3f}",
-                "-i", str(audio), "-map", "0:v", "-map", "1:a", "-c:v", "copy", *aac(audio_k), "-t", f"{sc.durata:.3f}",
-                "-movflags", "+faststart", str(tmp)])
+                "-i", str(audio), "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-af", "apad", *aac(audio_k),
+                "-t", f"{sc.durata:.3f}", "-movflags", "+faststart", str(tmp)])
         os.replace(tmp, CLIP / f"{sc.base}.mp4")
         srt = CLIP / f"{sc.base}.srt"
         if sc.battute:
@@ -812,7 +875,8 @@ def scrivi_clip(piano: list[Scena], file_scene: list[Path], audio: Path, audio_k
     elenco_v.write_text("".join(f"file '{v}'\n" for v in video), encoding="utf-8")
     tmp = CLIP / f".{FINALE_PULITO}.tmp.mp4"
     esegui(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(elenco_v), "-i", str(audio),
-            "-map", "0:v", "-map", "1:a", "-c:v", "copy", *aac(audio_k), "-t", f"{totale:.3f}", "-movflags", "+faststart", str(tmp)])
+            "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-af", "apad", *aac(audio_k), "-t", f"{totale:.3f}",
+            "-movflags", "+faststart", str(tmp)])
     os.replace(tmp, CLIP / FINALE_PULITO)
 
     # Clip di scene che non sono più in scaletta (le riconosce dall'elenco della volta prima)
@@ -851,6 +915,8 @@ def scrivi_leggimi_clip(piano: list[Scena], totale: float) -> None:
         " li caricano da soli). Le scene senza voce non lo hanno;",
         f"- `sottotitoli.srt`: i sottotitoli del video intero, e `{FINALE_PULITO}`: il video intero (le clip unite) senza"
         " sottotitoli impressi. La bozza con i sottotitoli impressi è [`../bozza.mp4`](../bozza.mp4);",
+        "- `sottotitoli.ass`: gli stessi sottotitoli con lo stile della bozza (riquadro scuro, carattere Inter), per imprimerli"
+        " con ffmpeg;",
         "- `elenco.txt`: l'ordine delle clip (serve anche a `monta.sh` per togliere quelle vecchie: non cancellarlo).", "",
         "I testi della voce, scena per scena e con chi li legge, sono in [`../voce/`](../voce/COPIONE-VOCE.md).", "",
         "## Ordine e durate", "",
@@ -871,8 +937,8 @@ def scrivi_leggimi_clip(piano: list[Scena], totale: float) -> None:
               "3. Con ffmpeg, da questa cartella:",
               "   - unire le clip: `ffmpeg -f concat -safe 0 -i elenco.txt -c copy prova.mp4` (a ogni giunta l'audio può slittare"
               f" di un paio di centesimi: per il video intero usa `{FINALE_PULITO}`);",
-              f"   - imprimere i sottotitoli: `ffmpeg -i {FINALE_PULITO} -vf subtitles=sottotitoli.srt -c:a copy prova.mp4`"
-              " (lo stile della bozza lo dà `../monta.sh`).", "",
+              f"   - imprimere i sottotitoli con lo stile della bozza: `ffmpeg -i {FINALE_PULITO} -vf ass=sottotitoli.ass -c:a copy"
+              " prova.mp4` (con `-vf subtitles=sottotitoli.srt` lo stile è quello semplice del lettore).", "",
               "Per rifare clip, SRT e testi della voce senza la codifica lunga della bozza: `../monta.sh --solo-clip`."]
     (CLIP / "LEGGIMI.md").write_text("\n".join(righe) + "\n", encoding="utf-8")
 
@@ -943,6 +1009,7 @@ def main() -> None:
 
     # Clip per rimontare (senza sottotitoli), SRT e video intero senza sottotitoli
     nuove, tolte = scrivi_clip(piano, clip, audio, audio_k, totale)
+    sottotitoli(scaletta, CLIP / "sottotitoli.ass")      # lo stesso ASS impresso nella bozza
     scrivi_leggimi_clip(piano, totale)
     pulito = CLIP / FINALE_PULITO
     peso = sum(mb(f) for f in CLIP.glob("[0-9][0-9]*-*.mp4") if f.name != FINALE_PULITO)
@@ -974,7 +1041,7 @@ def main() -> None:
         esegui(["ffmpeg", "-y", "-loglevel", "error", "-i", str(unito), "-vf", filtro_v, *comune, "-pass", "1", "-an",
                 "-f", "null", os.devnull], cwd=LAVORO)
         esegui(["ffmpeg", "-y", "-loglevel", "error", "-i", str(unito), "-i", str(audio),
-                "-filter_complex", f"[0:v]{filtro_v}[v]", "-map", "[v]", "-map", "1:a", *comune, "-pass", "2",
+                "-filter_complex", f"[0:v]{filtro_v}[v];[1:a]apad[a]", "-map", "[v]", "-map", "[a]", *comune, "-pass", "2",
                 *aac(audio_k), "-movflags", "+faststart", "-t", f"{totale:.3f}", str(uscita)], cwd=LAVORO)
 
         dur = durata_di(uscita)

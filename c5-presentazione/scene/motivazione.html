@@ -44,7 +44,7 @@
   <div><div class="t" id="manca-t"></div><div class="s" id="manca-s"></div></div>
 </div>
 <script type="module">
-import { CSS, carica, creaIsola, sparse, disponi, attendiImmagini, anteprima, casuale, fumo, curva, clamp, tra, esc } from './fonti/isole.js';
+import { CSS, carica, creaIsola, sparse, disponi, attendiImmagini, anteprima, casuale, fumo, curva, clamp, tra } from './fonti/isole.js';
 
 const P = new URLSearchParams(location.search);
 const DURATA = Number(P.get('durata')) || 11;
@@ -111,7 +111,7 @@ window.pronta = (async () => {
     svg.appendChild(g);
     return { a: isole[a], b: isole[b], linea: g.firstChild, x: g.lastChild, t0: T.legami + k * T.passoLegami };
   });
-  window.__legami = legami.length;
+  window.__legami = legami.length;          // per i controlli automatici (quanti collegamenti interrotti)
   await attendiImmagini(document);
   await document.fonts.ready;
   window.imposta(0);
