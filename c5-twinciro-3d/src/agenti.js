@@ -239,7 +239,10 @@ function agenteMeteo(ctx, ts) {
     if (m.scenario) testo += ' (pioggia dello scenario what-if)';
   }
   if (inAllerta) testo += ` Allerta ${a.colore} della Protezione Civile${a.tipi?.length ? ` (${N.descriviTipiAllerta(a.tipi)})` : ''} fino alle ${hh(a.al)} del ${N.dataBreve(a.al, ctx.adesso)}.`;
-  return { testo, meteo: m, allerta: inAllerta ? a : null };
+  // avvisi Meteoalarm (EUMETNET) validi a quell'ora: dato reale, arriva dallo snapshot
+  const w = (ctx.dati?.allerta?.meteoalarm || []).filter((x) => x.livello >= 2 && x.inizio <= ts && x.fine >= ts)[0];
+  if (w) testo += ` Meteoalarm segnala ${w.fenomeno.toLowerCase()} (allerta ${w.colore}) fino alle ${hh(w.fine)} del ${N.dataBreve(w.fine, ctx.adesso)}.`;
+  return { testo, meteo: m, allerta: inAllerta ? a : w ? { colore: w.colore } : null };
 }
 
 /** Eventi di un giorno, senza doppioni: prima quelli che spostano folla. */
@@ -296,7 +299,8 @@ export async function rispondi(testo, ctx) {
       dice('meteo', met.testo);
       if (mob.percorso) azioni.push({ tipo: 'percorso', percorso: mob.percorso, da, a });
       else azioni.push({ tipo: 'seleziona', zona: a });
-      let risposta = mob.percorso ? `Da ${nomeLuogo(da)} a ${nomeLuogo(a)} ci vogliono ${mob.percorso.minuti} minuti: ${descriviPercorso(mob.percorso)}. Arrivi alle ${hh(mob.percorso.arrivo)}.` : mob.testo;
+      const partendo = Math.abs(ts - ctx.adesso) > 20 * 60_000 ? `Partendo ${quando(ts, ctx.adesso)}, da` : 'Da';
+      let risposta = mob.percorso ? `${partendo} ${nomeLuogo(da)} a ${nomeLuogo(a)} ci vogliono ${mob.percorso.minuti} minuti: ${descriviPercorso(mob.percorso)}. Arrivi alle ${hh(mob.percorso.arrivo)}.` : mob.testo;
       risposta += ` ${nomeLuogo(a)} sarà ${f.stima.etichetta.toLowerCase()} (${soglia(f.stima.quota)})`;
       risposta += ev.length ? `, attenzione: ${ev[0].titolo}.` : '.';
       if (alt.length) risposta += ` Se vuoi evitare la folla: ${nomeLuogo(alt[0].zona)}.`;

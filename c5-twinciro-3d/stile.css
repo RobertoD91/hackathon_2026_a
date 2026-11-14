@@ -58,7 +58,7 @@ small { font-size: 0.82em; color: var(--testo3); }
 .barra {
   position: fixed; z-index: 6; top: 0; left: 0; right: 0; height: var(--alt-barra);
   display: flex; align-items: center; gap: 16px; padding: 0 var(--margine) 0 16px;
-  background: linear-gradient(180deg, rgba(6, 12, 24, 0.92), rgba(6, 12, 24, 0.55) 70%, rgba(6, 12, 24, 0));
+  background: linear-gradient(180deg, rgba(6, 12, 24, 0.97), rgba(6, 12, 24, 0.9) 60%, rgba(6, 12, 24, 0));
   pointer-events: none;
 }
 .barra > * { pointer-events: auto; }
@@ -266,7 +266,7 @@ small { font-size: 0.82em; color: var(--testo3); }
 .riferimenti small { display: block; }
 
 .classifica li + li { margin-top: 2px; }
-.classifica button { width: 100%; display: grid; grid-template-columns: 104px 1fr; grid-template-rows: auto auto; column-gap: 10px; row-gap: 1px; align-items: center; padding: 5px 6px; border: 0; border-radius: 9px; background: transparent; text-align: left; }
+.classifica button { width: 100%; display: grid; grid-template-columns: 132px 1fr; grid-template-rows: auto auto; column-gap: 10px; row-gap: 1px; align-items: center; padding: 5px 6px; border: 0; border-radius: 9px; background: transparent; text-align: left; }
 .classifica button:hover { background: var(--rilievo); }
 .classifica-nome { grid-row: 1 / 3; font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .classifica-barra { height: 8px; border-radius: 4px; background: var(--rilievo-forte); overflow: hidden; }
@@ -450,6 +450,7 @@ small { font-size: 0.82em; color: var(--testo3); }
   :root { --alt-tempo: 104px; --margine: 8px; }
   .marchio h1 { font-size: 17px; }
   .stato .chip:not(.chip-ora):not(.chip-scenario) { display: none; }
+  .stato { position: fixed; z-index: 6; top: calc(var(--alt-barra) + 44px); left: var(--margine); right: var(--margine); justify-content: flex-start; flex: none; }
   #btn-luoghi { display: inline-block; }
   .sinistra { z-index: 8; top: calc(var(--alt-barra) + 4px); bottom: auto; max-height: 62vh; width: min(320px, calc(100vw - 16px)); transform: translateX(-120%); transition: transform 0.25s; }
   .sinistra.aperto { transform: none; }

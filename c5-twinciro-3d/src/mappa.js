@@ -101,7 +101,7 @@ function cerchio(lon, lat, raggio, n = 28) {
 }
 
 /** Curva morbida tra due punti (per i flussi): [[lon, lat], ...]. */
-function arco(a, b, piega = 0.18, n = 22) {
+function arco(a, b, piega = 0.3, n = 24) {
   const mx = (a.lon + b.lon) / 2, my = (a.lat + b.lat) / 2;
   const dx = b.lon - a.lon, dy = b.lat - a.lat;
   const cx = mx - dy * piega, cy = my + dx * piega;
@@ -226,8 +226,9 @@ export function creaMappa(contenitore, cfg) {
     map.addLayer({ id: 'linee-alone', type: 'line', source: 'linee', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'colore'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 12], 'line-opacity': 0.16, 'line-blur': 4 } }, prima);
     map.addLayer({ id: 'linee', type: 'line', source: 'linee', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'colore'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 1.1, 15, 3.6], 'line-opacity': 0.85 } }, prima);
     // flussi pedonali
-    map.addLayer({ id: 'flussi', type: 'line', source: 'flussi', layout: { 'line-cap': 'round' }, paint: { 'line-color': '#5ad1ff', 'line-width': ['interpolate', ['linear'], ['get', 'persone'], 150, 1.2, 3000, 7], 'line-opacity': 0.34 } }, prima);
-    map.addLayer({ id: 'particelle', type: 'circle', source: 'particelle', paint: { 'circle-pitch-alignment': 'map', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 1.8, 15, 4], 'circle-color': '#d9f4ff', 'circle-opacity': 0.95, 'circle-blur': 0.2 } }, prima);
+    map.addLayer({ id: 'flussi-alone', type: 'line', source: 'flussi', layout: { 'line-cap': 'round' }, paint: { 'line-color': '#5ad1ff', 'line-width': ['interpolate', ['linear'], ['get', 'persone'], 150, 9, 3000, 26], 'line-opacity': 0.22, 'line-blur': 7 } }, prima);
+    map.addLayer({ id: 'flussi', type: 'line', source: 'flussi', layout: { 'line-cap': 'round' }, paint: { 'line-color': '#8fe6ff', 'line-width': ['interpolate', ['linear'], ['get', 'persone'], 150, 2.4, 3000, 9], 'line-opacity': 0.8 } }, prima);
+    map.addLayer({ id: 'particelle', type: 'circle', source: 'particelle', paint: { 'circle-pitch-alignment': 'map', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 2.6, 15, 5.5], 'circle-color': '#ffffff', 'circle-stroke-color': '#0ea5e9', 'circle-stroke-width': 1.2, 'circle-opacity': 1 } }, prima);
     // percorso proposto dall'agente Mobilità
     map.addLayer({ id: 'percorso-alone', type: 'line', source: 'percorso', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'colore'], 'line-width': 16, 'line-opacity': 0.25, 'line-blur': 6 } }, prima);
     map.addLayer({ id: 'percorso-mezzi', type: 'line', source: 'percorso', filter: ['!=', ['get', 'modo'], 'piedi'], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'colore'], 'line-width': 6 } }, prima);
@@ -298,7 +299,7 @@ export function creaMappa(contenitore, cfg) {
     ultimaGriglia = r || ultimaGriglia;
     if (!stato.pronta || !ultimaGriglia || stato.vista !== 'celle' || !cfg.griglia) return;
     const { presenze, pressione } = ultimaGriglia;
-    const scala = 0.42 * metriPerPixel(limita(map.getZoom(), 11.5, 15.5));
+    const scala = 6.5; // metri per radice di presenza: l'esagono ha dimensioni reali, quindi anche l'altezza resta in metri
     for (let i = 0; i < presenze.length; i++) {
       const p = presenze[i];
       if (p < SOGLIA_PRIVACY) {
@@ -401,7 +402,7 @@ export function creaMappa(contenitore, cfg) {
     }
     if (inquadra && tutta.length > 1) {
       const b = tutta.reduce((bb, p) => bb.extend(p), new maplibregl.LngLatBounds(tutta[0], tutta[0]));
-      map.fitBounds(b, { padding: cfg.margini?.() ?? 120, pitch: 55, bearing: map.getBearing(), duration: animazioni ? 1800 : 0, maxZoom: 14.6 });
+      map.fitBounds(b, { padding: 70, pitch: 55, bearing: map.getBearing(), duration: animazioni ? 1800 : 0, maxZoom: 14.6 });
     }
   }
 
@@ -486,7 +487,6 @@ export function creaMappa(contenitore, cfg) {
       attesa = setTimeout(() => {
         attesa = null;
         ridisegnaLuoghi();
-        aggiornaGriglia();
       }, 90);
     });
     for (const ev of ['mousedown', 'touchstart', 'wheel']) map.getCanvas().addEventListener(ev, () => (stato.orbita = false), { passive: true });
@@ -501,7 +501,7 @@ export function creaMappa(contenitore, cfg) {
     map.setLayoutProperty('colonne', 'visibility', celle ? 'none' : 'visible');
     map.setLayoutProperty('anelli', 'visibility', celle ? 'none' : 'visible');
     for (const id of ['linee', 'linee-alone', 'stazioni', 'stazioni-nomi']) map.setLayoutProperty(id, 'visibility', stato.strati.trasporti ? 'visible' : 'none');
-    for (const id of ['flussi', 'particelle']) map.setLayoutProperty(id, 'visibility', stato.strati.flussi ? 'visible' : 'none');
+    for (const id of ['flussi', 'flussi-alone', 'particelle']) map.setLayoutProperty(id, 'visibility', stato.strati.flussi ? 'visible' : 'none');
     if (celle) aggiornaGriglia();
   }
 
@@ -538,7 +538,7 @@ export function creaMappa(contenitore, cfg) {
       ridisegnaLuoghi();
       if (zona && vola && luoghi[zona]) {
         const l = luoghi[zona];
-        map.flyTo({ center: [l.lon, l.lat], zoom: Math.max(map.getZoom(), 14.4), pitch: 62, bearing: map.getBearing() + 25, duration: animazioni ? 1900 : 0, essential: true, padding: cfg.margini?.() });
+        map.flyTo({ center: [l.lon, l.lat], zoom: Math.max(map.getZoom(), 14.4), pitch: 62, bearing: map.getBearing() + 25, duration: animazioni ? 1900 : 0, essential: true });
       }
     },
     evidenzia(zone) {
@@ -564,7 +564,7 @@ export function creaMappa(contenitore, cfg) {
       const pts = zone.map((z) => luoghi[z]).filter(Boolean);
       if (!pts.length) return;
       const b = pts.reduce((bb, p) => bb.extend([p.lon, p.lat]), new maplibregl.LngLatBounds([pts[0].lon, pts[0].lat], [pts[0].lon, pts[0].lat]));
-      map.fitBounds(b, { padding: cfg.margini?.() ?? 140, pitch: 58, maxZoom: 14, duration: animazioni ? 2000 : 0 });
+      map.fitBounds(b, { padding: 80, pitch: 58, maxZoom: 14, duration: animazioni ? 2000 : 0 });
     },
     orbita(on) {
       stato.orbita = on;

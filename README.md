@@ -16,6 +16,7 @@ Progetto per [The Big Hack 2026](https://go.codemotion.com/big-hack-hackathon-20
 | **TwinCiro**: agenti della città, assistenti personali, gemello SUMO, API per CiroGPT, video | [`c5-agentic-city/`](c5-agentic-city/README.md) |
 | **Skill di CiroGPT** (OpenClaw): città e fonti aperte di Napoli | [`c5-agentic-city/openclaw/skills/`](c5-agentic-city/openclaw/skills/README.md) |
 | **Flasher web** dei nodi ESP32 (semaforo o sensore) | [robertodisanto.it/hackathon_2026_a/c5-agentic-city/flasher/](https://robertodisanto.it/hackathon_2026_a/c5-agentic-city/flasher/) |
+| **TwinCiro 3D**: gemello digitale 3D della città, presenze adesso e previste per 48 ore, CiroGPT in chat, sala operativa con what-if | [`c5-twinciro-3d/`](c5-twinciro-3d/README.md) |
 | Mappa "Napoli in tempo reale" con dati veri (meteo, aria, trasporti, eventi, allerta) | [`shared/iot-agents/example/`](https://robertodisanto.it/hackathon_2026_a/shared/iot-agents/example/) |
 | **API dati città** per CiroGPT (meteo, aria, allerta, trasporti, eventi, con fonte e ora di ogni dato) | [`shared/citta-api/`](shared/citta-api/README.md), Docker in [`cloud/citta-api/`](cloud/citta-api/README.md) |
 | **Video di consegna** (bozza di 2:54, copione e riprese da girare) | [`c5-video/`](c5-video/README.md) |

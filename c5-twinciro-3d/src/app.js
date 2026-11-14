@@ -215,8 +215,8 @@ async function chiedi(testo) {
   }
   await pausa(250);
   attesa.outerHTML = UI.messaggioCiro(r);
-  chat.lastElementChild.scrollIntoView({ block: 'end' });
   $('spunti').innerHTML = UI.rendiSpunti(r.suggerimenti?.length ? r.suggerimenti : SUGGERIMENTI_BASE);
+  chat.scrollTop = chat.scrollHeight; // dopo gli spunti, che tolgono spazio alla chat
   eseguiAzioni(r.azioni || []);
   return r;
 }

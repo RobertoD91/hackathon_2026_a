@@ -49,6 +49,9 @@ const allertaAttiva = (s, ts) => {
   return a && a.livello >= 2 && !a.scaduta && a.dal <= ts && a.al >= ts ? a : null;
 };
 
+/** Avvisi Meteoalarm (EUMETNET) validi a un istante: [{ fenomeno, colore, inizio, fine }]. */
+export const meteoalarmA = (s, ts) => (s.dati.allerta?.meteoalarm || []).filter((m) => m.livello >= 2 && m.inizio <= ts && m.fine >= ts);
+
 // ------------------------------------------------------------------ barra in alto
 
 export function rendiStato(s) {
@@ -60,6 +63,7 @@ export function rendiStato(s) {
     <span class="chip chip-ora chip-${e.tipo}" title="Ora mostrata sulla mappa">${e.tipo === 'adesso' ? '<i class="vivo"></i>' : ''}<b>${e.titolo}</b><span>${esc(e.quando)}</span>${e.delta ? `<small>${e.delta}</small>` : ''}</span>
     ${m ? `<span class="chip" title="${m.tipo === 'adesso' ? 'Meteo reale adesso' : 'Previsione oraria'} (Open-Meteo)">${Math.round(m.temperatura)} °C · ${esc(m.cielo || '')}${(m.pioggia ?? 0) >= 0.2 ? ` · ${virgola(m.pioggia)} mm` : ''}</span>` : ''}
     ${a ? `<span class="chip chip-allerta chip-allerta-${a.colore}" title="${esc(a.fenomeni || a.descrizione || '')}">Allerta ${esc(a.colore)} fino alle ${N.oraBreve(a.al)}</span>` : ''}
+    ${meteoalarmA(s, s.ts).slice(0, 1).map((w) => `<span class="chip chip-allerta chip-allerta-${w.colore}" title="${esc(w.titolo || '')} (Meteoalarm, dato reale)">${esc(w.fenomeno)}: allerta ${esc(w.colore)}</span>`).join('')}
     ${sc ? `<button type="button" class="chip chip-scenario" data-azione="azzera-scenario" title="Torna alla situazione reale">What-if attivo<b>×</b></button>` : ''}`;
 }
 
@@ -115,10 +119,10 @@ export function rendiStrumenti(s) {
       <button type="button" data-vista="celle" aria-pressed="${s.vista === 'celle'}" data-tip="Presenze per cella esagonale, come nei dati aggregati di rete mobile">Celle</button>
     </div>
     <div class="interruttori" role="group" aria-label="Strati">
-      ${b('trasporti', 'Metro e treni', 'Linee e stazioni (GTFS ANM ed EAV)')}
+      ${b('trasporti', 'Trasporti', 'Metro, funicolari e treni: linee e stazioni (GTFS ANM ed EAV)')}
       ${b('flussi', 'Flussi', 'Flussi pedonali stimati nell’ora successiva')}
       ${b('eventi', 'Eventi', 'Grandi eventi del giorno')}
-      ${b('edifici', 'Edifici 3D', 'Edifici di OpenStreetMap')}
+      ${b('edifici', 'Edifici', 'Edifici 3D di OpenStreetMap')}
     </div>
     <div class="interruttori" role="group" aria-label="Camera">
       <button type="button" data-camera="golfo" data-tip="Vista dal mare">Golfo</button>
@@ -164,6 +168,8 @@ export function rendiSchedaCitta(s) {
   const m = meteoPer(s, null, s.ts);
   const a = s.dati.allerta?.regionale;
   const allerta = a && a.livello >= 2 && !a.scaduta && a.al > s.adesso ? `Allerta ${a.colore} della Protezione Civile${a.tipi?.length ? ` (${N.descriviTipiAllerta(a.tipi)})` : ''} dalle ${N.oraBreve(a.dal)} del ${N.dataBreve(a.dal, s.adesso)} alle ${N.oraBreve(a.al)} del ${N.dataBreve(a.al, s.adesso)}.` : 'Nessuna allerta regionale in corso per Napoli.';
+  const avvisi = (s.dati.allerta?.meteoalarm || []).filter((w) => w.livello >= 2 && w.fine >= s.ts && w.inizio <= s.ts + GIORNO);
+  const meteoalarm = avvisi.length ? ` Meteoalarm: ${avvisi.map((w) => `${w.fenomeno.toLowerCase()}, allerta ${w.colore} dalle ${N.oraBreve(w.inizio)} del ${N.dataBreve(w.inizio, s.adesso)} alle ${N.oraBreve(w.fine)} del ${N.dataBreve(w.fine, s.adesso)}`).join('; ')}.` : '';
   const aqi = Math.max(...Object.values(s.dati.aria || {}).map((x) => x.aqi).filter((x) => typeof x === 'number'), -1);
   const cima = sin.classifica.slice(0, 5);
   const massimo = Math.max(1, ...cima.map((x) => x.quota));
@@ -198,7 +204,7 @@ export function rendiSchedaCitta(s) {
         ${m ? `<div class="tessera"><b>${virgola(m.pioggia ?? 0)} mm</b><span>pioggia nell’ora</span><small>${m.raffiche != null ? `raffiche ${Math.round(m.raffiche)} km/h` : m.vento != null ? `vento ${Math.round(m.vento)} km/h` : ''}</small></div>` : ''}
         ${aqi >= 0 ? `<div class="tessera"><b>${aqi}</b><span>aria ${esc(N.livelloAria(N.classeAqi(aqi)).label.toLowerCase())}</span><small>indice europeo</small></div>` : ''}
       </div>
-      <p class="nota">${esc(allerta)}</p>
+      <p class="nota">${esc(allerta + meteoalarm)}</p>
     </section>
     <section class="invito">
       <h3>Chiedi a CiroGPT</h3>
@@ -334,9 +340,10 @@ export function rendiTempo(s) {
     punti.push({ ts: t, totale: sin.totale, critici: sin.perLivello.affollato });
   }
   const tacche = [];
-  for (let g = N.inizioGiorno(N.giornoLocale(da)); g <= a + GIORNO; g += GIORNO) {
-    const mezzogiorno = N.inizioGiorno(N.giornoLocale(g + 3 * ORA)) + 12 * ORA;
-    if (mezzogiorno > da + 3 * ORA && mezzogiorno < a - 3 * ORA) tacche.push(`<span style="left:${(((mezzogiorno - da) / (a - da)) * 100).toFixed(2)}%">${esc(maiuscola(giornoParlato(mezzogiorno, s.adesso)))}</span>`);
+  for (let g = N.inizioGiorno(N.giornoLocale(da)); g < a; g = N.inizioGiorno(N.giornoLocale(g + GIORNO + 3 * ORA))) {
+    // etichetta al centro della parte visibile di ogni giorno (se è abbastanza larga)
+    const inizio = Math.max(da, g), fine = Math.min(a, g + GIORNO);
+    if (fine - inizio >= 6 * ORA) tacche.push(`<span style="left:${((((inizio + fine) / 2 - da) / (a - da)) * 100).toFixed(2)}%">${esc(maiuscola(giornoParlato(g + 12 * ORA, s.adesso)))}</span>`);
   }
   const eventi = eventiUnici(s.modello.eventiTra(da, a).filter((e) => e.persone >= 1000 && e.zona))
     .map((e) => `<button type="button" class="tacca-evento ${e.reale ? '' : 'ipotetico'}" style="left:${(((Math.max(da, e.inizio) - da) / (a - da)) * 100).toFixed(2)}%" data-ts="${e.inizio}" data-zona="${e.zona}" data-tip="${esc(`${e.titolo} · ${L[e.zona].breve} · ${giornoBreve(e.inizio)} ${N.oraBreve(e.inizio)}`)}" aria-label="${esc(e.titolo)}"></button>`)
