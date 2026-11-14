@@ -4,7 +4,7 @@ L'API di [`citta-api/`](../../citta-api/README.md) (il "cervello dati" di CiroGP
 
 | Porta | Protocollo | Per chi |
 |---|---|---|
-| **8443** | HTTPS (profilo `https`: nginx in un container) | CiroGPT (OpenClaw): `https://twinciro.robertodisanto.it:8443/citta-api` |
+| **443** | HTTPS (profilo `https`: nginx in un container) | CiroGPT (OpenClaw): `https://twinciro.robertodisanto.it/citta-api` |
 | 8791 | HTTP (JSON) | prove e rete interna; con il profilo `https` può restare su 127.0.0.1 |
 
 Sul server **non abbiamo root**: niente nginx di sistema né `sudo`. HTTPS lo fa un nginx in Docker con i certificati che l'amministratore rende leggibili ([`../certificati/`](../certificati/README.md)).
@@ -41,7 +41,7 @@ docker compose up -d --build
 ./prova.sh                                   # /salute, 401 senza token, riassunto, luogo, passaggi, fonti
 ```
 
-Apri nel firewall del provider la porta **TCP 8443** per il profilo `https` (qui sotto) e, solo se vuoi l'accesso diretto in HTTP, la **8791**. Come per il broker: le porte pubblicate da Docker scavalcano ufw; per non esporre la 8791 metti `CITTA_API_INDIRIZZO=127.0.0.1` in `.env`.
+Apri nel firewall del provider la porta **TCP 443** per il profilo `https` (qui sotto) e, solo se vuoi l'accesso diretto in HTTP, la **8791**. Come per il broker: le porte pubblicate da Docker scavalcano ufw; per non esporre la 8791 metti `CITTA_API_INDIRIZZO=127.0.0.1` in `.env`.
 
 Da fuori:
 
@@ -58,14 +58,14 @@ Il token viaggia in un header: su HTTP in chiaro si può leggere. Il profilo `ht
 ls -l /srv/certificati/twinciro.robertodisanto.it/       # fullchain.pem e privkey.pem
 # in .env: CITTA_API_INDIRIZZO=127.0.0.1 (la 8791 resta interna) e, se serve, CITTA_HTTPS_PORTA
 docker compose --profile https up -d --build
-./prova.sh https://twinciro.robertodisanto.it:8443/citta-api
+./prova.sh https://twinciro.robertodisanto.it/citta-api
 ```
 
-nginx rilegge i certificati da solo ogni 12 ore, quindi dopo un rinnovo non serve fare nulla (per farlo subito: `docker compose exec https nginx -s reload`). Se la 443 è già occupata sul server, oppure se Docker è rootless e non può pubblicare porte sotto la 1024, usa `CITTA_HTTPS_PORTA=8443` e l'indirizzo `https://twinciro.robertodisanto.it:8443/citta-api`. `https://twinciro.robertodisanto.it/salute` risponde `ok` da nginx stesso.
+nginx rilegge i certificati da solo ogni 12 ore, quindi dopo un rinnovo non serve fare nulla (per farlo subito: `docker compose exec https nginx -s reload`). Se la 443 è già occupata sul server, oppure se Docker è rootless e non può pubblicare porte sotto la 1024, usa `CITTA_HTTPS_PORTA=8443` e l'indirizzo `https://twinciro.robertodisanto.it/citta-api`. `https://twinciro.robertodisanto.it/salute` risponde `ok` da nginx stesso.
 
 Provato il 14/11 con un certificato autofirmato, con la chiave 0640 di un altro utente come la lascia `copia-certificati.sh`: container `healthy`, `prova.sh` 6 su 6 attraverso nginx e ricaricamento a caldo.
 
-Per CiroGPT: `CITTA_API=https://twinciro.robertodisanto.it:8443/citta-api` e `CITTA_API_TOKEN=<token>` (skill d'esempio nel [README dell'API](../../citta-api/README.md#usarla-da-cirogpt)).
+Per CiroGPT: `CITTA_API=https://twinciro.robertodisanto.it/citta-api` e `CITTA_API_TOKEN=<token>` (skill d'esempio nel [README dell'API](../../citta-api/README.md#usarla-da-cirogpt)).
 
 ## Configurazione (`.env`)
 
@@ -74,7 +74,7 @@ Per CiroGPT: `CITTA_API=https://twinciro.robertodisanto.it:8443/citta-api` e `CI
 | `CITTA_API_PORTA` | `8791` | porta sul server |
 | `CITTA_API_INDIRIZZO` | `0.0.0.0` | `127.0.0.1` dietro il profilo `https` |
 | `CITTA_CERTIFICATI_DIR` | `/srv/certificati/twinciro.robertodisanto.it` | profilo `https`: cartella con `fullchain.pem` e `privkey.pem` |
-| `CITTA_HTTPS_PORTA` | `8443` | profilo `https`: porta sul server. Il Docker del server è rootless e non pubblica porte sotto la 1024; `443` solo se l'amministratore imposta `net.ipv4.ip_unprivileged_port_start=443` |
+| `CITTA_HTTPS_PORTA` | `443` | profilo `https`: porta sul server. Il Docker del server è rootless: la 443 funziona perché le porte basse sono state abilitate (`sudo setcap cap_net_bind_service=ep "$(command -v rootlesskit)" && systemctl --user restart docker`); senza, `8443` (`cloud/riavvia-tutto.sh` ci passa da solo) |
 | `CITTA_API_TOKEN` | vuoto | Bearer per tutto tranne `/salute`. Vuoto = API aperta |
 | `CITTA_API_CORS` | `https://robertodisanto.it` | origini del browser ammesse (la mappa su GitHub Pages); `*` per tutte |
 | `NAPOLI_UA` | vuoto | User-Agent verso le fonti; generico, senza dati personali |
@@ -109,7 +109,7 @@ Il volume contiene solo snapshot rigenerabili, ma sul server **non si usa mai `d
 ```bash
 cd hackathon_2026_a && git pull
 cd cloud/citta-api && docker compose --profile https up -d --build   # senza il profilo https: docker compose up -d --build
-./prova.sh && ./prova.sh https://twinciro.robertodisanto.it:8443/citta-api
+./prova.sh && ./prova.sh https://twinciro.robertodisanto.it/citta-api
 ```
 
 **Dopo il riordino del 14/11** (l'API è passata da `shared/citta-api/` a `citta-api/`, autonoma) basta questo: l'immagine va **ricostruita** (`--build`), il volume `dati` resta com'è e all'avvio l'API ci rimette gli snapshot della repo se sono più recenti. Il nome del progetto compose (`bighack-citta-api`), la porta, il `.env` e il percorso per CiroGPT non cambiano. Niente `docker compose down -v`.

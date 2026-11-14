@@ -11,7 +11,7 @@ cd ~/hackathon_2026_a && git pull && bash cloud/riavvia-tutto.sh
 | Cartella | Servizio | Porte |
 |---|---|---|
 | [`mqtt/`](mqtt/README.md) | broker MQTT Eclipse Mosquitto 2.1.2, solo topic `napoli/` (formato unico in [`../firmware/`](../firmware/README.md#formato-mqtt-unico)): badge WHY2025 e scheda Tasmota sull'hotspot del team, città `c5-agentic-city` | 1883 (password, in chiaro); 8883 e 8884 solo con TLS acceso |
-| [`citta-api/`](citta-api/README.md) | API dati città di Napoli per CiroGPT (Node, cache, riserve dichiarate, pause dopo i 429), con nginx HTTPS in un container (profilo `https`) | 8443 (HTTPS), 8791 (HTTP con token) |
+| [`citta-api/`](citta-api/README.md) | API dati città di Napoli per CiroGPT (Node, cache, riserve dichiarate, pause dopo i 429), con nginx HTTPS in un container (profilo `https`) | 443 (HTTPS), 8791 (HTTP con token) |
 | [`certificati/`](certificati/README.md) | non è un servizio: hook di certbot che l'**amministratore** installa una volta per rendere i certificati leggibili senza root | — |
 
 Installazione rapida del broker (dettagli, utenti e TLS in [`mqtt/README.md`](mqtt/README.md)):

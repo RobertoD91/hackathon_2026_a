@@ -2,7 +2,7 @@
 # Riavvia da zero i servizi di TwinCIRO sul server (utente openclaw, Docker senza root):
 #   1. spegne tutto (MAI con -v: i dati e gli utenti del broker restano);
 #   2. broker MQTT (cloud/mqtt);
-#   3. API dati città (cloud/citta-api), con HTTPS sulla 8443 se ci sono i certificati;
+#   3. API dati città (cloud/citta-api), con HTTPS (443, oppure 8443 se il Docker rootless non può) se ci sono i certificati;
 #   4. città TwinCIRO (c5-agentic-city), collegata al broker con l'utente c5.
 # A ogni problema si ferma (o avvisa) e scrive COSA FARE.
 #
@@ -31,7 +31,7 @@ riepilogo() {
     echo "  API dati città:   $ESITO_API"
     echo "  HTTPS dell'API:   $ESITO_HTTPS"
     echo "  Città TwinCIRO:   $ESITO_CITTA"
-    echo "  Porte da aprire nel firewall del provider: 1883 (MQTT), 8443 (HTTPS dell'API); 8791 e 8080 solo se servono da fuori."
+    echo "  Porte da aprire nel firewall del provider: 1883 (MQTT), $(p="$(valore_env "$API/.env" CITTA_HTTPS_PORTA)"; echo "${p:-443}") (HTTPS dell'API); 8791 e 8080 solo se servono da fuori."
 }
 
 # Stato di salute di un servizio compose (cartella, servizio): healthy, starting, unhealthy, running, assente…
@@ -48,6 +48,16 @@ aspetta_sano() { # cartella servizio secondi
         [ "$s" = healthy ] && return 0
         sleep 3
     done
+    return 1
+}
+# true se questo Docker può pubblicare la 443: con root sì; rootless solo con la capability su
+# rootlesskit (sudo setcap cap_net_bind_service=ep "$(command -v rootlesskit)") o con il sysctl.
+porte_basse_ok() {
+    [ "${ROOTLESS:-0}" = 1 ] || return 0
+    [ "$(cat /proc/sys/net/ipv4/ip_unprivileged_port_start 2>/dev/null || echo 1024)" -le 443 ] && return 0
+    local rk gc
+    rk="$(command -v rootlesskit 2>/dev/null)"; gc="$(command -v getcap 2>/dev/null || echo /usr/sbin/getcap)"
+    [ -n "$rk" ] && [ -x "$gc" ] && "$gc" "$rk" 2>/dev/null | grep -q cap_net_bind_service && return 0
     return 1
 }
 valore_env() { # file chiave
@@ -68,7 +78,11 @@ docker info >/dev/null 2>&1 || ferma "Docker non risponde." \
 docker compose version >/dev/null 2>&1 || ferma "manca docker compose (plugin v2)." "installa il plugin docker-compose v2."
 [ -d "$MQTT" ] && [ -d "$API" ] && [ -d "$CITTA" ] || ferma "non trovo cloud/mqtt, cloud/citta-api o c5-agentic-city in $RADICE." \
     "lancia lo script dalla repo aggiornata: cd ~/hackathon_2026_a && git pull && bash cloud/riavvia-tutto.sh"
-if docker info -f '{{.SecurityOptions}}' 2>/dev/null | grep -q rootless; then ok "Docker rootless (niente porte sotto la 1024: HTTPS sulla 8443)"; else ok "Docker con root"; fi
+ROOTLESS=0
+if docker info -f '{{.SecurityOptions}}' 2>/dev/null | grep -q rootless; then
+    ROOTLESS=1
+    if porte_basse_ok; then ok "Docker rootless, con le porte basse abilitate (HTTPS sulla 443)"; else ok "Docker rootless senza porte basse (HTTPS sulla 8443)"; fi
+else ok "Docker con root"; fi
 ok "repo: $RADICE ($(git -C "$RADICE" log --oneline -1 2>/dev/null))"
 
 # ------------------------------------------------------------------ 1. spegni tutto (senza -v)
@@ -77,11 +91,15 @@ passo "1. Spengo tutto (i dati restano: niente -v)"
 (cd "$API" && docker compose --profile https down --remove-orphans >/dev/null 2>&1) && ok "API spenta" || avviso "API: niente da spegnere"
 (cd "$MQTT" && docker compose --profile monitor down --remove-orphans >/dev/null 2>&1) && ok "broker spento" || avviso "broker: niente da spegnere"
 # Client di prova rimasti appesi (stessa immagine del broker, senza progetto compose).
-for c in $(docker ps -aq --filter ancestor=eclipse-mosquitto:2.1.2-alpine); do
-    if [ -z "$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project"}}' "$c" 2>/dev/null)" ]; then
-        docker rm -f "$c" >/dev/null 2>&1 && ok "tolto il client di prova rimasto appeso ($c)"
-    fi
-done
+togli_client_appesi() {
+    local c
+    for c in $(docker ps -aq --filter ancestor=eclipse-mosquitto:2.1.2-alpine); do
+        if [ -z "$(docker inspect -f '{{index .Config.Labels "com.docker.compose.project"}}' "$c" 2>/dev/null)" ]; then
+            docker rm -f "$c" >/dev/null 2>&1 && ok "tolto il client di prova rimasto appeso ($c)"
+        fi
+    done
+}
+togli_client_appesi
 rimasti="$(docker ps --format '{{.Names}}')"
 [ -z "$rimasti" ] && ok "nessun container acceso" || avviso "restano accesi altri container (non di TwinCIRO, li lascio): $(echo $rimasti)"
 
@@ -111,16 +129,18 @@ for u in badge-1 tasmota-1; do
     fi
 done
 if [ "${SALTA_PROVE:-0}" != 1 ]; then
-    if timeout 90 ./scripts/prova.sh > /tmp/twinciro-prova-mqtt.log 2>&1; then
+    # Tempo massimo con kill: con Docker rootless il client di prova (--network host) può restare
+    # appeso verso il dominio pubblico. In rootless provo solo in locale.
+    prova_mqtt() { timeout -k 5 45 ./scripts/prova.sh "$@" < /dev/null; local e=$?; togli_client_appesi >/dev/null; return $e; }
+    if [ "$ROOTLESS" != 1 ] && prova_mqtt > /tmp/twinciro-prova-mqtt.log 2>&1; then
         ok "prova del broker dal dominio pubblico ($DOMINIO:1883): tutte le prove passate"
-    elif timeout 90 ./scripts/prova.sh localhost > /tmp/twinciro-prova-mqtt-locale.log 2>&1; then
+    elif prova_mqtt localhost > /tmp/twinciro-prova-mqtt-locale.log 2>&1; then
         ok "prova del broker in locale: tutte le prove passate"
-        avviso "dal dominio pubblico la prova non passa (log: /tmp/twinciro-prova-mqtt.log): il broker funziona, ma da qui $DOMINIO:1883 non risponde."
-        fai "controlla che la porta TCP 1883 sia aperta nel firewall del provider; poi prova da un portatile: mosquitto_sub -h $DOMINIO -p 1883 -u monitor -P '<password di monitor>' -t 'napoli/#' -v"
+        [ "$ROOTLESS" = 1 ] && fai "da fuori provalo da un portatile: mosquitto_sub -h $DOMINIO -p 1883 -u monitor -P '<password di monitor>' -t 'napoli/#' -v (porta 1883 aperta nel firewall del provider)" \
+            || { avviso "dal dominio pubblico la prova non passa (log: /tmp/twinciro-prova-mqtt.log)"; fai "controlla che la porta TCP 1883 sia aperta nel firewall del provider"; }
     else
-        avviso "la prova del broker non passa nemmeno in locale (log: /tmp/twinciro-prova-mqtt-locale.log)."
-        fai "guarda: tail -n 30 /tmp/twinciro-prova-mqtt-locale.log ; e cd $MQTT && docker compose logs --tail 30 mosquitto"
-        fai "se il client di prova si blocca (può succedere con Docker rootless) ma il broker è healthy, prova da un portatile con mosquitto_sub come sopra."
+        avviso "la prova automatica del broker non è riuscita o è scaduta (log: /tmp/twinciro-prova-mqtt-locale.log). Il broker è healthy: probabilmente è il client di prova, non il broker."
+        fai "provalo da un portatile: mosquitto_sub -h $DOMINIO -p 1883 -u monitor -P '<password di monitor>' -t 'napoli/#' -v"
     fi
 fi
 
@@ -135,7 +155,15 @@ if [ ! -f .env ]; then
     fai "su OpenClaw imposta CITTA_API_TOKEN con questo valore."
 fi
 [ -n "$(valore_env .env CITTA_API_TOKEN)" ] || avviso "CITTA_API_TOKEN è vuoto: l'API è aperta a tutti."
-[ "$(valore_env .env CITTA_HTTPS_PORTA)" = 8443 ] || { imposta_env .env CITTA_HTTPS_PORTA 8443; ok "CITTA_HTTPS_PORTA impostata a 8443"; }
+if [ -z "$(valore_env .env CITTA_HTTPS_PORTA)" ]; then
+    if porte_basse_ok; then imposta_env .env CITTA_HTTPS_PORTA 443; else imposta_env .env CITTA_HTTPS_PORTA 8443; fi
+    ok "CITTA_HTTPS_PORTA impostata a $(valore_env .env CITTA_HTTPS_PORTA)"
+elif [ "$(valore_env .env CITTA_HTTPS_PORTA)" = 443 ] && ! porte_basse_ok; then
+    avviso "questo Docker rootless non può pubblicare la 443: uso la 8443"
+    fai "per usare la 443: sudo setcap cap_net_bind_service=ep \"\$(command -v rootlesskit)\" && systemctl --user restart docker, poi metti CITTA_HTTPS_PORTA=443 in cloud/citta-api/.env"
+    imposta_env .env CITTA_HTTPS_PORTA 8443
+fi
+url_https() { local p; p="$(valore_env "$API/.env" CITTA_HTTPS_PORTA)"; [ "$p" = 443 ] && echo "https://$DOMINIO/citta-api" || echo "https://$DOMINIO:$p/citta-api"; }
 docker compose up -d --build > /tmp/twinciro-api.log 2>&1 || ferma "l'API non parte (log: /tmp/twinciro-api.log)." \
     "guarda: tail -n 30 /tmp/twinciro-api.log" \
     "se la porta 8791 è occupata: ss -ltnp | grep 8791"
@@ -145,18 +173,25 @@ else
     ferma "l'API non diventa healthy." "guarda: cd $API && docker compose logs --tail 30 citta-api"
 fi
 if [ "${SALTA_PROVE:-0}" != 1 ]; then
-    ./prova.sh > /tmp/twinciro-prova-api.log 2>&1 && ok "prova dell'API: $(grep -o 'Esito:.*' /tmp/twinciro-prova-api.log)" \
+    timeout -k 5 60 ./prova.sh > /tmp/twinciro-prova-api.log 2>&1 && ok "prova dell'API: $(grep -o 'Esito:.*' /tmp/twinciro-prova-api.log)" \
         || avviso "prova dell'API con qualche errore: tail -n 20 /tmp/twinciro-prova-api.log"
 fi
 CERT="$(valore_env .env CITTA_CERTIFICATI_DIR)"; CERT="${CERT:-/srv/certificati/$DOMINIO}"
 if [ -r "$CERT/fullchain.pem" ] && [ -r "$CERT/privkey.pem" ]; then
-    docker compose --profile https up -d > /tmp/twinciro-https.log 2>&1 || true
+    if ! docker compose --profile https up -d > /tmp/twinciro-https.log 2>&1; then
+        if grep -qi "privileged port" /tmp/twinciro-https.log && [ "$(valore_env .env CITTA_HTTPS_PORTA)" != 8443 ]; then
+            avviso "la porta $(valore_env .env CITTA_HTTPS_PORTA) è stata rifiutata (porta privilegiata con Docker rootless): passo alla 8443"
+            imposta_env .env CITTA_HTTPS_PORTA 8443
+            docker compose --profile https up -d > /tmp/twinciro-https.log 2>&1 || true
+        fi
+    fi
     if aspetta_sano "$API" https 40; then
-        ok "HTTPS acceso sulla 8443"; ESITO_HTTPS="${V}acceso${N} (https://$DOMINIO:8443/citta-api)"
+        ok "HTTPS acceso: $(url_https)"; ESITO_HTTPS="${V}acceso${N} ($(url_https))"
+        fai "su OpenClaw: CITTA_API=$(url_https)"
         if [ "${SALTA_PROVE:-0}" != 1 ]; then
-            ./prova.sh "https://$DOMINIO:8443/citta-api" > /tmp/twinciro-prova-https.log 2>&1 \
+            timeout -k 5 60 ./prova.sh "$(url_https)" > /tmp/twinciro-prova-https.log 2>&1 \
                 && ok "prova in HTTPS passata" \
-                || { avviso "la prova in HTTPS dal server non passa (log: /tmp/twinciro-prova-https.log)"; fai "apri la 8443 nel firewall del provider e prova da fuori: curl -s https://$DOMINIO:8443/salute"; }
+                || { avviso "la prova in HTTPS dal server non passa (log: /tmp/twinciro-prova-https.log)"; fai "apri la porta $(valore_env .env CITTA_HTTPS_PORTA) nel firewall del provider e prova da fuori: curl -s $(url_https | sed 's#/citta-api##')/salute"; }
         fi
     else
         avviso "il container HTTPS non diventa healthy."

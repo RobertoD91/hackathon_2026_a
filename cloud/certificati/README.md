@@ -62,4 +62,4 @@ Con Docker classico (demone di root) i container leggono la chiave anche se è d
 docker info -f '{{.SecurityOptions}}'
 ```
 
-Se compare `rootless`, è Docker rootless (sul server **lo è**, verificato il 14/11: l'API va in HTTPS sulla 8443). In quel caso la porta 443 si può pubblicare solo se l'amministratore abbassa `net.ipv4.ip_unprivileged_port_start`; altrimenti si usa `CITTA_HTTPS_PORTA=8443`.
+Se compare `rootless`, è Docker rootless (sul server **lo è**; il 14/11 le porte basse sono state abilitate con `sudo setcap cap_net_bind_service=ep "$(command -v rootlesskit)" && systemctl --user restart docker`, quindi l'HTTPS dell'API sta sulla 443). In quel caso la porta 443 si può pubblicare solo se l'amministratore abbassa `net.ipv4.ip_unprivileged_port_start`; altrimenti si usa `CITTA_HTTPS_PORTA=8443`.
