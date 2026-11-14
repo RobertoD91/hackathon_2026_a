@@ -25,6 +25,7 @@ Diario delle decisioni e di quello che sappiamo sull'ambiente di lavoro. Aggiorn
 | 13/11 sera | **Il team si divide:** qui restano Roberto D'Isanto e Mario Varlese; Francesca, Giovanni e Pasquale hanno forkato la repo e lavorano su challenge diverse. |
 | 13/11 sera | Avviati: ricerca e verifica delle fonti dati pubbliche di Napoli (catalogo in `docs/fonti-dati-napoli.md`), versione fattoria della mappa, firmware del badge WHY2025 con MQTT verso `cloud.robertodisanto.it` (+ ponte MQTT → hub, valutazione Tasmota), Docker del broker MQTT in `cloud/mqtt/`. |
 | 13/11 sera | Priorità: **C5 principale**, C2 di riserva, C1 molto improbabile. C4 passa all'altro gruppo; le cartelle restano come sono. |
+| 14/11 | Confermato: Docker con demone disponibile nelle sessioni cloud; su `cloud.robertodisanto.it` si possono aprire tutte le porte. |
 | — | Tower defense per C4: non più nostro (altro gruppo). |
 
 ## Punti di forza del team
@@ -41,6 +42,8 @@ Diario delle decisioni e di quello che sappiamo sull'ambiente di lavoro. Aggiorn
 | FLUX.1 Kontext (Hugging Face Space) | Generazione immagini (titoli, creatività pubblicitarie per C1, mockup) | `tools/flux-gen.sh "<prompt>" out.webp`. Funziona dalle sessioni cloud (credenziali iniettate dal proxy); altrove serve un token Hugging Face. Restituisce WebP 1024×1024. |
 | Hunyuan3D 2.1 (Hugging Face Space) | Generazione di modelli 3D da immagine | Non ancora usato. |
 | Cloudflare API | Workers, deploy di backend leggeri | Per C5: Worker **nuovo**, non toccare `mbl-privato`. |
+| **Docker (client + demone)** | Container per broker MQTT, build del firmware (immagini ESP-IDF/PlatformIO), servizi di prova | Docker 29.9.2 con compose v5.6.1 e buildx, demone attivo (`/var/run/docker.sock`). Disponibile nelle sessioni cloud di Claude Code: **usarlo** per provare davvero compose e immagini. |
+| Server `cloud.robertodisanto.it` | Server di Roberto per i servizi (broker MQTT in `cloud/mqtt/`, hub, ponti) | Si possono aprire **tutte le porte** (es. 1883 MQTT con autenticazione, 8883 MQTT/TLS, WebSocket). |
 | Playwright + Chromium | Test end-to-end e screenshot dei prototipi | Già installati nel container. |
 | ffmpeg | Conversione audio/immagini | Usato per i WAV → MP3 di C4. |
 

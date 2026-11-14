@@ -33,6 +33,11 @@ Soluzioni esistenti:
 - `c4-jrpg/`: C4 Consorzio Clara, JRPG a turni red team vs blue team (giocabile). Un tower defense per C4 è previsto più avanti. `jrpg/index.html` è solo un redirect al vecchio URL.
 - `c5-agentic-city/`: C5 Fastweb + Vodafone, "Napoli Agentic City". Brief e decisioni nel suo README. Non è una webapp: agenti + sensori IoT (ESP32, modulo 5G) + droni. Per un proxy/worker serve un Worker Cloudflare nuovo: **non usare `mbl-privato`**. Avvio: `python avvia.py` (venv con `requirements.txt`) oppure `docker compose up -d` dalla cartella (Mosquitto + città); video della simulazione con `strumenti/video_demo.py`.
 
+## Infrastruttura
+
+- **Docker è disponibile** nelle sessioni cloud di Claude Code, demone compreso (`docker`, `docker compose`, `buildx`): usalo per provare davvero container e compose prima di consegnarli.
+- **Server `cloud.robertodisanto.it`** (di Roberto): ci girano i servizi del team (broker MQTT in `cloud/mqtt/`). Si possono aprire tutte le porte.
+
 ## Hosting
 
 GitHub Pages pubblica la root di `master` tramite il workflow `.github/workflows/pages.yml` (a ogni push su master; dominio personalizzato dell'account): https://robertodisanto.it/hackathon_2026_a/ (ogni prototipo in `/<sottocartella>/`). `index.html` in root è la pagina con i link ai prototipi: aggiornala quando ne aggiungi uno. `.nojekyll` disattiva Jekyll. Nei prototipi usa **solo percorsi relativi** (il sito non è servito dalla root del dominio) e attenzione a maiuscole/minuscole nei nomi dei file.
