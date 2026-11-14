@@ -3,7 +3,7 @@
 Firmware per il badge **WHY2025/EMF2026 di Cyber Saiyan** ([CyberSaiyanIT/why2025-badge](https://github.com/CyberSaiyanIT/why2025-badge)) costruito **sopra il firmware originale** (ESP-IDF 4.4 via PlatformIO): il badge resta com'era (logo, radar dei badge, giochi, LED, web in modalità AP) e in più:
 
 - legge i sensori I2C collegati (luce, temperatura, umidità, pressione) e quelli che ha già sulla scheda (tensione di alimentazione, temperature interne, badge vicini via Bluetooth);
-- pubblica le letture via MQTT verso `cloud.robertodisanto.it` nel formato del contratto ([`../../CONTRATTO.md`](../../CONTRATTO.md), sezioni 1 e 9) su `bighack/<zona>/<deviceId>/readings`, con stato online/offline (last will) e, a richiesta, anche nel formato di `c5-agentic-city`;
+- pubblica le letture via MQTT verso `twinciro.robertodisanto.it` nel formato del contratto ([`../../CONTRATTO.md`](../../CONTRATTO.md), sezioni 1 e 9) su `bighack/<zona>/<deviceId>/readings`, con stato online/offline (last will) e, a richiesta, anche nel formato di `c5-agentic-city`;
 - ha una schermata **SENSORI** con i valori dal vivo, lo stato della connessione e i messaggi che arrivano dal cloud; le rotelle mandano una **segnalazione** (`button: true`) o una lettura immediata.
 
 Il ponte [`../../tools/mqtt-bridge.js`](../../tools/mqtt-bridge.js) porta le letture dal broker al hub (`POST /api/readings`).
@@ -124,7 +124,7 @@ cp telemetry_config.example.h telemetry_config.h   # poi metti Wi-Fi, utente/pas
 | `TELEMETRY_WIFI_SSID`, `_PASSWORD` | — | SSID vuoto = telemetria spenta (il badge torna quello originale) |
 | `TELEMETRY_WIFI_ENTERPRISE`, `_EAP_IDENTITY`, `_EAP_USERNAME` | 0 | reti 802.1X (PEAP/TTLS) |
 | `TELEMETRY_NET_LABEL` | `"wifi"` | `meta.net`: `"5g"` se il Wi-Fi è l'hotspot 5G |
-| `TELEMETRY_MQTT_HOST` | `cloud.robertodisanto.it` | |
+| `TELEMETRY_MQTT_HOST` | `twinciro.robertodisanto.it` | |
 | `TELEMETRY_MQTT_TRANSPORT`, `_PORT` | `"mqtt"`, 1883 | `"mqtts"` 8883 (TLS), `"wss"` 8884 (o 443 con nginx), `"ws"` |
 | `TELEMETRY_MQTT_USER`, `_PASSWORD` | `""` | con il broker di `cloud/mqtt` l'utente **è il deviceId** (l'ACL gli fa scrivere solo `bighack/+/<utente>/#`); utente vuoto + password = si usa il deviceId |
 | `TELEMETRY_MQTT_TLS_INSECURE`, `_CA_PEM` | 0, `""` | TLS verificato con il bundle di CA di ESP-IDF (Let's Encrypt va bene); CA propria per i certificati autofirmati |
@@ -206,12 +206,12 @@ Backlog GPIO0 608; GPIO1 640; GPIO5 1376; GPIO9 64; GPIO8 65; Restart 1
 | prese smart (Sonoff POW, Shelly, Nous A1T) per C2 | **Tasmota** | `ENERGY.Power` → `power_w` (grandezza standard del contratto) |
 | ESP32 con logica propria (semafori di c5, conteggio passaggi) | sketch Arduino | come in `c5-agentic-city/firmware/` e `../esp32-sensor/` |
 
-### Configurare Tasmota per cloud.robertodisanto.it
+### Configurare Tasmota per twinciro.robertodisanto.it
 
 Con il broker di `cloud/mqtt` il nome utente MQTT di un Tasmota **è il suo Topic**. L'ACL gli fa scrivere `tele/<utente>/#` e `stat/<utente>/#`, leggere `cmnd/<utente>/#`, e anche `bighack/+/<utente>/#`. L'utente si crea con `cloud/mqtt/scripts/aggiungi-utente.sh tasmota-serra`. Dalla console web di Tasmota:
 
 ```
-Backlog MqttHost cloud.robertodisanto.it; MqttPort 1883; MqttUser tasmota-serra; MqttPassword <password>; Topic tasmota-serra; TelePeriod 30
+Backlog MqttHost twinciro.robertodisanto.it; MqttPort 1883; MqttUser tasmota-serra; MqttPassword <password>; Topic tasmota-serra; TelePeriod 30
 ```
 
 - **TLS** (solo build ESP32; CA Let's Encrypt inclusa da Tasmota 13.4.1.2): `Backlog SetOption103 1; MqttPort 8883`.
@@ -260,14 +260,14 @@ MQTT_TEST_URL=mqtt://localhost:1883 node --test shared/iot-agents/test/mqtt.test
 
 Prove da questa sessione (sandbox con proxy HTTPS), 14/11/2026:
 
-- `cloud.robertodisanto.it` risolve in 34.154.157.249.
+- Dal 14/11 pomeriggio il server del team è `twinciro.robertodisanto.it`, che risolve in 34.154.255.49. Il vecchio `cloud.robertodisanto.it` (34.154.157.249) non si usa più.
 - **1883 e 8883: bloccati dalla sandbox**, il che è diverso da "non funziona": il proxy accetta il tunnel `CONNECT` ma non inoltra MQTT. Con `test.mosquitto.org` (che funziona) succede lo stesso: 1883 non risponde, 8883 viene resettato.
-- **443**: verso `cloud.robertodisanto.it` l'handshake TLS va in timeout/reset, mentre verso `test.mosquitto.org:443` passa. Quindi non si può dire da qui se sul server c'è qualcosa in ascolto.
+- **443**: dalla sandbox nessuna risposta HTTPS da `twinciro.robertodisanto.it`. Non si può dire da qui se sul server c'è qualcosa in ascolto.
 
 Da provare sul posto, da un PC in rete:
 
 ```bash
-node shared/iot-agents/tools/mqtt-pub.js --url mqtt://cloud.robertodisanto.it:1883 --user <u> --password <p> --sub 'bighack/#'
+node shared/iot-agents/tools/mqtt-pub.js --url mqtt://twinciro.robertodisanto.it:1883 --user <u> --password <p> --sub 'bighack/#'
 ```
 
 Valori predefiniti del broker del team (`cloud/mqtt`): 1883 con utente/password, 8883 TLS, 8884 WebSocket TLS (443 con nginx).

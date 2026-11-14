@@ -50,7 +50,7 @@ Soluzioni esistenti:
 ## Infrastruttura
 
 - **Docker è disponibile** nelle sessioni cloud di Claude Code, demone compreso (`docker`, `docker compose`, `buildx`): usalo per provare davvero container e compose prima di consegnarli.
-- **Server `cloud.robertodisanto.it`** (di Roberto): ci girano i servizi del team (broker MQTT in `cloud/mqtt/`). Si possono aprire tutte le porte.
+- **Server `twinciro.robertodisanto.it`** (di Roberto): ci girano i servizi del team (broker MQTT in `cloud/mqtt/`, API dati città in `cloud/citta-api/`). Si possono aprire tutte le porte. Dal 14/11 pomeriggio sostituisce `cloud.robertodisanto.it`, che **non si usa più**: la cartella `cloud/` mantiene il nome, l'host no.
 
 ## Hosting
 
@@ -103,7 +103,7 @@ Base comune IoT + agenti (contratto: `shared/iot-agents/CONTRATTO.md`, uso e API
 
 ## `cloud/`
 
-Servizi Docker per il server di Roberto (`cloud.robertodisanto.it`). Qui solo configurazione, mai segreti (`.env` e `segreti/` sono ignorati da git). Guida completa: `cloud/mqtt/README.md`.
+Servizi Docker per il server di Roberto (`twinciro.robertodisanto.it`). Qui solo configurazione, mai segreti (`.env` e `segreti/` sono ignorati da git). Guida completa: `cloud/mqtt/README.md`.
 - `cloud/mqtt/`: Mosquitto 2.1.2 (`eclipse-mosquitto:2.1.2-alpine`). Porte 1883 (password), 8883 (TLS), 8884 (wss), 9001 ws solo su 127.0.0.1. Nessun accesso anonimo (il healthcheck lo controlla).
 - Avvio sul server: `cd cloud/mqtt && sudo ./scripts/inizializza.sh && docker compose up -d && ./scripts/prova.sh`; hook di rinnovo Let's Encrypt: `scripts/rinnova-certificati.sh`.
 - Utenti: uno per dispositivo con nome = deviceId (badge/ESP32) o Topic Tasmota (`./scripts/aggiungi-utente.sh <id>`); permessi dai pattern `%u` di `config/acl`. Ruoli fissi: admin, ponte, c5, c5-plastico, dashboard (sola lettura: la sua password finisce nel browser), monitor.

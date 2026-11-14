@@ -33,7 +33,7 @@
 #define TELEMETRY_NET_LABEL "wifi"
 #endif
 #ifndef TELEMETRY_MQTT_HOST
-#define TELEMETRY_MQTT_HOST "cloud.robertodisanto.it"
+#define TELEMETRY_MQTT_HOST "twinciro.robertodisanto.it"
 #endif
 #ifndef TELEMETRY_MQTT_TRANSPORT
 #define TELEMETRY_MQTT_TRANSPORT "mqtt"

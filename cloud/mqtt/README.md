@@ -1,4 +1,4 @@
-# Broker MQTT su cloud.robertodisanto.it
+# Broker MQTT su twinciro.robertodisanto.it
 
 Broker MQTT del team per The Big Hack 2026: **Eclipse Mosquitto 2.1.2 in Docker**, con autenticazione obbligatoria, permessi per ruolo, TLS con i certificati Let's Encrypt del server, WebSocket su TLS per le dashboard nel browser, persistenza, log, healthcheck e limiti.
 
@@ -44,8 +44,8 @@ cloud/mqtt/
 ## Requisiti
 
 - Server Linux con **Docker Engine** e il plugin **Compose v2** (`docker compose version`), `openssl`, `git`.
-- Record DNS `A` (ed eventualmente `AAAA`) di `cloud.robertodisanto.it` verso l'IP del server.
-- Certificato Let's Encrypt per `cloud.robertodisanto.it` in `/etc/letsencrypt/live/cloud.robertodisanto.it/` (già presente sul server; per le prove bastano quelli autofirmati).
+- Record DNS `A` (ed eventualmente `AAAA`) di `twinciro.robertodisanto.it` verso l'IP del server.
+- Certificato Let's Encrypt per `twinciro.robertodisanto.it` in `/etc/letsencrypt/live/twinciro.robertodisanto.it/` (già presente sul server; per le prove bastano quelli autofirmati).
 - La repo intera clonata sul server se si usa il ponte (monta `shared/iot-agents/`).
 
 Gli script vanno lanciati da un utente che può usare Docker (root, `sudo` o gruppo `docker`) e funzionano da qualsiasi cartella.
@@ -55,7 +55,7 @@ Gli script vanno lanciati da un utente che può usare Docker (root, `sudo` o gru
 ### 1. DNS e porte
 
 ```bash
-dig +short cloud.robertodisanto.it      # deve rispondere con l'IP del server
+dig +short twinciro.robertodisanto.it      # deve rispondere con l'IP del server
 ```
 
 Apri nel firewall del provider (pannello cloud / security group) le porte **TCP 1883, 8883, 8884**. In più: 80 se certbot rinnova in modalità `standalone`, 443 solo se usi l'opzione WSS sulla 443 (vedi sotto).
@@ -67,10 +67,10 @@ Apri nel firewall del provider (pannello cloud / security group) le porte **TCP 
 ```bash
 git clone https://github.com/RobertoD91/hackathon_2026_a.git
 cd hackathon_2026_a/cloud/mqtt
-sudo ls /etc/letsencrypt/live/cloud.robertodisanto.it/     # fullchain.pem privkey.pem ...
+sudo ls /etc/letsencrypt/live/twinciro.robertodisanto.it/     # fullchain.pem privkey.pem ...
 ```
 
-Se il certificato non c'è ancora: `sudo certbot certonly --standalone -d cloud.robertodisanto.it` (serve la porta 80 libera) oppure `--webroot` se c'è già un web server. Nessun permesso di `/etc/letsencrypt` va cambiato (vedi [TLS](#tls)).
+Se il certificato non c'è ancora: `sudo certbot certonly --standalone -d twinciro.robertodisanto.it` (serve la porta 80 libera) oppure `--webroot` se c'è già un web server. Nessun permesso di `/etc/letsencrypt` va cambiato (vedi [TLS](#tls)).
 
 ### 3. Prima inizializzazione
 
@@ -155,7 +155,7 @@ I client devono fidarsi di `segreti/certs-autofirmati/ca.crt` (`--cafile`, `setC
 ### WebSocket sulla 443 (opzionale)
 
 La 8884 basta quasi sempre. Alcune reti (Wi-Fi di eventi, aziende) lasciano passare solo la 443:
-- se sulla 443 del server non c'è nulla, metti `WSS_PORTA=443` in `.env` e `docker compose up -d`: `wss://cloud.robertodisanto.it/mqtt`;
+- se sulla 443 del server non c'è nulla, metti `WSS_PORTA=443` in `.env` e `docker compose up -d`: `wss://twinciro.robertodisanto.it/mqtt`;
 - se c'è già nginx, aggiungi il blocco di `esempi/nginx-mqtt-websocket.conf` (inoltra `/mqtt` alla 9001 locale).
 
 Un reverse proxy dedicato (Caddy, Traefik) non serve: Mosquitto parla `wss://` da solo con lo stesso certificato.
@@ -165,7 +165,7 @@ Un reverse proxy dedicato (Caddy, Traefik) non serve: Mosquitto parla `wss://` d
 Con `mosquitto-clients` (`sudo apt install mosquitto-clients`, oppure `brew install mosquitto`) o con il container: `docker run --rm -it --entrypoint sh eclipse-mosquitto:2.1.2-alpine`.
 
 ```bash
-H=cloud.robertodisanto.it
+H=twinciro.robertodisanto.it
 # anonimo: deve rispondere "Connection Refused: not authorised"
 mosquitto_pub -h $H -p 1883 -t prova -m x
 # un terminale ascolta, l'altro pubblica (1883 in chiaro)
@@ -181,7 +181,7 @@ mosquitto_sub -h $H -p 8884 --ws --tls-use-os-certs -u dashboard -P '<password>'
 mosquitto_pub -h $H -p 8883 --tls-use-os-certs -V 5 -q 1 -u esp32-plebiscito-01 -P '<password>' -t napoli/kpi -m x
 ```
 
-Strumenti grafici: [MQTT Explorer](https://mqtt-explorer.com/) o [MQTTX](https://mqttx.app/) con host `cloud.robertodisanto.it`, porta 8883, TLS attivo, utente `admin`.
+Strumenti grafici: [MQTT Explorer](https://mqtt-explorer.com/) o [MQTTX](https://mqttx.app/) con host `twinciro.robertodisanto.it`, porta 8883, TLS attivo, utente `admin`.
 
 ## Configurazione dei client
 
@@ -190,7 +190,7 @@ Strumenti grafici: [MQTT Explorer](https://mqtt-explorer.com/) o [MQTTX](https:/
 In `telemetry_config.h` (copia di `telemetry_config.example.h`, non versionata):
 
 ```c
-#define TELEMETRY_MQTT_HOST        "cloud.robertodisanto.it"
+#define TELEMETRY_MQTT_HOST        "twinciro.robertodisanto.it"
 #define TELEMETRY_MQTT_TRANSPORT   "mqtts"          // consigliato; oppure "mqtt" con porta 1883
 #define TELEMETRY_MQTT_PORT        8883
 #define TELEMETRY_DEVICE_ID        "badge-ab12"     // meglio esplicito: deve essere = utente MQTT
@@ -218,7 +218,7 @@ void setup() {
   // ... Wi-Fi ...
   rete.setCACert(CA_LETS_ENCRYPT);   // radici ISRG Root X1 e X2 (https://letsencrypt.org/certificates/)
   // rete.setInsecure();             // solo per la demo: nessuna verifica del certificato
-  mqtt.setServer("cloud.robertodisanto.it", 8883);
+  mqtt.setServer("twinciro.robertodisanto.it", 8883);
   mqtt.setBufferSize(1024);          // il predefinito (256 byte) è poco per il JSON delle letture
   mqtt.setKeepAlive(30);             // massimo accettato dal broker: 300 s
 }
@@ -233,14 +233,14 @@ bool connetti() {
 // letture: mqtt.publish("bighack/plebiscito/esp32-plebiscito-01/readings", json);
 ```
 
-Per sapere quale radice usa il certificato del server: `openssl s_client -connect cloud.robertodisanto.it:8883 -showcerts </dev/null | grep -E '^ *[si]:'`. Senza TLS: `WiFiClient` e porta 1883 (stessa password, ma in chiaro).
+Per sapere quale radice usa il certificato del server: `openssl s_client -connect twinciro.robertodisanto.it:8883 -showcerts </dev/null | grep -E '^ *[si]:'`. Senza TLS: `WiFiClient` e porta 1883 (stessa password, ma in chiaro).
 
 ### Tasmota
 
 Dalla console web del dispositivo (un comando, `<password>` da `aggiungi-utente.sh tasmota-serra`):
 
 ```
-Backlog MqttHost cloud.robertodisanto.it; MqttPort 1883; MqttUser tasmota-serra; MqttPassword <password>; Topic tasmota-serra; FullTopic %prefix%/%topic%/; TelePeriod 60
+Backlog MqttHost twinciro.robertodisanto.it; MqttPort 1883; MqttUser tasmota-serra; MqttPassword <password>; Topic tasmota-serra; FullTopic %prefix%/%topic%/; TelePeriod 60
 ```
 
 Il **Topic deve essere uguale al nome utente**: Tasmota pubblica `tele/tasmota-serra/SENSOR`, `STATE` e `LWT` (trattenuto `Online`/`Offline`), `stat/tasmota-serra/...` e ascolta `cmnd/tasmota-serra/...`. Il topic di gruppo `cmnd/tasmotas/...` non è concesso. Con il FullTopic predefinito il topic non dice la zona: il ponte usa `PONTE_ZONA_PREDEFINITA` o `PONTE_MAPPA` di `.env`. In alternativa `FullTopic bighack/serra/%topic%/%prefix%/` mette la zona nel topic (`bighack/serra/tasmota-serra/tele/SENSOR`): lo riconoscono sia l'ACL sia il ponte. Le build ESP32 di Tasmota supportano TLS (`SetOption103 1` e `MqttPort 8883`, poi `Restart 1`); le build ESP8266 standard no, quindi 1883. Se la verifica del certificato fallisce, resta la 1883 con password.
@@ -258,14 +258,14 @@ docker compose --profile ponte ps          # ponte "healthy" = connesso al broke
 docker compose logs -f ponte               # una riga "→ hub <deviceId> ..." per lettura
 ```
 
-Il container (Node 22, nessuna dipendenza npm) monta `shared/iot-agents` in sola lettura e riceve `MQTT_URL=mqtt://mosquitto:1883` (rete interna di Docker), `MQTT_USER=ponte`, `MQTT_PASSWORD`, `HUB_URL`, `HUB_TOKEN` (inviato come `Authorization: Bearer`) e le facoltative `PONTE_ZONA_PREDEFINITA`, `PONTE_MAPPA`, `PONTE_C5` di `.env` (le altre opzioni sono nell'intestazione di `mqtt-bridge.js`). Il healthcheck interroga `GET /health` del ponte. Se il hub gira sullo stesso server fuori da Docker usa `HUB_URL=http://host.docker.internal:8701`, con il hub in ascolto su `0.0.0.0` (non solo su 127.0.0.1). Il ponte si può anche lanciare fuori da Docker, da un portatile: `MQTT_URL=mqtts://cloud.robertodisanto.it:8883 MQTT_USER=ponte MQTT_PASSWORD=... HUB_URL=http://localhost:8701 node shared/iot-agents/tools/mqtt-bridge.js`.
+Il container (Node 22, nessuna dipendenza npm) monta `shared/iot-agents` in sola lettura e riceve `MQTT_URL=mqtt://mosquitto:1883` (rete interna di Docker), `MQTT_USER=ponte`, `MQTT_PASSWORD`, `HUB_URL`, `HUB_TOKEN` (inviato come `Authorization: Bearer`) e le facoltative `PONTE_ZONA_PREDEFINITA`, `PONTE_MAPPA`, `PONTE_C5` di `.env` (le altre opzioni sono nell'intestazione di `mqtt-bridge.js`). Il healthcheck interroga `GET /health` del ponte. Se il hub gira sullo stesso server fuori da Docker usa `HUB_URL=http://host.docker.internal:8701`, con il hub in ascolto su `0.0.0.0` (non solo su 127.0.0.1). Il ponte si può anche lanciare fuori da Docker, da un portatile: `MQTT_URL=mqtts://twinciro.robertodisanto.it:8883 MQTT_USER=ponte MQTT_PASSWORD=... HUB_URL=http://localhost:8701 node shared/iot-agents/tools/mqtt-bridge.js`.
 
 ### c5-agentic-city
 
 c5 usa un Mosquitto locale anonimo sul portatile del plastico (`c5-agentic-city/docker/mosquitto.conf`) e il suo `BusMQTT` (Python, paho-mqtt) oggi **non** passa utente e password né usa TLS. Due strade:
 
 1. **Bridge (consigliato, nessuna modifica al codice):** il broker del plastico copia `napoli/#` nei due sensi verso il cloud con l'utente `c5` su TLS. Il plastico continua a funzionare anche senza internet. Istruzioni in `esempi/ponte-c5-verso-cloud.conf`: un file non versionato con la password, un volume in più e la riga `include_dir /mosquitto/config/conf.d` in fondo alla loro `mosquitto.conf`. Provato con la loro configurazione: plastico → cloud e cloud → plastico.
-2. **Collegamento diretto:** il gruppo c5 dovrebbe aggiungere in `citta/bus.py`, prima di `connect`, `self._mqtt.username_pw_set(os.environ["C5_MQTT_UTENTE"], os.environ["C5_MQTT_PASSWORD"])` e, sulla 8883, `self._mqtt.tls_set()`; poi `python avvia.py --broker cloud.robertodisanto.it:8883`. Gli ESP32 del plastico (`firmware/semaforo`, `firmware/sensore`) userebbero `mqtt.connect(id, "c5-plastico", password)`.
+2. **Collegamento diretto:** il gruppo c5 dovrebbe aggiungere in `citta/bus.py`, prima di `connect`, `self._mqtt.username_pw_set(os.environ["C5_MQTT_UTENTE"], os.environ["C5_MQTT_PASSWORD"])` e, sulla 8883, `self._mqtt.tls_set()`; poi `python avvia.py --broker twinciro.robertodisanto.it:8883`. Gli ESP32 del plastico (`firmware/semaforo`, `firmware/sensore`) userebbero `mqtt.connect(id, "c5-plastico", password)`.
 
 ### Dashboard nel browser
 
@@ -273,7 +273,7 @@ Le pagine servite in https (GitHub Pages) possono aprire solo `wss://`. Con [mqt
 
 ```js
 import mqtt from 'https://cdn.jsdelivr.net/npm/mqtt@5.16.1/+esm';
-const client = mqtt.connect('wss://cloud.robertodisanto.it:8884/mqtt', {
+const client = mqtt.connect('wss://twinciro.robertodisanto.it:8884/mqtt', {
   username: 'dashboard', password: '<password dashboard>', protocolVersion: 5,
 });
 client.on('connect', () => client.subscribe(['bighack/#', 'tele/#', 'napoli/#']));

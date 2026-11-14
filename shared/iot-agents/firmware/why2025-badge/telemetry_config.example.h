@@ -18,7 +18,7 @@
 #define TELEMETRY_NET_LABEL        "wifi"
 
 // ---------------------------------------------------------------- MQTT
-#define TELEMETRY_MQTT_HOST        "cloud.robertodisanto.it"
+#define TELEMETRY_MQTT_HOST        "twinciro.robertodisanto.it"
 // Trasporto e porta: "mqtt" 1883 (con utente/password) | "mqtts" 8883 (TLS) | "wss" 8884 (WebSocket TLS,
 // oppure 443 se c'è il reverse proxy nginx di cloud/mqtt/esempi) | "ws".
 #define TELEMETRY_MQTT_TRANSPORT   "mqtt"

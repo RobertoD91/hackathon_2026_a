@@ -1,4 +1,4 @@
-# API dati città di Napoli (shared/citta-api) per cloud.robertodisanto.it.
+# API dati città di Napoli (shared/citta-api) per twinciro.robertodisanto.it.
 # Contesto di build: la RADICE della repo (compose.yaml: context ../..). Il file
 # Dockerfile.dockerignore accanto a questo limita il contesto ai soli file che servono.
 # Nessuna dipendenza npm: solo Node e il codice della repo, copiato così com'è.

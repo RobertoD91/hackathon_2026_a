@@ -7,7 +7,7 @@
 //   DRY_RUN=1 node shared/iot-agents/tools/mqtt-bridge.js     # stampa le letture convertite, non invia
 //
 // Variabili d'ambiente (tutte facoltative):
-//   MQTT_URL           broker (predefinito mqtt://cloud.robertodisanto.it:1883): mqtt:// mqtts:// ws:// wss://
+//   MQTT_URL           broker (predefinito mqtt://twinciro.robertodisanto.it:1883): mqtt:// mqtts:// ws:// wss://
 //   MQTT_USER, MQTT_PASSWORD   credenziali del ponte sul broker
 //   MQTT_CLIENT_ID     predefinito bighack-ponte-<casuale>
 //   MQTT_TOPICS        filtri separati da virgola (predefinito: bighack/# + Tasmota + c5 secondo i flag)
@@ -43,7 +43,7 @@ export function configFromEnv(env = process.env) {
   if (env.MQTT_MAP_FILE) map = JSON.parse(readFileSync(env.MQTT_MAP_FILE, 'utf8'));
   if (env.MQTT_MAP) map = { ...map, ...JSON.parse(env.MQTT_MAP) };
   return {
-    mqttUrl: env.MQTT_URL || 'mqtt://cloud.robertodisanto.it:1883',
+    mqttUrl: env.MQTT_URL || 'mqtt://twinciro.robertodisanto.it:1883',
     username: env.MQTT_USER || undefined,
     password: env.MQTT_PASSWORD || undefined,
     clientId: env.MQTT_CLIENT_ID || `bighack-ponte-${os.hostname().replace(/[^A-Za-z0-9-]/g, '').slice(0, 16)}-${Math.random().toString(16).slice(2, 6)}`,

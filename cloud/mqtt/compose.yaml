@@ -1,4 +1,4 @@
-# Broker MQTT del team (The Big Hack 2026) per cloud.robertodisanto.it.
+# Broker MQTT del team (The Big Hack 2026) per twinciro.robertodisanto.it.
 # Guida completa: README.md in questa cartella.
 #
 #   cp .env.example .env && ./scripts/inizializza.sh   prima installazione (utenti, .env, TLS)
@@ -23,7 +23,7 @@ services:
     entrypoint: ["/bin/sh", "/mosquitto/config/avvio.sh"]
     command: ["/usr/sbin/mosquitto", "-c", "/mosquitto/config/mosquitto.conf"]
     environment:
-      MQTT_DOMINIO: ${MQTT_DOMINIO:-cloud.robertodisanto.it}
+      MQTT_DOMINIO: ${MQTT_DOMINIO:-twinciro.robertodisanto.it}
       MQTT_CERTIFICATI: ${MQTT_CERTIFICATI:-letsencrypt}
     ports:
       - "${MQTT_PORTA:-1883}:1883"

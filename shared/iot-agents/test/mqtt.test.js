@@ -462,7 +462,7 @@ describe('ponte MQTT → hub', () => {
 
   test('configurazione dalle variabili d\'ambiente', () => {
     const c = configFromEnv({});
-    assert.equal(c.mqttUrl, 'mqtt://cloud.robertodisanto.it:1883');
+    assert.equal(c.mqttUrl, 'mqtt://twinciro.robertodisanto.it:1883');
     assert.equal(c.hubUrl, 'http://localhost:8701');
     assert.equal(c.tasmota, true);
     assert.equal(c.c5, false);

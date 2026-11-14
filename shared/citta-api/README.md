@@ -1,6 +1,6 @@
 # API dati città di Napoli (`citta-api`)
 
-Il **cervello dati di CiroGPT**. Una sola API, sempre accesa su `cloud.robertodisanto.it`, che legge le fonti reali di Napoli già verificate (catalogo: [`docs/fonti-dati-napoli.md`](../../docs/fonti-dati-napoli.md)) e le restituisce **già "masticate" per un LLM**: JSON compatto, campi in italiano con l'unità nel nome, orari locali, la fonte con licenza e **stato del dato** (reale, riserva, salvato, snapshot, programmato, simulato) e un campo `testo` pronto da citare in WhatsApp.
+Il **cervello dati di CiroGPT**. Una sola API, sempre accesa su `twinciro.robertodisanto.it`, che legge le fonti reali di Napoli già verificate (catalogo: [`docs/fonti-dati-napoli.md`](../../docs/fonti-dati-napoli.md)) e le restituisce **già "masticate" per un LLM**: JSON compatto, campi in italiano con l'unità nel nome, orari locali, la fonte con licenza e **stato del dato** (reale, riserva, salvato, snapshot, programmato, simulato) e un campo `testo` pronto da citare in WhatsApp.
 
 Perché esiste:
 - **quote**: CiroGPT, la mappa e il video chiedono le stesse cose decine di volte. L'API le legge una volta sola, le tiene in cache e, dopo un **429**, non richiama la fonte per 15 minuti (passa alla riserva e lo dice);
@@ -129,7 +129,7 @@ Con la cartella predefinita (`CITTA_DATI` non impostata) il rinfresco, se attivo
 
 ## Usarla da CiroGPT
 
-Variabili per OpenClaw: `CITTA_API` (es. `https://cloud.robertodisanto.it/citta-api` o `http://cloud.robertodisanto.it:8791`, senza barra finale) e `CITTA_API_TOKEN`. Testo pronto da copiare in un `SKILL.md` (per esempio `skills/napoli-citta-dati/SKILL.md`). I comandi qui sotto sono stati provati così come sono contro l'API in esecuzione:
+Variabili per OpenClaw: `CITTA_API` (es. `https://twinciro.robertodisanto.it/citta-api` o `http://twinciro.robertodisanto.it:8791`, senza barra finale) e `CITTA_API_TOKEN`. Testo pronto da copiare in un `SKILL.md` (per esempio `skills/napoli-citta-dati/SKILL.md`). I comandi qui sotto sono stati provati così come sono contro l'API in esecuzione:
 
 ````markdown
 ---

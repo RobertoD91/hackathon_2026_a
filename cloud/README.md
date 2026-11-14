@@ -1,6 +1,6 @@
 # cloud/
 
-Servizi da installare sul server di Roberto, **cloud.robertodisanto.it**, con Docker. Non fanno parte del sito su GitHub Pages: qui c'è solo la loro configurazione, senza segreti (password, chiavi e `.env` restano sul server e sono nel `.gitignore`).
+Servizi da installare sul server di Roberto, **twinciro.robertodisanto.it**, con Docker. Non fanno parte del sito su GitHub Pages: qui c'è solo la loro configurazione, senza segreti (password, chiavi e `.env` restano sul server e sono nel `.gitignore`).
 
 | Cartella | Servizio | Porte |
 |---|---|---|

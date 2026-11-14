@@ -1,7 +1,7 @@
 // Client MQTT 3.1.1 minimale, senza dipendenze npm (node:net, node:tls, WebSocket globale).
 //
 //   import { MqttClient } from './mqtt-client.js';
-//   const c = new MqttClient('mqtts://cloud.robertodisanto.it:8883', { username, password });
+//   const c = new MqttClient('mqtts://twinciro.robertodisanto.it:8883', { username, password });
 //   c.on('connect', () => c.subscribe(['bighack/#']));
 //   c.on('message', (topic, payload, packet) => ...);   // payload: Buffer
 //   c.connect();

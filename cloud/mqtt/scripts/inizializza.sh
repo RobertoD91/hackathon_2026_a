@@ -25,7 +25,7 @@ if [ "$AUTOFIRMATO" = 1 ]; then
     env_imposta MQTT_CERTIFICATI autofirmato
     env_imposta LETSENCRYPT_DIR ./segreti
 fi
-DOMINIO="$(env_valore MQTT_DOMINIO cloud.robertodisanto.it)"
+DOMINIO="$(env_valore MQTT_DOMINIO twinciro.robertodisanto.it)"
 CERTIFICATI="$(env_valore MQTT_CERTIFICATI letsencrypt)"
 LE_DIR="$(env_valore LETSENCRYPT_DIR /etc/letsencrypt)"
 

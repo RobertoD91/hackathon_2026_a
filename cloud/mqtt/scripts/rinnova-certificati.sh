@@ -6,7 +6,7 @@
 # Se qualcosa va storto basta anche: docker compose restart mosquitto
 . "$(dirname "$0")/_comune.sh"
 
-DOMINIO="$(env_valore MQTT_DOMINIO cloud.robertodisanto.it)"
+DOMINIO="$(env_valore MQTT_DOMINIO twinciro.robertodisanto.it)"
 # certbot passa i domini rinnovati in RENEWED_DOMAINS: ignora i rinnovi di altri siti.
 if [ -n "${RENEWED_DOMAINS:-}" ] && [[ " $RENEWED_DOMAINS " != *" $DOMINIO "* ]]; then
     exit 0

@@ -6,7 +6,7 @@ Catalogo delle fonti dati per la mappa "Napoli in tempo reale" (`shared/iot-agen
 
 **Quando e da dove.** Le prove sono state fatte dalla sandbox cloud di Claude Code tra la sera del 13/11/2026 e la notte del 14/11/2026: la verifica, tra le 00:00 e le 01:45 UTC del 14/11. La sandbox esce verso l'esterno da un unico IP condiviso, non italiano, attraverso un proxy HTTPS. Per questo negli esiti si distinguono tre casi:
 
-- **bloccata dalla sandbox**: è il proxy della sandbox a rifiutare o chiudere la connessione. Non vuol dire che la fonte non funzioni: va riprovata dalla rete dell'evento o da `cloud.robertodisanto.it`;
+- **bloccata dalla sandbox**: è il proxy della sandbox a rifiutare o chiudere la connessione. Non vuol dire che la fonte non funzioni: va riprovata dalla rete dell'evento o da `twinciro.robertodisanto.it`;
 - **irraggiungibile da questo IP**: il proxy lascia passare la richiesta ma il server non risponde (timeout, reset, 502). Anche in questo caso va riprovata da una rete italiana;
 - **429** di Open-Meteo o di Wikimedia: è la quota dell'IP condiviso che si esaurisce, non un guasto della fonte.
 

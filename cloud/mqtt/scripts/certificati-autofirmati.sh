@@ -12,7 +12,7 @@
 . "$(dirname "$0")/_comune.sh"
 command -v openssl >/dev/null || errore "serve openssl (apt install openssl)"
 
-DOMINIO="$(env_valore MQTT_DOMINIO cloud.robertodisanto.it)"
+DOMINIO="$(env_valore MQTT_DOMINIO twinciro.robertodisanto.it)"
 DIR=segreti/certs-autofirmati
 prepara_cartelle && mkdir -p "$DIR" && chmod 700 "$DIR"
 

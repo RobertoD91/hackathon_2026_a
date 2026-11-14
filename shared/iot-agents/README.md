@@ -446,7 +446,7 @@ Il badge **non ha un sensore di luce**: va collegato un BH1750 o un VEML7700 al 
 
 ## MQTT
 
-Broker del team: `cloud.robertodisanto.it` (configurazione in `cloud/mqtt/`; porte 1883 con utente e password, 8883 TLS, 8884 WebSocket TLS). Topic e formati: [`CONTRATTO.md`](CONTRATTO.md), sezione 9.
+Broker del team: `twinciro.robertodisanto.it` (configurazione in `cloud/mqtt/`; porte 1883 con utente e password, 8883 TLS, 8884 WebSocket TLS). Topic e formati: [`CONTRATTO.md`](CONTRATTO.md), sezione 9.
 
 | Topic | Contenuto |
 |---|---|
@@ -460,7 +460,7 @@ Il **ponte** porta tutto al hub. È un solo comando, configurato solo da variabi
 
 ```bash
 # broker del team → hub locale
-MQTT_URL=mqtt://cloud.robertodisanto.it:1883 MQTT_USER=ponte MQTT_PASSWORD=... \
+MQTT_URL=mqtt://twinciro.robertodisanto.it:1883 MQTT_USER=ponte MQTT_PASSWORD=... \
   HUB_URL=http://localhost:8701 node shared/iot-agents/tools/mqtt-bridge.js
 
 # prova in locale, senza hardware

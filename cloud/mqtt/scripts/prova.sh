@@ -10,7 +10,7 @@
 # Esce con 0 se tutto va bene, altrimenti con il numero di prove fallite.
 . "$(dirname "$0")/_comune.sh"
 
-DOMINIO="$(env_valore MQTT_DOMINIO cloud.robertodisanto.it)"
+DOMINIO="$(env_valore MQTT_DOMINIO twinciro.robertodisanto.it)"
 HOST="${1:-$DOMINIO}"
 CERTIFICATI="$(env_valore MQTT_CERTIFICATI letsencrypt)"
 broker_attivo || errore "il broker non è attivo (docker compose up -d)"

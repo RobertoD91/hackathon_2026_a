@@ -1,4 +1,4 @@
-# API dati città su cloud.robertodisanto.it
+# API dati città su twinciro.robertodisanto.it
 
 L'API di [`shared/citta-api/`](../../shared/citta-api/README.md) (il "cervello dati" di CiroGPT) in **Docker**: immagine `node:22.23.5-alpine` (la stessa del ponte MQTT), nessuna dipendenza npm, porta **8791**, token Bearer facoltativo, healthcheck su `/salute`, snapshot in un volume e rinfresco automatico degli snapshot dentro il processo.
 
@@ -42,23 +42,23 @@ Apri nel firewall del provider la porta **TCP 8791** (o niente, se usi il revers
 Da fuori:
 
 ```bash
-curl -s http://cloud.robertodisanto.it:8791/salute            # HTTP: per HTTPS vedi nginx qui sotto
-curl -s -H "Authorization: Bearer <token>" 'http://cloud.robertodisanto.it:8791/citta/riassunto?formato=testo'
+curl -s http://twinciro.robertodisanto.it:8791/salute            # HTTP: per HTTPS vedi nginx qui sotto
+curl -s -H "Authorization: Bearer <token>" 'http://twinciro.robertodisanto.it:8791/citta/riassunto?formato=testo'
 ```
 
 ### HTTPS con nginx (consigliato se il token passa da Internet)
 
-Il token viaggia in un header: su HTTP in chiaro si può leggere. Con nginx già sul server, [`esempi/nginx-citta-api.conf`](esempi/nginx-citta-api.conf) pubblica l'API su `https://cloud.robertodisanto.it/citta-api/` (oppure su un sottodominio) con il certificato Let's Encrypt esistente:
+Il token viaggia in un header: su HTTP in chiaro si può leggere. Con nginx già sul server, [`esempi/nginx-citta-api.conf`](esempi/nginx-citta-api.conf) pubblica l'API su `https://twinciro.robertodisanto.it/citta-api/` (oppure su un sottodominio) con il certificato Let's Encrypt esistente:
 
 ```bash
 # in .env: CITTA_API_INDIRIZZO=127.0.0.1, poi
 docker compose up -d
 sudo cp esempi/nginx-citta-api.conf /etc/nginx/snippets/citta-api.conf   # e "include snippets/citta-api.conf;" nel server 443
 sudo nginx -t && sudo systemctl reload nginx
-./prova.sh https://cloud.robertodisanto.it/citta-api
+./prova.sh https://twinciro.robertodisanto.it/citta-api
 ```
 
-Per CiroGPT: `CITTA_API=https://cloud.robertodisanto.it/citta-api` e `CITTA_API_TOKEN=<token>` (skill d'esempio nel [README dell'API](../../shared/citta-api/README.md#usarla-da-cirogpt)).
+Per CiroGPT: `CITTA_API=https://twinciro.robertodisanto.it/citta-api` e `CITTA_API_TOKEN=<token>` (skill d'esempio nel [README dell'API](../../shared/citta-api/README.md#usarla-da-cirogpt)).
 
 ## Configurazione (`.env`)
 

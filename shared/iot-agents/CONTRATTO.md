@@ -130,7 +130,7 @@ Come configurare OpenClaw è ancora da definire: tutto deve essere provabile sen
 | `c2-cer-quartiere` | 8703 |
 | `c5-regia-evento` | 8704 |
 
-## 9. MQTT (broker `cloud.robertodisanto.it`)
+## 9. MQTT (broker `twinciro.robertodisanto.it`)
 
 Alternativa a `POST /api/readings` per i dispositivi: pubblicano sul broker e il **ponte** `tools/mqtt-bridge.js` inoltra al hub. Il hub non cambia: riceve sempre le letture della sezione 1.
 
@@ -156,7 +156,7 @@ Alternativa a `POST /api/readings` per i dispositivi: pubblicano sul broker e il
 
 | Variabile | Predefinito | |
 |---|---|---|
-| `MQTT_URL` | `mqtt://cloud.robertodisanto.it:1883` | anche `mqtts://`, `ws://`, `wss://` |
+| `MQTT_URL` | `mqtt://twinciro.robertodisanto.it:1883` | anche `mqtts://`, `ws://`, `wss://` |
 | `MQTT_USER`, `MQTT_PASSWORD` | — | |
 | `MQTT_TOPICS` | `bighack/#` + `tele/+/SENSOR,STATE,LWT` + (`napoli/sensori/+/+`, `napoli/nodi/+/stato`) | filtri separati da virgola |
 | `MQTT_TASMOTA`, `MQTT_C5`, `MQTT_STATUS` | 1, 0, 1 | quali formati leggere |

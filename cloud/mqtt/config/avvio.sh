@@ -21,7 +21,7 @@ set -eu
 
 UID_MOSQ="${PUID:-1883}"
 GID_MOSQ="${PGID:-1883}"
-DOMINIO="${MQTT_DOMINIO:-cloud.robertodisanto.it}"
+DOMINIO="${MQTT_DOMINIO:-twinciro.robertodisanto.it}"
 SORGENTE="${MQTT_CERTIFICATI:-letsencrypt}"
 RUN=/mosquitto/run
 PASSWD=/mosquitto/utenti/passwd
