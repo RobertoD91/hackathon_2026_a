@@ -6,10 +6,10 @@
 
 | | |
 |---|---|
-| 🎬 **Video** (meno di 3 minuti) | [guardalo online](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/bozza.mp4) · file nella repo: [`c5-presentazione/bozza.mp4`](c5-presentazione/bozza.mp4) |
-| 💬 **Prova TwinCIRO** | nel gruppo WhatsApp della demo: **il link per entrare è nella pagina dell'hackathon** |
+| 🖥️ **Per l'operatore** | **[TwinCIRO 3D](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/gemello-3d/)**, la dashboard della sala operativa: il gemello digitale di Napoli con presenze adesso e previste, e scenari «e se…» |
+| 💬 **Per turisti e cittadini** | **TwinCIRO su WhatsApp**: il link per entrare nel gruppo è **sulla piattaforma dell'hackathon** |
 | 📚 **Le fonti** | **[oltre 50 fonti pubbliche di Napoli, verificate una per una](docs/fonti-dati-napoli.md)**, con licenza, limiti ed esito delle prove |
-| 🌐 **Online** | [TwinCIRO 3D, il gemello della città](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/gemello-3d/) · [mappa «Napoli in tempo reale»](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/mappa/) · [Napoli come rete di relazioni](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/grafo/) · [tutte le pagine](https://robertodisanto.it/hackathon_2026_a/) |
+| 🌐 **Altre pagine** | [mappa «Napoli in tempo reale»](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/mappa/) · [Napoli come rete di relazioni](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/grafo/) · [la regata in 3D](https://robertodisanto.it/hackathon_2026_a/c5-agentic-city/visore3d/) · [tutte le pagine](https://robertodisanto.it/hackathon_2026_a/) |
 
 ## È tutto vero
 
