@@ -106,74 +106,70 @@ Ecco la città come rete: luoghi,
 eventi, flussi, stazioni.
 
 23
-00:01:47,700 --> 00:01:51,700
-Poi agenti, sensori e fonti,
-e come sono collegati.
-
-24
-00:01:52,300 --> 00:01:56,200
+00:01:48,800 --> 00:01:52,700
 Questa è Napoli adesso: dati veri,
 ognuno con la sua fonte.
 
-25
-00:01:56,400 --> 00:02:00,000
+24
+00:01:52,900 --> 00:01:56,500
 Allerte, treni, aria e Campi Flegrei,
 con l'ora del dato.
 
-26
-00:02:00,350 --> 00:02:05,600
-Chiedi come arrivare a Città della Scienza:
-TwinCIRO ti dà stazioni e orari.
-
-27
-00:02:06,300 --> 00:02:10,400
+25
+00:01:57,800 --> 00:02:01,900
 Sensori fatti da noi:
 badge WHY2025 e Tasmota.
 
-28
-00:02:10,700 --> 00:02:13,800
+26
+00:02:02,200 --> 00:02:05,300
 Oggi in Wi-Fi, domani con una SIM IoT.
 
-29
-00:02:14,300 --> 00:02:18,300
+27
+00:02:05,800 --> 00:02:09,800
 Il gemello digitale prova
 la giornata sulle strade vere.
 
-30
-00:02:18,600 --> 00:02:22,600
+28
+00:02:10,100 --> 00:02:14,100
 E l'avviso di TwinCIRO arriva
 quando la Rotonda Diaz si riempie.
 
-31
-00:02:23,300 --> 00:02:28,000
+29
+00:02:14,800 --> 00:02:19,500
 Con Fastweb e Vodafone la folla
 non si simula più: si può misurare.
 
-32
-00:02:28,300 --> 00:02:32,400
+30
+00:02:19,800 --> 00:02:23,900
 Con le loro SIM IoT,
 i sensori si mettono dove servono.
 
-33
-00:02:32,700 --> 00:02:38,900
+31
+00:02:24,200 --> 00:02:30,400
 E TwinCIRO può integrare MIIA,
 l'AI italiana di Fastweb: sovranità digitale.
 
-34
-00:02:39,300 --> 00:02:44,400
+32
+00:02:30,800 --> 00:02:35,900
 Con un'adesione ipotizzata,
 un avviso sposta circa 1.900 persone.
 
-35
-00:02:44,700 --> 00:02:50,600
+33
+00:02:36,200 --> 00:02:41,300
 Perché Napoli? Nessuna app nuova,
 i dati ci sono già, e si parte da un quartiere.
 
-36
-00:02:51,400 --> 00:02:54,000
+34
+00:02:41,800 --> 00:02:46,300
+È tutto vero: le fonti,
+i sensori e il gruppo WhatsApp con TwinCIRO.
+
+35
+00:02:46,900 --> 00:02:49,300
 TwinCIRO. Napoli che ci pensa.
 
-37
-00:02:54,300 --> 00:02:57,300
-Provalo nel gruppo WhatsApp della demo.
+36
+00:02:49,500 --> 00:02:54,100
+Il link al gruppo WhatsApp è
+nella pagina dell'hackathon.
 

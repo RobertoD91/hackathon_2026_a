@@ -1,0 +1,5 @@
+1
+00:00:00,300 --> 00:00:04,800
+È tutto vero: le fonti,
+i sensori e il gruppo WhatsApp con TwinCIRO.
+

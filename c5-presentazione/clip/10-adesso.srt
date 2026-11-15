@@ -8,8 +8,3 @@ ognuno con la sua fonte.
 Allerte, treni, aria e Campi Flegrei,
 con l'ora del dato.
 
-3
-00:00:08,350 --> 00:00:13,600
-Chiedi come arrivare a Città della Scienza:
-TwinCIRO ti dà stazioni e orari.
-

@@ -1,6 +1,6 @@
 # Copione del video di consegna · TwinCIRO (C5) · v3
 
-**Durata: 2:59** (limite 3:00) · 15 scene · 1920×1080 · 30 fps · in italiano · sottotitoli impressi · **due voci: Roberto e Mario**.
+**Durata: 2:54,5** (limite di Roberto 2:55) · 16 scene · 1920×1080 · 30 fps · in italiano · sottotitoli impressi · **due voci: Roberto e Mario**.
 
 **Al centro c'è TwinCIRO su WhatsApp**, come hanno chiesto Fastweb e Vodafone il 14/11: la chat del turista è la scena più lunga (38 s) e, subito dopo, l'operatore della Polizia Locale approva proprio l'avviso che Marta ha ricevuto. TwinCIRO torna in quasi tutte le altre scene (titolo, le sue fonti, i due utenti, l'architettura dietro di lui, la sua risposta con i dati di adesso, il suo avviso nel gemello, la chiusura). L'IoT (badge WHY2025 e scheda Tasmota, sensori fatti da noi) e il gemello digitale con la regata 3D servono da prove di concretezza. **Traffico e semafori** (non piaciuti ai partner) restano in una riga dei benefici: la scena SUMO non c'è più.
 
@@ -24,13 +24,14 @@ Napoli 2027, un sabato con l'America's Cup: chi guida la folla? I dati della cit
 | 6 | 0:40–1:18 | 38 s | **Il turista.** A sinistra il telefono con la chat di Marta: la ripresa vera se c'è `girato/chat.mp4`, altrimenti la chat ricostruita con le risposte vere dell'API. A destra il passo del racconto e «dietro le quinte», i messaggi tra gli agenti (quelli lunghi accorciati alla frase sulla zona dell'avviso). Risposte di TwinCIRO a 6,4 · 11,7 · 18,0 · 24,2 · 29,7 s della scena; l'avviso resta a schermo 8 s | Mario, Roberto (7 battute) |
 | 7 | 1:18–1:32 | 14 s | `operatore.html`: **chi governa.** La dashboard (mappa in modalità demo: KPI, avvisi meteo, mappa; *folla e sensori simulati*, *allerte, meteo, eventi veri*), accanto la proposta D4 delle 14:41 degli agenti con *Approva / Blocca*, approvata dall'operatore con `POST /operatore`: parte lo stesso avviso della chat, «anche a Marta». Poi la stessa decisione nella sala nel terminale | Roberto, Mario |
 | 8 | 1:32–1:43 | 11 s | `architettura.html`: **Un sistema multi-agente.** Persone → TwinCIRO (agente OpenClaw). Da TwinCIRO due strade: l'API della città → orchestratore e sei agenti specializzati, che si parlano sul bus MQTT `napoli/#` con sensori fatti da noi, drone, gemello e sala operativa; e l'API dati città, che legge le fonti pubbliche (*oltre 50 fonti pubbliche, verificate una per una*) | Mario, Roberto |
-| 9 | 1:43–1:52 | 9 s | `grafo.html`: *Napoli come rete di relazioni* il giorno della regata (83 nodi, 196 relazioni, a strati: luoghi, eventi e flussi, stazioni e imprese, agenti, sensori *in prova* e fonti), ricavata dai dati e dal codice del repository. Pagina navigabile: [`grafo/`](grafo/) | Mario, Roberto |
-| 10 | 1:52–2:06 | 14 s | `adesso.html`: **Napoli adesso**, sabato 14/11/2026 alle 19:30, con i dati veri dell'API dati città (meteo, allerte, eventi, treni, aria, Campi Flegrei, tangenziale), ognuno con fonte e stato; i pannelli si accendono mentre la voce li nomina; a destra TwinCIRO risponde a «Come arrivo a Città della Scienza?» con stazioni e orari della Cumana | Mario, Roberto |
-| 11 | 2:06–2:14 | 8 s | **Sensori fatti da noi.** Le riprese vere `girato/badge.mp4` e `girato/tasmota.mp4` (quelle che ci sono si dividono la scena, con la testata). Se mancano tutte e due, il cartello: badge WHY2025 (*firmware nostro*) e scheda Tasmota (*regole nostre*) → formato unico `napoli/sensori/<id>/<grandezza>` e `napoli/nodi/<id>/stato` → agenti; *Oggi: hotspot Wi-Fi → Domani: SIM IoT*; la nota sulle prove in corso a schermo da 1,8 s; nessun valore inventato | Mario, Roberto |
-| 12 | 2:14–2:23 | 9 s | **Il gemello digitale.** Regata 3D (`regata_3d.mp4` da 0:58, cioè 14:33–14:42 simulate): la Rotonda Diaz a circa 20.600 persone; alle 14:37 parte l'avviso vero della simulazione e compare la notifica di TwinCIRO con l'avviso della chat; poi Piazza Vittoria sale da circa 1.500 a 3.300. Testata: *Gemello digitale · Regata simulata sulle strade vere: le colonne sono le persone per zona* | Mario, Roberto |
-| 13 | 2:23–2:39 | 16 s | `fastweb.html`: *Tre passi con Fastweb + Vodafone*: le persone (analytics di rete: la folla, oggi simulata, si può misurare), sensori sulla rete (SIM IoT, esempio Walter), AI italiana e sovranità digitale (TwinCIRO *può integrare* MIIA; *FastwebMIIA-7B su Hugging Face*, licenza non commerciale, per le prove). Riga finale *TwinCIRO · Challenge 05 di Fastweb + Vodafone*. Solo testo, nessun logo | Mario, Roberto |
-| 14 | 2:39–2:51 | 12 s | Cartello in due colonne. **Cosa cambia**, con i numeri e le loro ipotesi: ≈ 1.900 persone spostate da un avviso quando la zona si riempie (stima dell'agente Turismo, adesione ipotizzata) · tavolo negoziato e prenotato con un «ok», senza telefonate · offerte solo dove c'è posto · −9% di ore in coda in media su 4 giornate simulate. **Perché Napoli**: nessuna app nuova · i dati ci sono già · America's Cup 2027 · si parte da un quartiere | Roberto, Mario |
-| 15 | 2:51–2:59 | 8 s | Chiusura: **TwinCIRO**, *Napoli che ci pensa*, «💬 Provalo nel gruppo WhatsApp della demo», Roberto D'Isanto · Mario Varlese, The Big Hack 2026 · Challenge 05 Fastweb + Vodafone, robertodisanto.it/hackathon_2026_a | Roberto, Mario |
+| 9 | 1:43–1:48,5 | 5,5 s | `grafo.html` (tempi accorciati con `?durata=5.5`): *Napoli come rete di relazioni* il giorno della regata (83 nodi, 196 relazioni, a strati: luoghi, eventi e flussi, stazioni e imprese, agenti, sensori *in prova* e fonti), ricavata dai dati e dal codice del repository. Pagina navigabile: [`grafo/`](grafo/) | Mario |
+| 10 | 1:48,5–1:57,5 | 9 s | `adesso.html`: **Napoli adesso**, sabato 14/11/2026 alle 19:30, con i dati veri dell'API dati città (meteo, allerte, eventi, treni, aria, Campi Flegrei, tangenziale), ognuno con fonte e stato; i pannelli si accendono mentre la voce li nomina (la scena finisce prima della risposta su Città della Scienza) | Mario, Roberto |
+| 11 | 1:57,5–2:05,5 | 8 s | **Sensori fatti da noi.** Le riprese vere `girato/badge.mp4` e `girato/tasmota.mp4` (quelle che ci sono si dividono la scena, con la testata). Se mancano tutte e due, il cartello con la **foto vera** dei dispositivi sul tavolo (`scene/foto/dispositivi.jpg`): la pagina di Tasmota sulla scheda ESP32 mostra il DHT11 a 21,1 °C e 91% di umidità, davanti c'è il badge; accanto badge WHY2025 (*firmware nostro*) e scheda Tasmota (*regole nostre*), *Oggi: hotspot Wi-Fi*, *Domani: SIM IoT*. La didascalia dice solo quello che si vede | Mario, Roberto |
+| 12 | 2:05,5–2:14,5 | 9 s | **Il gemello digitale.** Regata 3D (`regata_3d.mp4` da 0:58, cioè 14:33–14:42 simulate): la Rotonda Diaz a circa 20.600 persone; alle 14:37 parte l'avviso vero della simulazione e compare la notifica di TwinCIRO con l'avviso della chat; poi Piazza Vittoria sale da circa 1.500 a 3.300. Testata: *Gemello digitale · Regata simulata sulle strade vere: le colonne sono le persone per zona* | Mario, Roberto |
+| 13 | 2:14,5–2:30,5 | 16 s | `fastweb.html`: *Tre passi con Fastweb + Vodafone*: le persone (analytics di rete: la folla, oggi simulata, si può misurare), sensori sulla rete (SIM IoT, esempio Walter), AI italiana e sovranità digitale (TwinCIRO *può integrare* MIIA; *FastwebMIIA-7B su Hugging Face*, licenza non commerciale, per le prove). Riga finale *TwinCIRO · Challenge 05 di Fastweb + Vodafone*. Solo testo, nessun logo | Mario, Roberto |
+| 14 | 2:30,5–2:41,5 | 11 s | Cartello in due colonne. **Cosa cambia**, con i numeri e le loro ipotesi: ≈ 1.900 persone spostate da un avviso quando la zona si riempie (stima dell'agente Turismo, adesione ipotizzata) · tavolo negoziato e prenotato con un «ok», senza telefonate · offerte solo dove c'è posto · −9% di ore in coda in media su 4 giornate simulate. **Perché Napoli**: nessuna app nuova · i dati ci sono già · America's Cup 2027 · si parte da un quartiere | Roberto, Mario |
+| 15 | 2:41,5–2:46,5 | 5 s | **È tutto vero.** Tre riquadri: la schermata vera del gruppo WhatsApp della demo (TwinCIRO saluta la giuria; nel gruppo l'account si chiama «Jarvis»), la foto vera dei dispositivi, *oltre 50 fonti pubbliche, verificate una per una* (`scene/foto/`) | Roberto |
+| 16 | 2:46,5–2:54,5 | 8 s | Chiusura con la foto di Roberto e Mario davanti al pannello di The Big Hack (`scene/foto/squadra.jpg`): **TwinCIRO**, *Napoli che ci pensa*, «💬 Il link al gruppo WhatsApp con TwinCIRO è nella pagina dell'hackathon», Roberto D'Isanto · Mario Varlese, The Big Hack 2026 · Challenge 05 Fastweb + Vodafone, robertodisanto.it/hackathon_2026_a | Roberto, Mario |
 
 Le dissolvenze sono brevi (0,2 s attraverso il nero). Il video si apre dal nero in 0,6 s e si chiude nel nero in 1 s. Nessun logo di Fastweb, Vodafone, WhatsApp o Polizia Locale: solo testo (le icone delle fonti nelle scene 2, 4 e 9 sono quelle ufficiali dei loro siti).
 
@@ -83,41 +84,44 @@ Pronuncia (è anche in `voce/COPIONE-VOCE.md`): *TwinCIRO* = «tuìn cìro»; *W
 
 **9 · La città come rete (1:43)**
 > MARIO: Ecco la città come rete: luoghi, eventi, flussi, stazioni.
-> ROBERTO: Poi agenti, sensori e fonti, e come sono collegati.
 
-**10 · Napoli adesso (1:52)**
+**10 · Napoli adesso (1:48,5)**
 > MARIO: Questa è Napoli adesso: dati veri, ognuno con la sua fonte.
 > ROBERTO: Allerte, treni, aria e Campi Flegrei, con l'ora del dato.
-> MARIO: Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà stazioni e orari.
 
 *La battuta dei pannelli vale con qualsiasi cattura (`node c5-presentazione/scene/oggi/cattura.mjs`): di proposito non cita livelli di allerta. La cattura delle 19:30 del 14/11 è di prima della correzione dell'API: il pannello mostra Meteoalarm (temporali arancione il 15/11) ma non l'avviso n. 94 della Protezione Civile (gialla dal 15/11 alle 06:00), che la cattura non ha. Con una cattura nuova il pannello lo mostra.*
 
-**11 · Sensori fatti da noi (2:06)**
+**11 · Sensori fatti da noi (1:57,5)**
 > MARIO: Sensori fatti da noi: badge WHY2025 e Tasmota.
 > ROBERTO: Oggi in Wi-Fi, domani con una SIM IoT.
 
-*Frase prudente di proposito: il firmware del badge è compilato e provato sul PC ma non ancora su un badge vero (`firmware/why2025-badge/README.md`), e le regole di Tasmota sono da provare sulla scheda. Finché le riprese R2 e R3 non mostrano un dispositivo che pubblica davvero, il video usa il cartello (con la nota sulle prove in corso) e la voce non dice «misurano» o «pubblicano». Con le riprese si può dire, nello stesso tempo: «Il badge e la scheda Tasmota pubblicano sul bus degli agenti.»*
+*Frase prudente di proposito: il firmware del badge è compilato e provato sul PC ma non ancora su un badge vero (`firmware/why2025-badge/README.md`), e le regole di Tasmota sono da provare sulla scheda. Finché le riprese R2 e R3 non mostrano un dispositivo che pubblica davvero, il video usa il cartello con la foto vera (Tasmota sulla scheda ESP32 legge un DHT11: è quello che si vede) e la voce non dice «misurano» o «pubblicano»; nemmeno il cartello dice che le letture arrivano via MQTT alla città, perché non è ancora verificato. Con le riprese si può dire, nello stesso tempo: «Il badge e la scheda Tasmota pubblicano sul bus degli agenti.»*
 
-**12 · Il gemello digitale (2:14)**
+**12 · Il gemello digitale (2:05,5)**
 > MARIO: Il gemello digitale prova la giornata sulle strade vere.
 > ROBERTO: E l'avviso di TwinCIRO arriva quando la Rotonda Diaz si riempie.
 
-**13 · Con Fastweb + Vodafone (2:23)**
+**13 · Con Fastweb + Vodafone (2:14,5)**
 > MARIO: Con Fastweb e Vodafone la folla non si simula più: si può misurare.
 > ROBERTO: Con le loro SIM IoT, i sensori si mettono dove servono.
 > MARIO: E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: sovranità digitale.
 
 *«Può integrare»: l'adattatore compatibile con OpenAI della città (`C5_LLM=compatibile`, alias `miia`) è provato con un server di prova e con llama.cpp, non ancora con MIIA (licenza non commerciale su Hugging Face; per la produzione l'offerta FastwebAI Suite). Dettagli nel README di `c5-agentic-city`, sezione «LLM».*
 
-**14 · Cosa cambia e perché Napoli (2:39)**
+**14 · Cosa cambia e perché Napoli (2:30,5)**
 > ROBERTO: Con un'adesione ipotizzata, un avviso sposta circa 1.900 persone.
 > MARIO: Perché Napoli? Nessuna app nuova, i dati ci sono già, e si parte da un quartiere.
 
 *Gli altri numeri del cartello restano a schermo senza voce, ognuno con la sua fonte (il −9% di ore in coda è l'unico punto del video sul traffico).*
 
-**15 · Chiusura (2:51)**
+**15 · È tutto vero (2:41,5)**
+> ROBERTO: È tutto vero: le fonti, i sensori e il gruppo WhatsApp con TwinCIRO.
+
+*Le prove sono a schermo: la schermata vera del gruppo, la foto vera dei dispositivi, il catalogo delle fonti (`docs/fonti-dati-napoli.md`).*
+
+**16 · Chiusura (2:46,5)**
 > ROBERTO: TwinCIRO. Napoli che ci pensa.
-> MARIO: Provalo nel gruppo WhatsApp della demo.
+> MARIO: Il link al gruppo WhatsApp è nella pagina dell'hackathon.
 
 ## Riprese da girare
 

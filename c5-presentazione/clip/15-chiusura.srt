@@ -1,8 +1,0 @@
-1
-00:00:00,400 --> 00:00:03,000
-TwinCIRO. Napoli che ci pensa.
-
-2
-00:00:03,300 --> 00:00:06,300
-Provalo nel gruppo WhatsApp della demo.
-

@@ -47,6 +47,44 @@
   .evento { margin-top: 12px; font-size: 25px; color: var(--tenue); }
   .link { margin-top: 10px; font-size: 25px; color: var(--twin); }
   .crediti { margin-top: 26px; font-size: 20px; color: var(--tenue); opacity: .85; }
+  /* chiusura con la foto della squadra: foto a sinistra, testi a destra (tutto sopra la fascia dei sottotitoli) */
+  .chiusa { position: absolute; left: 100px; right: 100px; top: 0; height: 950px; display: grid; grid-template-columns: 760px 1fr; column-gap: 64px; align-items: center; }
+  .chiusa .foto-sq { display: block; width: 760px; height: 570px; object-fit: cover; border-radius: 28px; border: 3px solid var(--bordo); box-shadow: 0 30px 70px rgb(0 0 0 / .5); }
+  .chiusa .testi { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+  .chiusa .wordmark { font-size: 150px; margin: 0; }
+  .chiusa .sotto { font-size: 44px; margin-top: 8px; }
+  .chiusa .invito { margin-top: 34px; font-size: 33px; line-height: 1.25; padding: 16px 30px; border-radius: 34px; align-items: flex-start; }
+  .chiusa .squadra { margin-top: 38px; font-size: 34px; }
+  .chiusa .crediti { margin-top: 20px; }
+
+  /* tutto vero: tre riquadri con le foto vere (gruppo WhatsApp, dispositivi) e le fonti */
+  .vero { position: absolute; left: 90px; right: 90px; top: 0; height: 950px; display: flex; flex-direction: column; justify-content: center; }
+  .vero h1 { margin: 0 0 28px; font-size: 64px; font-weight: 800; letter-spacing: -0.02em; text-align: center; }
+  .vero .tre { display: grid; grid-template-columns: 430px 1fr 430px; gap: 40px; }
+  .vero .ri { background: rgb(22 33 59 / 0.94); border: 2px solid var(--bordo); border-radius: 26px; overflow: hidden; }
+  .vero .ri img { display: block; width: 100%; height: 600px; object-fit: cover; }
+  .vero .ri .did { padding: 16px 24px 20px; }
+  .vero .ri h3 { margin: 0; font-size: 33px; color: var(--ciro); }
+  .vero .ri p { margin: 6px 0 0; font-size: 22px; color: #c8d3ec; line-height: 1.3; }
+  .vero .num { height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    background: radial-gradient(circle at 50% 45%, rgb(56 214 240 / 0.16), transparent 65%); }
+  .vero .num small { font-size: 34px; font-weight: 700; color: #dbe4f7; }
+  .vero .num b { font-size: 200px; line-height: 1; font-weight: 800; letter-spacing: -0.04em; color: var(--verde); }
+  .vero .num span { margin-top: 10px; font-size: 34px; font-weight: 700; color: #dbe4f7; }
+
+  /* sensori con la foto vera dei dispositivi: foto a sinistra, i due dispositivi e la rete a destra */
+  .sens-f { position: absolute; left: 90px; right: 90px; top: 0; height: 950px; display: grid; grid-template-columns: 920px 1fr; column-gap: 54px; align-items: center; }
+  .sens-f .foto-d { display: block; width: 920px; height: 690px; object-fit: cover; border-radius: 26px; border: 3px solid var(--bordo); box-shadow: 0 30px 70px rgb(0 0 0 / .45); }
+  .sens-f h1 { margin: 0 0 8px; font-size: 60px; font-weight: 800; letter-spacing: -0.02em; }
+  .sens-f .sotto-t { font-size: 27px; color: #c8d3ec; margin-bottom: 26px; }
+  .sens-f .dispositivi { gap: 18px; }
+  .sens-f .dispositivi .nodo { grid-template-columns: 58px 1fr; padding: 18px 22px; }
+  .sens-f .nodo h3 { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 31px; margin: 2px 0 6px; }
+  .sens-f .nodo p { font-size: 22px; }
+  .sens-f .rete-f { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 24px; }
+  .sens-f .rete-f .chip-i { font-size: 25px; padding: 10px 20px; }
+  .sens-f .rete-f .chip-i.domani { border-color: var(--twin); color: #bff4ff; background: #0f2533; }
+  .sens-f .fonte-r { margin-top: 22px; font-size: 22px; color: #b9c6e4; line-height: 1.35; }
 
   /* testata trasparente sopra i video */
   body.trasparente { background: transparent; }
@@ -233,6 +271,21 @@ window.pronta = (async () => {
       r.innerHTML = `<div class="iot"><h1 class="a" style="--d:.1s">${esc(c.titolo)}</h1><div class="sotto-t a" style="--d:.3s">${esc(c.sotto)}</div>
         <div class="msgs">${c.messaggi.map((m, i) => `<div class="msg a" style="--d:${(0.7 + i * 0.9).toFixed(1)}s"><div class="tp"><span class="etf">${i ? 'stato' : 'lettura'}</span>${esc(m.topic)}</div><div class="js">${esc(m.contenuto)}</div>${m.nota ? `<div class="nt">${cod(m.nota)}</div>` : ''}</div>`).join('')}</div>
         <div class="chips">${c.chips.map((x, i) => `<span class="chip-i a" style="--d:${(2.6 + i * 0.3).toFixed(1)}s">${esc(x)}</span>`).join('')}</div></div>`;
+    } else if (c.tipo === 'sensori' && c.foto) {
+      // Con la foto vera dei dispositivi (scene/foto/): foto a sinistra, i due dispositivi e la rete a destra.
+      // La didascalia dice solo quello che si vede nella foto.
+      r.innerHTML = `<div class="sens-f"><img class="foto-d c" style="--d:.1s" src="${esc(c.foto)}" alt="">
+        <div><h1 class="a" style="--d:.2s">${esc(c.titolo)}</h1><div class="sotto-t a" style="--d:.4s">${cod(c.sotto)}</div>
+        <div class="dispositivi">${c.dispositivi.map((x, i) => `<div class="nodo hw a" style="--d:${(0.6 + i * 0.35).toFixed(2)}s"><div class="ic">${x.icona}</div><div><h3>${esc(x.nome)}<span class="nostro">${esc(x.nostro)}</span></h3><p>${esc(x.testo)}</p></div></div>`).join('')}</div>
+        <div class="rete-f"><span class="chip-i a" style="--d:${c.d_rete ?? 4.4}s">${esc(c.rete[0])}</span><span class="chip-i domani a" style="--d:${(c.d_rete ?? 4.4) + 0.4}s">${esc(c.rete[1])}</span></div>
+        <div class="fonte-r f" style="--d:${c.d_fonte ?? 1.8}s">${esc(c.fonte)}</div></div></div>`;
+    } else if (c.tipo === 'vero') {
+      // Tre riquadri: foto vere (schermata del gruppo WhatsApp, dispositivi sul tavolo) o un numero, con la didascalia
+      const ri = (v) => `<div class="ri a" style="--d:${v.d}s">`
+        + (v.foto ? `<img src="${esc(v.foto)}" alt="" style="object-position:${esc(v.posizione || 'center')}">`
+          : `<div class="num">${v.sopra ? `<small>${esc(v.sopra)}</small>` : ''}<b>${esc(v.numero)}</b><span>${esc(v.sotto)}</span></div>`)
+        + `<div class="did"><h3>${esc(v.titolo)}</h3><p>${esc(v.testo)}</p></div></div>`;
+      r.innerHTML = `<div class="vero"><h1 class="a" style="--d:.05s">${esc(c.titolo)}</h1><div class="tre">${c.riquadri.map(ri).join('')}</div></div>`;
     } else if (c.tipo === 'sensori') {
       // I due dispositivi veri (firmware e regole nostri), il formato unico napoli/ e la rete: nessuna misura inventata
       const msg = (m, i, d) => `<div class="msg a" style="--d:${d}s"><div class="tp"><span class="etf">${i ? 'stato' : 'lettura'}</span>${esc(m.topic)}</div><div class="js">${esc(m.contenuto)}</div>${m.nota ? `<div class="nt">${cod(m.nota)}</div>` : ''}</div>`;
@@ -254,6 +307,17 @@ window.pronta = (async () => {
       r.innerHTML = `<div class="due">${c.colonne.map((col) => `<div><h2 class="a" style="--d:${col.d}s">${esc(col.titolo)}${col.sotto ? `<small>${esc(col.sotto)}</small>` : ''}</h2>`
         + `<div class="col-righe">${col.voci.map(riga).join('')}</div></div>`).join('')}
         ${c.piede ? `<div class="piede-d f" style="--d:${c.d_piede ?? 9}s">${esc(c.piede)}</div>` : ''}</div>`;
+    } else if (c.tipo === 'chiusura' && c.foto) {
+      // Con la foto della squadra (scene/foto/): foto a sinistra, marchio, invito e squadra a destra
+      r.innerHTML = `<div class="alone"></div><div class="chiusa"><img class="foto-sq c" style="--d:.1s" src="${esc(c.foto)}" alt="">
+        <div class="testi">
+        <div class="wordmark c" style="--d:.2s">${marchio()}</div>
+        <div class="sotto a" style="--d:.7s">${esc(c.sotto)}</div>
+        <div class="invito a" style="--d:${c.d_invito ?? 1.4}s"><span>💬</span><span>${esc(c.invito)}</span></div>
+        <div class="squadra a" style="--d:2.2s">${esc(c.squadra)}</div>
+        <div class="evento a" style="--d:2.6s">${esc(c.evento)}</div>
+        <div class="link a" style="--d:2.9s">${esc(c.link)}</div>
+        ${c.crediti ? `<div class="crediti a" style="--d:3.3s">${esc(c.crediti)}</div>` : ''}</div></div>`;
     } else if (c.tipo === 'chiusura') {
       r.innerHTML = `<div class="alone"></div><div class="centro">
         <div class="wordmark c" style="--d:.1s;font-size:190px">${marchio()}</div>

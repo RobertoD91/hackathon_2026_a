@@ -2,7 +2,7 @@
 
 > Generato da `scene/monta.py` a partire da `scene/scaletta.json`: **non modificarlo a mano**. Per cambiare una battuta cambiala nella scaletta e rilancia `./monta.sh --solo-testi` (un secondo, niente video). Anche i file `NN-<scena>.txt` di questa cartella si rigenerano da soli: una scena per file, con battute, tempi e chi legge.
 
-**2:59 di video · 37 battute · Roberto 19 (1:14 di parlato) · Mario 18 (1:19 di parlato)** · ritmo medio di circa 148 parole al minuto (obiettivo circa 150; il ritmo si conta in sillabe, circa 2 per parola, con sigle e numeri letti per esteso).
+**2:54 di video · 36 battute · Roberto 19 (1:15 di parlato) · Mario 17 (1:14 di parlato)** · ritmo medio di circa 148 parole al minuto (obiettivo circa 150; il ritmo si conta in sillabe, circa 2 per parola, con sigle e numeri letti per esteso).
 
 ## Come registrare
 
@@ -140,85 +140,83 @@ Consigli: stanza silenziosa e con tende o divani, telefono a 20 cm dalla bocca e
 
 > Si parlano su MQTT; le fonti pubbliche arrivano dall'API dati città.
 
-### 09 · grafo · 1:43,0–1:52,0 (9,0 s)
+### 09 · grafo · 1:43,0–1:48,5 (5,5 s)
 
 **MARIO** · 1:43,3 → 1:47,4 · 4,1 s · `girato/voce/09-grafo-1.m4a`
 
 > Ecco la città come rete: luoghi, eventi, flussi, stazioni.
 
-**ROBERTO** · 1:47,7 → 1:51,7 · 4,0 s · `girato/voce/09-grafo-2.m4a`
+### 10 · adesso · 1:48,5–1:57,5 (9,0 s)
 
-> Poi agenti, sensori e fonti, e come sono collegati.
-
-### 10 · adesso · 1:52,0–2:06,0 (14,0 s)
-
-**MARIO** · 1:52,3 → 1:56,2 · 3,9 s · `girato/voce/10-adesso-1.m4a`
+**MARIO** · 1:48,8 → 1:52,7 · 3,9 s · `girato/voce/10-adesso-1.m4a`
 
 > Questa è Napoli adesso: dati veri, ognuno con la sua fonte.
 
-**ROBERTO** · 1:56,4 → 2:00,0 · 3,6 s · `girato/voce/10-adesso-2.m4a`
+**ROBERTO** · 1:52,9 → 1:56,5 · 3,6 s · `girato/voce/10-adesso-2.m4a`
 
 > Allerte, treni, aria e Campi Flegrei, con l'ora del dato.
 
-**MARIO** · 2:00,3 → 2:05,6 · 5,2 s · `girato/voce/10-adesso-3.m4a`
+### 11 · sensori · 1:57,5–2:05,5 (8,0 s)
 
-> Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà stazioni e orari.
-
-### 11 · sensori · 2:06,0–2:14,0 (8,0 s)
-
-**MARIO** · 2:06,3 → 2:10,4 · 4,1 s · `girato/voce/11-sensori-1.m4a`
+**MARIO** · 1:57,8 → 2:01,9 · 4,1 s · `girato/voce/11-sensori-1.m4a`
 
 > Sensori fatti da noi: badge WHY2025 e Tasmota.
 
-**ROBERTO** · 2:10,7 → 2:13,8 · 3,1 s · `girato/voce/11-sensori-2.m4a`
+**ROBERTO** · 2:02,2 → 2:05,3 · 3,1 s · `girato/voce/11-sensori-2.m4a`
 
 > Oggi in Wi-Fi, domani con una SIM IoT.
 
-### 12 · gemello · 2:14,0–2:23,0 (9,0 s)
+### 12 · gemello · 2:05,5–2:14,5 (9,0 s)
 
-**MARIO** · 2:14,3 → 2:18,3 · 4,0 s · `girato/voce/12-gemello-1.m4a`
+**MARIO** · 2:05,8 → 2:09,8 · 4,0 s · `girato/voce/12-gemello-1.m4a`
 
 > Il gemello digitale prova la giornata sulle strade vere.
 
-**ROBERTO** · 2:18,6 → 2:22,6 · 4,0 s · `girato/voce/12-gemello-2.m4a`
+**ROBERTO** · 2:10,1 → 2:14,1 · 4,0 s · `girato/voce/12-gemello-2.m4a`
 
 > E l'avviso di TwinCIRO arriva quando la Rotonda Diaz si riempie.
 
-### 13 · fastweb · 2:23,0–2:39,0 (16,0 s)
+### 13 · fastweb · 2:14,5–2:30,5 (16,0 s)
 
-**MARIO** · 2:23,3 → 2:28,0 · 4,7 s · `girato/voce/13-fastweb-1.m4a`
+**MARIO** · 2:14,8 → 2:19,5 · 4,7 s · `girato/voce/13-fastweb-1.m4a`
 
 > Con Fastweb e Vodafone la folla non si simula più: si può misurare.
 
-**ROBERTO** · 2:28,3 → 2:32,4 · 4,1 s · `girato/voce/13-fastweb-2.m4a`
+**ROBERTO** · 2:19,8 → 2:23,9 · 4,1 s · `girato/voce/13-fastweb-2.m4a`
 
 > Con le loro SIM IoT, i sensori si mettono dove servono.
 
-**MARIO** · 2:32,7 → 2:38,9 · 6,2 s · `girato/voce/13-fastweb-3.m4a`
+**MARIO** · 2:24,2 → 2:30,4 · 6,2 s · `girato/voce/13-fastweb-3.m4a`
 
 > E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: sovranità digitale.
 
-### 14 · benefici · 2:39,0–2:51,0 (12,0 s)
+### 14 · benefici · 2:30,5–2:41,5 (11,0 s)
 
-**ROBERTO** · 2:39,3 → 2:44,4 · 5,1 s · `girato/voce/14-benefici-1.m4a`
+**ROBERTO** · 2:30,8 → 2:35,9 · 5,1 s · `girato/voce/14-benefici-1.m4a`
 
 > Con un'adesione ipotizzata, un avviso sposta circa 1.900 persone.
 
-**MARIO** · 2:44,7 → 2:50,6 · 5,9 s · `girato/voce/14-benefici-2.m4a`
+**MARIO** · 2:36,2 → 2:41,3 · 5,1 s · `girato/voce/14-benefici-2.m4a`
 
 > Perché Napoli? Nessuna app nuova, i dati ci sono già, e si parte da un quartiere.
 
-### 15 · chiusura · 2:51,0–2:59,0 (8,0 s)
+### 15 · vero · 2:41,5–2:46,5 (5,0 s)
 
-**ROBERTO** · 2:51,4 → 2:54,0 · 2,6 s · `girato/voce/15-chiusura-1.m4a`
+**ROBERTO** · 2:41,8 → 2:46,3 · 4,5 s · `girato/voce/15-vero-1.m4a`
+
+> È tutto vero: le fonti, i sensori e il gruppo WhatsApp con TwinCIRO.
+
+### 16 · chiusura · 2:46,5–2:54,5 (8,0 s)
+
+**ROBERTO** · 2:46,9 → 2:49,3 · 2,4 s · `girato/voce/16-chiusura-1.m4a`
 
 > TwinCIRO. Napoli che ci pensa.
 
-**MARIO** · 2:54,3 → 2:57,3 · 3,0 s · `girato/voce/15-chiusura-2.m4a`
+**MARIO** · 2:49,5 → 2:54,1 · 4,6 s · `girato/voce/16-chiusura-2.m4a`
 
-> Provalo nel gruppo WhatsApp della demo.
+> Il link al gruppo WhatsApp è nella pagina dell'hackathon.
 
-## Solo Roberto (19 battute, 1:14 di parlato)
+## Solo Roberto (19 battute, 1:15 di parlato)
 
 1. **01-regata-1** · 0:00,6 · 2,4 s — Napoli, 2027.
 2. **02-motivazione-1** · 0:08,3 · 4,0 s — I dati ci sono. Ma sono sparsi, e non si parlano.
@@ -232,15 +230,15 @@ Consigli: stanza silenziosa e con tende o divani, telefono a 20 cm dalla bocca e
 10. **07-operatore-1** · 1:18,3 · 4,2 s — Quell'avviso passa dalla Polizia Locale, in sala operativa.
 11. **07-operatore-3** · 1:27,3 · 4,4 s — Nel terminale della sala, la stessa decisione: l'avviso è partito.
 12. **08-architettura-2** · 1:37,9 · 4,9 s — Si parlano su MQTT; le fonti pubbliche arrivano dall'API dati città.
-13. **09-grafo-2** · 1:47,7 · 4,0 s — Poi agenti, sensori e fonti, e come sono collegati.
-14. **10-adesso-2** · 1:56,4 · 3,6 s — Allerte, treni, aria e Campi Flegrei, con l'ora del dato.
-15. **11-sensori-2** · 2:10,7 · 3,1 s — Oggi in Wi-Fi, domani con una SIM IoT.
-16. **12-gemello-2** · 2:18,6 · 4,0 s — E l'avviso di TwinCIRO arriva quando la Rotonda Diaz si riempie.
-17. **13-fastweb-2** · 2:28,3 · 4,1 s — Con le loro SIM IoT, i sensori si mettono dove servono.
-18. **14-benefici-1** · 2:39,3 · 5,1 s — Con un'adesione ipotizzata, un avviso sposta circa 1.900 persone.
-19. **15-chiusura-1** · 2:51,4 · 2,6 s — TwinCIRO. Napoli che ci pensa.
+13. **10-adesso-2** · 1:52,9 · 3,6 s — Allerte, treni, aria e Campi Flegrei, con l'ora del dato.
+14. **11-sensori-2** · 2:02,2 · 3,1 s — Oggi in Wi-Fi, domani con una SIM IoT.
+15. **12-gemello-2** · 2:10,1 · 4,0 s — E l'avviso di TwinCIRO arriva quando la Rotonda Diaz si riempie.
+16. **13-fastweb-2** · 2:19,8 · 4,1 s — Con le loro SIM IoT, i sensori si mettono dove servono.
+17. **14-benefici-1** · 2:30,8 · 5,1 s — Con un'adesione ipotizzata, un avviso sposta circa 1.900 persone.
+18. **15-vero-1** · 2:41,8 · 4,5 s — È tutto vero: le fonti, i sensori e il gruppo WhatsApp con TwinCIRO.
+19. **16-chiusura-1** · 2:46,9 · 2,4 s — TwinCIRO. Napoli che ci pensa.
 
-## Solo Mario (18 battute, 1:19 di parlato)
+## Solo Mario (17 battute, 1:14 di parlato)
 
 1. **01-regata-2** · 0:03,2 · 4,5 s — Un sabato: America's Cup, navi da crociera e partita al Maradona.
 2. **02-motivazione-2** · 0:13,0 · 5,7 s — E manca il dato più importante: quante persone ci sono, adesso, in ogni zona.
@@ -252,14 +250,13 @@ Consigli: stanza silenziosa e con tende o divani, telefono a 20 cm dalla bocca e
 8. **07-operatore-2** · 1:22,8 · 4,2 s — Gli agenti propongono: l'operatore approva, o blocca.
 9. **08-architettura-1** · 1:32,3 · 5,4 s — Dietro TwinCIRO c'è un sistema multi-agente: agenti specializzati e un orchestratore.
 10. **09-grafo-1** · 1:43,3 · 4,1 s — Ecco la città come rete: luoghi, eventi, flussi, stazioni.
-11. **10-adesso-1** · 1:52,3 · 3,9 s — Questa è Napoli adesso: dati veri, ognuno con la sua fonte.
-12. **10-adesso-3** · 2:00,3 · 5,2 s — Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà stazioni e orari.
-13. **11-sensori-1** · 2:06,3 · 4,1 s — Sensori fatti da noi: badge WHY2025 e Tasmota.
-14. **12-gemello-1** · 2:14,3 · 4,0 s — Il gemello digitale prova la giornata sulle strade vere.
-15. **13-fastweb-1** · 2:23,3 · 4,7 s — Con Fastweb e Vodafone la folla non si simula più: si può misurare.
-16. **13-fastweb-3** · 2:32,7 · 6,2 s — E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: sovranità digitale.
-17. **14-benefici-2** · 2:44,7 · 5,9 s — Perché Napoli? Nessuna app nuova, i dati ci sono già, e si parte da un quartiere.
-18. **15-chiusura-2** · 2:54,3 · 3,0 s — Provalo nel gruppo WhatsApp della demo.
+11. **10-adesso-1** · 1:48,8 · 3,9 s — Questa è Napoli adesso: dati veri, ognuno con la sua fonte.
+12. **11-sensori-1** · 1:57,8 · 4,1 s — Sensori fatti da noi: badge WHY2025 e Tasmota.
+13. **12-gemello-1** · 2:05,8 · 4,0 s — Il gemello digitale prova la giornata sulle strade vere.
+14. **13-fastweb-1** · 2:14,8 · 4,7 s — Con Fastweb e Vodafone la folla non si simula più: si può misurare.
+15. **13-fastweb-3** · 2:24,2 · 6,2 s — E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: sovranità digitale.
+16. **14-benefici-2** · 2:36,2 · 5,1 s — Perché Napoli? Nessuna app nuova, i dati ci sono già, e si parte da un quartiere.
+17. **16-chiusura-2** · 2:49,5 · 4,6 s — Il link al gruppo WhatsApp è nella pagina dell'hackathon.
 
 ## Da controllare
 

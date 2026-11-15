@@ -19,7 +19,7 @@
     "use_speaker_boost": true
   },
   "seed": 2026,
-  "aggiornato": "2026-11-15T07:01:34+00:00",
+  "aggiornato": "2026-11-15T10:04:28+00:00",
   "battute": {
     "01-regata-1": {
       "testo": "Napoli, 2027.",
@@ -286,18 +286,6 @@
       "spazio_s": 4.4,
       "importata": true
     },
-    "09-grafo-2": {
-      "testo": "Poi agenti, sensori e fonti, e come sono collegati.",
-      "testo_sintesi": "Poi agenti, sensori e fonti, e come sono collegati.",
-      "chi": "Roberto",
-      "voce": "George",
-      "file": "09-grafo-2.m4a",
-      "impronta": "e9198508f50e62f8",
-      "speed": null,
-      "parlato_s": 3.03,
-      "spazio_s": 4.3,
-      "importata": true
-    },
     "10-adesso-1": {
       "testo": "Questa è Napoli adesso: dati veri, ognuno con la sua fonte.",
       "testo_sintesi": "Questa è Napoli adesso: dati veri, ognuno con la sua fonte.",
@@ -320,18 +308,6 @@
       "speed": null,
       "parlato_s": 3.51,
       "spazio_s": 3.6,
-      "importata": true
-    },
-    "10-adesso-3": {
-      "testo": "Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà stazioni e orari.",
-      "testo_sintesi": "Chiedi come arrivare a Città della Scienza: Twin Ciro ti dà stazioni e orari.",
-      "chi": "Mario",
-      "voce": "Eric",
-      "file": "10-adesso-3.m4a",
-      "impronta": "72cddc0420b75893",
-      "speed": null,
-      "parlato_s": 4.15,
-      "spazio_s": 6.0,
       "importata": true
     },
     "11-sensori-1": {
@@ -441,29 +417,39 @@
       "spazio_s": 6.3,
       "importata": true
     },
-    "15-chiusura-1": {
+    "15-vero-1": {
+      "testo": "È tutto vero: le fonti, i sensori e il gruppo WhatsApp con TwinCIRO.",
+      "testo_sintesi": "È tutto vero: le fonti, i sensori e il gruppo WhatsApp con Twin Ciro.",
+      "chi": "Roberto",
+      "voce": "George",
+      "file": "15-vero-1.m4a",
+      "impronta": "ad4e839feee83cc0",
+      "speed": 1.0,
+      "parlato_s": 4.32,
+      "spazio_s": 4.7
+    },
+    "16-chiusura-1": {
       "testo": "TwinCIRO. Napoli che ci pensa.",
       "testo_sintesi": "Twin Ciro. Napoli che ci pensa.",
       "chi": "Roberto",
       "voce": "George",
-      "file": "15-chiusura-1.m4a",
+      "file": "16-chiusura-1.m4a",
       "impronta": "084d83b417140827",
       "speed": null,
       "parlato_s": 2.34,
       "spazio_s": 2.9,
       "importata": true
     },
-    "15-chiusura-2": {
-      "testo": "Provalo nel gruppo WhatsApp della demo.",
-      "testo_sintesi": "Provalo nel gruppo WhatsApp della demo.",
+    "16-chiusura-2": {
+      "testo": "Il link al gruppo WhatsApp è nella pagina dell'hackathon.",
+      "testo_sintesi": "Il link al gruppo WhatsApp è nella pagina dell'hackathon.",
       "chi": "Mario",
       "voce": "Eric",
-      "file": "15-chiusura-2.m4a",
-      "impronta": "2142bd60e3bdc299",
-      "speed": null,
-      "parlato_s": 1.8,
-      "spazio_s": 4.7,
-      "importata": true
+      "file": "16-chiusura-2.m4a",
+      "impronta": "7dbbdf8c4a88ff1e",
+      "speed": 1.0,
+      "parlato_s": 2.66,
+      "spazio_s": 5.0
     }
   }
 }

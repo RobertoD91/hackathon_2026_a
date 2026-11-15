@@ -3,8 +3,3 @@
 Ecco la città come rete: luoghi,
 eventi, flussi, stazioni.
 
-2
-00:00:04,700 --> 00:00:08,700
-Poi agenti, sensori e fonti,
-e come sono collegati.
-

@@ -1,5 +1,5 @@
 {
-  "nota": "Scaletta v3 del video di consegna di TwinCIRO (C5): 15 scene, 2:59. È l'unica fonte di durate, testi a schermo e voce fuori campo: monta.py la legge, cartelli.html prende da qui i testi dei cartelli, titolo.html e fastweb.html la loro durata. Ogni battuta ha \"chi\" (Roberto o Mario); tempi in secondi dall'inizio della scena, a circa 150 parole al minuto contando le sigle come si pronunciano (controllo: ./monta.sh --solo-testi). Le scene di tipo \"pagina\" elencano in \"dipende\" i file che leggono: se cambiano, la scena si rigenera da sola. Una scena con \"salta\": true resta descritta ma non entra nel video. Se cambi qualcosa qui, aggiorna anche copione.md.",
+  "nota": "Scaletta v3 del video di consegna di TwinCIRO (C5): 16 scene, 2:54,5 (al massimo 2:55). È l'unica fonte di durate, testi a schermo e voce fuori campo: monta.py la legge, cartelli.html prende da qui i testi dei cartelli, titolo.html e fastweb.html la loro durata. Ogni battuta ha \"chi\" (Roberto o Mario); tempi in secondi dall'inizio della scena, a circa 150 parole al minuto contando le sigle come si pronunciano (controllo: ./monta.sh --solo-testi). Le scene di tipo \"pagina\" elencano in \"dipende\" i file che leggono: se cambiano, la scena si rigenera da sola. Una scena con \"salta\": true resta descritta ma non entra nel video. Se cambi qualcosa qui, aggiorna anche copione.md.",
   "fps": 30,
   "dissolvenza": 0.2,
   "pronuncia": {
@@ -111,29 +111,27 @@
     },
     {
       "id": "09-grafo",
-      "durata": 9,
-      "nota": "Knowledge graph della giornata della regata (83 nodi, 196 relazioni) da grafo/grafo.json, generato da grafo/genera.mjs con i dati e il codice della repository; i dati sono incorporati nella pagina. È una rappresentazione delle relazioni, non un database interrogato dagli agenti: lo dicono titolo, nota e voce. I due sensori sono «in prova». Pagina navigabile: c5-presentazione/grafo/.",
-      "sorgente": { "tipo": "pagina", "pagina": "grafo.html", "dipende": ["fonti/loghi/*.png"] },
+      "durata": 5.5,
+      "nota": "Knowledge graph della giornata della regata (83 nodi, 196 relazioni) da grafo/grafo.json, generato da grafo/genera.mjs con i dati e il codice della repository; i dati sono incorporati nella pagina. È una rappresentazione delle relazioni, non un database interrogato dagli agenti: lo dicono titolo e nota. I due sensori sono «in prova». Pagina navigabile: c5-presentazione/grafo/. Dal 15/11 (regola dei 2:55) dura 5,5 s con una battuta sola: la pagina accorcia i suoi tempi con ?durata.",
+      "sorgente": { "tipo": "pagina", "pagina": "grafo.html?durata=5.5", "dipende": ["fonti/loghi/*.png"] },
       "voce": [
-        { "da": 0.3, "a": 4.4, "chi": "Mario", "testo": "Ecco la città come rete: luoghi, eventi, flussi, stazioni." },
-        { "da": 4.7, "a": 8.7, "chi": "Roberto", "testo": "Poi agenti, sensori e fonti, e come sono collegati." }
+        { "da": 0.3, "a": 4.4, "chi": "Mario", "testo": "Ecco la città come rete: luoghi, eventi, flussi, stazioni." }
       ]
     },
     {
       "id": "10-adesso",
-      "durata": 14,
-      "nota": "Napoli adesso, con i dati veri dell'API dati città catturati il 14/11/2026 alle 19:30 (scene/oggi/, rifare con node c5-presentazione/scene/oggi/cattura.mjs). La battuta dei pannelli vale con qualsiasi cattura: mentre la dice, si accendono allerta, treni, aria, Campi Flegrei e la legenda degli stati. Con l'API di adesso il pannello dell'allerta mostra anche l'avviso della Protezione Civile per domani (chiave \"domani\").",
+      "durata": 9,
+      "nota": "Napoli adesso, con i dati veri dell'API dati città catturati il 14/11/2026 alle 19:30 (scene/oggi/, rifare con node c5-presentazione/scene/oggi/cattura.mjs). La battuta dei pannelli vale con qualsiasi cattura: mentre la dice, si accendono allerta, treni, aria, Campi Flegrei e la legenda degli stati. Con l'API di adesso il pannello dell'allerta mostra anche l'avviso della Protezione Civile per domani (chiave \"domani\"). Dal 15/11 (regola dei 2:55) dura 9 s: tolta la battuta su Città della Scienza.",
       "sorgente": { "tipo": "pagina", "pagina": "adesso.html", "dipende": ["oggi/*.json"] },
       "voce": [
         { "da": 0.3, "a": 4.2, "chi": "Mario", "testo": "Questa è Napoli adesso: dati veri, ognuno con la sua fonte." },
-        { "da": 4.4, "a": 8.0, "chi": "Roberto", "testo": "Allerte, treni, aria e Campi Flegrei, con l'ora del dato." },
-        { "da": 8.35, "a": 13.6, "chi": "Mario", "testo": "Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà stazioni e orari." }
+        { "da": 4.4, "a": 8.0, "chi": "Roberto", "testo": "Allerte, treni, aria e Campi Flegrei, con l'ora del dato." }
       ]
     },
     {
       "id": "11-sensori",
       "durata": 8,
-      "nota": "Sensori fatti da noi: le riprese vere girato/badge.mp4 e girato/tasmota.mp4 (quelle che ci sono si dividono la scena, con la testata); se mancano tutte e due, il cartello «sensori»: i due dispositivi, il formato unico napoli/ e la rete, senza valori inventati, con la nota sulle prove in corso a schermo da 1,8 s. Con --segnaposto: il cartello «qui-sensori».",
+      "nota": "Sensori fatti da noi: le riprese vere girato/badge.mp4 e girato/tasmota.mp4 (quelle che ci sono si dividono la scena, con la testata); se mancano tutte e due, il cartello «sensori»: la foto vera dei dispositivi sul tavolo (scene/foto/dispositivi.jpg: la scheda ESP32 con Tasmota legge un DHT11, accanto al badge) con i due dispositivi e la rete; la didascalia dice solo quello che si vede. Con --segnaposto: il cartello «qui-sensori».",
       "sorgente": { "tipo": "cartello", "id": "sensori" },
       "segnaposto": "qui-sensori",
       "girato": { "file": ["badge", "tasmota"], "modo": "pieno", "da": 0 },
@@ -174,34 +172,44 @@
     },
     {
       "id": "14-benefici",
-      "durata": 12,
-      "nota": "Benefici con i numeri già verificati e le loro ipotesi (tutti da simulazione o dalla demo, e lo dice il piede) e perché Napoli dovrebbe adottarla, in un cartello solo.",
+      "durata": 11,
+      "nota": "Benefici con i numeri già verificati e le loro ipotesi (tutti da simulazione o dalla demo, e lo dice il piede) e perché Napoli dovrebbe adottarla, in un cartello solo. Dal 15/11 dura 11 s.",
       "sorgente": { "tipo": "cartello", "id": "benefici" },
       "voce": [
         { "da": 0.3, "a": 5.4, "chi": "Roberto", "testo": "Con un'adesione ipotizzata, un avviso sposta circa 1.900 persone." },
-        { "da": 5.7, "a": 11.6, "chi": "Mario", "testo": "Perché Napoli? Nessuna app nuova, i dati ci sono già, e si parte da un quartiere." }
+        { "da": 5.7, "a": 10.8, "chi": "Mario", "testo": "Perché Napoli? Nessuna app nuova, i dati ci sono già, e si parte da un quartiere." }
       ]
     },
     {
-      "id": "15-chiusura",
+      "id": "15-vero",
+      "durata": 5,
+      "nota": "È tutto vero (15/11, richiesta di Roberto): tre riquadri con le prove, la schermata vera del gruppo WhatsApp della demo (TwinCIRO saluta la giuria; nel gruppo l'account si chiama «Jarvis»), la foto vera dei dispositivi sul tavolo e le oltre 50 fonti pubbliche verificate. Foto in scene/foto/.",
+      "sorgente": { "tipo": "cartello", "id": "vero" },
+      "voce": [
+        { "da": 0.3, "a": 4.8, "chi": "Roberto", "testo": "È tutto vero: le fonti, i sensori e il gruppo WhatsApp con TwinCIRO." }
+      ]
+    },
+    {
+      "id": "16-chiusura",
       "durata": 8,
-      "nota": "Non c'è un numero pubblico di TwinCIRO: l'invito porta al gruppo WhatsApp della demo, dove c'è l'agente vero.",
+      "nota": "Non c'è un numero pubblico di TwinCIRO: il link per entrare nel gruppo WhatsApp della demo, dove c'è l'agente vero, è nella pagina dell'hackathon. Con la foto di Roberto e Mario davanti al pannello di The Big Hack (scene/foto/squadra.jpg).",
       "sorgente": { "tipo": "cartello", "id": "chiusura" },
       "voce": [
-        { "da": 0.4, "a": 3.0, "chi": "Roberto", "testo": "TwinCIRO. Napoli che ci pensa." },
-        { "da": 3.3, "a": 6.3, "chi": "Mario", "testo": "Provalo nel gruppo WhatsApp della demo." }
+        { "da": 0.4, "a": 2.8, "chi": "Roberto", "testo": "TwinCIRO. Napoli che ci pensa." },
+        { "da": 3.0, "a": 7.6, "chi": "Mario", "testo": "Il link al gruppo WhatsApp è nella pagina dell'hackathon." }
       ]
     }
   ],
   "cartelli": {
     "sensori": {
       "tipo": "sensori",
-      "nota_uso": "Scena 11 quando in girato/ mancano sia badge.mp4 sia tasmota.mp4: i due dispositivi veri, il formato unico dei messaggi (segnaposto tra < >, nessuna misura) e la rete. Riprende i riquadri di riserva della v2 (dispositivi e formato) in un cartello solo.",
+      "nota_uso": "Scena 11 quando in girato/ mancano sia badge.mp4 sia tasmota.mp4. Con \"foto\" (dal 15/11): la foto vera dei dispositivi a sinistra, i due dispositivi e la rete a destra, e la didascalia in \"fonte\" che dice solo quello che si vede; senza \"foto\": i due dispositivi, il formato unico dei messaggi (segnaposto tra < >, nessuna misura) e la rete. \"messaggi\" e \"agenti\" servono solo senza foto.",
       "titolo": "Sensori fatti da noi",
+      "foto": "foto/dispositivi.jpg",
       "sotto": "Due dispositivi veri, un solo formato: quello degli agenti, `napoli/`",
       "dispositivi": [
-        { "icona": "📛", "nome": "Badge WHY2025", "nostro": "firmware nostro", "testo": "Cyber Saiyan, ESP32-C3: contapersone con la rotella e sensori I2C collegati (luce, temperatura, umidità)" },
-        { "icona": "🔌", "nome": "Scheda Tasmota", "nostro": "regole nostre", "testo": "ESP32 o ESP8266 con Tasmota: sensori e regole dalla console web, senza compilare" }
+        { "icona": "📛", "nome": "Badge WHY2025", "nostro": "firmware nostro", "testo": "Cyber Saiyan, ESP32-C3: contapersone con la rotella e sensori I2C (luce, temperatura, umidità)" },
+        { "icona": "🔌", "nome": "Scheda Tasmota", "nostro": "regole nostre", "testo": "ESP32 con Tasmota: qui legge un DHT11 (temperatura e umidità); regole dalla console web, senza compilare" }
       ],
       "messaggi": [
         { "topic": "napoli/sensori/<id>/<grandezza>", "contenuto": "{\"zona\": \"<zona>\", \"valore\": <numero>}", "nota": "`temperatura` · `umidita` · `luce` · `pressione` · `persone`" },
@@ -211,7 +219,7 @@
       "rete": ["📶 Oggi: hotspot Wi-Fi", "📡 Domani: SIM IoT sulla rete mobile"],
       "d_rete": 4.2,
       "d_fonte": 1.8,
-      "fonte": "Firmware del badge compilato e provato sul PC, regole di Tasmota pronte: le prove sui dispositivi veri sono in corso"
+      "fonte": "Foto vera, al tavolo dell'hackathon: la pagina di Tasmota sulla scheda ESP32 mostra il DHT11 a 21,1 °C e 91% di umidità; davanti, il badge WHY2025"
     },
     "qui-sensori": {
       "tipo": "segnaposto",
@@ -257,10 +265,21 @@
       "piede": "Numeri da simulazione o dalla demo, con le ipotesi scritte nel repository. Il passo successivo è un pilota su strada.",
       "d_piede": 6.2
     },
+    "vero": {
+      "tipo": "vero",
+      "nota_uso": "Scena 15: tre riquadri con le prove vere. Foto in scene/foto/ (ridotte a 1600 px, senza metadati). Le didascalie dicono solo quello che si vede.",
+      "titolo": "È tutto vero",
+      "riquadri": [
+        { "foto": "foto/whatsapp-1.jpg", "posizione": "center top", "titolo": "Il gruppo WhatsApp", "testo": "schermata vera: TwinCIRO (account «Jarvis») saluta la giuria", "d": 0.3 },
+        { "foto": "foto/dispositivi.jpg", "titolo": "I sensori", "testo": "foto vera: Tasmota su ESP32 legge un DHT11, accanto al badge WHY2025", "d": 0.7 },
+        { "numero": "50+", "sopra": "oltre", "sotto": "fonti pubbliche", "titolo": "Le fonti", "testo": "verificate una per una, nel catalogo del repository", "d": 1.1 }
+      ]
+    },
     "chiusura": {
       "tipo": "chiusura",
+      "foto": "foto/squadra.jpg",
       "sotto": "Napoli che ci pensa",
-      "invito": "Provalo nel gruppo WhatsApp della demo",
+      "invito": "Il link al gruppo WhatsApp con TwinCIRO è nella pagina dell'hackathon",
       "squadra": "Roberto D'Isanto · Mario Varlese",
       "evento": "The Big Hack 2026 · Challenge 05 Fastweb + Vodafone",
       "link": "robertodisanto.it/hackathon_2026_a"

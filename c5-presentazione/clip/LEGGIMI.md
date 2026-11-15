@@ -24,14 +24,15 @@ I testi della voce, scena per scena e con chi li legge, sono in [`../voce/`](../
 | 06 | `06-chat.mp4` | 0:40,0–1:18,0 | 38,0 s | 7 · Mario 3, Roberto 4 |
 | 07 | `07-operatore.mp4` | 1:18,0–1:32,0 | 14,0 s | 3 · Roberto 2, Mario 1 |
 | 08 | `08-architettura.mp4` | 1:32,0–1:43,0 | 11,0 s | 2 · Mario 1, Roberto 1 |
-| 09 | `09-grafo.mp4` | 1:43,0–1:52,0 | 9,0 s | 2 · Mario 1, Roberto 1 |
-| 10 | `10-adesso.mp4` | 1:52,0–2:06,0 | 14,0 s | 3 · Mario 2, Roberto 1 |
-| 11 | `11-sensori.mp4` | 2:06,0–2:14,0 | 8,0 s | 2 · Mario 1, Roberto 1 |
-| 12 | `12-gemello.mp4` | 2:14,0–2:23,0 | 9,0 s | 2 · Mario 1, Roberto 1 |
-| 13 | `13-fastweb.mp4` | 2:23,0–2:39,0 | 16,0 s | 3 · Mario 2, Roberto 1 |
-| 14 | `14-benefici.mp4` | 2:39,0–2:51,0 | 12,0 s | 2 · Roberto 1, Mario 1 |
-| 15 | `15-chiusura.mp4` | 2:51,0–2:59,0 | 8,0 s | 2 · Roberto 1, Mario 1 |
-| | **Totale** | | **2:59** (179,0 s) | 37 |
+| 09 | `09-grafo.mp4` | 1:43,0–1:48,5 | 5,5 s | 1 · Mario |
+| 10 | `10-adesso.mp4` | 1:48,5–1:57,5 | 9,0 s | 2 · Mario 1, Roberto 1 |
+| 11 | `11-sensori.mp4` | 1:57,5–2:05,5 | 8,0 s | 2 · Mario 1, Roberto 1 |
+| 12 | `12-gemello.mp4` | 2:05,5–2:14,5 | 9,0 s | 2 · Mario 1, Roberto 1 |
+| 13 | `13-fastweb.mp4` | 2:14,5–2:30,5 | 16,0 s | 3 · Mario 2, Roberto 1 |
+| 14 | `14-benefici.mp4` | 2:30,5–2:41,5 | 11,0 s | 2 · Roberto 1, Mario 1 |
+| 15 | `15-vero.mp4` | 2:41,5–2:46,5 | 5,0 s | 1 · Roberto |
+| 16 | `16-chiusura.mp4` | 2:46,5–2:54,5 | 8,0 s | 2 · Roberto 1, Mario 1 |
+| | **Totale** | | **2:54** (174,5 s) | 36 |
 
 ## Rimontare a mano
 

@@ -50,7 +50,7 @@ node c5-presentazione/grafo/genera.mjs --controlla  # esce con 1 se non sono agg
 
 ## Il video di consegna (v3)
 
-- [`bozza.mp4`](bozza.mp4): la bozza montata. Dura **2:59** (15 scene), è 1920×1080 a 30 fps, H.264, ha i sottotitoli impressi e pesa meno di 40 MB. Mancano le voci di Roberto e Mario e le riprese vere. Al loro posto ci sono la chat ricostruita (con le risposte vere dell'API) e, per l'IoT, il cartello «Sensori fatti da noi» (i due dispositivi reali e il formato unico dei messaggi, senza valori inventati).
+- [`bozza.mp4`](bozza.mp4): la bozza montata. Dura **2:54,5** (16 scene; limite di Roberto 2:55), è 1920×1080 a 30 fps, H.264, ha i sottotitoli impressi e pesa meno di 40 MB. Mancano le voci di Roberto e Mario e le riprese vere. Al loro posto ci sono la chat ricostruita (con le risposte vere dell'API) e, per l'IoT, il cartello «Sensori fatti da noi» con la foto vera dei dispositivi. Le foto vere (dispositivi, gruppo WhatsApp, squadra) sono in `scene/foto/`.
 - [`clip/`](clip/LEGGIMI.md): ogni scena come clip a sé senza sottotitoli, con il suo SRT, più `sottotitoli.srt`, `sottotitoli.ass` e `00-finale-senza-sottotitoli.mp4`, per rimontare a mano. Sono nel repository.
 - [`voce/`](voce/COPIONE-VOCE.md): le battute scena per scena con chi le legge (Roberto o Mario), i tempi e il nome del file da registrare.
 - [`copione.md`](copione.md): scene con i tempi, testi a schermo, voce da leggere, **riprese da girare** e tabella di cosa è reale e cosa è simulato.
@@ -64,8 +64,8 @@ Il feedback dei partner del 14/11 chiede di mettere **l'assistente su WhatsApp a
 3. **il turista**: Marta scrive a TwinCIRO su WhatsApp; TwinCIRO negozia con la pizzeria, prenota con un «ok», la porta alla regata, usa i dati veri e **avvisa per primo** quando la Rotonda Diaz si riempie;
 4. **chi governa**, subito dopo: l'operatore della Polizia Locale approva proprio quell'avviso (gli agenti propongono, l'operatore approva o blocca);
 5. dietro: un **sistema multi-agente** (agenti specializzati e orchestratore sul bus MQTT `napoli/#`; i dati veri dall'API dati città), il grafo della città, Napoli adesso con i dati veri;
-6. i **sensori fatti da noi** (badge WHY2025 e scheda Tasmota, prove sui dispositivi veri in corso), il gemello digitale con l'avviso di TwinCIRO;
-7. tre passi con Fastweb + Vodafone, i benefici con i numeri e le loro ipotesi, il perché Napoli, la chiusura.
+6. i **sensori fatti da noi** (badge WHY2025 e scheda Tasmota, con la foto vera), il gemello digitale con l'avviso di TwinCIRO;
+7. tre passi con Fastweb + Vodafone, i benefici con i numeri e le loro ipotesi, il perché Napoli, «È tutto vero» (gruppo WhatsApp, sensori e fonti, con le foto vere), la chiusura con la foto della squadra e il link al gruppo WhatsApp nella pagina dell'hackathon.
 
 ### Scene e cartelle
 
@@ -178,6 +178,7 @@ Cosa è reale e cosa è simulato: tabella in fondo a [`copione.md`](copione.md#c
 - [x] Hardware del 14/11 sera: i due dispositivi reali (badge WHY2025 e scheda Tasmota sull'hotspot) e il formato unico `napoli/...`
 - [x] v3 del 14/11 sera (2:58, 15 scene): motivazione, fonti, titolo, due utenti, chat del turista, architettura multi-agente, grafo, Napoli adesso con i dati veri, operatore della Polizia Locale, sensori fatti da noi, gemello, Fastweb + Vodafone, benefici e perché Napoli; voce divisa tra Roberto e Mario
 - [x] Revisione della notte del 15/11 (fatti e forma): operatore subito dopo la chat, gemello sull'avviso vero della simulazione, allerta senza livelli in contrasto con la Protezione Civile, architettura con l'API dati città, quinte coerenti, stime con le loro ipotesi, testi di Fastweb + Vodafone verificati, sottotitoli su due righe (2:59)
+- [x] Regole del 15/11 mattina (2:54,5, 16 scene): massimo 2:55, link al gruppo WhatsApp nella pagina dell'hackathon, «È tutto vero» con le foto vere (gruppo WhatsApp, dispositivi, fonti), foto della squadra nella chiusura; grafo, Napoli adesso e benefici accorciati
 - [ ] Riprese vere: chat di TwinCIRO su WhatsApp (R1), badge WHY2025 (R2), scheda Tasmota (R3)
 - [ ] Voci di Roberto e Mario (R4)
 - [ ] Controllo finale dei fotogrammi con le riprese vere
