@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Lingua:** parla sempre in italiano con il team (risposte, commit message, commenti, documentazione).
 - **Branch:** lavora solo su `master`. Niente feature branch, niente PR: commit e push direttamente su `master` (`git push origin master`). Prima di iniziare fai `git pull --rebase origin master`: più sessioni (e più persone) pushano sullo stesso branch.
+- **REGOLA IMPORTANTE (Roberto, 15/11): dalle 11:59 di domenica 15/11, ora di Napoli, NON si pusha MAI PIÙ su `master`.** Vale per tutte le sessioni e per qualsiasi modifica, anche piccola. Controlla l'ora con `TZ=Europe/Rome date` prima di ogni push.
 
 ## Contesto
 

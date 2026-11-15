@@ -1,60 +1,63 @@
-# TwinCIRO
+# TwinCIRO · Napoli che ci pensa
 
-**Napoli che ci pensa**: un gemello digitale della città e un assistente su WhatsApp, **TwinCIRO**, che fa parlare tra loro gli agenti della città, i cittadini, i turisti e le imprese. *Twin* è il gemello digitale; *CIRO* sta per City Intelligence & Responsive Orchestration.
+**TwinCIRO è l'assistente della città su WhatsApp.** Dietro c'è un sistema multi-agente con un gemello digitale di Napoli. Turisti e cittadini gli scrivono come a un amico, e lui risponde con i dati veri della città, citando sempre fonte e ora del dato. Chiede agli agenti della città e tratta con le imprese, per esempio una pizzeria piena che propone un altro orario. Quando una zona si riempie scrive per primo, dopo l'ok dell'operatore della Polizia Locale. *Twin* sta per gemello digitale, *CIRO* per City Intelligence & Responsive Orchestration.
 
-Progetto per [The Big Hack 2026](https://go.codemotion.com/big-hack-hackathon-2026/) (Codemotion × Futuro Remoto), Città della Scienza, Napoli, 14–15 novembre 2026. Challenge 05 **Fastweb + Vodafone**, *"Napoli Agentic City: la città che Ci pensa"*.
+[The Big Hack 2026](https://go.codemotion.com/big-hack-hackathon-2026/) (Codemotion × Futuro Remoto), Città della Scienza, Napoli, 14–15 novembre 2026. Challenge 05 **Fastweb + Vodafone**, *«Napoli Agentic City»*.
 
-> **Oltre 50 fonti pubbliche, verificate una per una**: i dati di Napoli (meteo, aria, allerte, trasporti, eventi, turismo, territorio), con licenza, limiti ed esito delle prove: **[`docs/fonti-dati-napoli.md`](docs/fonti-dati-napoli.md)**
+| | |
+|---|---|
+| 🎬 **Video** (meno di 3 minuti) | [guardalo online](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/bozza.mp4) · file nella repo: [`c5-presentazione/bozza.mp4`](c5-presentazione/bozza.mp4) |
+| 💬 **Prova TwinCIRO** | nel gruppo WhatsApp della demo: **il link per entrare è nella pagina dell'hackathon** |
+| 📚 **Le fonti** | **[oltre 50 fonti pubbliche di Napoli, verificate una per una](docs/fonti-dati-napoli.md)**, con licenza, limiti ed esito delle prove |
+| 🌐 **Online** | [TwinCIRO 3D, il gemello della città](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/gemello-3d/) · [mappa «Napoli in tempo reale»](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/mappa/) · [Napoli come rete di relazioni](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/grafo/) · [tutte le pagine](https://robertodisanto.it/hackathon_2026_a/) |
 
-## Team
+## È tutto vero
 
-- Roberto D'Isanto
-- Mario Varlese
+**TwinCIRO risponde davvero, nel gruppo WhatsApp della demo**, con dati veri e la loro fonte. Nel gruppo l'agente compare con il nome del suo account WhatsApp, «Jarvis».
 
-## TwinCIRO in breve
+<p>
+  <img src="docs/foto/whatsapp-giuria.jpg" width="300" alt="Nel gruppo WhatsApp TwinCIRO saluta la giuria e dice quali zone di Napoli sono tranquille adesso">
+  <img src="docs/foto/whatsapp-aria.jpg" width="300" alt="TwinCIRO risponde sulla qualità dell'aria a Napoli con i dati Copernicus/Open-Meteo delle 10:00">
+</p>
 
-- **TwinCIRO su WhatsApp** (agente OpenClaw) è il centro: risponde a cittadini e turisti con dati veri, chiede agli agenti della città, negozia con le imprese (una pizzeria piena propone un altro orario) e avvisa per primo quando una zona si riempie.
-- **Gli agenti della città** (Python, bus MQTT) si coordinano con un orchestratore; il **gemello digitale** mostra la giornata della regata in 3D.
-- **I dati veri** (meteo, aria, allerte, trasporti, eventi) arrivano da fonti pubbliche di Napoli, scelte nel catalogo di oltre 50 fonti verificate una per una, e TwinCIRO li riceve da una sola API con cache, fonte e ora di ogni dato.
-- **Due dispositivi veri**, il badge Cyber Saiyan WHY2025 e una scheda Tasmota, mandano alla città conteggi e misure sul campo.
-- **LLM a scelta, anche italiano:** gli agenti ragionano con Claude, con Codex o con qualsiasi LLM che ha un'API compatibile con OpenAI, come MIIA di Fastweb + Vodafone ([FastwebMIIA-7B su Hugging Face](https://huggingface.co/Fastweb/FastwebMIIA-7B), [come si collega](c5-agentic-city/README.md#llm)); senza LLM decidono le regole. L'integrazione è pronta e provata con server compatibili, non ancora con MIIA.
+**I sensori sono fatti da noi.** Nella foto c'è una scheda ESP32 con Tasmota che legge temperatura e umidità (DHT11: 21,1 °C, 91%). Sotto c'è il badge Cyber Saiyan WHY2025, per cui abbiamo scritto il firmware. Per tutti e due abbiamo preparato la configurazione che pubblica nel formato MQTT della città, `napoli/...` ([`firmware/`](firmware/README.md)).
 
-**Percorso della demo:** badge WHY2025 e scheda Tasmota → MQTT `napoli/...` sul server `twinciro.robertodisanto.it` → città Python ([`c5-agentic-city/`](c5-agentic-city/README.md)) → TwinCIRO su WhatsApp, che prende i dati veri da [`citta-api/`](citta-api/README.md).
+![I dispositivi IoT veri: la scheda ESP32 con Tasmota e il badge WHY2025, con l'interfaccia di Tasmota aperta sul portatile](docs/foto/iot-dispositivi.jpg)
 
-## Cartelle
+- **Dati veri:** meteo, aria, allerte della Protezione Civile, treni, metro, bus ed eventi arrivano da [fonti pubbliche verificate](docs/fonti-dati-napoli.md) attraverso una sola API ([`citta-api/`](citta-api/README.md)), con cache, riserve dichiarate e fonte e ora di ogni dato. Mai dati inventati.
+- **Server vero:** broker MQTT e API dei dati sono attivi su `twinciro.robertodisanto.it` ([`cloud/`](cloud/README.md)).
+- **Simulato, e dichiarato come tale:** la folla stimata per zona (oggi non ci sono dati di presenza aperti), le offerte delle imprese e lo scenario della regata dell'America's Cup 2027.
 
-| Cartella | Cosa c'è | Reale o vetrina |
-|---|---|---|
-| [`c5-agentic-city/`](c5-agentic-city/README.md) | la città agentica: agenti, assistenti personali, API per TwinCIRO su WhatsApp, gemello digitale, [visore](https://robertodisanto.it/hackathon_2026_a/c5-agentic-city/visore3d/) e video 3D della regata, [skill di TwinCIRO](c5-agentic-city/openclaw/skills/README.md) | reale; folla, traffico e offerte delle imprese sono simulati e dichiarati |
-| [`citta-api/`](citta-api/README.md) | API dati città, il cervello dati di TwinCIRO: fonti, snapshot, rigenerazione, test | reale (solo la folla stimata è simulata, e lo dice) |
-| [`firmware/`](firmware/README.md) | badge WHY2025 e scheda Tasmota, hotspot del team, formato MQTT unico `napoli/...` | reale (hardware ancora da provare sul posto) |
-| [`cloud/`](cloud/README.md) | broker MQTT e API dati città in Docker sul server, senza root | reale, attivi su `twinciro.robertodisanto.it` |
-| [`c5-presentazione/`](c5-presentazione/README.md) | video di consegna, copione, scene e la [mappa "Napoli in tempo reale"](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/mappa/) | vetrina: nella mappa folla e sensori sono simulati, meteo, aria, trasporti, eventi e allerte sono veri |
-| [`c5-presentazione/gemello-3d/`](c5-presentazione/gemello-3d/README.md) | **TwinCIRO 3D** ([online](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/gemello-3d/)), il gemello digitale 3D di tutta la città, idea di Mario: presenze adesso e previste per 48 ore, chat con agenti a regole, sala operativa con what-if, link diretti che TwinCIRO su WhatsApp può mandare | vetrina: presenze simulate e dichiarate, meteo, allerte, aria, trasporti ed eventi veri; non legge MQTT |
-| [`docs/`](docs/) | [challenge e regole](docs/hackathon.md), [diario e richieste tra le sessioni](docs/stato-e-strumenti.md), [le fonti, oltre 50 pubbliche e verificate](docs/fonti-dati-napoli.md), [brainstorming](docs/brainstorming.md) (storico) | documentazione |
-| [`tools/`](tools/) | `flux-gen.sh`: immagini con FLUX | strumento |
+## Come funziona
 
-Pagina con i link online: https://robertodisanto.it/hackathon_2026_a/
+**Badge e scheda Tasmota** → **MQTT `napoli/...`** → **agenti della città** (Python, con un orchestratore) → **TwinCIRO su WhatsApp** (agente OpenClaw), che prende i dati veri dall'API dati città.
 
-## Avvio rapido
+- **Due utenti:** chi visita Napoli, su WhatsApp, e chi la governa, in sala operativa. Gli agenti propongono, l'operatore approva o blocca.
+- **Agenti specializzati:** folla, eventi, meteo e mare, mobilità, turismo, imprese. Si parlano su MQTT e un orchestratore decide.
+- **Gemello digitale:** prova la giornata sulle strade vere prima che accada ([TwinCIRO 3D](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/gemello-3d/), [regata in 3D](https://robertodisanto.it/hackathon_2026_a/c5-agentic-city/visore3d/)).
+- **LLM a scelta, anche italiano:** gli agenti funzionano con Claude o con qualsiasi API compatibile con OpenAI, come [MIIA di Fastweb](https://huggingface.co/Fastweb/FastwebMIIA-7B). L'integrazione è pronta e provata con server compatibili, non ancora con MIIA. Senza LLM decidono le regole.
 
-La città, dalla cartella `c5-agentic-city/`:
+## Con Fastweb + Vodafone
 
-```bash
-docker compose up -d                           # broker MQTT locale, agenti, gemello, API per TwinCIRO su :8080
-docker compose run --rm sala                   # sala operativa nel terminale
-```
+- **Il dato che manca, cioè quante persone ci sono adesso in ogni zona**, viene dalle analytics di rete degli operatori, aggregate e anonime: la folla non si simula più, si misura.
+- **Le SIM IoT** portano i sensori dove non c'è Wi-Fi.
+- **MIIA**, l'AI italiana di Fastweb, come LLM degli agenti: sovranità digitale.
 
-API dati città e mappa, dalla radice della repo:
+## Il team
 
-```bash
-node citta-api/server.js                       # API dati città su :8791 (test: node --test citta-api/test/)
-python3 -m http.server 8000                    # mappa su http://localhost:8000/c5-presentazione/mappa/
-```
+![Roberto D'Isanto e Mario Varlese a The Big Hack 2026, con i dispositivi di TwinCIRO](docs/foto/team.jpg)
 
-Senza Docker, e le altre opzioni della città, nel [README della città](c5-agentic-city/README.md#come-si-avvia). Server, broker e utenti dei dispositivi: [`cloud/`](cloud/README.md) e [`firmware/`](firmware/README.md).
+**Roberto D'Isanto** e **Mario Varlese**.
 
-## Scadenze
+## Nella repo
 
-- Sabato 14/11: lavori dalle 11:00 alle 20:30.
-- Domenica 15/11: ripresa alle 8:30, **consegna alle 12:00** (video di massimo 3 minuti), giuria dalle 14:00 alle 15:30, premiazione alle 16:00.
+| Cartella | Cosa c'è |
+|---|---|
+| [`c5-agentic-city/`](c5-agentic-city/README.md) | la città agentica: agenti, orchestratore, API per TwinCIRO, gemello digitale, [skill di TwinCIRO](c5-agentic-city/openclaw/skills/README.md) |
+| [`citta-api/`](citta-api/README.md) | API dati città: le fonti vere, con cache, riserve, fonte e ora di ogni dato (59 test) |
+| [`firmware/`](firmware/README.md) | badge WHY2025 e scheda Tasmota, formato MQTT unico `napoli/...` |
+| [`cloud/`](cloud/README.md) | broker MQTT e API in Docker sul server |
+| [`c5-presentazione/`](c5-presentazione/README.md) | video (montaggio riproducibile, clip, sottotitoli, voce), [TwinCIRO 3D](c5-presentazione/gemello-3d/README.md), mappa, grafo |
+| [`docs/`](docs/) | [le fonti](docs/fonti-dati-napoli.md), [la challenge](docs/hackathon.md), [il diario](docs/stato-e-strumenti.md) |
+
+Avvio rapido della città: `cd c5-agentic-city && docker compose up -d` (agenti, gemello e API per TwinCIRO su :8080). L'API dei dati si avvia con `node citta-api/server.js` (porta 8791). Dettagli nei README delle cartelle.
