@@ -190,8 +190,9 @@ window.pronta = (async () => {
       <div class="capo"><div class="av">C</div><div class="chi">TwinCIRO</div><div class="quando">${esc(c.quando || 'adesso')}</div></div>
       <div class="tit">📣 AVVISO DELLA CITTÀ</div><p>${esc(testo)}</p>${c.nota ? `<div class="nota-n">${esc(c.nota)}</div>` : ''}</div>`;
   } else {
-    const c = s.cartelli[id];
-    if (!c) throw new Error(`cartello sconosciuto: ${id}`);
+    if (!s.cartelli[id]) throw new Error(`cartello sconosciuto: ${id}`);
+    // ?crediti=… lo aggiunge monta.py alla chiusura quando usa la musica e la voce sintetica di audio/
+    const c = P.get('crediti') ? { ...s.cartelli[id], crediti: P.get('crediti') } : s.cartelli[id];
     if (c.tipo === 'titolo') {
       r.innerHTML = `<div class="alone"></div><div class="centro">
         <div class="etichetta a" style="--d:.1s">${esc(c.sopra)}</div>

@@ -74,6 +74,7 @@ import sys
 import textwrap
 import time
 import unicodedata
+import urllib.parse
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -331,7 +332,9 @@ def monta_scena(sc: dict, i: int, n: int, sorg: Sorgenti, dissolvenza: float) ->
         tipo = s["tipo"]
         da = 0.0
         if tipo == "cartello":
-            file = sorg.html(f"cartelli.html?id={s['id']}", d, QUI / "cartelli.html", dati=CARTELLI.get(s["id"]))
+            crediti = (CARTELLI.get(s["id"]) or {}).get("crediti")
+            extra = f"&crediti={urllib.parse.quote(crediti)}" if crediti else ""   # la pagina legge i testi dalla scaletta
+            file = sorg.html(f"cartelli.html?id={s['id']}{extra}", d, QUI / "cartelli.html", dati=CARTELLI.get(s["id"]))
             descrizione = f"cartello {s['id']}" + (" (SEGNAPOSTO: manca la ripresa vera)" if s["id"].startswith("qui-") else "")
         elif tipo == "pagina":
             # "operatore.html?durata=14": il file è il nome senza i parametri; "dipende" = i dati che la pagina legge
