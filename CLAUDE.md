@@ -49,7 +49,6 @@ Vincoli che contano per le scelte tecniche:
 | `cloud/` | servizi Docker sul server `twinciro.robertodisanto.it` (broker MQTT, API dati città) | hackathon-2026-a |
 | `c5-presentazione/` | vetrina: video di consegna (con clip, SRT e testi per le voci), copione, scene, mappa "Napoli in tempo reale" (simulata), grafo della città, gemello 3D "TwinCIRO 3D" (presenze simulate) | hackathon-2026-a |
 | `docs/` | `hackathon.md` (testo delle challenge, agenda, regole), `stato-e-strumenti.md` (diario, richieste tra sessioni, strumenti), `fonti-dati-napoli.md` (catalogo delle fonti: 58 righe, 56 fonti pubbliche; nei testi "oltre 50 fonti pubbliche, verificate una per una"), `brainstorming.md` (storico) | hackathon-2026-a |
-| `tools/` | `flux-gen.sh` (immagini con FLUX) | tutti |
 
 - Ogni cartella ha un `README.md` con brief, scelte, avvio e stato. Tieni aggiornati i file di `docs/` quando si decide qualcosa.
 - **Reale e vetrina separati:** quello che è simulato o serve solo alla presentazione sta in `c5-presentazione/` e lo dichiara in pagina.
@@ -123,8 +122,8 @@ Vincoli che contano per le scelte tecniche:
 
 ## Hosting
 
-GitHub Pages pubblica la root di `master` tramite il workflow `.github/workflows/pages.yml` (a ogni push su master; dominio personalizzato dell'account): https://robertodisanto.it/hackathon_2026_a/ (ogni pagina dalla sua sottocartella, es. `/c5-presentazione/mappa/`). `index.html` in root è la pagina con i link: aggiornala quando aggiungi una pagina. `.nojekyll` disattiva Jekyll (i `.md` non vengono resi: da `index.html` si linkano su GitHub). Nelle pagine usa **solo percorsi relativi** (il sito non è servito dalla root del dominio) e attenzione a maiuscole/minuscole nei nomi dei file.
+GitHub Pages pubblica la root di `master` tramite il workflow `.github/workflows/pages.yml` (a ogni push su master; dominio personalizzato dell'account): https://robertodisanto.it/hackathon_2026_a/ (ogni pagina dalla sua sottocartella, es. `/c5-presentazione/mappa/`). `index.html` in root è la pagina con i link: aggiornala quando aggiungi una pagina. Il workflow pubblica i file così come sono, senza Jekyll (`.nojekyll` non serve): i `.md` non vengono resi, quindi da `index.html` si linkano su GitHub. Nelle pagine usa **solo percorsi relativi** (il sito non è servito dalla root del dominio) e attenzione a maiuscole/minuscole nei nomi dei file.
 
 ## Strumenti
 
-FLUX (`tools/flux-gen.sh`), Playwright con Chromium, ffmpeg, Cloudflare e gli altri servizi disponibili nelle sessioni cloud: tabella in `docs/stato-e-strumenti.md`.
+Playwright con Chromium, ffmpeg, Cloudflare e gli altri servizi disponibili nelle sessioni cloud: tabella in `docs/stato-e-strumenti.md`.

@@ -78,7 +78,7 @@ Richieste da una sessione Claude all'altra (vedi la divisione del lavoro in `CLA
 | Servizio | Uso | Note |
 |---|---|---|
 | GitHub Pages | Hosting statico delle pagine (mappa, video, visore 3D) | Workflow `.github/workflows/pages.yml`, deploy in ~20 s dopo il push. URL: https://robertodisanto.it/hackathon_2026_a/ |
-| FLUX.1 Kontext (Hugging Face Space) | Generazione immagini (titoli, mockup) | `tools/flux-gen.sh "<prompt>" out.webp`. Funziona dalle sessioni cloud (credenziali iniettate dal proxy); altrove serve un token Hugging Face. Restituisce WebP 1024×1024. |
+| FLUX.1 Kontext (Hugging Face Space) | Generazione immagini (titoli, mockup) | Lo script `tools/flux-gen.sh` è stato tolto il 15/11 (non serviva più): resta nella storia git. Dalle sessioni cloud le credenziali dello Space le inietta il proxy. |
 | Hunyuan3D 2.1 (Hugging Face Space) | Generazione di modelli 3D da immagine | Non ancora usato. |
 | Cloudflare API | Workers, deploy di backend leggeri | Per C5: Worker **nuovo**, non toccare `mbl-privato`. |
 | **Docker (client + demone)** | Container per broker MQTT, build del firmware (immagini ESP-IDF/PlatformIO), servizi di prova | Docker 29.9.2 con compose v5.6.1 e buildx, demone attivo (`/var/run/docker.sock`). Disponibile nelle sessioni cloud di Claude Code: **usarlo** per provare davvero compose e immagini. |
