@@ -1,0 +1,12 @@
+TwinCIRO · voce fuori campo · scena 02 di 15: motivazione
+Nel video da 0:08,0 a 0:19,0 · clip clip/02-motivazione.mp4 di 11,0 s
+
+1 · ROBERTO · da 0,3 a 4,3 s della clip · durata disponibile 4,0 s · nel video 0:08,3 → 0:12,3
+    I dati ci sono. Ma sono sparsi, e non si parlano.
+    11 parole, ritmo di circa 128 al minuto · registra in girato/voce/02-motivazione-1.m4a
+
+2 · MARIO · da 5,0 a 10,7 s della clip · durata disponibile 5,7 s · nel video 0:13,0 → 0:18,7
+    E manca il dato più importante: quante persone ci sono, adesso, in ogni zona.
+    14 parole, ritmo di circa 142 al minuto · registra in girato/voce/02-motivazione-2.m4a
+
+Tutta la scena in un file: girato/voce/02-motivazione.m4a (la prima parola va a 0,3 s dall'inizio della clip, il silenzio prima si toglie da solo).

@@ -1,0 +1,12 @@
+TwinCIRO · voce fuori campo · scena 01 di 15: regata
+Nel video da 0:00,0 a 0:08,0 · clip clip/01-regata.mp4 di 8,0 s
+
+1 · ROBERTO · da 0,6 a 3,0 s della clip · durata disponibile 2,4 s · nel video 0:00,6 → 0:03,0
+    Napoli, 2027.
+    2 parole, ritmo di circa 125 al minuto · registra in girato/voce/01-regata-1.m4a
+
+2 · MARIO · da 3,2 a 7,7 s della clip · durata disponibile 4,5 s · nel video 0:03,2 → 0:07,7
+    Un sabato: America's Cup, navi da crociera e partita al Maradona.
+    11 parole, ritmo di circa 160 al minuto · registra in girato/voce/01-regata-2.m4a
+
+Tutta la scena in un file: girato/voce/01-regata.m4a (la prima parola va a 0,6 s dall'inizio della clip, il silenzio prima si toglie da solo).

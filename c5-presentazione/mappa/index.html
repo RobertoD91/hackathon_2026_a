@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Napoli in tempo reale</title>
+    <meta name="description" content="TwinCIRO, la mappa della presentazione: folla e sensori simulati, meteo, aria, trasporti, eventi e allerte reali di Napoli, con agenti, orchestratore, notifiche e chat." />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./napoli.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  </head>
+  <body>
+    <header class="top">
+      <div class="title">
+        <h1>Napoli connessa</h1>
+        <p class="subtitle">TwinCIRO · simulatore della presentazione: folla e sensori simulati, dati della città reali</p>
+      </div>
+      <div class="status">
+        <span id="mode" class="badge" title="Modalità di funzionamento">…</span>
+        <span id="conn" class="conn" aria-live="polite"></span>
+        <div class="clock" title="Ora simulata (Europe/Rome)">
+          <span class="clock-label">ora simulata</span>
+          <span id="clock" class="clock-value">--:--</span>
+          <span id="speed" class="clock-speed"></span>
+        </div>
+      </div>
+    </header>
+
+    <p id="demo-note" class="demo-note" hidden>
+      Modalità demo: nessun backend raggiungibile, quindi simulatore e agenti girano nel tuo browser.
+      Avvia <code>node c5-presentazione/mappa/server.js</code> e apri <code>http://localhost:8701/</code> per la versione con il hub.
+    </p>
+
+    <section class="kpis" id="kpis" aria-label="Metriche"></section>
+
+    <!-- allerta meteo reale (Protezione Civile Campania, Meteoalarm): la riempie napoli-fonti.js -->
+    <div id="nf-allerta" class="nf-allerta" role="status" hidden></div>
+
+    <!-- mappa "Napoli in tempo reale": la disegna mappa.js con la configurazione di napoli.js -->
+    <section class="panel citymap" id="citymap" aria-labelledby="h-map"></section>
+
+    <!-- dati reali del giorno: eventi, prossimi giorni, avvisi e rischi, fonti (napoli-fonti.js) -->
+    <section class="panel nf-oggi" id="oggi" aria-labelledby="h-oggi">
+      <div class="nf-oggi-head">
+        <h2 id="h-oggi">Oggi a Napoli</h2>
+        <span id="nf-oggi-data" class="nf-oggi-data"></span>
+        <span class="nf-tag nf-live">dati reali</span>
+      </div>
+      <div class="nf-griglia">
+        <article>
+          <h3>Eventi di oggi</h3>
+          <ul id="nf-eventi" class="nf-lista"><li class="muted">Carico il calendario…</li></ul>
+        </article>
+        <article>
+          <h3>Prossimi giorni</h3>
+          <ul id="nf-prossimi" class="nf-lista"></ul>
+        </article>
+        <article>
+          <h3>Avvisi e rischi</h3>
+          <ul id="nf-avvisi" class="nf-lista"><li class="muted">Carico gli avvisi…</li></ul>
+        </article>
+      </div>
+      <p id="nf-stagione" class="nf-stagione"></p>
+      <details class="nf-fonti">
+        <summary>Fonti dei dati, stato e licenze</summary>
+        <div class="nf-fonti-scroll"><table id="nf-fonti" class="cm-table nf-fonti-tab"></table></div>
+        <p class="nf-fonte"><span id="nf-snapshot"></span> Le fonti senza CORS o pesanti (GTFS, Parquet EEA, calendari) sono snapshot statici; le altre sono lette dal browser con cache e, se non rispondono, con una riserva dichiarata.</p>
+      </details>
+    </section>
+
+    <main class="grid">
+      <section class="panel" aria-labelledby="h-dev">
+        <h2 id="h-dev">Sensori <span class="count" id="dev-count"></span></h2>
+        <div id="devices" class="devices"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-dec">
+        <h2 id="h-dec">Decisioni degli agenti</h2>
+        <ol id="decisions" class="feed"></ol>
+      </section>
+
+      <div class="col">
+        <section class="panel" aria-labelledby="h-sc">
+          <h2 id="h-sc">Scenari</h2>
+          <div id="scenario-buttons" class="scenario-buttons"></div>
+          <div id="active-scenarios" class="chips" aria-live="polite"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="h-not">
+          <h2 id="h-not">Notifiche alle persone</h2>
+          <ol id="notifications" class="notifications"></ol>
+        </section>
+
+        <section class="panel chat" aria-labelledby="h-chat">
+          <h2 id="h-chat">Chat con l'orchestratore</h2>
+          <ol id="chat-log" class="chat-log"></ol>
+          <div class="nf-chiedi" aria-label="Domande di esempio">
+            <button type="button" data-chiedi="Che eventi ci sono oggi?">Eventi di oggi</button>
+            <button type="button" data-chiedi="Come arrivo al Maradona?">Come arrivo al Maradona</button>
+            <button type="button" data-chiedi="C'è allerta meteo?">Allerta meteo</button>
+            <button type="button" data-chiedi="Com'è l'aria?">Qualità dell'aria</button>
+          </div>
+          <form id="chat-form" class="chat-form" autocomplete="off">
+            <input id="chat-input" type="text" placeholder="Es. che temperatura c'è?" aria-label="Messaggio" maxlength="500" />
+            <button type="submit">Invia</button>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <details class="panel events">
+      <summary>Flusso eventi (bus)</summary>
+      <ol id="events" class="event-log"></ol>
+    </details>
+
+    <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+
+    <script type="module">
+      import { avviaDashboard } from './app.js';
+      import napoli from './napoli.js';
+      avviaDashboard(napoli);
+    </script>
+  </body>
+</html>

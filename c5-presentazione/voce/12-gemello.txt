@@ -1,0 +1,12 @@
+TwinCIRO · voce fuori campo · scena 12 di 15: gemello
+Nel video da 2:14,0 a 2:23,0 · clip clip/12-gemello.mp4 di 9,0 s
+
+1 · MARIO · da 0,3 a 4,3 s della clip · durata disponibile 4,0 s · nel video 2:14,3 → 2:18,3
+    Il gemello digitale prova la giornata sulle strade vere.
+    9 parole, ritmo di circa 150 al minuto · registra in girato/voce/12-gemello-1.m4a
+
+2 · ROBERTO · da 4,6 a 8,6 s della clip · durata disponibile 4,0 s · nel video 2:18,6 → 2:22,6
+    E l'avviso di TwinCIRO arriva quando la Rotonda Diaz si riempie.
+    11 parole, ritmo di circa 158 al minuto · registra in girato/voce/12-gemello-2.m4a
+
+Tutta la scena in un file: girato/voce/12-gemello.m4a (la prima parola va a 0,3 s dall'inizio della clip, il silenzio prima si toglie da solo).

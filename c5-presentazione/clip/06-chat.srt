@@ -1,0 +1,35 @@
+1
+00:00:00,500 --> 00:00:04,100
+Marta, in crociera,
+scrive a TwinCIRO come a un amico.
+
+2
+00:00:04,300 --> 00:00:09,000
+TwinCIRO chiede alla pizzeria:
+alle 13 è piena, propone le 14.
+
+3
+00:00:09,200 --> 00:00:13,300
+Marta dice «ok»: tavolo prenotato,
+nessuna telefonata.
+
+4
+00:00:14,900 --> 00:00:19,700
+Poi TwinCIRO le dice come arrivare
+alla regata, e quanta gente c'è.
+
+5
+00:00:21,300 --> 00:00:25,100
+Per il meteo usa dati veri,
+e cita sempre la fonte.
+
+6
+00:00:26,500 --> 00:00:30,600
+E quando la Rotonda Diaz si riempie,
+è TwinCIRO a scrivere per primo:
+
+7
+00:00:30,800 --> 00:00:34,000
+c'è un posto più tranquillo,
+con un'offerta.
+

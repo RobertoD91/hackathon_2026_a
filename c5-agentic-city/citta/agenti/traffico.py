@@ -1,6 +1,6 @@
 """Agente Traffico: decide la strategia dei semafori, cioè quali corridoi hanno priorità.
 
-Il controllo secondo per secondo è nel gemello (e negli ESP32): verde esteso dove c'è coda,
+Il controllo secondo per secondo è nel gemello SUMO (solo simulato): verde esteso dove c'è coda,
 cambio fase quando l'altra direzione aspetta di più. L'agente decide i PESI dei corridoi
 (lungomare, porto, uscita verso Fuorigrotta, collina, centro) e la durata massima del verde,
 guardando eventi previsti, code misurate e richieste dell'orchestratore.

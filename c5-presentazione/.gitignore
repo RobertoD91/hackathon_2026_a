@@ -1,0 +1,5 @@
+# Riprese, voce e musica restano sul portatile che monta il video (file grandi)
+girato/*
+!girato/LEGGIMI.md
+# Clip a metà, se monta.sh si interrompe (le clip finite invece vanno nel repository)
+clip/.*.tmp.*

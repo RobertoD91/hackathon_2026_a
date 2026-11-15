@@ -1,0 +1,195 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/trasporti/vicino?luogo=Città della Scienza&passaggi=1",
+  "formato": "json",
+  "http": 200,
+  "risposta": {
+    "luogo": {
+      "id": "citta_scienza",
+      "nome": "Città della Scienza",
+      "tipo": "punto",
+      "categoria": "Museo e centro congressi (Bagnoli-Coroglio)",
+      "lat": 40.8061,
+      "lon": 14.1781,
+      "trovato_con": "Città della Scienza",
+      "luogo_monitorato_vicino": {
+        "zona": "maradona",
+        "nome": "Stadio Diego Armando Maradona",
+        "km": 2.7
+      }
+    },
+    "raggio_m": 2500,
+    "nota": "nessuna stazione entro 1200 m: ricerca allargata a 2500 m",
+    "stazioni": [
+      {
+        "id": "eav-6806",
+        "nome": "Agnano",
+        "tipo": "ferrovia",
+        "linee": [
+          "Cumana"
+        ],
+        "operatore": "EAV",
+        "distanza_m": 1310,
+        "minuti_a_piedi": 23,
+        "corse_programmate_in_quest_ora": 5,
+        "tipo_giorno": "sabato",
+        "prossimi_passaggi_disponibili": true
+      },
+      {
+        "id": "eav-6808",
+        "nome": "Bagnoli",
+        "tipo": "ferrovia",
+        "linee": [
+          "Cumana"
+        ],
+        "operatore": "EAV",
+        "distanza_m": 1386,
+        "minuti_a_piedi": 24,
+        "corse_programmate_in_quest_ora": 5,
+        "tipo_giorno": "sabato",
+        "prossimi_passaggi_disponibili": true
+      },
+      {
+        "id": "eav-6805",
+        "nome": "Edenlandia",
+        "tipo": "ferrovia",
+        "linee": [
+          "Cumana"
+        ],
+        "operatore": "EAV",
+        "distanza_m": 1648,
+        "minuti_a_piedi": 29,
+        "corse_programmate_in_quest_ora": 5,
+        "tipo_giorno": "sabato",
+        "prossimi_passaggi_disponibili": true
+      }
+    ],
+    "avvisi": [],
+    "fonte": {
+      "nome": "GTFS ANM ed EAV (orari programmati)",
+      "stato": "programmato",
+      "ora_dato": "2026-11-14 08:40",
+      "licenza": "ANM: CC BY 4.0 (Comune di Napoli); EAV: citata",
+      "nota": "corse programmate, non in tempo reale"
+    },
+    "fonte_avvisi": {
+      "nome": "EAV, infomobilità",
+      "stato": "reale",
+      "ora_dato": "2026-11-14 11:58",
+      "licenza": "contenuti del sito EAV, citati"
+    },
+    "prossimi_passaggi": {
+      "stazione": "Agnano",
+      "passaggi": [
+        {
+          "ora": "19:30",
+          "tra_min": 0,
+          "linea": "Cumana",
+          "direzione": "Torregaveta",
+          "operatore": "EAV",
+          "tempo_reale": false,
+          "ritardo_min": null,
+          "soppresso": false
+        },
+        {
+          "ora": "19:33",
+          "tra_min": 3,
+          "linea": "Cumana",
+          "direzione": "Montesanto",
+          "operatore": "EAV",
+          "tempo_reale": false,
+          "ritardo_min": null,
+          "soppresso": false
+        },
+        {
+          "ora": "20:00",
+          "tra_min": 30,
+          "linea": "Cumana",
+          "direzione": "Torregaveta",
+          "operatore": "EAV",
+          "tempo_reale": false,
+          "ritardo_min": null,
+          "soppresso": false
+        },
+        {
+          "ora": "20:03",
+          "tra_min": 33,
+          "linea": "Cumana",
+          "direzione": "Montesanto",
+          "operatore": "EAV",
+          "tempo_reale": false,
+          "ritardo_min": null,
+          "soppresso": false
+        },
+        {
+          "ora": "20:30",
+          "tra_min": 60,
+          "linea": "Cumana",
+          "direzione": "Torregaveta",
+          "operatore": "EAV",
+          "tempo_reale": false,
+          "ritardo_min": null,
+          "soppresso": false
+        },
+        {
+          "ora": "20:33",
+          "tra_min": 63,
+          "linea": "Cumana",
+          "direzione": "Montesanto",
+          "operatore": "EAV",
+          "tempo_reale": false,
+          "ritardo_min": null,
+          "soppresso": false
+        },
+        {
+          "ora": "21:00",
+          "tra_min": 90,
+          "linea": "Cumana",
+          "direzione": "Torregaveta",
+          "operatore": "EAV",
+          "tempo_reale": false,
+          "ritardo_min": null,
+          "soppresso": false
+        },
+        {
+          "ora": "21:03",
+          "tra_min": 93,
+          "linea": "Cumana",
+          "direzione": "Montesanto",
+          "operatore": "EAV",
+          "tempo_reale": false,
+          "ritardo_min": null,
+          "soppresso": false
+        },
+        {
+          "ora": "21:30",
+          "tra_min": 120,
+          "linea": "Cumana",
+          "direzione": "Torregaveta",
+          "operatore": "EAV",
+          "tempo_reale": false,
+          "ritardo_min": null,
+          "soppresso": false
+        },
+        {
+          "ora": "21:33",
+          "tra_min": 123,
+          "linea": "Cumana",
+          "direzione": "Montesanto",
+          "operatore": "EAV",
+          "tempo_reale": false,
+          "ritardo_min": null,
+          "soppresso": false
+        }
+      ],
+      "fonte": {
+        "nome": "Transitous (prossimi passaggi)",
+        "stato": "reale",
+        "ora_dato": "2026-11-14 19:30",
+        "licenza": "servizio comunitario per progetti open source non commerciali",
+        "nota": "orari programmati (nessun dato in tempo reale per questa fermata); citare transitous.org/sources"
+      }
+    },
+    "testo": "Nessuna stazione entro 1200 m da Città della Scienza; le più vicine: Agnano (Cumana) a 23 min a piedi; Bagnoli (Cumana) a 24 min a piedi; Edenlandia (Cumana) a 29 min a piedi. Orari GTFS di ANM ed EAV (programmati). Prossime partenze da Agnano: 19:30 Cumana per Torregaveta, 19:33 Cumana per Montesanto, 20:00 Cumana per Torregaveta."
+  }
+}

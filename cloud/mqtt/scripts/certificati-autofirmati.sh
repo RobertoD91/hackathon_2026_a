@@ -6,7 +6,7 @@
 # eventuali nomi o IP passati come argomenti (es. l'IP del portatile in una rete locale).
 # Poi in .env: MQTT_CERTIFICATI=autofirmato e LETSENCRYPT_DIR=./segreti, e riavvia.
 #
-# I client devono fidarsi di ca.crt: mosquitto_sub --cafile ca.crt, ESP32 setCACert(...),
+# I client devono fidarsi di ca.crt: mosquitto_sub --cafile ca.crt, badge TELEMETRY_MQTT_CA_PEM,
 # MQTT Explorer "Server certificate (CA)". Il browser invece rifiuta wss:// autofirmato
 # finché non apri una volta https://<host>:8884/ e accetti il certificato.
 . "$(dirname "$0")/_comune.sh"

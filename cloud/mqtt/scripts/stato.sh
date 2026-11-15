@@ -8,10 +8,14 @@ docker compose ps mosquitto
 broker_attivo || exit 1
 
 echo
-echo "Certificato TLS in uso:"
-docker compose exec -T mosquitto /bin/sh -c 'cat /mosquitto/run/fullchain.pem' \
-    | openssl x509 -noout -subject -enddate 2>/dev/null | sed 's/^/  /' \
-    || echo "  (serve openssl sul server per leggere la scadenza)"
+if [ "$(env_valore MQTT_CERTIFICATI nessuno)" = nessuno ]; then
+    echo "TLS spento (MQTT_CERTIFICATI=nessuno): solo MQTT in chiaro sulla $(env_valore MQTT_PORTA 1883)."
+else
+    echo "Certificato TLS in uso:"
+    docker compose exec -T mosquitto /bin/sh -c 'cat /mosquitto/run/fullchain.pem' \
+        | openssl x509 -noout -subject -enddate 2>/dev/null | sed 's/^/  /' \
+        || echo "  (serve openssl sul server per leggere la scadenza)"
+fi
 
 PW="$(env_valore MQTT_MONITOR_PASSWORD)"
 if [ -z "$PW" ]; then avviso "MQTT_MONITOR_PASSWORD vuota in .env: niente statistiche"; exit 0; fi

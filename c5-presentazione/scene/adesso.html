@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Napoli adesso</title>
+<link rel="stylesheet" href="stile.css">
+<style>
+  /* Napoli, adesso: i dati veri catturati dall'API dati città (oggi/*.json, da rifare con oggi/cattura.mjs).
+     Nessun valore scritto a mano: testi, numeri, fonti e stati vengono dai file. I 130 px in basso restano liberi. */
+  .testa { position: absolute; left: 72px; top: 30px; width: 1236px; }
+  .titolo-r { display: flex; align-items: baseline; gap: 20px; margin-top: 2px; white-space: nowrap; }
+  .titolo-r h1 { margin: 0; font-size: 64px; line-height: 1.08; font-weight: 800; letter-spacing: -0.02em; }
+  .quando { font-size: 31px; font-weight: 600; color: #dbe4f7; }
+  .vivo { align-self: center; display: inline-flex; align-items: center; gap: 10px; padding: 4px 16px 4px 12px; border-radius: 22px; background: rgb(74 222 128 / 0.12);
+    border: 2px solid var(--verde); color: var(--verde); font-size: 19px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+  .vivo i { width: 12px; height: 12px; border-radius: 50%; background: var(--verde); display: block; }
+
+  .legenda { position: absolute; left: 1344px; top: 34px; width: 504px; }
+  .legenda h4 { margin: 0 0 8px; font-size: 17px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tenue); }
+  .legenda .voce-l { display: flex; align-items: center; gap: 12px; height: 27px; font-size: 18px; color: #c8d3ec; white-space: nowrap; }
+  .legenda .voce-l .st { width: 124px; text-align: center; }
+
+  /* stato del dato, come lo dà l'API (fonte.stato) */
+  .st { display: inline-block; flex: none; font-size: 14px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 9px 2px; border-radius: 7px; color: #0a1020; }
+  .s-reale { background: var(--verde); }
+  .s-riserva { background: var(--ciro); }
+  .s-salvato { background: var(--corallo); }
+  .s-snapshot { background: var(--twin); }
+  .s-programmato { background: var(--viola); }
+  .s-simulato, .s-assente { background: #94a3b8; }
+
+  /* griglia dei pannelli: 2 colonne × 3 righe, alla sinistra del telefono */
+  .griglia { position: absolute; left: 72px; top: 144px; width: 1236px; height: 804px; display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: 258px 266px minmax(0, 1fr); gap: 14px 20px; }
+  .coppia { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; min-height: 0; }
+  .pan { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; background: rgb(22 33 59 / 0.95); border: 2px solid var(--bordo);
+    border-radius: 22px; padding: 11px 20px 10px; overflow: hidden; }
+  .capo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tenue); white-space: nowrap; }
+  .capo .ic { font-size: 24px; letter-spacing: 0; }
+  .capo .dove { color: #e3e9f8; letter-spacing: 0.06em; overflow: hidden; text-overflow: ellipsis; }
+  .corpo { margin-top: 4px; flex: none; }
+  .fonti { margin-top: auto; padding-top: 5px; display: flex; flex-direction: column; gap: 3px; }
+  .fonte { display: flex; align-items: center; gap: 9px; min-width: 0; font-size: 16px; line-height: 1.25; color: #8ea0c8; }
+  .fonte > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fonte.a-capo { align-items: flex-start; }
+  .fonte.a-capo > span:last-child { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .nb { white-space: nowrap; }
+  [data-pan="treni"] .det { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+  .riga { border-top: 1px solid #22304f; }
+  .det { font-size: 19px; color: #c8d3ec; line-height: 1.3; padding-top: 4px; }
+  .piccola { font-size: 15px; color: var(--tenue); line-height: 1.3; padding-top: 3px; }
+
+  /* meteo */
+  .meteo-g { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: baseline; }
+  .rm { display: contents; }
+  .rm > span { padding: 3px 0 2px; }
+  .rm.riga > span { border-top: 1px solid #22304f; }
+  .rm .n { font-size: 21px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rm .t { font-size: 29px; font-weight: 800; letter-spacing: -0.01em; text-align: right; padding-left: 12px; }
+  .rm .cielo { font-size: 17px; color: #c8d3ec; white-space: nowrap; padding-left: 12px; }
+  .nota-m { font-size: 14px; color: var(--tenue); padding-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* allerta */
+  .reg { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; padding: 2px 0 4px; }
+  .pallino { width: 15px; height: 15px; border-radius: 50%; flex: none; }
+  .ma { display: grid; grid-template-columns: 150px minmax(0, 1fr); column-gap: 10px; align-items: center; padding: 5px 8px; margin: 0 -8px; border-radius: 12px; }
+  .ma .g { font-size: 19px; font-weight: 700; color: #dbe4f7; white-space: nowrap; line-height: 1.15; }
+  .ma .g small { display: block; font-size: 15px; font-weight: 500; color: var(--tenue); }
+  .liv { display: inline-flex; align-items: center; gap: 7px; margin: 2px 12px 2px 0; font-size: 20px; font-weight: 700; white-space: nowrap; }
+  .liv b { font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 6px; color: #1a1200; }
+
+  /* eventi */
+  .ev { padding: 5px 0 4px; }
+  .ev .ti { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ev .me { font-size: 16px; color: var(--tenue); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* treni e metro */
+  .part { display: grid; grid-template-columns: 74px 140px minmax(0, 1fr) auto; align-items: center; column-gap: 12px; padding: 5px 0 4px; }
+  .part .o { font-size: 25px; font-weight: 800; }
+  .part .l { justify-self: start; font-size: 17px; font-weight: 800; padding: 3px 10px; border-radius: 8px; background: #1d3157; color: #b7cdfa; white-space: nowrap; }
+  .part .l.eav { background: #2f2457; color: #cdbcff; }
+  .part .d { font-size: 21px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .part .tra { font-size: 18px; color: var(--tenue); white-space: nowrap; }
+  .part .tra.ora { color: var(--ciro); font-weight: 700; }
+
+  /* aria */
+  .grande { font-size: 38px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; }
+  .aria-r { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 14px; }
+  .aria-r span:last-child { font-size: 18px; color: #c8d3ec; white-space: nowrap; }
+  .conta { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 20px; color: #dbe4f7; padding-top: 4px; }
+  .conta i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 7px; }
+
+  /* Campi Flegrei e tangenziale, affiancati */
+  .mini .grande { font-size: 40px; }
+  .mini .det { font-size: 18px; }
+  .mini .fonte { align-items: flex-start; }
+  .mini .fonte > span:last-child { white-space: normal; }
+
+  /* telefono (stesso linguaggio di chat.html: telefono generico, nessun marchio) */
+  .telefono { position: absolute; left: 1344px; top: 196px; width: 504px; height: 750px; border-radius: 52px; background: #1a2133;
+    box-shadow: 0 0 0 2px #2c3650, 0 40px 90px rgb(0 0 0 / 0.55); padding: 11px; }
+  .schermo { position: relative; width: 482px; height: 728px; border-radius: 42px; overflow: hidden; background: #eef1f6; }
+  .barra-stato { height: 32px; padding: 9px 30px 0; display: flex; justify-content: space-between; font-size: 15px; font-weight: 600; color: #fff; background: #1f2b47; }
+  .testata-tel { height: 72px; background: #1f2b47; color: #fff; display: flex; align-items: center; gap: 14px; padding: 0 18px; }
+  .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--twin), var(--ciro)); display: grid; place-items: center;
+    font-weight: 800; font-size: 23px; color: #0a1020; flex: none; }
+  .nome-tel { font-size: 22px; font-weight: 800; }
+  .nome-tel .twin { color: #7fe6f7; } .nome-tel .ciro { color: var(--ciro); }
+  .stato-tel { font-size: 15px; color: #b9c6e4; margin-top: 2px; }
+  .messaggi { position: absolute; top: 104px; bottom: 66px; left: 0; right: 0; padding: 14px 12px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+  .chip-g { display: flex; justify-content: center; }
+  .chip-g span { background: #dde3ee; color: #475569; font-size: 14px; font-weight: 600; padding: 5px 12px; border-radius: 10px; }
+  .benvenuto { align-self: center; max-width: 90%; text-align: center; background: #fff7e6; color: #6b4e16; font-size: 15px; line-height: 1.35;
+    padding: 8px 14px; border-radius: 14px; box-shadow: 0 1px 1.5px rgb(15 23 42 / 0.12); }
+  .m { display: flex; }
+  .bolla { max-width: 88%; padding: 10px 14px 8px; border-radius: 18px; font-size: 20px; line-height: 1.38; color: #111827;
+    box-shadow: 0 1px 1.5px rgb(15 23 42 / 0.12); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .m.utente { justify-content: flex-end; }
+  .m.utente .bolla { background: #d6e8ff; border-bottom-right-radius: 6px; }
+  .m.ciro .bolla { background: #fff; border-bottom-left-radius: 6px; }
+  .bolla b { font-weight: 800; color: #0b3b8c; }
+  .bolla .ora { display: block; text-align: right; font-size: 13px; color: #6b7280; margin-top: 2px; }
+  .slot { position: relative; }
+  .scrive { position: absolute; left: 0; top: 0; }
+  .scrive .bolla { width: 74px; padding: 14px 16px; }
+  .punti { display: flex; gap: 7px; justify-content: center; }
+  .punti i { width: 9px; height: 9px; border-radius: 50%; background: #94a3b8; display: block; }
+  .nota-tel { align-self: center; max-width: 94%; text-align: center; font-size: 14px; font-weight: 600; color: #475569; background: #dde3ee; padding: 6px 12px; border-radius: 10px; line-height: 1.35; }
+  .ingresso { position: absolute; left: 0; right: 0; bottom: 0; height: 66px; background: #f7f8fb; display: flex; align-items: center; gap: 10px;
+    padding: 0 12px 4px; border-top: 1px solid #e2e6ee; }
+  .campo { flex: 1; height: 44px; border-radius: 22px; background: #fff; border: 1px solid #dbe1ea; display: flex; align-items: center; padding: 0 18px;
+    font-size: 19px; color: #111827; overflow: hidden; white-space: nowrap; }
+  .campo.pieno { justify-content: flex-end; }
+  .campo .vuoto { color: #9aa3b2; }
+  .cursore { display: inline-block; width: 2px; height: 22px; background: #1f2b47; margin-left: 1px; vertical-align: middle; }
+  .invia { width: 44px; height: 44px; border-radius: 50%; background: #1f2b47; color: #fff; display: grid; place-items: center; font-size: 19px; }
+  .errore { position: absolute; left: 72px; top: 300px; right: 72px; font-size: 34px; color: var(--corallo); }
+</style>
+</head>
+<body>
+<div id="radice"></div>
+<script>
+'use strict';
+// Parametri: ?durata=14 (secondi: la linea del tempo si allunga o si accorcia), ?stazione=montesanto|toledo,
+// ?fotogrammi=1 (lo mette rendi_html.mjs: niente animazione automatica). Senza renderer la scena gira da sola.
+const P = new URLSearchParams(location.search);
+const DURATA = Number(P.get('durata')) || 14;
+const K = DURATA / 14;                        // i tempi qui sotto sono per 14 s
+const STAZIONE = (P.get('stazione') || 'montesanto').toLowerCase();
+const TEMPI = {
+  testa: 0, quando: 0.3, legenda: 0.55, telefono: 0.45,
+  // meteo, allerta, eventi, treni e metro, aria, Campi Flegrei, tangenziale
+  pannelli: { meteo: 0.8, allerta: 1.3, eventi: 1.8, treni: 2.3, aria: 2.8, terremoti: 3.3, traffico: 3.8 },
+  // la voce «Allerte, treni, aria e Campi Flegrei, con l'ora del dato» (4,4–7,8 s): i pannelli si accendono uno dopo
+  // l'altro mentre li nomina, poi la legenda degli stati («con l'ora del dato»)
+  evidenze: [['allerta', 4.4, 5.6], ['treni', 4.95, 6.15], ['aria', 5.45, 6.6], ['terremoti', 5.95, 7.0], ['legenda', 6.75, 7.95]],
+  scrive: [5.6, 6.5], invia: 6.6, pensa: [6.8, 7.5], risposta: 7.6, nota: 8.3,   // la risposta è già lì quando la voce ne parla (8,0 s)
+};
+const T = (x) => x * K;
+const fumo = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(1 - x, 3));
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const it = (v, dec = 1) => (typeof v === 'number' && Number.isFinite(v) ? new Intl.NumberFormat('it-IT', { maximumFractionDigits: dec }).format(v) : 'n/d');
+const oraDi = (s) => String(s || '').slice(11, 16);
+const dataDi = (s) => String(s || '').slice(0, 10);
+const GIORNI = ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'];
+const MESI = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
+/** 'AAAA-MM-GG' + k giorni */
+const piuGiorni = (g, k) => { const [a, m, d] = g.split('-').map(Number); return new Date(Date.UTC(a, m - 1, d + k)).toISOString().slice(0, 10); };
+const settimana = (g) => { const [a, m, d] = g.split('-').map(Number); return new Date(Date.UTC(a, m - 1, d)).getUTCDay(); };
+const breve = (g) => { const [, m, d] = g.split('-').map(Number); return `${d}/${m}`; };
+/** MAIUSCOLO → Maiuscolo ("SAN GIOVANNI - BARRA" → "San Giovanni - Barra"); il resto com'è */
+const leggibile = (s) => (s && s === s.toUpperCase() && /\p{L}/u.test(s) ? s.toLowerCase().replace(/(^|[\s'(-])(\p{L})/gu, (_, a, b) => a + b.toUpperCase()) : s || '');
+
+let OGGI = '';   // giorno della cattura: "oggi", "ieri" e "domani" sono rispetto a quello (la data è nel titolo)
+const relativo = (s) => {
+  const g = dataDi(s);
+  if (g === OGGI) return 'oggi';
+  if (g === piuGiorni(OGGI, -1)) return 'ieri';
+  if (g === piuGiorni(OGGI, 1)) return 'domani';
+  return `${GIORNI[settimana(g)]} ${breve(g)}`;
+};
+const datoDelle = (s) => (!s ? '' : dataDi(s) === OGGI ? `dato delle ${oraDi(s)}` : `dato del ${breve(dataDi(s))} alle ${oraDi(s)}`);
+
+const COLORI_ALLERTA = { verde: '#4ade80', gialla: '#facc15', arancione: '#fb923c', rossa: '#ef4444' };
+const COLORI_ARIA = { buona: '#4ade80', discreta: '#a3e635', moderata: '#facc15', scadente: '#fb923c', 'molto scadente': '#ef4444', pessima: '#c084fc' };
+const ORDINE_ARIA = ['buona', 'discreta', 'moderata', 'scadente', 'molto scadente', 'pessima'];
+/** Cosa vuol dire lo stato, in breve (la legenda completa è in legenda_stati dell'API) */
+const LEGENDA = {
+  reale: 'letto adesso dalla fonte',
+  riserva: 'letto adesso, da una fonte di riserva',
+  salvato: 'ultimo dato salvato: la fonte non risponde',
+  snapshot: 'file della fonte, rigenerato di recente',
+  programmato: 'orario programmato, non in tempo reale',
+  simulato: 'stima del simulatore, non una misura',
+  assente: 'nessuna fonte: nessun numero',
+};
+
+/** Icona del cielo dalla descrizione dell'API (solo l'icona: il testo resta quello dell'API). */
+function iconaCielo(c) {
+  const s = String(c || '').toLowerCase();
+  if (/tempor/.test(s)) return '⛈️';
+  if (/pioggia|rovesc|pioviggin/.test(s)) return '🌧️';
+  if (/neve/.test(s)) return '🌨️';
+  if (/nebbia/.test(s)) return '🌫️';
+  if (/coperto|nuvoloso/.test(s) && !/parz/.test(s)) return '☁️';
+  if (/parz|quasi/.test(s)) return '⛅';
+  if (/sereno/.test(s)) return '☀️';
+  return '🌡️';
+}
+
+async function leggi(nome) {
+  const r = await fetch(`oggi/${nome}.json`, { cache: 'no-store' });
+  if (!r.ok) throw new Error(`oggi/${nome}.json: HTTP ${r.status}`);
+  return r.json();
+}
+/** Risposta di un file della cattura, o null se manca (il pannello lo dice: nessun numero inventato). */
+async function risposta(nome) {
+  try { return (await leggi(nome)).risposta; } catch (e) { console.error(String(e)); return null; }
+}
+
+const st = (stato) => `<span class="st s-${esc(stato || 'assente')}">${esc(stato || 'assente')}</span>`;
+/** Nome della fonte senza le parentesi lunghe: "Open-Meteo (modello ICON-2I di …)" → "Open-Meteo, modello ICON-2I". */
+function nomeFonte(nome) {
+  const s = String(nome || '');
+  const m = /^(Open-Meteo) \(modello ([^\s)]+)/.exec(s);
+  if (m) return `${m[1]}, modello ${m[2]}`;
+  return s.replace(/^MET Norway Locationforecast$/, 'MET Norway').replace(/\s*\([^)]*\)/g, '').trim();
+}
+/** Riga della fonte: stato del dato (come lo dà l'API), nome e ora. */
+function rigaFonte({ f, nome, quando, extra, aCapo = false }) {
+  const q = quando ?? datoDelle(f?.ora_dato);
+  // riserva e dato salvato vanno spiegati per intero: la riga può andare a capo
+  const lunga = aCapo || ['riserva', 'salvato', 'assente'].includes(f?.stato);
+  const testo = `${esc(nome || nomeFonte(f?.nome) || 'fonte sconosciuta')}${q ? ` · ${esc(q)}` : ''}${extra ? ` · ${esc(extra)}` : ''}`;
+  return `<div class="fonte${lunga ? ' a-capo' : ''}">${st(f?.stato)}<span>${testo.replace(/Open-Meteo/g, '<span class="nb">Open-Meteo</span>')}</span></div>`;
+}
+function pannello({ id, ic, nome, dove = '', corpo, fonti, cl = '', stile = '' }) {
+  return `<section class="pan ${cl}" data-pan="${id}" style="${stile}"><div class="capo"><span class="ic">${ic}</span><span>${esc(nome)}</span>${dove ? `<span class="dove">· ${esc(dove)}</span>` : ''}</div>`
+    + `<div class="corpo">${corpo}</div><div class="fonti">${fonti.map(rigaFonte).join('')}</div></section>`;
+}
+const nonDisponibile = (cosa) => `<div class="det">${esc(cosa)}: dato non catturato.</div>`;
+/** Spiegazione breve di una riserva o di un dato salvato, dalla nota della fonte. */
+function perche(f) {
+  if (!f || !['riserva', 'salvato', 'assente'].includes(f.stato)) return '';
+  const n = f.nota || '';
+  const chi = /open-meteo/i.test(n) ? 'Open-Meteo' : 'la fonte principale';
+  const motivo = /429/.test(n) ? `${chi} ha risposto 429 (troppe richieste)` : `${chi} non risponde`;
+  const punto = /un solo punto/i.test(n) ? ', un punto solo per tutta la città' : '';
+  return f.stato === 'assente' ? 'dato non disponibile' : `${motivo}${punto}`;
+}
+
+// ------------------------------------------------------------------ pannelli
+
+function pMeteo(stile, luoghi) {
+  const validi = luoghi.filter((x) => x?.meteo);
+  if (!validi.length) return pannello({ id: 'meteo', stile, ic: '🌡️', nome: 'Meteo', corpo: nonDisponibile('Meteo'), fonti: [] });
+  const f = validi[0].fonte;
+  const righe = `<div class="meteo-g">${validi.map((x, i) => `<div class="rm${i ? ' riga' : ''}"><span class="n">${esc(x.luogo.nome)}${x.nota ? '*' : ''}</span>`
+    + `<span class="t">${it(x.meteo.temperatura_c)} °C</span><span class="cielo">${iconaCielo(x.meteo.cielo)} ${esc(String(x.meteo.cielo || '').toLowerCase())}</span></div>`).join('')}</div>`;
+  const m = validi[0].meteo;
+  const vento = `<div class="det riga" data-opz="1">${esc(validi[0].luogo.nome)}: vento ${it(m.vento_kmh, 0)} km/h, raffiche ${it(m.raffiche_kmh, 0)}, umidità ${it(m.umidita_pct, 0)} %</div>`;
+  const nota = validi.find((x) => x.nota);
+  const vicino = nota?.luogo?.luogo_monitorato_vicino;
+  const testoNota = vicino ? `* dati del luogo monitorato più vicino: ${vicino.nome}, a ${it(vicino.km)} km` : nota?.nota;
+  return pannello({
+    id: 'meteo', stile, ic: iconaCielo(m.cielo), nome: 'Meteo',
+    corpo: righe + vento + (nota ? `<div class="nota-m">${esc(testoNota)}</div>` : ''),
+    fonti: [{ f, extra: perche(f) }],
+  });
+}
+
+function pAllerta(stile, a) {
+  if (!a) return pannello({ id: 'allerta', stile, ic: '⚠️', nome: 'Allerta meteo', corpo: nonDisponibile('Allerta'), fonti: [] });
+  const r = a.regionale;
+  let reg;
+  if (r?.attiva) {
+    reg = `<div class="reg"><i class="pallino" style="background:${COLORI_ALLERTA[r.colore] || '#facc15'}"></i>Allerta ${esc(r.colore)} ${r.in_corso ? 'in corso' : 'prevista'}${r.fenomeni_tipo ? `: ${esc(r.fenomeni_tipo)}` : ''}</div>`
+      + `<div class="piccola">Protezione Civile Campania, Zona 1 · avviso n. ${esc(r.avviso_n ?? 'n/d')}${r.al ? ` · fino a ${esc(relativo(r.al))} alle ${esc(oraDi(r.al))}` : ''}</div>`;
+  } else if (r) {
+    reg = `<div class="reg"><i class="pallino" style="background:${COLORI_ALLERTA.verde}"></i>Nessuna allerta regionale in corso</div>`
+      + (r.avviso_n ? `<div class="piccola">Protezione Civile Campania: l'ultimo avviso (n. ${esc(r.avviso_n)}, ${esc(r.colore)}) ${r.scaduta && r.al ? `è scaduto ${esc(relativo(r.al))} alle ${esc(oraDi(r.al))}` : 'non è più in vigore'}</div>` : '');
+  } else if (a.fonte?.stato === 'reale' && /senza avvisi in vigore/i.test(a.fonte?.nota || '')) {
+    // il Centro Funzionale ha risposto: nessun avviso in vigore (fonte.nota), anche se l'API non ha l'ultimo avviso
+    reg = `<div class="reg"><i class="pallino" style="background:${COLORI_ALLERTA.verde}"></i>Protezione Civile: nessun avviso in vigore</div>`;
+  } else {
+    reg = `<div class="reg"><i class="pallino" style="background:#94a3b8"></i>Allerta regionale: dato non disponibile</div>`;
+  }
+  // Avviso già emesso per domani: chiave "domani" di /citta/allerta (API dal 14/11 sera; le catture di prima non ce l'hanno)
+  const dm = a.domani;
+  if (dm?.livello >= 2) {
+    reg += `<div class="reg"><i class="pallino" style="background:${COLORI_ALLERTA[dm.colore] || '#facc15'}"></i>Domani: allerta ${esc(dm.colore)}${dm.fenomeni_tipo ? ` per ${esc(dm.fenomeni_tipo)}` : ''}</div>`
+      + `<div class="piccola">Protezione Civile Campania · avviso n. ${esc(dm.avviso_n ?? 'n/d')}${dm.dal ? ` · dalle ${esc(oraDi(dm.dal))} di ${esc(relativo(dm.dal))}` : ''}</div>`;
+  } else if (r?.domani?.livello >= 2) reg += `<div class="piccola">Domani: ${esc(r.domani.descrizione || `livello ${r.domani.livello}`)}</div>`;
+  // Meteoalarm: avvisi per tutta la Campania, raggruppati per giorno di inizio (al massimo due giorni)
+  const gruppi = new Map();
+  for (const w of a.meteoalarm || []) {
+    const g = dataDi(w.dal);
+    if (!gruppi.has(g)) gruppi.set(g, []);
+    gruppi.get(g).push(w);
+  }
+  const righe = [...gruppi.entries()].slice(0, 2).map(([g, ws], i) => {
+    const stesso = ws.every((w) => w.dal === ws[0].dal && w.al === ws[0].al) && dataDi(ws[0].al) === g;
+    const inCorso = ws.some((w) => w.in_corso);
+    const inizio = ws.map((w) => w.dal).sort()[0];
+    const quando = inCorso ? 'in corso' : relativo(`${g} 00:00`);
+    const orario = inCorso ? `fino alle ${oraDi(ws[0].al)}` : stesso ? `${oraDi(ws[0].dal)}–${oraDi(ws[0].al)}` : `dalle ${oraDi(inizio)}`;
+    const liv = [...ws].sort((x, y) => y.livello - x.livello)
+      .map((w) => `<span class="liv">${esc(String(w.fenomeno).toLowerCase())} <b style="background:${COLORI_ALLERTA[w.colore] || '#facc15'}">${esc(w.colore)}</b></span>`).join('');
+    return `<div class="ma${i ? '' : ' primo'}"${i ? ' data-opz="1"' : ''}><div class="g">${esc(quando)}<small>${esc(orario)}</small></div><div>${liv}</div></div>`;
+  }).join('');
+  const ma = a.meteoalarm?.length ? `<div class="piccola riga" style="padding-top:4px" data-opz="2">Meteoalarm, avvisi per tutta la Campania:</div>${righe}`
+    : '<div class="piccola riga" style="padding-top:4px">Meteoalarm: nessun avviso per la Campania.</div>';
+  return pannello({
+    id: 'allerta', stile, ic: '⚠️', nome: 'Allerta meteo', corpo: reg + ma,
+    fonti: [{ f: a.fonte, nome: 'Protezione Civile Campania' }, { f: a.fonte_meteoalarm, nome: 'Meteoalarm', extra: 'tutta la Campania' }],
+  });
+}
+
+/** Luogo di un evento: per il Comune il posto che scrive il Comune ("Maschio Angioino | Sala dei Baroni"), altrimenti il luogo monitorato. */
+function luogoEvento(e) {
+  if (e.fonte === 'Comune di Napoli' && e.nota) return e.nota.split(' | ')[0].replace(/\s*-\s*Napoli$/, '');
+  return e.luogo || '';
+}
+function pEventi(stile, ev) {
+  if (!ev) return pannello({ id: 'eventi', stile, ic: '📅', nome: 'Eventi di oggi', corpo: nonDisponibile('Eventi'), fonti: [] });
+  const lista = ev.eventi || [];
+  let corpo = lista.slice(0, 3).map((e, i) => `<div class="ev${i ? ' riga' : ''}"${i === 2 ? ' data-opz="1"' : ''}><div class="ti">${esc(e.titolo)}</div><div class="me">${esc([luogoEvento(e), e.orario].filter(Boolean).join(' · '))}</div></div>`).join('');
+  if (lista.length > 3) corpo += `<div class="piccola">e altri ${lista.length - 3}</div>`;
+  if (!lista.length) {
+    const p = ev.prossimi?.[0];
+    corpo = `<div class="det">Nessun evento in calendario nelle fonti consultate.</div>${p ? `<div class="piccola">Prossimo: ${esc(relativo(`${p.giorno} 00:00`))}, ${esc(p.titolo)}</div>` : ''}`;
+  }
+  // la fonte citata è quella degli eventi mostrati (lo snapshot ne mette insieme quattro)
+  const daQui = [...new Set(lista.slice(0, 3).map((e) => e.fonte).filter(Boolean))].join(', ');
+  return pannello({ id: 'eventi', stile, ic: '📅', nome: 'Eventi di oggi', corpo, fonti: [{ f: ev.fonte, nome: daQui || null, aCapo: !daQui }] });
+}
+
+function pTreni(stile, p) {
+  if (!p) return pannello({ id: 'treni', stile, ic: '🚇', nome: 'Treni e metro', corpo: nonDisponibile('Prossimi passaggi'), fonti: [] });
+  const lista = (p.passaggi || []).slice(0, 4);
+  const corpo = lista.length
+    ? lista.map((x, i) => `<div class="part${i ? ' riga' : ''}"${i === 3 ? ' data-opz="1"' : ''}><span class="o">${esc(x.ora)}</span><span class="l${x.operatore === 'EAV' ? ' eav' : ''}">${esc(x.linea)}</span>`
+      + `<span class="d">→ ${esc(leggibile(x.direzione))}</span><span class="tra${x.tra_min === 0 ? ' ora' : ''}">${x.soppresso ? 'soppresso' : x.tra_min === 0 ? 'in partenza' : `tra ${x.tra_min} min`}</span></div>`).join('')
+    : `<div class="det">${esc(p.testo)}</div>`;
+  const extra = lista.length ? (lista.some((x) => x.tempo_reale) ? 'con tempo reale' : 'orari programmati') : '';
+  return pannello({ id: 'treni', stile, ic: '🚇', nome: 'Treni e metro', dove: p.stazione?.nome, corpo, fonti: [{ f: p.fonte, nome: 'Transitous', extra }] });
+}
+
+function pAria(stile, a) {
+  if (!a) return pannello({ id: 'aria', stile, ic: '🍃', nome: "Qualità dell'aria", corpo: nonDisponibile('Aria'), fonti: [] });
+  const c = a.citta;
+  let corpo = c
+    ? `<div class="aria-r"><span class="grande" style="color:${COLORI_ARIA[c.classe_nome] || '#eef2fb'}">${esc(c.classe_nome)}</span><span>indice europeo ${esc(c.indice_europeo_max)} · ${esc(c.origine)}</span></div>`
+    : '<div class="det">Modello dell\'aria non disponibile.</div>';
+  // centraline con una misura di meno di 48 ore rispetto alla cattura (le altre sono vecchie e non contano)
+  const limite = piuGiorni(OGGI, -2);
+  const recenti = (a.centraline || []).filter((x) => x.classe && x.ora_dato && dataDi(x.ora_dato) >= limite);
+  if (recenti.length) {
+    const ultima = recenti.map((x) => x.ora_dato).sort().at(-1);
+    const conta = ORDINE_ARIA.map((k) => [k, recenti.filter((x) => x.classe === k).length]).filter(([, n]) => n);
+    corpo += `<div class="det riga">${recenti.length} centraline ARPAC, misure ${dataDi(ultima) === OGGI ? `fino alle ${oraDi(ultima)}` : `del ${breve(dataDi(ultima))}`}, non validate:</div>`
+      + `<div class="conta">${conta.map(([k, n]) => `<span><i style="background:${COLORI_ARIA[k]}"></i>${n} ${esc(k)}</span>`).join('')}</div>`;
+  }
+  return pannello({
+    id: 'aria', stile, ic: '🍃', nome: "Qualità dell'aria", corpo,
+    fonti: [{ f: a.fonti?.modello, nome: 'Copernicus CAMS (Open-Meteo)', extra: perche(a.fonti?.modello) }, { f: a.fonti?.centraline, nome: 'Centraline ARPAC via EEA' }],
+  });
+}
+
+function pTerremoti(q, fonti) {
+  if (!q) return pannello({ id: 'terremoti', ic: '🌋', nome: 'Campi Flegrei', cl: 'mini', corpo: nonDisponibile('Terremoti'), fonti: [] });
+  const u = q.ultimi?.[0];
+  const letto = (fonti?.fonti || []).find((x) => x.id === 'terremoti')?.letto_alle;
+  const corpo = u
+    ? `<div class="grande">${esc(u.tipo_magnitudo)} ${it(u.magnitudo)}</div><div class="det">ultima scossa: ${esc(relativo(u.ora))} alle ${esc(oraDi(u.ora))}, ${it(u.profondita_km)} km di profondità</div>`
+    : `<div class="det">${esc(q.testo)}</div>`;
+  return pannello({ id: 'terremoti', ic: '🌋', nome: 'Campi Flegrei', cl: 'mini', corpo, fonti: [{ f: q.fonte, nome: 'INGV', quando: letto && dataDi(letto) === OGGI ? `letto alle ${oraDi(letto)}` : null }] });
+}
+
+function pTraffico(tr) {
+  if (!tr) return pannello({ id: 'traffico', ic: '🛣️', nome: 'Tangenziale', cl: 'mini', corpo: nonDisponibile('Traffico'), fonti: [] });
+  const ev = tr.eventi || [];
+  const corpo = ev.length
+    ? `<div class="grande" style="font-size:30px;color:var(--ciro)">${ev.length === 1 ? '1 evento' : `${ev.length} eventi`}</div>${ev.slice(0, 2).map((e, i) => `<div class="det"${i ? ' data-opz="1"' : ''}>${esc(e.strada)}: ${esc(String(e.tipo || 'evento').toLowerCase())}${e.coda_km ? (/coda/i.test(e.tipo || '') ? ` di ${it(e.coda_km)} km` : ` (coda ${it(e.coda_km)} km)`) : ''}</div>`).join('')}`
+    : '<div class="grande" style="font-size:34px;color:var(--verde)">Nessun evento</div><div class="det">su tangenziale e autostrade attorno a Napoli</div>';
+  return pannello({ id: 'traffico', ic: '🛣️', nome: 'Tangenziale', cl: 'mini', corpo, fonti: [{ f: tr.fonte, nome: "Autostrade per l'Italia" }] });
+}
+
+// ------------------------------------------------------------------ costruzione
+
+let voci = [];          // elementi che entrano: { el, t }
+let tel = {};           // pezzi del telefono
+let evid = null;        // riquadro dell'allerta da accendere
+
+window.pronta = (async () => {
+  const r = document.getElementById('radice');
+  let indice;
+  try {
+    indice = await leggi('cattura');
+  } catch (e) {
+    r.innerHTML = '<div class="errore">Manca la cattura dei dati (oggi/cattura.json): node c5-presentazione/scene/oggi/cattura.mjs</div>';
+    return { durata: DURATA };
+  }
+  OGGI = dataDi(indice.catturato_il);
+  const nomeTreni = STAZIONE === 'toledo' ? 'passaggi-toledo' : 'passaggi-montesanto';
+  const [mPleb, mOvo, mCds, allerta, eventi, treni, aria, terremoti, traffico, fonti] = await Promise.all(
+    ['meteo-plebiscito', 'meteo-castel-dell-ovo', 'meteo-citta-della-scienza', 'allerta', 'eventi-oggi', nomeTreni, 'aria', 'terremoti', 'traffico', 'fonti'].map(risposta));
+  let domanda = null;
+  try { domanda = await leggi('come-arrivo'); } catch (e) { console.error(String(e)); }
+
+  const pannelli = [
+    pMeteo('grid-area:1/1', [mPleb, mOvo, mCds]), pAllerta('grid-area:2/1', allerta), pEventi('grid-area:3/1', eventi),
+    pTreni('grid-area:1/2', treni), pAria('grid-area:2/2', aria),
+    `<div class="coppia" style="grid-area:3/2">${pTerremoti(terremoti, fonti)}${pTraffico(traffico)}</div>`,
+  ].join('');
+  // stati presenti nella scena, nell'ordine della legenda
+  const stati = new Set([...pannelli.matchAll(/class="st s-([a-z]+)"/g)].map((m) => m[1]));
+  const legenda = Object.keys(LEGENDA).filter((k) => stati.has(k)).slice(0, 5);
+  const g = Number(OGGI.slice(8, 10));
+  const m = Number(OGGI.slice(5, 7));
+
+  r.innerHTML = `
+    <div class="testa">
+      <div class="etichetta" data-t="${TEMPI.testa}">API dati città di TwinCIRO · ogni dato con fonte e stato</div>
+      <div class="titolo-r"><h1 data-t="${TEMPI.testa + 0.1}">Napoli, adesso</h1>
+        <span class="quando" data-t="${TEMPI.quando}">${esc(indice.giorno_testo)}, ore ${esc(indice.ora)}</span>
+        <span class="vivo" data-t="${TEMPI.quando + 0.15}"><i id="punto-vivo"></i>dati veri</span></div>
+    </div>
+    <div class="legenda" data-t="${TEMPI.legenda}">
+      <h4>Stato del dato, come lo dà l'API</h4>
+      ${legenda.map((k) => `<div class="voce-l">${st(k)}<span>${esc(LEGENDA[k])}</span></div>`).join('')}
+    </div>
+    <div class="griglia">${pannelli}</div>
+    <div class="telefono" data-t="${TEMPI.telefono}"><div class="schermo">
+      <div class="barra-stato"><span>${esc(indice.ora)}</span><span>●●● 5G ▮</span></div>
+      <div class="testata-tel"><div class="avatar">C</div><div><div class="nome-tel"><span class="twin">Twin</span><span class="ciro">CIRO</span></div><div class="stato-tel" id="stato-tel">online</div></div></div>
+      <div class="messaggi">
+        <div class="chip-g" data-opz="1"><span>${esc(GIORNI[settimana(OGGI)])} ${g} ${esc(MESI[m - 1])}</span></div>
+        <div class="benvenuto" data-opz="2">TwinCIRO risponde con i dati veri della città, dalla sua API dati città</div>
+        <div class="m utente" id="m-domanda"><div class="bolla">${esc(domanda?.domanda || '')}<span class="ora">${esc(indice.ora)} ✓</span></div></div>
+        <div class="slot">
+          <div class="m ciro scrive" id="m-scrive"><div class="bolla"><div class="punti"><i></i><i></i><i></i></div></div></div>
+          <div class="m ciro" id="m-risposta"><div class="bolla">${domanda ? esc(domanda.risposta).replace(/\b(\d{1,2}:\d{2})\b/g, '<b>$1</b>') : 'Risposta non catturata.'}<span class="ora">${esc(indice.ora)}</span></div></div>
+        </div>
+        <div class="nota-tel" id="nota-tel">Il testo vero dell'API dati città, così com'è, delle ${esc(indice.ora)}</div>
+      </div>
+      <div class="ingresso"><div class="campo" id="campo"><span class="vuoto">Scrivi un messaggio</span></div><div class="invia">➤</div></div>
+    </div></div>`;
+
+  voci = [...r.querySelectorAll('[data-t]')].map((el) => ({ el, t: Number(el.dataset.t) }));
+  for (const el of r.querySelectorAll('.pan')) voci.push({ el, t: TEMPI.pannelli[el.dataset.pan] ?? 4 });
+  tel = {
+    domanda: document.getElementById('m-domanda'), scrive: document.getElementById('m-scrive'), risposta: document.getElementById('m-risposta'),
+    nota: document.getElementById('nota-tel'), campo: document.getElementById('campo'), stato: document.getElementById('stato-tel'),
+    testo: domanda?.domanda || '', vivo: document.getElementById('punto-vivo'),
+  };
+  // mentre la voce li nomina si accendono, uno dopo l'altro, i pannelli e poi la legenda degli stati
+  evid = TEMPI.evidenze.map(([id, a, b]) => ({ el: id === 'legenda' ? r.querySelector('.legenda') : r.querySelector(`[data-pan="${id}"]`), a, b }))
+    .filter((x) => x.el);
+  await document.fonts.ready;
+  const telefono = r.querySelector('.telefono');
+  const sotto = Math.ceil(r.querySelector('.legenda').getBoundingClientRect().bottom) + 18;
+  const cima = Math.max(144, sotto);
+  telefono.style.top = `${cima}px`;
+  telefono.style.height = `${948 - cima}px`;
+  telefono.querySelector('.schermo').style.height = `${948 - cima - 22}px`;
+  adatta(r);
+  window.imposta(0);
+  return { durata: DURATA };
+})();
+
+/** Se un pannello (o la chat) trabocca, per esempio con una cattura dai testi più lunghi, toglie le righe facoltative, prima quelle con data-opz più alto. */
+function adatta(r) {
+  if (P.has('senza-adatta')) return;   // per le prove: si vede quanto trabocca
+  for (const p of [...r.querySelectorAll('.pan'), r.querySelector('.messaggi')]) {
+    for (;;) {
+      if (p.scrollHeight <= p.clientHeight + 1) break;
+      const opz = [...p.querySelectorAll('[data-opz]')].sort((a, b) => b.dataset.opz - a.dataset.opz)[0];
+      if (!opz) { console.error(`${p.dataset.pan ? `pannello ${p.dataset.pan}` : 'chat'}: il testo non sta nel riquadro`); break; }
+      opz.remove();
+    }
+  }
+}
+
+window.imposta = (t) => {
+  for (const v of voci) {
+    const p = fumo((t - T(v.t)) / 0.6);
+    v.el.style.opacity = p;
+    v.el.style.transform = p < 1 ? `translateY(${(1 - p) * 26}px)` : '';
+  }
+  if (!tel.campo) return;
+  for (const e of evid || []) {
+    const k = clamp(Math.min((t - T(e.a)) / 0.35, (T(e.b) - t) / 0.5), 0, 1);
+    if (e.el.classList.contains('legenda')) {   // la legenda non ha un riquadro: un contorno staccato dal testo
+      e.el.style.borderRadius = '16px';
+      e.el.style.outline = k ? `3px solid rgb(255 181 71 / ${(0.9 * k).toFixed(3)})` : '';
+      e.el.style.outlineOffset = '10px';
+    } else {
+      e.el.style.boxShadow = k ? `0 0 0 3px rgb(255 181 71 / ${(0.9 * k).toFixed(3)}), 0 0 ${(30 * k).toFixed(0)}px rgb(255 181 71 / ${(0.4 * k).toFixed(3)})` : '';
+    }
+  }
+  // il punto "dati veri" pulsa piano
+  if (tel.vivo) tel.vivo.style.opacity = 0.55 + 0.45 * (0.5 + 0.5 * Math.cos((t * 2 * Math.PI) / 1.6));
+  // la domanda si scrive nel campo, poi parte
+  const [s0, s1] = TEMPI.scrive.map(T);
+  if (t >= s0 && t < T(TEMPI.invia)) {
+    const n = Math.round(tel.testo.length * clamp((t - s0) / (s1 - s0), 0, 1));
+    const cursore = Math.floor(t * 2.2) % 2 === 0 ? '<span class="cursore"></span>' : '<span class="cursore" style="opacity:0"></span>';
+    tel.campo.classList.add('pieno');
+    tel.campo.innerHTML = `<span>${esc(tel.testo.slice(0, n))}</span>${cursore}`;
+  } else {
+    tel.campo.classList.remove('pieno');
+    tel.campo.innerHTML = '<span class="vuoto">Scrivi un messaggio</span>';
+  }
+  const comp = (el, t0, d = 0.4) => {
+    const p = fumo((t - T(t0)) / d);
+    el.style.opacity = p;
+    el.style.transform = p < 1 ? `translateY(${(1 - p) * 16}px) scale(${0.97 + 0.03 * p})` : '';
+  };
+  comp(tel.domanda, TEMPI.invia);
+  const [p0, p1] = TEMPI.pensa.map(T);
+  const pensa = t >= p0 && t < p1;
+  tel.scrive.style.opacity = pensa ? fumo((t - p0) / 0.3) : 0;
+  [...tel.scrive.querySelectorAll('i')].forEach((d, k) => { d.style.opacity = 0.35 + 0.65 * Math.max(0, Math.sin(t * 6 - k * 0.9)); });
+  tel.stato.textContent = pensa ? 'sta scrivendo…' : 'online';
+  comp(tel.risposta, TEMPI.risposta, 0.45);
+  comp(tel.nota, TEMPI.nota, 0.5);
+};
+
+// Anteprima nel browser (senza renderer): parte da sola e ricomincia
+if (!P.has('fotogrammi')) {
+  window.pronta.then(() => {
+    const t0 = performance.now();
+    const giro = () => { window.imposta(((performance.now() - t0) / 1000) % (DURATA + 2)); requestAnimationFrame(giro); };
+    giro();
+  });
+}
+</script>
+</body>
+</html>

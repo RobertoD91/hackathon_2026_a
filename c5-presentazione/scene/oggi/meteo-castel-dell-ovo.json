@@ -1,0 +1,37 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/meteo?luogo=castel dell'ovo",
+  "formato": "json",
+  "http": 200,
+  "risposta": {
+    "luogo": {
+      "id": "castel_ovo",
+      "nome": "Castel dell'Ovo",
+      "tipo": "luogo",
+      "categoria": "Attrazioni",
+      "lat": 40.828,
+      "lon": 14.2476,
+      "trovato_con": "Castel dell'Ovo"
+    },
+    "meteo": {
+      "temperatura_c": 18.5,
+      "percepita_c": 18.7,
+      "cielo": "Coperto",
+      "pioggia_mm": 0,
+      "umidita_pct": 81,
+      "vento_kmh": 11,
+      "vento_nodi": 6,
+      "raffiche_kmh": 22,
+      "condizioni": "variabile",
+      "ora_dato": "2026-11-14 19:30"
+    },
+    "fonte": {
+      "nome": "Open-Meteo (modello ICON-2I di ItaliaMeteo-ARPAE)",
+      "stato": "reale",
+      "ora_dato": "2026-11-14 19:30",
+      "licenza": "CC BY 4.0",
+      "nota": "previsione per l'ora corrente, griglia di 2,2 km"
+    },
+    "testo": "Castel dell'Ovo: 18,5 °C, coperto, vento 11 km/h (6 nodi) con raffiche a 22 km/h, umidità 81 %. Fonte: Open-Meteo (modello ICON-2I di ItaliaMeteo-ARPAE), dato delle 19:30."
+  }
+}

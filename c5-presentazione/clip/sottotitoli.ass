@@ -1,0 +1,50 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Voce,Inter SemiBold,40,&H00FFFFFF,&H000000FF,&H38140A0A,&H00000000,0,0,0,0,100,100,0,0,3,12,0,2,300,300,30,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.60,0:00:03.00,Voce,,0,0,0,,Napoli, 2027.
+Dialogue: 0,0:00:03.20,0:00:07.70,Voce,,0,0,0,,Un sabato: America's Cup,\Nnavi da crociera e partita al Maradona.
+Dialogue: 0,0:00:08.30,0:00:12.30,Voce,,0,0,0,,I dati ci sono. Ma sono sparsi,\Ne non si parlano.
+Dialogue: 0,0:00:13.00,0:00:18.70,Voce,,0,0,0,,E manca il dato più importante:\Nquante persone ci sono, adesso, in ogni zona.
+Dialogue: 0,0:00:19.30,0:00:22.80,Voce,,0,0,0,,TwinCIRO: City Intelligence\Nand Responsive Orchestration.
+Dialogue: 0,0:00:23.00,0:00:25.70,Voce,,0,0,0,,Il gemello di Napoli, che ci pensa.
+Dialogue: 0,0:00:26.30,0:00:30.10,Voce,,0,0,0,,Oltre 50 fonti pubbliche,\Nverificate una per una.
+Dialogue: 0,0:00:30.30,0:00:33.80,Voce,,0,0,0,,Un catalogo unico, diviso per temi.
+Dialogue: 0,0:00:34.40,0:00:38.40,Voce,,0,0,0,,Due utenti: chi visita Napoli,\Ne chi la governa.
+Dialogue: 0,0:00:40.50,0:00:44.10,Voce,,0,0,0,,Marta, in crociera,\Nscrive a TwinCIRO come a un amico.
+Dialogue: 0,0:00:44.30,0:00:49.00,Voce,,0,0,0,,TwinCIRO chiede alla pizzeria:\Nalle 13 è piena, propone le 14.
+Dialogue: 0,0:00:49.20,0:00:53.30,Voce,,0,0,0,,Marta dice «ok»: tavolo prenotato,\Nnessuna telefonata.
+Dialogue: 0,0:00:54.90,0:00:59.70,Voce,,0,0,0,,Poi TwinCIRO le dice come arrivare\Nalla regata, e quanta gente c'è.
+Dialogue: 0,0:01:01.30,0:01:05.10,Voce,,0,0,0,,Per il meteo usa dati veri,\Ne cita sempre la fonte.
+Dialogue: 0,0:01:06.50,0:01:10.60,Voce,,0,0,0,,E quando la Rotonda Diaz si riempie,\Nè TwinCIRO a scrivere per primo:
+Dialogue: 0,0:01:10.80,0:01:14.00,Voce,,0,0,0,,c'è un posto più tranquillo,\Ncon un'offerta.
+Dialogue: 0,0:01:18.30,0:01:22.50,Voce,,0,0,0,,Quell'avviso passa dalla Polizia Locale,\Nin sala operativa.
+Dialogue: 0,0:01:22.80,0:01:27.00,Voce,,0,0,0,,Gli agenti propongono:\Nl'operatore approva, o blocca.
+Dialogue: 0,0:01:27.30,0:01:31.70,Voce,,0,0,0,,Nel terminale della sala,\Nla stessa decisione: l'avviso è partito.
+Dialogue: 0,0:01:32.30,0:01:37.70,Voce,,0,0,0,,Dietro TwinCIRO c'è un sistema multi-agente:\Nagenti specializzati e un orchestratore.
+Dialogue: 0,0:01:37.90,0:01:42.80,Voce,,0,0,0,,Si parlano su MQTT;\Nle fonti pubbliche arrivano dall'API dati città.
+Dialogue: 0,0:01:43.30,0:01:47.40,Voce,,0,0,0,,Ecco la città come rete: luoghi,\Neventi, flussi, stazioni.
+Dialogue: 0,0:01:47.70,0:01:51.70,Voce,,0,0,0,,Poi agenti, sensori e fonti,\Ne come sono collegati.
+Dialogue: 0,0:01:52.30,0:01:56.20,Voce,,0,0,0,,Questa è Napoli adesso: dati veri,\Nognuno con la sua fonte.
+Dialogue: 0,0:01:56.40,0:02:00.00,Voce,,0,0,0,,Allerte, treni, aria e Campi Flegrei,\Ncon l'ora del dato.
+Dialogue: 0,0:02:00.35,0:02:05.60,Voce,,0,0,0,,Chiedi come arrivare a Città della Scienza:\NTwinCIRO ti dà stazioni e orari.
+Dialogue: 0,0:02:06.30,0:02:10.40,Voce,,0,0,0,,Sensori fatti da noi:\Nbadge WHY2025 e Tasmota.
+Dialogue: 0,0:02:10.70,0:02:13.80,Voce,,0,0,0,,Oggi in Wi-Fi, domani con una SIM IoT.
+Dialogue: 0,0:02:14.30,0:02:18.30,Voce,,0,0,0,,Il gemello digitale prova\Nla giornata sulle strade vere.
+Dialogue: 0,0:02:18.60,0:02:22.60,Voce,,0,0,0,,E l'avviso di TwinCIRO arriva\Nquando la Rotonda Diaz si riempie.
+Dialogue: 0,0:02:23.30,0:02:28.00,Voce,,0,0,0,,Con Fastweb e Vodafone la folla\Nnon si simula più: si può misurare.
+Dialogue: 0,0:02:28.30,0:02:32.40,Voce,,0,0,0,,Con le loro SIM IoT,\Ni sensori si mettono dove servono.
+Dialogue: 0,0:02:32.70,0:02:38.90,Voce,,0,0,0,,E TwinCIRO può integrare MIIA,\Nl'AI italiana di Fastweb: sovranità digitale.
+Dialogue: 0,0:02:39.30,0:02:44.40,Voce,,0,0,0,,Con un'adesione ipotizzata,\Nun avviso sposta circa 1.900 persone.
+Dialogue: 0,0:02:44.70,0:02:50.60,Voce,,0,0,0,,Perché Napoli? Nessuna app nuova,\Ni dati ci sono già, e si parte da un quartiere.
+Dialogue: 0,0:02:51.40,0:02:54.00,Voce,,0,0,0,,TwinCIRO. Napoli che ci pensa.
+Dialogue: 0,0:02:54.30,0:02:57.30,Voce,,0,0,0,,Provalo nel gruppo WhatsApp della demo.

@@ -1,0 +1,393 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/riassunto",
+  "formato": "json",
+  "http": 200,
+  "risposta": {
+    "ora": "2026-11-14 19:30",
+    "giorno": "sabato 14 novembre 2026",
+    "testo": "Napoli, sabato 14 novembre 2026, ore 19:30. Allerta regionale: dato non disponibile. Meteoalarm (avvisi per tutta la Campania): temporali arancione domani dalle 07:00 alle 18:59; pioggia gialla domani dalle 07:00 alle 18:59; vento gialla il 16/11 dalle 01:00 alle 23:59. Meteo a Napoli: tra 16,7 e 18,5 °C, coperto, vento fino a 11 km/h (raffiche fino a 22) (Open-Meteo, dato delle 19:30). Aria: moderata secondo il modello Copernicus CAMS (indice europeo 46, dato delle 19:00). Oggi: Tri Gold Caracciolo 2026 (Lungomare Caracciolo, in corso fino al 15 nov); Vedi Napoli Sacra e Misteriosa e poi Torni - Edizione 2026 (Napoli, in corso fino al 30 dic); Alla prova del tempo - Storia con metamorfosi (Molo Beverello · Stazione Marittima, in corso, ultimo giorno fino alle 20:00). Prossimi: dom 15/11 Viva la Strada; lun 16/11 3 navi da crociera; mar 17/11 2 navi da crociera; mer 18/11 Nave da crociera. Avvisi EAV (treni regionali): Linee Flegree Impianti di risalita (ascensori) di Piave fuori servizio del 17/11/2026; Linee Flegree – Impianto di risalita (ascensore NA108) di Soccavo fuori servizio del 14/11/2026/Ripristino; Linee Flegree Impianti di risalita (ascensori) di Piave fuori servizio del 16/11/2026. Per metro e funicolari ANM non c'è un'API dello stato del servizio: per guasti rimanda all'app ANM Go. Ultimo terremoto ai Campi Flegrei: Md 2,6 ieri alle 08:22 (INGV). Stagione turistica: gli arrivi di questo mese sono 0,52 volte la media mensile (ISTAT 2025, provincia di Napoli). La folla per luogo è una stima del simulatore, non una misura.",
+    "allerta": {
+      "regionale": null,
+      "meteoalarm": [
+        {
+          "fenomeno": "Temporali",
+          "livello": 3,
+          "colore": "arancione",
+          "dal": "2026-11-15 07:00",
+          "al": "2026-11-15 18:59",
+          "in_corso": false,
+          "titolo": "Allerta Temporali Arancione per l'Italia - Campania"
+        },
+        {
+          "fenomeno": "Pioggia",
+          "livello": 2,
+          "colore": "gialla",
+          "dal": "2026-11-15 07:00",
+          "al": "2026-11-15 18:59",
+          "in_corso": false,
+          "titolo": "Allerta Pioggia Giallo per l'Italia - Campania"
+        },
+        {
+          "fenomeno": "Vento",
+          "livello": 2,
+          "colore": "gialla",
+          "dal": "2026-11-16 01:00",
+          "al": "2026-11-16 23:59",
+          "in_corso": false,
+          "titolo": "Allerta Vento Giallo per l'Italia - Campania"
+        },
+        {
+          "fenomeno": "Pioggia",
+          "livello": 2,
+          "colore": "gialla",
+          "dal": "2026-11-16 01:00",
+          "al": "2026-11-16 18:59",
+          "in_corso": false,
+          "titolo": "Allerta Pioggia Giallo per l'Italia - Campania"
+        }
+      ]
+    },
+    "meteo": {
+      "citta": {
+        "temperatura_min_c": 16.7,
+        "temperatura_max_c": 18.5,
+        "cielo_prevalente": "Coperto",
+        "vento_max_kmh": 11,
+        "raffiche_max_kmh": 22,
+        "pioggia_max_mm": 0
+      },
+      "luoghi": {
+        "plebiscito": "18,3 °C, coperto, vento 11 km/h",
+        "centro_storico": "18,2 °C, coperto, vento 11 km/h",
+        "lungomare": "18,5 °C, coperto, vento 11 km/h",
+        "mergellina": "17,5 °C, coperto, vento 6 km/h",
+        "beverello": "18,4 °C, coperto, vento 11 km/h",
+        "castel_ovo": "18,5 °C, coperto, vento 11 km/h",
+        "garibaldi": "18,2 °C, coperto, vento 8 km/h",
+        "vomero": "16,7 °C, coperto, vento 6 km/h",
+        "sanita": "17,6 °C, coperto, vento 7 km/h",
+        "maradona": "17,5 °C, parzialmente nuvoloso, vento 5 km/h"
+      },
+      "fonte": {
+        "nome": "Open-Meteo (modello ICON-2I di ItaliaMeteo-ARPAE)",
+        "stato": "reale",
+        "ora_dato": "2026-11-14 19:30",
+        "licenza": "CC BY 4.0",
+        "nota": "previsione per l'ora corrente, griglia di 2,2 km"
+      }
+    },
+    "aria": {
+      "indice_europeo_max": 46,
+      "luoghi": {
+        "plebiscito": "moderata",
+        "centro_storico": "discreta",
+        "lungomare": "moderata",
+        "mergellina": "moderata",
+        "beverello": "moderata",
+        "castel_ovo": "moderata",
+        "garibaldi": "discreta",
+        "vomero": "discreta",
+        "sanita": "buona",
+        "maradona": "discreta"
+      },
+      "fonte_modello": {
+        "nome": "Open-Meteo Air Quality (Copernicus CAMS)",
+        "stato": "reale",
+        "ora_dato": "2026-11-14 19:00",
+        "licenza": "CC BY 4.0, dati Copernicus",
+        "nota": "modello di fondo regionale (celle di circa 11 km)"
+      },
+      "fonte_centraline": {
+        "nome": "Centraline ARPAC via EEA (dati orari non validati)",
+        "stato": "snapshot",
+        "ora_dato": "2026-11-14 15:00",
+        "licenza": "riuso con citazione EEA",
+        "nota": "misure orarie non validate, salvate con lo script degli snapshot"
+      }
+    },
+    "eventi_oggi": [
+      {
+        "titolo": "Tri Gold Caracciolo 2026",
+        "tipo": "Evento sportivo",
+        "luogo": "Lungomare Caracciolo",
+        "zona": "lungomare",
+        "orario": "in corso fino al 15 nov",
+        "inizio": null,
+        "fine": null,
+        "in_corso": true,
+        "nota": "Rotonda Diaz | Lungomare Caracciolo - Napoli",
+        "fonte": "Comune di Napoli",
+        "sposta_folla": true
+      },
+      {
+        "titolo": "Vedi Napoli Sacra e Misteriosa e poi Torni - Edizione 2026",
+        "tipo": "Manifestazione artistica",
+        "luogo": "Napoli",
+        "zona": null,
+        "orario": "in corso fino al 30 dic",
+        "inizio": null,
+        "fine": null,
+        "in_corso": true,
+        "nota": "Napoli",
+        "fonte": "Comune di Napoli",
+        "sposta_folla": false
+      },
+      {
+        "titolo": "Alla prova del tempo - Storia con metamorfosi",
+        "tipo": "Evento culturale",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "orario": "in corso, ultimo giorno fino alle 20:00",
+        "inizio": null,
+        "fine": null,
+        "in_corso": true,
+        "nota": "Maschio Angioino | Sala dei Baroni",
+        "fonte": "Comune di Napoli",
+        "sposta_folla": false
+      }
+    ],
+    "prossimi_eventi": [
+      {
+        "giorno": "2026-11-15",
+        "giorno_testo": "domenica 15 novembre 2026",
+        "titolo": "Viva la Strada",
+        "tipo": "Evento sportivo",
+        "luogo": null,
+        "zona": null,
+        "nota": "Parco San Laise - Viale della Liberazione n. 1, Bagnoli"
+      },
+      {
+        "giorno": "2026-11-16",
+        "giorno_testo": "lunedì 16 novembre 2026",
+        "titolo": "3 navi da crociera",
+        "tipo": "Crociere",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "nota": "Celebrity Equinox, MSC Magnifica, Oceania Marina"
+      },
+      {
+        "giorno": "2026-11-17",
+        "giorno_testo": "martedì 17 novembre 2026",
+        "titolo": "2 navi da crociera",
+        "tipo": "Crociere",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "nota": "MSC Euribia, Viking Mira"
+      },
+      {
+        "giorno": "2026-11-18",
+        "giorno_testo": "mercoledì 18 novembre 2026",
+        "titolo": "Nave da crociera",
+        "tipo": "Crociere",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "nota": "Costa Toscana"
+      },
+      {
+        "giorno": "2026-11-19",
+        "giorno_testo": "giovedì 19 novembre 2026",
+        "titolo": "Nave da crociera",
+        "tipo": "Crociere",
+        "luogo": "Molo Beverello · Stazione Marittima",
+        "zona": "beverello",
+        "nota": "Viking Vesta"
+      },
+      {
+        "giorno": "2026-11-21",
+        "giorno_testo": "sabato 21 novembre 2026",
+        "titolo": "Napoli - Torino",
+        "tipo": "Serie A",
+        "luogo": "Stadio Diego Armando Maradona",
+        "zona": "maradona",
+        "nota": "20:45"
+      },
+      {
+        "giorno": "2027-05-22",
+        "giorno_testo": "sabato 22 maggio 2027",
+        "titolo": "Louis Vuitton Cup · regate di flotta",
+        "tipo": "Louis Vuitton Cup",
+        "luogo": "Lungomare Caracciolo",
+        "zona": "lungomare",
+        "nota": "primo giorno di regate a Napoli"
+      }
+    ],
+    "trasporti": {
+      "avvisi": [
+        {
+          "titolo": "Linee Flegree Impianti di risalita (ascensori) di Piave fuori servizio del 17/11/2026",
+          "tipo": "impianti",
+          "pubblicato": "2026-11-14 11:58",
+          "stazioni": [
+            "Piave"
+          ],
+          "link": "https://www.eavsrl.it/linee-flegree-impianti-di-risalita-ascensori-di-piave-fuori-servizio-del-17-11-2026/"
+        },
+        {
+          "titolo": "Linee Flegree – Impianto di risalita (ascensore NA108) di Soccavo fuori servizio del 14/11/2026/Ripristino",
+          "tipo": "impianti",
+          "pubblicato": "2026-11-14 07:35",
+          "stazioni": [
+            "Soccavo"
+          ],
+          "link": "https://www.eavsrl.it/linee-flegree-impianto-di-risalita-ascensore-na108-di-soccavo-fuori-servizio-del-14-11-2026/"
+        },
+        {
+          "titolo": "Linee Flegree Impianti di risalita (ascensori) di Piave fuori servizio del 16/11/2026",
+          "tipo": "impianti",
+          "pubblicato": "2026-11-13 14:48",
+          "stazioni": [
+            "Piave"
+          ],
+          "link": "https://www.eavsrl.it/linee-flegree-impianti-di-risalita-ascensori-di-piave-fuori-servizio-del-16-11-2026-2/"
+        }
+      ],
+      "fonte_avvisi": {
+        "nome": "EAV, infomobilità",
+        "stato": "reale",
+        "ora_dato": "2026-11-14 11:58",
+        "licenza": "contenuti del sito EAV, citati"
+      },
+      "nota": "Nessuna API pubblica dello stato del servizio ANM (metro e funicolari). Prossimi passaggi: /citta/passaggi?stazione=…"
+    },
+    "terremoti": {
+      "ultimo": {
+        "ora": "2026-11-13 08:22",
+        "magnitudo": 2.6,
+        "tipo_magnitudo": "Md",
+        "luogo": "Campi Flegrei",
+        "profondita_km": 3
+      },
+      "fonte": {
+        "nome": "INGV, terremoti",
+        "stato": "reale",
+        "ora_dato": "2026-11-13 08:22",
+        "licenza": "CC BY 4.0"
+      }
+    },
+    "stagione": {
+      "mese": 11,
+      "indice": 0.52,
+      "arrivi": 189942,
+      "stranieri_pct": 43,
+      "anno_istat": 2025
+    },
+    "folla_stimata": {
+      "stato": "simulato",
+      "luoghi": {
+        "plebiscito": {
+          "livello": "Normale",
+          "persone_stimate": 1700
+        },
+        "centro_storico": {
+          "livello": "Un po’ affollato",
+          "persone_stimate": 2800
+        },
+        "lungomare": {
+          "livello": "Affollato",
+          "persone_stimate": 5100
+        },
+        "mergellina": {
+          "livello": "Normale",
+          "persone_stimate": 1200
+        },
+        "beverello": {
+          "livello": "Tranquillo",
+          "persone_stimate": 710
+        },
+        "castel_ovo": {
+          "livello": "Tranquillo",
+          "persone_stimate": 140
+        },
+        "garibaldi": {
+          "livello": "Normale",
+          "persone_stimate": 3000
+        },
+        "vomero": {
+          "livello": "Un po’ affollato",
+          "persone_stimate": 1900
+        },
+        "sanita": {
+          "livello": "Tranquillo",
+          "persone_stimate": 620
+        },
+        "maradona": {
+          "livello": "Tranquillo",
+          "persone_stimate": 40
+        }
+      },
+      "nota": "Stima del simulatore della demo (curva oraria per luogo con capienze indicative), modificata da eventi reali di oggi e stagionalità ISTAT: NON è una misura. In produzione: presenze anonime e aggregate dalle celle di Fastweb + Vodafone e sensori ESP32."
+    },
+    "fonti": [
+      {
+        "dato": "meteo",
+        "nome": "Open-Meteo (modello ICON-2I di ItaliaMeteo-ARPAE)",
+        "stato": "reale",
+        "ora_dato": "2026-11-14 19:30"
+      },
+      {
+        "dato": "aria (modello)",
+        "nome": "Open-Meteo Air Quality (Copernicus CAMS)",
+        "stato": "reale",
+        "ora_dato": "2026-11-14 19:00"
+      },
+      {
+        "dato": "aria (centraline)",
+        "nome": "Centraline ARPAC via EEA (dati orari non validati)",
+        "stato": "snapshot",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "dato": "allerta",
+        "nome": "Protezione Civile Regione Campania, Centro Funzionale",
+        "stato": "reale",
+        "ora_dato": "2026-11-14 19:30"
+      },
+      {
+        "dato": "eventi",
+        "nome": "Comune di Napoli, openfootball, Cruise Timetables, America's Cup",
+        "stato": "snapshot",
+        "ora_dato": "2026-11-14 19:29"
+      },
+      {
+        "dato": "avvisi EAV",
+        "nome": "EAV, infomobilità",
+        "stato": "reale",
+        "ora_dato": "2026-11-14 11:58"
+      },
+      {
+        "dato": "terremoti",
+        "nome": "INGV, terremoti",
+        "stato": "reale",
+        "ora_dato": "2026-11-13 08:22"
+      },
+      {
+        "dato": "trasporti (orari)",
+        "nome": "GTFS ANM ed EAV (orari programmati)",
+        "stato": "programmato",
+        "ora_dato": "2026-11-14 08:40"
+      },
+      {
+        "dato": "riferimenti",
+        "nome": "Comune di Napoli, ISTAT, Wikidata, Inside Airbnb, EEA, AdSP",
+        "stato": "snapshot",
+        "ora_dato": "2026-11-14 08:47"
+      },
+      {
+        "dato": "folla",
+        "nome": "simulatore della demo (sim-config.json)",
+        "stato": "simulato",
+        "ora_dato": "2026-11-14 19:30"
+      }
+    ],
+    "legenda_stati": {
+      "reale": "letto dal vivo dalla fonte ufficiale (con cache di pochi minuti)",
+      "riserva": "la fonte principale non risponde: dato dal vivo di una fonte di riserva (es. MET Norway al posto di Open-Meteo)",
+      "salvato": "la fonte dal vivo non risponde: ultimo dato salvato nello snapshot, con la sua ora",
+      "snapshot": "dato statico o a lenta variazione dallo snapshot rigenerato periodicamente (eventi, centraline, visitatori)",
+      "programmato": "orario programmato GTFS, non in tempo reale",
+      "simulato": "stima del simulatore della demo, non una misura (es. la folla)",
+      "assente": "nessuna fonte disponibile: non dare numeri"
+    }
+  }
+}

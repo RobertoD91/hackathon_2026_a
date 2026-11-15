@@ -49,7 +49,7 @@ def frase_folla(zona: str, livello: str) -> str:
 
 
 def frase_prenotazione(esito: dict, persone: int) -> str:
-    """Esito di una negoziazione raccontato da CiroGPT, non dall'impresa."""
+    """Esito di una negoziazione raccontato da TwinCIRO, non dall'impresa."""
     nome = esito.get("nome", "il locale")
     sconto = esito.get("sconto_pct") or 0
     con_sconto = f", con il {sconto}% di sconto" if sconto else ""

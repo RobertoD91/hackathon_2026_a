@@ -51,7 +51,7 @@ def main() -> None:
             })
         meta = json.loads((Path(str(grezzo) + ".meta.json")).read_text(encoding="utf-8"))
     uscita = {"da": a.da, "a": a.a, "passo_s": a.passo, "riepilogo": meta.get("finale", ""),
-              "nota": "Simulazione TwinCiro: folla e traffico sono simulati (agenti con regole, gemello SUMO su strade OSM); "
+              "nota": "Simulazione TwinCIRO: folla e traffico sono simulati (agenti con regole, gemello SUMO su strade OSM); "
                       "percorso delle barche ipotizzato.",
               "fotogrammi": fotogrammi}
     (QUI / "regata.json").write_text(json.dumps(uscita, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

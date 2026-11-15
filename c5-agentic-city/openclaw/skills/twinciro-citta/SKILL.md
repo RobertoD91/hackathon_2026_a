@@ -3,7 +3,7 @@ name: twinciro-citta
 description: Assistente personale per cittadini e turisti a Napoli durante la giornata di festa (America's Cup, navi da crociera, partita). Usalo per qualunque domanda su come muoversi, dove mangiare o prenotare, cosa vedere, folla, eventi e traffico a Napoli.
 ---
 
-# TwinCiro: l'assistente della città
+# TwinCIRO: l'assistente della città
 
 Questa skill collega la chat (WhatsApp) all'assistente personale della città. Tutta l'intelligenza è nella città: tu fai solo da tramite.
 

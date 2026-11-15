@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920">
+<title>I dati sono sparsi</title>
+<link rel="stylesheet" href="stile.css">
+<style>
+  /* Scena 2 del video: le fonti pubbliche di Napoli come isole che non si parlano, poi il dato che manca.
+     Fonti, icone e formati da fonti/catalogo.json; i 130 px in basso restano liberi per i sottotitoli. */
+  #mare { position: absolute; inset: 0; }
+  svg#legami { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+  .titolo { position: absolute; left: 0; right: 0; top: 64px; text-align: center; font-size: 72px; font-weight: 800;
+    letter-spacing: -0.02em; line-height: 1; white-space: nowrap; }
+  .titolo span { display: inline-block; }
+  .titolo .due { color: var(--corallo); margin-left: 18px; }
+  .manca { position: absolute; left: 0; right: 0; top: 196px; text-align: center; }
+  .manca .sopra { font-size: 46px; font-weight: 700; color: #c8d3ec; }
+  .manca .grande { margin-top: 22px; font-size: 92px; line-height: 1.04; font-weight: 800; letter-spacing: -0.025em; }
+  .manca .grande b { color: var(--ciro); font-weight: 800; }
+  .vuota { position: absolute; left: 50%; top: 610px; display: flex; align-items: center; gap: 34px; transform: translateX(-50%);
+    padding: 22px 46px 22px 24px; border-radius: 80px; background: rgb(12 19 38 / 0.92); }
+  .vuota .cerchio { position: relative; width: 124px; height: 124px; flex: none; display: grid; place-items: center; }
+  .vuota .cerchio svg { position: absolute; inset: 0; overflow: visible; }
+  .vuota .cerchio .punto { font-size: 74px; font-weight: 800; color: var(--ciro); line-height: 1; }
+  .vuota .t { font-size: 40px; font-weight: 800; text-align: left; white-space: nowrap; }
+  .vuota .s { margin-top: 8px; font-size: 27px; color: var(--tenue); text-align: left; white-space: nowrap; }
+  .vuota .s b { color: #ffd38a; font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="mare"></div>
+<svg id="legami" viewBox="0 0 1920 1080"></svg>
+<div class="titolo"><span class="uno">I dati ci sono.</span><span class="due">Ma sono sparsi.</span></div>
+<div class="manca">
+  <div class="sopra">E manca il dato più importante:</div>
+  <div class="grande">quante <b>persone</b> ci sono,<br>adesso, in ogni zona.</div>
+</div>
+<div class="vuota">
+  <div class="cerchio">
+    <svg viewBox="0 0 124 124"><circle id="anello" cx="62" cy="62" r="58" fill="rgb(255 181 71 / 0.07)" stroke="#ffb547" stroke-width="4" stroke-dasharray="13 10"/></svg>
+    <span class="punto">?</span>
+  </div>
+  <div><div class="t" id="manca-t"></div><div class="s" id="manca-s"></div></div>
+</div>
+<script type="module">
+import { CSS, carica, creaIsola, sparse, disponi, attendiImmagini, anteprima, casuale, fumo, curva, clamp, tra } from './fonti/isole.js';
+
+const P = new URLSearchParams(location.search);
+const DURATA = Number(P.get('durata')) || 11;
+const stile = document.createElement('style');
+stile.textContent = CSS;
+document.head.appendChild(stile);
+
+// Tempi della scena (secondi), allineati alla voce: «I dati ci sono. Ma sono sparsi, e non si parlano.» poi
+// «E manca il dato più importante: quante persone ci sono, adesso, in ogni zona.»
+const T = { titolo1: 0.15, isole: [0.35, 2.35], titolo2: 1.9, legami: 2.45, passoLegami: 0.5, buio: 4.75, sopra: 4.95, grande: 6.45, vuota: 7.6 };
+const outBack = (x) => { const c = 1.6; return x <= 0 ? 0 : x >= 1 ? 1 : 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+
+let isole = [], legami = [];
+
+window.pronta = (async () => {
+  const { fonti, mancante } = await carica();
+  const mare = document.getElementById('mare');
+  const pos = sparse(fonti);
+  const rnd = casuale(7);
+  // ordine di comparsa casuale ma fisso
+  const chiavi = fonti.map(() => rnd());
+  const ordine = fonti.map((_, i) => i).sort((a, b) => chiavi[a] - chiavi[b]);
+  isole = fonti.map((f, i) => {
+    const el = creaIsola(f);
+    mare.appendChild(el);
+    return { f, el, p: pos[i], t0: T.isole[0] + (T.isole[1] - T.isole[0]) * (ordine.indexOf(i) / Math.max(1, fonti.length - 1)) };
+  });
+  // Il dato che manca: la riga «Presenze da rete mobile» del catalogo, l'unica non pubblica insieme allo stato ANM
+  document.getElementById('manca-t').textContent = 'Persone per zona, adesso';
+  document.getElementById('manca-s').innerHTML = mancante && !mancante.pubblica ? 'In Italia <b>non è un dato pubblico</b>' : '';
+
+  // «Non si parlano»: tra due fonti di formato diverso parte un collegamento che si interrompe a metà strada.
+  // Solo tra isole con il logo (tonde), lontane dal titolo, senza altre isole in mezzo.
+  const svg = document.getElementById('legami');
+  const tonde = isole.map((_, i) => i).filter((i) => isole[i].f.icona && isole[i].p.y > 290);
+  // il tratto tra A e B non deve passare sopra un'altra isola né sul suo cartellino del formato (sotto il tondo)
+  const libera = (A, B) => isole.every((C) => {
+    if (C === A || C === B) return true;
+    const vx = B.p.x - A.p.x, vy = B.p.y - A.p.y, l2 = vx * vx + vy * vy;
+    const punti = C.f.icona ? [[C.p.x, C.p.y, 52], [C.p.x, C.p.y + 50 * C.p.s, 46]] : [[C.p.x - 60, C.p.y, 60], [C.p.x + 60, C.p.y, 60], [C.p.x, C.p.y + 40, 40]];
+    return punti.every(([px, py, r]) => {
+      const k = clamp(((px - A.p.x) * vx + (py - A.p.y) * vy) / l2, 0, 1);
+      return Math.hypot(A.p.x + vx * k - px, A.p.y + vy * k - py) > r;
+    });
+  });
+  const prese = new Set();
+  const coppie = [];
+  for (const a of tonde.map((i) => ({ i, k: rnd() })).sort((x, y) => x.k - y.k).map((x) => x.i)) {
+    if (coppie.length >= 5 || prese.has(a)) continue;
+    const A = isole[a];
+    const b = tonde.find((j) => {
+      const B = isole[j], d = Math.hypot(B.p.x - A.p.x, B.p.y - A.p.y);
+      return j !== a && !prese.has(j) && d > 220 && d < 460 && A.f.formati[0] !== B.f.formati[0] && libera(A, B);
+    });
+    if (b === undefined) continue;
+    coppie.push([a, b]);
+    for (const k of [a, b]) isole.forEach((C, j) => { if (Math.hypot(C.p.x - isole[k].p.x, C.p.y - isole[k].p.y) < 230) prese.add(j); });
+  }
+  coppie.sort((x, y) => isole[x[0]].p.x - isole[y[0]].p.x);   // da sinistra a destra
+  legami = coppie.map(([a, b], k) => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.innerHTML = '<line stroke="#dbe4f7" stroke-width="4.5" stroke-dasharray="11 9" stroke-linecap="round"/>'
+      + '<g><circle r="19" fill="#2a1420" stroke="#ff7a7a" stroke-width="3.5"/><path d="M-7.5 -7.5 L7.5 7.5 M7.5 -7.5 L-7.5 7.5" stroke="#ff7a7a" stroke-width="4.5" stroke-linecap="round"/></g>';
+    svg.appendChild(g);
+    return { a: isole[a], b: isole[b], linea: g.firstChild, x: g.lastChild, t0: T.legami + k * T.passoLegami };
+  });
+  window.__legami = legami.length;          // per i controlli automatici (quanti collegamenti interrotti)
+  await attendiImmagini(document);
+  await document.fonts.ready;
+  window.imposta(0);
+  return { durata: DURATA };
+})();
+
+const dondola = (p, t) => ({ dy: Math.sin((t / p.periodo) * Math.PI * 2 + p.fase) * 5, dr: Math.sin((t / (p.periodo * 1.3)) * Math.PI * 2 + p.fase) * 1.2 });
+const centro = (isola, t) => { const d = dondola(isola.p, t); return { x: isola.p.x, y: isola.p.y + d.dy }; };
+
+window.imposta = (t) => {
+  const buio = fumo(tra(t, T.buio, T.buio + 0.6));
+  // Titolo
+  const uno = document.querySelector('.titolo .uno'), due = document.querySelector('.titolo .due');
+  for (const [el, t0] of [[uno, T.titolo1], [due, T.titolo2]]) {
+    const p = fumo(tra(t, t0, t0 + 0.6));
+    el.style.opacity = (p * (1 - buio)).toFixed(3);
+    el.style.transform = `translateY(${((1 - p) * 26).toFixed(1)}px)`;
+  }
+  // Isole: compaiono, ondeggiano, poi si spengono quando arriva il dato che manca
+  for (const isola of isole) {
+    const p = tra(t, isola.t0, isola.t0 + 0.45);
+    const d = dondola(isola.p, t);
+    const lont = isola.p.lontana ? 0.78 : 1;
+    disponi(isola.el, {
+      x: isola.p.x, y: isola.p.y + d.dy, r: isola.p.r + d.dr, s: isola.p.s * (0.55 + 0.45 * outBack(p)), u: 0,
+      o: fumo(p) * lont * (1 - 0.84 * buio), of: 1, filtro: buio > 0.01 ? `blur(${(buio * 2.2).toFixed(2)}px)` : '',
+    });
+  }
+  // Collegamenti interrotti
+  for (const l of legami) {
+    const A = centro(l.a, t), B = centro(l.b, t);
+    const dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy);
+    const ka = (36 * l.a.p.s + 8) / d, kb = (36 * l.b.p.s + 8) / d;       // dal bordo di A verso il bordo di B
+    const x0 = A.x + dx * ka, y0 = A.y + dy * ka;
+    const cresce = curva(tra(t, l.t0, l.t0 + 0.4)) * 0.5 * (1 - ka - kb);  // si ferma a metà del tratto libero
+    const xt = x0 + dx * cresce, yt = y0 + dy * cresce;
+    const svanisce = 1 - fumo(tra(t, l.t0 + 0.75, l.t0 + 1.05));
+    const vis = t >= l.t0 ? svanisce * (1 - buio) : 0;
+    l.linea.setAttribute('x1', x0.toFixed(1)); l.linea.setAttribute('y1', y0.toFixed(1));
+    l.linea.setAttribute('x2', xt.toFixed(1)); l.linea.setAttribute('y2', yt.toFixed(1));
+    l.linea.setAttribute('opacity', (vis * 0.95).toFixed(3));
+    const px = outBack(tra(t, l.t0 + 0.38, l.t0 + 0.58));
+    l.x.setAttribute('transform', `translate(${xt.toFixed(1)} ${yt.toFixed(1)}) scale(${(px).toFixed(3)})`);
+    l.x.setAttribute('opacity', (t >= l.t0 + 0.38 ? vis : 0).toFixed(3));
+  }
+  // Il dato che manca
+  const sopra = document.querySelector('.manca .sopra'), grande = document.querySelector('.manca .grande');
+  for (const [el, t0] of [[sopra, T.sopra], [grande, T.grande]]) {
+    const p = fumo(tra(t, t0, t0 + 0.6));
+    el.style.opacity = p.toFixed(3);
+    el.style.transform = `translateY(${((1 - p) * 30).toFixed(1)}px)`;
+  }
+  const v = document.querySelector('.vuota');
+  const pv = tra(t, T.vuota, T.vuota + 0.55);
+  v.style.opacity = fumo(pv).toFixed(3);
+  v.style.transform = `translateX(-50%) scale(${(0.86 + 0.14 * outBack(pv)).toFixed(4)})`;
+  document.getElementById('anello').style.transform = `rotate(${(t * 16).toFixed(2)}deg)`;
+  document.getElementById('anello').style.transformOrigin = '62px 62px';
+  const battito = 1 + 0.06 * Math.max(0, Math.sin((t - T.vuota) * Math.PI * 1.4)) * (t > T.vuota + 0.5 ? 1 : 0);
+  v.querySelector('.punto').style.transform = `scale(${battito.toFixed(4)})`;
+};
+
+window.pronta.then(() => anteprima(window.imposta, DURATA));
+</script>
+</body>
+</html>

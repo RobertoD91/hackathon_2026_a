@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TwinCIRO · la città come rete di relazioni — giornata della regata</title>
+<meta name="description" content="Il knowledge graph di TwinCIRO per la giornata della regata: luoghi, eventi e flussi di persone, stazioni, imprese, agenti, sensori e fonti, con le relazioni ricavate dai file della repository.">
+<style>
+  :root {
+    color-scheme: dark;
+    --fondo: #0a1020;
+    --fondo-2: #111a30;
+    --pannello: #16213b;
+    --bordo: #26345a;
+    --testo: #eef2fb;
+    --tenue: #9fb0d3;
+    --twin: #38d6f0;
+    --ciro: #ffb547;
+    --corallo: #f45d5d;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(1200px 700px at 85% -10%, rgb(56 214 240 / 0.10), transparent 60%),
+      radial-gradient(900px 600px at -5% 110%, rgb(255 181 71 / 0.08), transparent 60%),
+      var(--fondo);
+    color: var(--testo);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: var(--twin); }
+  button, input { font: inherit; color: inherit; }
+
+  .schermo { display: flex; flex-direction: column; height: 100vh; min-height: 640px; }
+  header { padding: 18px 24px 10px; flex: none; }
+  .torna { font-size: 14px; color: var(--tenue); text-decoration: none; }
+  .torna:hover { color: var(--testo); }
+  .etichetta { margin: 10px 0 0; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--twin); }
+  h1 { margin: 4px 0 6px; font-size: clamp(22px, 2.6vw, 34px); line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; }
+  h1 .twin { color: var(--twin); }
+  h1 .ciro { color: var(--ciro); }
+  .sotto { margin: 0; max-width: 1100px; color: var(--tenue); font-size: 15px; line-height: 1.5; }
+  .sotto b { color: var(--testo); font-weight: 600; }
+
+  .app { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; padding: 8px 24px 16px; }
+  .tela { position: relative; min-width: 0; border: 1px solid var(--bordo); border-radius: 18px; background: rgb(10 16 32 / 0.6); overflow: hidden; touch-action: none; }
+  #svg { display: block; width: 100%; height: 100%; cursor: grab; user-select: none; -webkit-user-select: none; }
+  #svg.trascina { cursor: grabbing; }
+
+  .barra { position: absolute; left: 12px; right: 12px; top: 12px; display: flex; gap: 8px; align-items: center; pointer-events: none; z-index: 2; }
+  .barra > * { pointer-events: auto; }
+  .cerca { flex: 1 1 260px; max-width: 360px; min-width: 0; height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid var(--bordo); background: rgb(22 33 59 / 0.94); }
+  .cerca::placeholder { color: var(--tenue); }
+  .bottoni { display: flex; gap: 6px; margin-left: auto; }
+  .tasto { height: 40px; min-width: 40px; padding: 0 12px; border-radius: 20px; border: 1px solid var(--bordo); background: rgb(22 33 59 / 0.94); cursor: pointer; font-size: 15px; font-weight: 600; }
+  .tasto:hover { border-color: var(--twin); }
+  .tasto[aria-pressed="true"] { border-color: var(--twin); color: var(--twin); }
+  :focus-visible { outline: 2px solid var(--twin); outline-offset: 2px; }
+
+  .legenda { position: absolute; left: 12px; bottom: 12px; right: 12px; display: flex; flex-wrap: wrap; gap: 6px; z-index: 2; pointer-events: none; }
+  .legenda button { pointer-events: auto; display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px 0 9px; border-radius: 16px; border: 1px solid var(--bordo);
+    background: rgb(22 33 59 / 0.94); cursor: pointer; font-size: 14px; color: #c8d3ec; }
+  .legenda button b { color: var(--testo); font-variant-numeric: tabular-nums; }
+  .legenda button[aria-pressed="false"] { opacity: 0.42; text-decoration: line-through; }
+  .legenda svg { width: 16px; height: 16px; overflow: visible; flex: none; }
+
+  .suggerimento { position: absolute; z-index: 3; pointer-events: none; max-width: 280px; padding: 8px 11px; border-radius: 10px; background: #0f172a; border: 1px solid var(--bordo);
+    font-size: 13px; line-height: 1.35; box-shadow: 0 8px 24px rgb(0 0 0 / 0.4); }
+  .suggerimento b { display: block; font-size: 14px; }
+  .suggerimento span { color: var(--tenue); }
+
+  /* grafo */
+  .arco { fill: none; stroke-linecap: round; transition: opacity 0.15s; }
+  .nodo { cursor: pointer; transition: opacity 0.15s; }
+  .nodo:focus { outline: none; }
+  .nodo:focus-visible .anello { stroke: #fff; stroke-width: 2.5; opacity: 1; }
+  .anello { fill: none; stroke: none; opacity: 0; }
+  .et { font-family: inherit; paint-order: stroke; stroke: #0a1020; stroke-width: 5px; stroke-linejoin: round; fill: var(--testo); pointer-events: none; transition: opacity 0.15s; }
+  .et-minore { display: none; font-weight: 600; }
+  svg.zoom-vicino .et-minore, .et-minore.mostra { display: inline; }
+  .et.coperta { display: none; }
+  .em { font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif; pointer-events: none; }
+  .nascosto { display: none; }
+  svg.scelta .nodo { opacity: 0.14; }
+  svg.scelta .nodo.acceso { opacity: 1; }
+  svg.scelta .arco { opacity: 0.04 !important; }
+  svg.scelta .arco.acceso { opacity: 0.95 !important; }
+  svg.scelta .et { opacity: 0.14; }
+  svg.scelta .et.acceso { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .nodo.entra { animation: entra 0.5s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--s) * 0.22s); }
+    .arco.entra { animation: appari 0.6s ease both; animation-delay: calc(var(--s) * 0.22s + 0.2s); }
+    @keyframes entra { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes appari { from { opacity: 0; } }
+  }
+
+  /* pannello dei dettagli */
+  .pannello { min-width: 0; overflow-y: auto; border: 1px solid var(--bordo); border-radius: 18px; background: rgb(22 33 59 / 0.75); padding: 18px 18px 22px; }
+  .pannello h2 { margin: 6px 0 4px; font-size: 22px; line-height: 1.2; }
+  .pannello h3 { margin: 18px 0 6px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tenue); }
+  .tipo { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .tipo svg { width: 16px; height: 16px; overflow: visible; }
+  .sottotipo { color: var(--tenue); font-size: 14px; margin: 0; }
+  .stato { margin: 10px 0 0; padding: 8px 10px; border-radius: 10px; font-size: 13px; line-height: 1.4; background: rgb(56 214 240 / 0.08); border: 1px solid rgb(56 214 240 / 0.25); }
+  .stato.simulato { background: rgb(255 181 71 / 0.1); border-color: rgb(255 181 71 / 0.4); }
+  .desc { margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: #dbe4f7; }
+  dl.fatti { margin: 10px 0 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; font-size: 14px; }
+  dl.fatti dt { color: var(--tenue); }
+  dl.fatti dd { margin: 0; overflow-wrap: anywhere; }
+  .rel { list-style: none; margin: 0; padding: 0; }
+  .rel li { padding: 6px 0; border-top: 1px solid #22304f; font-size: 14px; line-height: 1.4; }
+  .rel li:first-child { border-top: 0; }
+  .rel button { background: none; border: 0; padding: 0; cursor: pointer; color: var(--testo); font-weight: 600; text-align: left; text-decoration: underline; text-decoration-color: rgb(159 176 211 / 0.5); text-underline-offset: 3px; }
+  .rel button:hover { color: var(--twin); }
+  .rel .det { display: block; color: var(--tenue); font-size: 13px; }
+  .file { font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+  .barre { display: flex; align-items: flex-end; gap: 3px; height: 54px; margin-top: 6px; }
+  .barre div { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+  .barre i { display: block; width: 100%; max-width: 22px; border-radius: 4px 4px 0 0; background: var(--c, var(--twin)); min-height: 1px; }
+  .barre small { font-size: 11px; color: var(--tenue); margin-top: 3px; }
+  .nota-barre { font-size: 12px; color: var(--tenue); margin: 4px 0 0; }
+  .vuoto { color: var(--tenue); font-size: 14px; line-height: 1.55; }
+  .conti { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+  .conti div { padding: 8px 10px; border-radius: 10px; background: rgb(10 16 32 / 0.5); border: 1px solid #22304f; font-size: 14px; }
+  .conti b { font-size: 18px; margin-right: 4px; }
+
+  .info { padding: 0 24px 28px; max-width: 1200px; }
+  .info details { margin-top: 10px; border: 1px solid var(--bordo); border-radius: 14px; background: rgb(22 33 59 / 0.6); }
+  .info summary { cursor: pointer; padding: 12px 16px; font-weight: 700; }
+  .info .corpo { padding: 0 16px 14px; font-size: 14px; line-height: 1.55; color: #dbe4f7; }
+  .info dt { font-weight: 700; margin-top: 8px; }
+  .info dd { margin: 2px 0 0; color: #c8d3ec; }
+  .tabella { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 5px 8px; border-top: 1px solid #22304f; vertical-align: top; }
+  th { color: var(--tenue); font-weight: 600; position: sticky; top: 0; background: #16213b; }
+  footer { padding: 0 24px 28px; color: var(--tenue); font-size: 13px; line-height: 1.6; }
+  .errore { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--tenue); }
+
+  @media (max-width: 860px) {
+    .schermo { display: block; height: auto; min-height: 0; }
+    header { padding: 14px 16px 8px; }
+    .app { display: grid; grid-template-columns: minmax(0, 1fr); padding: 8px 16px 12px; }
+    .tela { display: flex; flex-direction: column; height: auto; }
+    #svg { height: 64vh; min-height: 380px; flex: none; }
+    .legenda { position: static; padding: 4px 12px 12px; }
+    .pannello { max-height: none; }
+    .info, footer { padding-left: 16px; padding-right: 16px; }
+    .bottoni .facoltativo { display: none; }
+    .legenda button { height: 28px; font-size: 12.5px; padding: 0 9px 0 7px; }
+  }
+</style>
+</head>
+<body>
+<div class="schermo">
+<header>
+  <a class="torna" href="../../index.html">← The Big Hack 2026 · TwinCIRO</a>
+  <p class="etichetta">Knowledge graph · giornata della regata</p>
+  <h1><span class="twin">Twin</span><span class="ciro">CIRO</span> · la città come rete di relazioni — giornata della regata</h1>
+  <p class="sotto" id="sotto">Luoghi, eventi e flussi di persone, stazioni, imprese, agenti, sensori e fonti, con le relazioni che usano gli agenti di TwinCIRO: tutte ricavate dai file della repository. <b>Eventi e flussi sono dello scenario simulato della regata (Napoli 2027), le imprese sono di fantasia, le presenze da rete mobile sono simulate</b>; luoghi, stazioni e fonti sono reali.</p>
+</header>
+
+<main class="app">
+  <section class="tela" id="tela" aria-label="Grafo della città">
+    <div class="barra">
+      <input class="cerca" id="cerca" type="search" list="nomi" placeholder="Cerca nel grafo…" aria-label="Cerca un nodo" autocomplete="off">
+      <datalist id="nomi"></datalist>
+      <div class="bottoni">
+        <button class="tasto facoltativo" id="etichette" type="button" aria-pressed="false" title="Mostra tutte le etichette">Aa</button>
+        <button class="tasto" id="meno" type="button" aria-label="Rimpicciolisci" title="Rimpicciolisci">−</button>
+        <button class="tasto" id="piu" type="button" aria-label="Ingrandisci" title="Ingrandisci">+</button>
+        <button class="tasto" id="adatta" type="button" aria-label="Mostra tutto il grafo" title="Mostra tutto">⤢</button>
+      </div>
+    </div>
+    <svg id="svg" aria-label="Grafo: tocca un nodo per vedere le sue relazioni; trascina per spostare; rotella o due dita per lo zoom">
+      <g id="mondo"><g id="g-archi"></g><g id="g-nodi"></g><g id="g-et"></g></g>
+    </svg>
+    <div class="legenda" id="legenda" aria-label="Legenda: tocca un tipo per nasconderlo o mostrarlo"></div>
+    <div class="suggerimento" id="sugg" hidden></div>
+  </section>
+  <aside class="pannello" id="pannello" aria-live="polite"></aside>
+</main>
+</div>
+
+<section class="info">
+  <details id="come">
+    <summary>Come è costruito</summary>
+    <div class="corpo" id="come-corpo"></div>
+  </details>
+  <details id="tab">
+    <summary>Tutte le relazioni in tabella</summary>
+    <div class="corpo tabella" id="tab-corpo"></div>
+  </details>
+</section>
+<footer id="piede"></footer>
+
+<script>
+(() => {
+  'use strict';
+  const NS = 'http://www.w3.org/2000/svg';
+  const REPO = 'https://github.com/RobertoD91/hackathon_2026_a/blob/master/';
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const el = (nome, attr = {}, padre) => {
+    const e = document.createElementNS(NS, nome);
+    for (const [k, v] of Object.entries(attr)) if (v != null) e.setAttribute(k, v);
+    if (padre) padre.appendChild(e);
+    return e;
+  };
+  const hash = (s) => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
+  const forma = {
+    cerchio: (r) => `M${-r},0a${r},${r} 0 1,0 ${2 * r},0a${r},${r} 0 1,0 ${-2 * r},0`,
+    rombo: (r) => `M0,${-r}L${r},0L0,${r}L${-r},0Z`,
+    quadrato: (r) => `M${-r},${-r}H${r}V${r}H${-r}Z`,
+    triangolo: (r) => `M0,${-r * 1.1}L${r * 1.05},${r * 0.75}L${-r * 1.05},${r * 0.75}Z`,
+    esagono: (r) => Array.from({ length: 6 }, (_, i) => { const a = Math.PI / 6 + (i * Math.PI) / 3; return `${i ? 'L' : 'M'}${(r * Math.cos(a)).toFixed(2)},${(r * Math.sin(a)).toFixed(2)}`; }).join('') + 'Z',
+  };
+  const FORMA_TIPO = { luogo: 'cerchio', evento: 'rombo', stazione: 'quadrato', impresa: 'triangolo', agente: 'esagono', sensore: 'cerchio', fonte: 'cerchio' };
+  // Come si legge una relazione dal lato del nodo di arrivo
+  const INVERSO = { 'vicino a': 'vicino a', 'si svolge a': 'ospita', 'flusso verso': 'riceve un flusso da', 'servito da': 'serve', 'offerta a': 'riceve offerte da', monitora: 'è monitorato da', 'parla con': 'parla con', alimenta: 'è alimentato da' };
+  const STILE = {
+    'vicino a': { w: 1.6, o: 0.45 }, 'servito da': { w: 1.2, o: 0.42 }, 'si svolge a': { w: 2.4, o: 0.75 }, 'flusso verso': { w: 1.6, o: 0.62 },
+    'offerta a': { w: 1.5, o: 0.6 }, monitora: { w: 1.2, o: 0.36, tratto: '5 6' }, 'parla con': { w: 1.7, o: 0.45 }, alimenta: { w: 1, o: 0.28 },
+  };
+  const ORDINE = ['servito da', 'alimenta', 'vicino a', 'monitora', 'offerta a', 'si svolge a', 'flusso verso', 'parla con'];
+
+  const svg = $('svg');
+  const mondo = $('mondo');
+  const tela = $('tela');
+  const sugg = $('sugg');
+  const pannello = $('pannello');
+  let G = null;
+  let perId = new Map();
+  const vista = { x: 0, y: 0, k: 1 };
+  let toccata = false; // l'utente ha già spostato o zoomato la vista
+  let scelto = null;
+  let tutte = false;             // bottone «Aa»: tutte le etichette
+  const MINIMO_PX = 11;          // un'etichetta non scende sotto questa dimensione sullo schermo
+  const nascostiTipi = new Set();
+  const nascostiArchi = new Set();
+
+  function mostraErrore(testo) {
+    const d = document.createElement('div');
+    d.className = 'errore';
+    d.textContent = testo;
+    tela.appendChild(d);
+    pannello.innerHTML = `<p class="vuoto">${esc(testo)}</p>`;
+  }
+
+  function curva(e) {
+    const A = perId.get(e.da);
+    const B = perId.get(e.a);
+    const dx = B.x - A.x;
+    const dy = B.y - A.y;
+    const L = Math.hypot(dx, dy) || 1;
+    let cx;
+    let cy;
+    if (e.tipo === 'parla con') {
+      cx = (A.x + B.x) / 2;
+      cy = Math.min(A.y, B.y) - (0.15 * Math.abs(dx) + 20);
+    } else {
+      const piega = (hash(A.id + B.id) % 2 ? 1 : -1) * (e.tipo === 'alimenta' ? 0.06 : 0.1);
+      cx = (A.x + B.x) / 2 - (dy / L) * piega * L;
+      cy = (A.y + B.y) / 2 + (dx / L) * piega * L;
+    }
+    return `M${A.x.toFixed(1)},${A.y.toFixed(1)}Q${cx.toFixed(1)},${cy.toFixed(1)} ${B.x.toFixed(1)},${B.y.toFixed(1)}`;
+  }
+
+  function simbolo(n, padre, colore) {
+    switch (n.tipo) {
+      case 'luogo':
+        if (n.capienza) el('path', { d: forma.cerchio(n.r + 6), fill: 'none', stroke: colore, 'stroke-width': 1.5, opacity: 0.4 }, padre);
+        el('path', { d: forma.cerchio(n.r), fill: n.lat != null || n.capienza ? colore : '#0f2733', stroke: n.lat != null || n.capienza ? '#0a1020' : colore, 'stroke-width': 2 }, padre);
+        break;
+      case 'evento':
+        el('path', { d: forma.rombo(n.r * 1.18), fill: 'rgb(244 93 93 / 0.22)', stroke: colore, 'stroke-width': 3 }, padre);
+        break;
+      case 'stazione':
+        el('path', { d: forma.quadrato(n.r), fill: colore, stroke: '#0a1020', 'stroke-width': 1.5 }, padre);
+        break;
+      case 'impresa':
+        el('path', { d: forma.triangolo(n.r), fill: colore, stroke: '#0a1020', 'stroke-width': 2 }, padre);
+        break;
+      case 'agente': {
+        const twin = n.id === 'agente:twinciro';
+        el('path', { d: forma.esagono(n.r), fill: twin ? '#ffb547' : '#161f38', stroke: twin ? '#fff3dc' : colore, 'stroke-width': twin ? 3 : 2.5 }, padre);
+        break;
+      }
+      case 'sensore':
+        el('circle', { r: n.r, fill: 'none', stroke: colore, 'stroke-width': 1.5, opacity: 0.45 }, padre);
+        el('circle', { r: n.r * 0.62, fill: '#161f38', stroke: colore, 'stroke-width': 2.5 }, padre);
+        el('circle', { r: n.r * 0.26, fill: colore }, padre);
+        break;
+      case 'fonte': {
+        const scuro = n.icona_sfondo === 'scuro';
+        el('circle', { r: n.r, fill: n.simulato ? '#161f38' : scuro ? '#0f172a' : '#ffffff', stroke: n.simulato || scuro ? colore : '#0a1020', 'stroke-width': n.simulato ? 2.5 : 2, 'stroke-dasharray': n.simulato ? '4 4' : null }, padre);
+        if (n.icona) {
+          const id = `clip-${n.id.replace(/[^a-z0-9]/gi, '-')}`;
+          const cp = el('clipPath', { id }, svg);
+          el('circle', { r: n.r - 3 }, cp);
+          const lato = (n.r - 3) * 2 * 0.86;
+          el('image', { href: `../scene/${n.icona}`, x: -lato / 2, y: -lato / 2, width: lato, height: lato, 'clip-path': `url(#${id})`, preserveAspectRatio: 'xMidYMid meet' }, padre);
+        }
+        break;
+      }
+      default:
+        el('circle', { r: n.r, fill: colore }, padre);
+    }
+    if (n.emoji && (n.tipo === 'agente' || n.tipo === 'evento' || (n.tipo === 'fonte' && !n.icona))) {
+      const fs = n.tipo === 'agente' ? n.r * 0.95 : n.r * 0.92;
+      el('text', { class: 'em', 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-size': fs.toFixed(1) }, padre).textContent = n.emoji;
+    }
+  }
+
+  function posizionaEtichetta(n, dimensione) {
+    if (!n.et) return;
+    const et = n.etichetta;
+    const d = dimensione || (et ? et.dimensione : 13);
+    const lato = et ? et.lato : 'destra';
+    let x = n.x + n.r + (n.capienza ? 12 : 8);
+    let y = n.y + d * 0.35;
+    let anchor = 'start';
+    if (lato === 'sotto') { x = n.x; y = n.y + n.r * (n.tipo === 'evento' ? 1.18 : 1) + 6 + d * 0.86; anchor = 'middle'; }
+    else if (lato === 'sinistra') { x = n.x - n.r - 8; anchor = 'end'; }
+    n.et.setAttribute('x', x.toFixed(1));
+    n.et.setAttribute('y', y.toFixed(1));
+    n.et.setAttribute('text-anchor', anchor);
+  }
+
+  function disegna() {
+    const gA = $('g-archi');
+    const gN = $('g-nodi');
+    const gE = $('g-et');
+    for (const e of [...G.archi].sort((p, q) => ORDINE.indexOf(p.tipo) - ORDINE.indexOf(q.tipo))) {
+      const st = STILE[e.tipo] || { w: 1.2, o: 0.4 };
+      const colore = G.tipi_arco[e.tipo]?.colore || '#9fb0d3';
+      e.el = el('path', {
+        class: 'arco entra', d: curva(e), stroke: colore, 'stroke-width': (e.tipo === 'flusso verso' ? st.w + 3 * (e.quota || 0) : st.w).toFixed(2),
+        opacity: st.o, 'stroke-dasharray': e.simulato ? '3 7' : st.tratto || null, style: `--s:${G.tipi_arco[e.tipo]?.strato || 1}`,
+      }, gA);
+      perId.get(e.da).archi.push(e);
+      perId.get(e.a).archi.push(e);
+    }
+    for (const n of G.nodi) {
+      const colore = G.tipi_nodo[n.tipo].colore;
+      const g = el('g', { class: 'nodo entra', tabindex: 0, role: 'button', 'aria-label': `${n.nome}, ${G.tipi_nodo[n.tipo].nome.toLowerCase()}`, style: `--s:${n.strato}` }, gN);
+      g.dataset.id = n.id;
+      el('circle', { class: 'anello', r: n.r + 6 }, g);
+      simbolo(n, g, colore);
+      el('circle', { r: Math.max(n.r + 4, 12), fill: 'transparent' }, g); // bersaglio più largo del simbolo
+      n.g = g;
+      const et = n.etichetta;
+      const t = el('text', { class: `et${et ? '' : ' et-minore'}`, 'font-size': et ? et.dimensione : 13, 'font-weight': et ? (n.tipo === 'agente' || n.tipo === 'evento' ? 700 : 650) : 600 }, gE);
+      if (n.id === 'agente:twinciro') {
+        t.setAttribute('font-weight', 800);
+        el('tspan', { fill: '#38d6f0' }, t).textContent = 'Twin';
+        el('tspan', { fill: '#ffb547' }, t).textContent = 'CIRO';
+      } else t.textContent = et ? et.testo : n.breve;
+      n.et = t;
+      sposta(n);
+    }
+  }
+
+  function sposta(n) {
+    n.g.setAttribute('transform', `translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`);
+    posizionaEtichetta(n, Number(n.et?.getAttribute('font-size')) || undefined);
+  }
+
+  // Etichette come su una mappa: mai più piccole di MINIMO_PX sullo schermo; se due si sovrappongono resta
+  // la più importante (il nodo scelto e i suoi vicini, TwinCIRO, gli agenti, le zone, gli eventi...).
+  function priorita(n) {
+    if (scelto && n === scelto) return 1e6;
+    let p = n.etichetta ? 300 : 0;
+    if (n.id === 'agente:twinciro') p += 200;
+    else if (n.tipo === 'agente') p += 120;
+    else if (n.capienza) p += 100;
+    else if (n.tipo === 'evento') p += 90;
+    if (scelto && n.et.classList.contains('acceso')) p += 1e4;
+    return p + (n.grado || 0);
+  }
+  let inAttesa = false;
+  function sistemaEtichette() {
+    if (inAttesa) return;
+    inAttesa = true;
+    requestAnimationFrame(() => {
+      inAttesa = false;
+      const vicino = svg.classList.contains('zoom-vicino');
+      const prese = [];
+      for (const n of [...G.nodi].sort((a, b) => priorita(b) - priorita(a))) {
+        const t = n.et;
+        t.classList.remove('coperta');
+        if (nascostiTipi.has(n.tipo)) continue;
+        if (!(n.etichetta || vicino || t.classList.contains('mostra'))) continue;
+        // dimensione sullo schermo: quella del video a zoom 1, costante se si ingrandisce, mai sotto MINIMO_PX
+        const d = n.etichetta ? n.etichetta.dimensione : 13;
+        const fs = Math.max(MINIMO_PX, Math.min(d, d * vista.k)) / vista.k;
+        t.setAttribute('font-size', fs.toFixed(1));
+        posizionaEtichetta(n, fs);
+        const b = t.getBBox();
+        const s = { x0: b.x - 2, y0: b.y, x1: b.x + b.width + 2, y1: b.y + b.height };
+        if (prese.some((a) => s.x0 < a.x1 && s.x1 > a.x0 && s.y0 < a.y1 && s.y1 > a.y0)) t.classList.add('coperta');
+        else prese.push(s);
+      }
+    });
+  }
+
+  // --- vista: zoom e spostamento ---
+  function applicaVista() {
+    mondo.setAttribute('transform', `translate(${vista.x.toFixed(2)},${vista.y.toFixed(2)}) scale(${vista.k.toFixed(4)})`);
+    svg.classList.toggle('zoom-vicino', vista.k > 1.35);
+    if (G) sistemaEtichette();
+  }
+  function confini(lista) {
+    let x0 = Infinity; let y0 = Infinity; let x1 = -Infinity; let y1 = -Infinity;
+    for (const n of lista) {
+      const extra = n.etichetta ? n.etichetta.testo.length * n.etichetta.dimensione * 0.56 + 20 : 0;
+      x0 = Math.min(x0, n.x - n.r - (n.etichetta?.lato === 'sinistra' ? extra : n.etichetta?.lato === 'sotto' ? extra / 2 : 0));
+      x1 = Math.max(x1, n.x + n.r + (n.etichetta?.lato === 'destra' ? extra : n.etichetta?.lato === 'sotto' ? extra / 2 : 0));
+      y0 = Math.min(y0, n.y - n.r - 10);
+      y1 = Math.max(y1, n.y + n.r + (n.etichetta?.lato === 'sotto' ? 34 : 10));
+    }
+    // gli archi tra agenti salgono sopra le loro file
+    if (lista.some((n) => n.tipo === 'agente')) y0 -= 50;
+    return { x0, y0, x1, y1 };
+  }
+  function adatta(lista = G.nodi.filter((n) => !nascostiTipi.has(n.tipo))) {
+    const r = svg.getBoundingClientRect();
+    if (!r.width || !r.height || !lista.length) return;
+    const b = confini(lista);
+    const alto = 64;   // barra di ricerca
+    const leg = tela.querySelector('.legenda');
+    const basso = getComputedStyle(leg).position === 'absolute' ? leg.offsetHeight + 24 : 12;
+    const w = r.width - 24;
+    const h = r.height - alto - basso;
+    vista.k = Math.max(0.15, Math.min(4, Math.min(w / (b.x1 - b.x0), h / (b.y1 - b.y0))));
+    vista.x = 12 + (w - (b.x1 - b.x0) * vista.k) / 2 - b.x0 * vista.k;
+    vista.y = alto + (h - (b.y1 - b.y0) * vista.k) / 2 - b.y0 * vista.k;
+    applicaVista();
+  }
+  function zoomIn(fattore, sx, sy) {
+    const r = svg.getBoundingClientRect();
+    const px = sx ?? r.width / 2;
+    const py = sy ?? r.height / 2;
+    const k = Math.max(0.15, Math.min(8, vista.k * fattore));
+    vista.x = px - ((px - vista.x) * k) / vista.k;
+    vista.y = py - ((py - vista.y) * k) / vista.k;
+    vista.k = k;
+    toccata = true;
+    applicaVista();
+  }
+  function centraSu(n) {
+    const r = svg.getBoundingClientRect();
+    if (vista.k < 1.1) vista.k = 1.4;
+    vista.x = r.width / 2 - n.x * vista.k;
+    vista.y = r.height / 2 - n.y * vista.k;
+    toccata = true;
+    applicaVista();
+  }
+
+  // --- puntatori: trascinare un nodo, spostare la vista, due dita per lo zoom ---
+  const puntatori = new Map();
+  let gesto = null;
+  const locale = (ev) => { const r = svg.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; };
+  svg.addEventListener('pointerdown', (ev) => {
+    if (ev.button !== 0 && ev.pointerType === 'mouse') return;
+    const p = locale(ev);
+    puntatori.set(ev.pointerId, p);
+    svg.setPointerCapture(ev.pointerId);
+    const g = ev.target.closest('.nodo');
+    if (puntatori.size === 2) {
+      const [a, b] = [...puntatori.values()];
+      gesto = { tipo: 'pinza', d: Math.hypot(a.x - b.x, a.y - b.y), k: vista.k };
+    } else if (g) {
+      const n = perId.get(g.dataset.id);
+      gesto = { tipo: 'nodo', n, da: p, x: n.x, y: n.y, mosso: false };
+    } else {
+      gesto = { tipo: 'vista', da: p, x: vista.x, y: vista.y, mosso: false };
+    }
+  });
+  svg.addEventListener('pointermove', (ev) => {
+    const p = locale(ev);
+    if (!puntatori.has(ev.pointerId)) {
+      if (ev.pointerType === 'mouse') suggerisci(ev);
+      return;
+    }
+    puntatori.set(ev.pointerId, p);
+    if (!gesto) return;
+    if (gesto.tipo === 'pinza' && puntatori.size === 2) {
+      const [a, b] = [...puntatori.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      zoomIn((gesto.k * d) / gesto.d / vista.k, (a.x + b.x) / 2, (a.y + b.y) / 2);
+      return;
+    }
+    const dx = p.x - gesto.da.x;
+    const dy = p.y - gesto.da.y;
+    if (!gesto.mosso && Math.hypot(dx, dy) < 5) return;
+    gesto.mosso = true;
+    svg.classList.add('trascina');
+    sugg.hidden = true;
+    if (gesto.tipo === 'nodo') {
+      gesto.n.x = gesto.x + dx / vista.k;
+      gesto.n.y = gesto.y + dy / vista.k;
+      sposta(gesto.n);
+      for (const e of gesto.n.archi) e.el.setAttribute('d', curva(e));
+    } else if (gesto.tipo === 'vista') {
+      vista.x = gesto.x + dx;
+      vista.y = gesto.y + dy;
+      toccata = true;
+      applicaVista();
+    }
+  });
+  const fine = (ev) => {
+    if (!puntatori.has(ev.pointerId)) return;
+    puntatori.delete(ev.pointerId);
+    svg.classList.remove('trascina');
+    if (gesto?.tipo === 'nodo' && gesto.mosso) sistemaEtichette();
+    if (gesto && !gesto.mosso && ev.type === 'pointerup') {
+      if (gesto.tipo === 'nodo') scegli(gesto.n.id);
+      else if (gesto.tipo === 'vista') scegli(null);
+    }
+    if (puntatori.size === 0) gesto = null;
+    else if (gesto?.tipo === 'pinza') gesto = null;
+  };
+  svg.addEventListener('pointerup', fine);
+  svg.addEventListener('pointercancel', fine);
+  svg.addEventListener('pointerleave', (ev) => { if (ev.pointerType === 'mouse') sugg.hidden = true; });
+  svg.addEventListener('wheel', (ev) => {
+    ev.preventDefault();
+    const p = locale(ev);
+    zoomIn(Math.exp(-ev.deltaY * (ev.ctrlKey ? 0.01 : 0.0015)), p.x, p.y);
+  }, { passive: false });
+  svg.addEventListener('keydown', (ev) => {
+    const g = ev.target.closest?.('.nodo');
+    if (g && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); scegli(g.dataset.id); }
+    if (ev.key === 'Escape') scegli(null);
+  });
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && scelto) scegli(null); });
+
+  function suggerisci(ev) {
+    const g = ev.target.closest?.('.nodo');
+    if (!g) { sugg.hidden = true; return; }
+    const n = perId.get(g.dataset.id);
+    sugg.innerHTML = `<b>${esc(n.nome)}</b><span>${esc(G.tipi_nodo[n.tipo].nome)}${n.sottotipo ? ` · ${esc(n.sottotipo)}` : ''}</span>`;
+    sugg.hidden = false;
+    const r = tela.getBoundingClientRect();
+    const x = Math.min(ev.clientX - r.left + 14, r.width - sugg.offsetWidth - 8);
+    const y = Math.min(ev.clientY - r.top + 14, r.height - sugg.offsetHeight - 8);
+    sugg.style.left = `${Math.max(8, x)}px`;
+    sugg.style.top = `${Math.max(8, y)}px`;
+  }
+
+  // --- scelta di un nodo: si accendono i vicini e le relazioni ---
+  function scegli(id) {
+    scelto = id ? perId.get(id) : null;
+    svg.classList.toggle('scelta', Boolean(scelto));
+    for (const n of G.nodi) {
+      n.g.classList.remove('acceso');
+      n.et.classList.remove('acceso');
+      n.et.classList.toggle('mostra', tutte);
+    }
+    for (const e of G.archi) e.el.classList.remove('acceso');
+    if (scelto) {
+      const accendi = (n) => { n.g.classList.add('acceso'); n.et.classList.add('acceso', 'mostra'); };
+      accendi(scelto);
+      for (const e of scelto.archi) {
+        if (nascostiArchi.has(e.tipo)) continue;
+        const altro = perId.get(e.da === scelto.id ? e.a : e.da);
+        if (nascostiTipi.has(altro.tipo)) continue;
+        e.el.classList.add('acceso');
+        accendi(altro);
+      }
+    }
+    dettagli();
+    sistemaEtichette();
+  }
+
+  const giorno = (s) => (s && /^\d{8}$/.test(s) ? `${s.slice(6)}/${s.slice(4, 6)}/${s.slice(0, 4)}` : s);
+  function barre(valori, colore, formato, nota) {
+    const voci = Object.entries(valori || {});
+    if (!voci.length) return '';
+    const max = Math.max(1, ...voci.map(([, v]) => v));
+    const numeri = voci.map(([, v]) => v);
+    const da = voci[0][0];
+    const a = voci.at(-1)[0];
+    const sintesi = `Tra le ${da} e le ${a}: da ${formato(Math.min(...numeri))} a ${formato(Math.max(...numeri))} l'ora.`;
+    return `<div class="barre" role="img" aria-label="${esc(voci.map(([h, v]) => `ore ${h}: ${formato(v)}`).join(', '))}">${voci.map(([h, v]) => `<div title="ore ${esc(h)}: ${esc(formato(v))}"><i style="height:${Math.max(2, (v / max) * 40).toFixed(0)}px;--c:${colore}"></i><small>${esc(h)}</small></div>`).join('')}</div><p class="nota-barre">${esc(sintesi)} ${esc(nota)}</p>`;
+  }
+
+  function dettagli() {
+    if (!scelto) {
+      const c = G.meta.conteggi;
+      pannello.innerHTML = `<p class="etichetta">La rete</p><h2>${c.nodi} nodi, ${c.archi} relazioni</h2>
+        <p class="vuoto">Tocca un nodo per vedere che cos'è, da dove viene il dato e con chi è collegato. Trascina un nodo per spostarlo, trascina lo sfondo per muoverti, usa la rotella o due dita per lo zoom. Con i bottoni della legenda nascondi un tipo di nodo.</p>
+        <div class="conti">${Object.entries(c.per_tipo).map(([t, v]) => `<div><b>${v}</b>${esc(G.tipi_nodo[t].nome.toLowerCase())}</div>`).join('')}</div>
+        <h3>Relazioni</h3><ul class="rel">${Object.entries(c.per_relazione).map(([t, v]) => `<li><b>${v}</b> «${esc(t)}»<span class="det">${esc(G.meta.regole[t] || '')}</span></li>`).join('')}</ul>`;
+      return;
+    }
+    const n = scelto;
+    const T = G.tipi_nodo[n.tipo];
+    const fatti = [];
+    const f = (k, v) => { if (v != null && v !== '') fatti.push([k, v]); };
+    if (n.tipo === 'luogo') {
+      f('Categoria', n.categoria);
+      if (n.capienza) f('Capienza (scenario)', `${n.capienza.toLocaleString('it-IT')} persone`);
+      if (n.capienza_mappa) f('Soglia «affollato» (mappa)', `${n.capienza_mappa.toLocaleString('it-IT')} persone`);
+      if (n.coordinate) f('Coordinate', n.coordinate.map((c) => `${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}`).join(' · '));
+      if (n.turismo) f("Per l'agente Turismo", `${n.turismo.nome}: ${n.turismo.interessi.join(', ')}`);
+      if (n.parole) f('Si cerca anche con', n.parole.slice(0, 6).join(', '));
+      f('Stazioni', n.nota_stazioni);
+    } else if (n.tipo === 'evento') {
+      f('Orario', n.orario);
+      f('Persone', n.persone?.toLocaleString('it-IT'));
+      f('Zona nello scenario', n.zona_scenario);
+    } else if (n.tipo === 'stazione') {
+      f('Linee', n.linee?.join(', '));
+      f('Operatore', n.operatore);
+      f('Prossime partenze dal vivo', n.prossimi_passaggi ? 'sì (Transitous)' : 'no');
+    } else if (n.tipo === 'impresa') {
+      f('Tipo', n.sottotipo);
+      f('Posti', n.posti);
+      f('Sconto nelle ore vuote', n.sconto_ore_morte != null ? `${n.sconto_ore_morte}%` : null);
+    } else if (n.tipo === 'sensore') {
+      f('Zona', n.zona);
+      f('Grandezze', n.grandezze?.join(', '));
+    } else if (n.tipo === 'fonte') {
+      f('Ente', n.ente);
+      f('Licenza', n.licenza);
+      f('Esito della verifica', n.esito_verifica);
+      if (n.url) fatti.push(['Sito', `<a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.url.replace(/^https?:\/\//, '').slice(0, 48))}</a>`, true]);
+    }
+    const gruppi = new Map();
+    for (const e of n.archi) {
+      const uscita = e.da === n.id;
+      const altro = perId.get(uscita ? e.a : e.da);
+      const verbo = uscita ? e.tipo : INVERSO[e.tipo] || e.tipo;
+      if (!gruppi.has(verbo)) gruppi.set(verbo, []);
+      gruppi.get(verbo).push({ e, altro });
+    }
+    const relazioni = [...gruppi.entries()].map(([verbo, voci]) => `<h3>${esc(verbo)} (${voci.length})</h3><ul class="rel">${voci
+      .sort((a, b) => a.altro.breve.localeCompare(b.altro.breve, 'it'))
+      .map(({ e, altro }) => `<li><button type="button" data-vai="${esc(altro.id)}">${esc(altro.breve)}</button> <span class="det">${esc(e.dettaglio || '')}</span></li>`).join('')}</ul>`).join('');
+    const icona = `<svg viewBox="-11 -11 22 22" aria-hidden="true"><path d="${forma[FORMA_TIPO[n.tipo]](8)}" fill="${T.colore}" stroke="${T.colore}"/></svg>`;
+    const grafico = n.tipo === 'stazione'
+      ? `<h3>Corse programmate il sabato</h3>${barre(n.corse_sabato, '#a78bfa', (v) => `${v} corse`, `Orario GTFS del sabato di riferimento (${giorno(n.giorno_gtfs_sabato) || 'snapshot'}): la giornata dello scenario è un sabato.`)}`
+      : n.tipo === 'impresa'
+        ? `<h3>Posti già prenotati per ora</h3>${barre(Object.fromEntries(Object.entries(n.occupazione || {}).map(([h, v]) => [h, Math.round(v * 100)])), '#4ade80', (v) => `${v}%`, 'Quota tipica del sabato, dati di fantasia (imprese.json): sotto il 50% è un\'ora vuota e scatta l\'offerta.')}`
+        : '';
+    pannello.innerHTML = `<span class="tipo" style="color:${T.colore}">${icona}${esc(T.nome)}</span>
+      <h2>${esc(n.nome)}</h2>${n.sottotipo ? `<p class="sottotipo">${esc(n.sottotipo)}</p>` : ''}
+      <p class="stato${/simulat|fantasia|scenario/i.test(n.stato || '') ? ' simulato' : ''}">${esc(n.stato || '')}</p>
+      ${n.descrizione ? `<p class="desc">${esc(n.descrizione)}</p>` : ''}
+      ${fatti.length ? `<dl class="fatti">${fatti.map(([k, v, html]) => `<dt>${esc(k)}</dt><dd>${html ? v : esc(v)}</dd>`).join('')}</dl>` : ''}
+      ${grafico}
+      ${relazioni || '<h3>Relazioni</h3><p class="vuoto">Nessuna relazione nei dati della repository.</p>'}
+      <h3>Da dove viene</h3><div class="file">${(n.origine || []).map((p) => `<a href="${REPO}${esc(p)}" target="_blank" rel="noopener">${esc(p)}</a>`).join('<br>')}</div>`;
+  }
+  pannello.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-vai]');
+    if (!b) return;
+    const n = perId.get(b.dataset.vai);
+    if (nascostiTipi.has(n.tipo)) attivaTipo(n.tipo, true);
+    scegli(n.id);
+    centraSu(n);
+  });
+
+  // --- legenda: un bottone per tipo di nodo e uno per tipo di relazione ---
+  function attivaTipo(t, acceso) {
+    if (acceso) nascostiTipi.delete(t); else nascostiTipi.add(t);
+    aggiornaVisibili();
+  }
+  function aggiornaVisibili() {
+    for (const n of G.nodi) {
+      const via = nascostiTipi.has(n.tipo);
+      n.g.classList.toggle('nascosto', via);
+      n.et.classList.toggle('nascosto', via);
+    }
+    for (const e of G.archi) {
+      const via = nascostiArchi.has(e.tipo) || nascostiTipi.has(perId.get(e.da).tipo) || nascostiTipi.has(perId.get(e.a).tipo);
+      e.el.classList.toggle('nascosto', via);
+    }
+    for (const b of $('legenda').querySelectorAll('button')) {
+      const acceso = b.dataset.tipo ? !nascostiTipi.has(b.dataset.tipo) : !nascostiArchi.has(b.dataset.arco);
+      b.setAttribute('aria-pressed', String(acceso));
+    }
+    if (scelto && nascostiTipi.has(scelto.tipo)) scegli(null);
+    else if (scelto) scegli(scelto.id);
+    else sistemaEtichette();
+  }
+  function legenda() {
+    const L = $('legenda');
+    for (const [t, T] of Object.entries(G.tipi_nodo)) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.dataset.tipo = t;
+      b.setAttribute('aria-pressed', 'true');
+      b.innerHTML = `<svg viewBox="-11 -11 22 22" aria-hidden="true"><path d="${forma[FORMA_TIPO[t]](8)}" fill="${t === 'agente' || t === 'evento' || t === 'sensore' ? '#161f38' : T.colore}" stroke="${T.colore}" stroke-width="2.2"/></svg><b>${G.meta.conteggi.per_tipo[t]}</b>${esc(T.nome.split(' ')[0].toLowerCase())}`;
+      b.addEventListener('click', () => attivaTipo(t, nascostiTipi.has(t)));
+      L.appendChild(b);
+    }
+    for (const [t, A] of Object.entries(G.tipi_arco)) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.dataset.arco = t;
+      b.setAttribute('aria-pressed', 'true');
+      b.title = G.meta.regole[t] || t;
+      const st = STILE[t] || {};
+      b.innerHTML = `<svg viewBox="0 -8 22 16" aria-hidden="true"><path d="M1,4 Q11,-6 21,4" fill="none" stroke="${A.colore}" stroke-width="2.4" ${st.tratto ? `stroke-dasharray="4 3"` : ''}/></svg>${esc(t)}`;
+      b.addEventListener('click', () => {
+        if (nascostiArchi.has(t)) nascostiArchi.delete(t); else nascostiArchi.add(t);
+        aggiornaVisibili();
+      });
+      L.appendChild(b);
+    }
+  }
+
+  // --- ricerca ---
+  function ricerca() {
+    const dl = $('nomi');
+    const nomi = new Map();
+    for (const n of G.nodi) {
+      nomi.set(n.breve.toLowerCase(), n);
+      if (n.nome !== n.breve) nomi.set(n.nome.toLowerCase(), n);
+    }
+    dl.innerHTML = [...new Set(G.nodi.map((n) => n.breve))].sort((a, b) => a.localeCompare(b, 'it')).map((v) => `<option value="${esc(v)}"></option>`).join('');
+    const vai = () => {
+      const q = $('cerca').value.trim().toLowerCase();
+      if (!q) return;
+      const n = nomi.get(q) || G.nodi.find((x) => x.breve.toLowerCase().includes(q) || x.nome.toLowerCase().includes(q));
+      if (!n) return;
+      if (nascostiTipi.has(n.tipo)) attivaTipo(n.tipo, true);
+      scegli(n.id);
+      centraSu(n);
+    };
+    $('cerca').addEventListener('change', vai);
+    $('cerca').addEventListener('keydown', (ev) => { if (ev.key === 'Enter') vai(); });
+  }
+
+  function informazioni() {
+    const m = G.meta;
+    $('come-corpo').innerHTML = `<p>${esc(m.descrizione)} ${esc(m.nota)}</p>
+      <p>Il grafo e le posizioni dei nodi li calcola <a href="${REPO}${esc(m.script)}" target="_blank" rel="noopener">${esc(m.script)}</a> (Node, nessuna dipendenza): <code>node ${esc(m.script)}</code> riscrive <code>grafo.json</code> e la scena del video <code>c5-presentazione/scene/grafo.html</code>. Il layout è deterministico: stessi dati, stesse posizioni.</p>
+      <dl>${Object.entries(m.regole).map(([t, r]) => `<dt>${esc(t)} (${m.conteggi.per_relazione[t]})</dt><dd>${esc(r)}</dd>`).join('')}</dl>
+      <p><b>Scenario:</b> ${esc(m.scenario)}</p>
+      <p><b>Dati del:</b> ${Object.entries(m.dati_del).filter(([, v]) => v).map(([k, v]) => `${esc(k.replace('_', ' '))} ${esc(v)}`).join(' · ')}</p>
+      <p><b>File letti:</b><br>${m.file.map((p) => `<a href="${REPO}${esc(p)}" target="_blank" rel="noopener">${esc(p)}</a>`).join('<br>')}</p>`;
+    $('tab').addEventListener('toggle', () => {
+      if (!$('tab').open || $('tab-corpo').childElementCount) return;
+      const righe = G.archi.map((e) => `<tr><td>${esc(perId.get(e.da).breve)}</td><td>${esc(e.tipo)}</td><td>${esc(perId.get(e.a).breve)}</td><td>${esc(e.dettaglio || '')}</td></tr>`).join('');
+      $('tab-corpo').innerHTML = `<table><thead><tr><th>Da</th><th>Relazione</th><th>A</th><th>Dettaglio</th></tr></thead><tbody>${righe}</tbody></table>`;
+    });
+    $('piede').innerHTML = `TwinCIRO · The Big Hack 2026, challenge 05 Fastweb + Vodafone · Roberto D'Isanto e Mario Varlese · <a href="../mappa/">mappa «Napoli in tempo reale»</a> · <a href="${REPO}c5-presentazione/grafo/" target="_blank" rel="noopener">codice del grafo</a>`;
+  }
+
+  async function avvia() {
+    try {
+      const r = await fetch('grafo.json', { cache: 'no-cache' });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      G = await r.json();
+    } catch (err) {
+      mostraErrore(`Non riesco a leggere grafo.json (${err.message}). Apri la pagina da un server web, per esempio: python3 -m http.server dalla radice della repository.`);
+      return;
+    }
+    perId = new Map(G.nodi.map((n) => [n.id, n]));
+    for (const n of G.nodi) n.archi = [];
+    disegna();
+    legenda();
+    ricerca();
+    informazioni();
+    dettagli();
+    adatta();
+    new ResizeObserver(() => { if (!toccata) adatta(); }).observe(svg);
+    $('piu').addEventListener('click', () => zoomIn(1.35));
+    $('meno').addEventListener('click', () => zoomIn(1 / 1.35));
+    $('adatta').addEventListener('click', () => { toccata = false; adatta(); });
+    $('etichette').addEventListener('click', (ev) => {
+      tutte = !tutte;
+      ev.currentTarget.setAttribute('aria-pressed', String(tutte));
+      for (const n of G.nodi) n.et.classList.toggle('mostra', tutte || n.et.classList.contains('acceso'));
+      sistemaEtichette();
+    });
+  }
+  avvia();
+})();
+</script>
+</body>
+</html>

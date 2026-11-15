@@ -3,7 +3,7 @@ eclipse-sumo>=1.20     # simulatore di traffico (gemello digitale), include sumo
 traci>=1.20
 sumolib>=1.20
 pyproj                 # conversione coordinate per sumolib
-paho-mqtt>=2.0         # bus MQTT verso gli ESP32
+paho-mqtt>=2.0         # bus MQTT (misure vere del badge WHY2025 e di Tasmota)
 rich>=13               # console della sala operativa
 anthropic>=0.70        # provider LLM Claude (opzionale: senza chiave si usano le regole)
 numpy                  # solo per strumenti/video3d (esportazione posizioni)

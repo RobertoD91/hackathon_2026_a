@@ -1,6 +1,8 @@
 # Brainstorming — challenge 1, 2, 5
 
-> **Documento storico (13/11).** La scelta definitiva è la C5 con **TwinCiro** e CiroGPT al centro (vedi `CLAUDE.md` e il diario in `stato-e-strumenti.md`). Le idee `c5-regia-evento`, `c5-heatescape` e `c5-smartwaste` non sono state sviluppate come cartelle separate: lo scenario America's Cup + navi + partita vive in `c5-agentic-city/`.
+> **14/11:** i prototipi di C1, C2 e C4 sono stati tolti dalla repo (restano nella storia git e nel fork dell'altro gruppo), insieme a `shared/`: le cartelle citate qui sotto non esistono più.
+
+> **Documento storico (13/11).** La scelta definitiva è la C5 con **TwinCIRO** e il suo assistente su WhatsApp al centro (vedi `CLAUDE.md` e il diario in `stato-e-strumenti.md`). Le idee `c5-regia-evento`, `c5-heatescape` e `c5-smartwaste` non sono state sviluppate come cartelle separate: lo scenario America's Cup + navi + partita vive in `c5-agentic-city/`.
 
 Testi ufficiali delle challenge: [`hackathon.md`](hackathon.md). Punti di forza del team: IoT (ESP32, modulo 5G), OpenClaw già funzionante con WhatsApp, server cloud e deploy rapido con Claude Code.
 

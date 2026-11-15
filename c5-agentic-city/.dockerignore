@@ -3,7 +3,8 @@ __pycache__/
 **/__pycache__/
 media/
 risultati/
-firmware/
 openclaw/
 *.mp4
 .video3d/
+# utente e password del broker: li legge compose, non devono entrare nel contesto di build
+.env

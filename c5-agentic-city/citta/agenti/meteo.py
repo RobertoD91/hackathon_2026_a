@@ -3,6 +3,9 @@
 Fonte reale: Open-Meteo (meteo e mare, senza chiave). Con --meteo scenario usa i valori
 dello scenario (demo stabile); con --meteo reale usa i dati di oggi e ripiega sullo
 scenario se la rete non risponde.
+
+Ascolta anche i termometri veri (badge WHY2025, scheda Tasmota: napoli/sensori/<id>/temperatura)
+e lo dice in una riga di dialogo; le decisioni sulla regata restano su vento e onda.
 """
 
 from __future__ import annotations
@@ -10,6 +13,8 @@ from __future__ import annotations
 import json
 import urllib.request
 
+from ..sensori import numero_valido
+from ..testi import dove
 from .base import Agente
 
 NAPOLI = (40.83, 14.24)
@@ -48,6 +53,7 @@ class AgenteMeteo(Agente):
         self.modalita = modalita
         self.orari: dict | None = None
         self.ultimo_esito: bool | None = None
+        self.misure: dict[str, float] = {}  # id del sensore → ultima temperatura detta in dialogo
 
     def avvio(self) -> None:
         if self.modalita == "reale":
@@ -59,7 +65,16 @@ class AgenteMeteo(Agente):
                     "temperatura": h["temperature_2m"], "pioggia": h["precipitation"],
                     "onda": mare["hourly"]["wave_height"],
                 }
+        self.ascolta("napoli/sensori/+/temperatura")
         self.ogni(30, self.aggiorna)
+
+    def gestisci(self, topic: str, m: dict) -> None:
+        # Termometro vero: una riga alla prima misura e poi solo se cambia di almeno 1 °C.
+        nodo, valore, zona = topic.split("/")[2], m.get("valore"), m.get("zona")
+        if numero_valido(valore) and abs(valore - self.misure.get(nodo, -999)) >= 1:
+            self.misure[nodo] = valore
+            gradi = f"{valore:.1f}".replace(".", ",")
+            self.di("Orchestratore", f"Misura vera dal sensore {nodo}{' ' + dove(zona) if zona else ''}: {gradi} °C.")
 
     def _valori(self) -> tuple[dict, str]:
         if self.orari:

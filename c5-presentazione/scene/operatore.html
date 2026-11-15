@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Chi governa · l'operatore</title>
+<link rel="stylesheet" href="stile.css">
+<style>
+  /* Scena «Chi governa»: l'operatore della Polizia Locale, il secondo utente di TwinCIRO.
+     Tre cose vere, una dopo l'altra:
+     1. la dashboard: la mappa «Napoli in tempo reale» (operatore/mappa.jpg + mappa.json, da cattura_mappa.mjs);
+     2. la proposta degli agenti da approvare: la città agentica con --approvazione (operatore/decisione.json,
+        da cattura_citta.py), approvata con l'API vera POST /operatore;
+     3. la sala operativa nel terminale, la stessa simulazione nello stesso momento (operatore/sala-dopo.svg, rich).
+     Nessun dato scritto a mano: testi, numeri e orari vengono dai file. Nessun marchio: solo testo.
+     I 130 px in basso restano liberi per i sottotitoli. */
+  .testa { position: absolute; left: 72px; top: 36px; right: 72px; }
+  .testa h1 { margin: 6px 0 0; font-size: 62px; line-height: 1.06; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap; }
+  .testa h1 span { color: var(--twin); }
+
+  .sx { position: absolute; left: 72px; top: 196px; width: 1040px; height: 736px; }
+  .dx { position: absolute; left: 1148px; top: 196px; width: 700px; height: 736px; }
+
+  /* 1. la dashboard, in una finestra del browser */
+  .browser { position: absolute; inset: 0; border-radius: 18px; overflow: hidden; background: #1a2133;
+    box-shadow: 0 0 0 2px #2c3650, 0 30px 80px rgb(0 0 0 / 0.5); }
+  .barra { height: 48px; display: flex; align-items: center; gap: 16px; padding: 0 16px; background: #1f2b47; }
+  .pallini { display: flex; gap: 8px; }
+  .pallini i { width: 13px; height: 13px; border-radius: 50%; display: block; }
+  .indirizzo { flex: 1; min-width: 0; height: 32px; border-radius: 16px; background: #0f172a; color: #9fb0d3; font-size: 18px; display: flex;
+    align-items: center; padding: 0 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .indirizzo b { color: #eef2fb; font-weight: 600; }
+  .demo { flex: none; font-size: 15px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #3a2e00; background: #f2c200;
+    padding: 5px 11px; border-radius: 8px; white-space: nowrap; }
+  .vista { position: absolute; left: 0; top: 48px; right: 0; bottom: 0; overflow: hidden; background: #f3f4f6; }
+  .vista img { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+  .riquadro { position: absolute; border-radius: 14px; border: 4px solid var(--ciro); box-shadow: 0 0 0 4px rgb(255 181 71 / 0.25), 0 0 30px rgb(255 181 71 / 0.55); opacity: 0; }
+  .didascalia { position: absolute; left: 18px; right: 18px; bottom: 18px; display: flex; flex-wrap: wrap; gap: 8px 12px; }
+  .didascalia > div { position: absolute; left: 0; bottom: 0; display: flex; flex-wrap: wrap; gap: 8px 10px; }
+  .chip { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px; border-radius: 14px; background: rgb(10 16 32 / 0.9);
+    color: #eef2fb; font-size: 23px; font-weight: 700; box-shadow: 0 6px 20px rgb(0 0 0 / 0.35); white-space: nowrap; }
+  .chip i { width: 13px; height: 13px; border-radius: 50%; display: block; flex: none; }
+  .chip small { font-size: 19px; font-weight: 600; color: #9fb0d3; }
+
+  /* 2. la proposta degli agenti */
+  .proposta { position: absolute; inset: 0; border-radius: 26px; background: rgb(22 33 59 / 0.97); border: 2px solid rgb(167 139 250 / 0.7);
+    box-shadow: 0 0 60px rgb(167 139 250 / 0.16), 0 30px 80px rgb(0 0 0 / 0.45); padding: 24px 28px 22px; display: flex; flex-direction: column; overflow: hidden; }
+  .p-testa { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .p-testa .etichetta { color: #c4b5fd; font-size: 21px; letter-spacing: 0.1em; white-space: nowrap; }
+  .stato { flex: none; display: inline-flex; align-items: center; gap: 10px; padding: 6px 16px 6px 13px; border-radius: 20px; font-size: 20px; font-weight: 800; white-space: nowrap; }
+  .stato i { width: 13px; height: 13px; border-radius: 50%; display: block; }
+  .stato.attesa { color: #ffd38a; background: rgb(255 181 71 / 0.14); border: 2px solid var(--ciro); }
+  .stato.attesa i { background: var(--ciro); }
+  .stato.ok { color: #052e16; background: var(--verde); border: 2px solid var(--verde); }
+  .stato.ok i { display: none; }
+  .p-sotto { margin-top: 10px; font-size: 22px; color: #c8d3ec; }
+  .p-sotto b { color: var(--testo); font-weight: 800; }
+  .p-sez { margin-top: 18px; display: flex; justify-content: space-between; align-items: baseline; font-size: 17px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--tenue); }
+  .p-sez small { font-size: 16px; letter-spacing: 0.04em; text-transform: none; font-weight: 600; }
+  .azioni { margin-top: 8px; display: flex; flex-direction: column; gap: 10px; }
+  .az { display: grid; grid-template-columns: 46px minmax(0, 1fr); column-gap: 12px; padding: 10px 14px 11px 10px; border-radius: 16px; background: #121c33;
+    border: 1px solid #2c3a62; }
+  .az.chiave { border-color: rgb(255 181 71 / 0.75); background: #1b2236; }
+  .az-ic { font-size: 32px; line-height: 40px; text-align: center; }
+  .az-t { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 25px; line-height: 1.25; white-space: nowrap; }
+  .az-t b { font-weight: 800; }
+  .az-t .verso { color: var(--tenue); margin: 0 6px; }
+  .folla { display: inline-flex; align-items: center; gap: 9px; font-size: 17px; font-weight: 600; color: #c8d3ec; }
+  .folla .barra-f { width: 48px; height: 9px; border-radius: 5px; background: #26345a; overflow: hidden; }
+  .folla .barra-f i { display: block; height: 100%; border-radius: 5px; }
+  .az-m { margin-top: 4px; font-size: 18.5px; line-height: 1.32; color: #c8d3ec; font-style: italic; }
+  .fondo { position: relative; margin-top: auto; height: 236px; flex: none; }
+  .bottoni { position: absolute; left: 0; right: 0; top: 18px; }
+  .riga-b { display: flex; align-items: center; gap: 16px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; height: 62px; padding: 0 30px; border-radius: 16px; font-size: 27px; font-weight: 800; }
+  .btn.si { background: var(--verde); color: #052e16; box-shadow: 0 8px 24px rgb(74 222 128 / 0.3); }
+  .btn.no { background: transparent; color: #ffb4b4; border: 2px solid var(--corallo); }
+  .api { margin-left: auto; text-align: right; font-size: 16px; line-height: 1.35; color: var(--tenue); }
+  .api code { font: 600 17px 'DejaVu Sans Mono', monospace; color: #bff4ff; }
+  .nota-p { margin-top: 14px; font-size: 18px; line-height: 1.35; color: var(--tenue); }
+  .esito { position: absolute; left: 0; right: 0; bottom: 0; top: 6px; border-radius: 18px; background: rgb(74 222 128 / 0.08); border: 2px solid rgb(74 222 128 / 0.6);
+    padding: 13px 18px 12px; display: flex; flex-direction: column; opacity: 0; }
+  .es-t { font-size: 23px; font-weight: 800; color: var(--verde); }
+  .es-da { margin-top: 6px; font-size: 19px; font-weight: 700; color: #ffd38a; white-space: nowrap; }
+  .es-da .marta { color: var(--testo); }
+  .es-bolla { margin-top: 7px; padding: 9px 14px 10px; border-radius: 14px 14px 14px 4px; background: #fff; color: #111827; font-size: 19.5px; line-height: 1.34; }
+  .es-nota { margin-top: auto; padding-top: 6px; font-size: 16px; line-height: 1.3; color: var(--tenue); }
+
+  /* 3. la sala nel terminale (SVG di rich, la stessa simulazione) */
+  .terminale { position: absolute; left: 0; top: 0; width: 1040px; filter: drop-shadow(0 30px 60px rgb(0 0 0 / 0.55)); opacity: 0; }
+  .terminale svg { display: block; width: 1040px; }
+  .terminale .ev { stroke-width: 3; opacity: 0; }
+  .did-term { position: absolute; left: 30px; bottom: 34px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; opacity: 0; }
+  .errore { position: absolute; left: 72px; top: 300px; right: 72px; font-size: 34px; color: var(--corallo); }
+</style>
+</head>
+<body>
+<div id="radice"></div>
+<script>
+'use strict';
+// Parametri: ?durata=14 (secondi: la linea del tempo si allunga o si accorcia), ?fotogrammi=1 (lo mette rendi_html.mjs).
+// Senza renderer la scena gira da sola nel browser.
+const P = new URLSearchParams(location.search);
+const DURATA = Number(P.get('durata')) || 14;
+const K = DURATA / 14;                          // i tempi qui sotto sono per 14 s
+const TEMPI = {
+  etichetta: 0, titolo: 0.1,
+  // la voce: «Quell'avviso passa dalla Polizia Locale, in sala operativa.» (0,3–4,5 s). La proposta entra subito accanto
+  // alla dashboard; la dashboard mostra KPI, avvisi meteo e mappa (non il pannello delle decisioni della mappa, che
+  // sono di un'altra simulazione, nel browser)
+  browser: 0.45, proposta: 0.9, didK0: 1.2, allerta: [1.4, 2.6], scorri: [1.8, 4.0], legenda: [3.8, 5.0], attenua: 5.0,
+  // «Gli agenti propongono: l'operatore approva, o blocca.» (4,8–9,0 s)
+  premi: 7.6, approvata: 7.85, esito: 8.15, rimarca: [9.3, 10.4],
+  // «Nel terminale della sala, la stessa decisione: l'avviso è partito.» (9,3–13,7 s)
+  terminale: 9.7, didTerm: 10.3, evRegia: 10.7, evAvviso: 11.8,
+};
+const T = (x) => x * K;
+const fumo = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(1 - x, 3));
+const morbido = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const num = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');   // 5517 → 5.517, come nella sala
+const maiuscola = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+/** finestra [a, b] → 0..1..0 con salita e discesa morbide */
+const finestra = (t, [a, b], su = 0.35, giu = 0.4) => clamp(Math.min((t - T(a)) / su, (T(b) - t) / giu), 0, 1);
+
+const AGENTI = { turismo: ['🧭', 'Turismo'], drone: ['🛸', 'Drone'], traffico: ['🚦', 'Traffico'], avviso: ['📣', 'Avviso'] };
+const COLORE_LIVELLO = { basso: '#4ade80', medio: '#facc15', alto: '#ff8a2a', critico: '#ef4444' };
+
+async function leggi(nome) {
+  const r = await fetch(`operatore/${nome}`, { cache: 'no-store' });
+  if (!r.ok) throw new Error(`operatore/${nome}: HTTP ${r.status}`);
+  return nome.endsWith('.json') ? r.json() : r.text();
+}
+
+let el = {};          // elementi animati
+let cam = null;       // telecamera sulla dashboard
+let geo = null;       // geometria della sala nell'SVG
+
+window.pronta = (async () => {
+  const r = document.getElementById('radice');
+  let mappa, dec, svg;
+  try {
+    [mappa, dec] = await Promise.all([leggi('mappa.json'), leggi('decisione.json')]);
+    svg = await leggi(dec.sala.dopo);
+  } catch (e) {
+    r.innerHTML = `<div class="errore">${esc(e.message)}: rifai le catture (operatore/cattura_mappa.mjs e operatore/cattura_citta.py)</div>`;
+    return { durata: DURATA };
+  }
+  const p = dec.proposta;
+  const zona = (z) => dec.folla_alla_proposta?.[z] || { nome: z };
+  // la motivazione dell'orchestratore, una frase per zona (così com'è: niente riscritture)
+  const frasi = String(p.motivazione || '').split(/(?<=\.)\s+/);
+  const perche = (nome) => frasi.find((f) => f.startsWith(nome)) || '';
+  const zonaAvviso = dec.avviso?.zona;
+  const azioni = (p.azioni || []).map((a) => {
+    const [ic, nome] = AGENTI[a.agente] || ['•', maiuscola(a.agente)];
+    const z = zona(a.zona);
+    const quota = z.capienza ? clamp(z.persone / z.capienza, 0, 1) : 0;
+    const folla = z.persone != null
+      ? `<span class="folla"><span class="barra-f"><i style="width:${(quota * 100).toFixed(1)}%;background:${COLORE_LIVELLO[z.livello] || '#94a3b8'}"></i></span>${num(z.persone)} / ${num(z.capienza)} · ${esc(z.livello)}</span>` : '';
+    const motivo = perche(z.nome);
+    return `<div class="az${a.zona === zonaAvviso ? ' chiave' : ''}"><div class="az-ic">${ic}</div><div>
+      <div class="az-t"><span><b>${esc(nome)}</b><span class="verso">→</span>${esc(z.nome)}</span>${folla}</div>
+      ${motivo ? `<div class="az-m">«${esc(motivo.replace(/\.$/, ''))}»</div>` : ''}</div></div>`;
+  }).join('');
+  // il messaggio di Turismo nel dialogo tra agenti: a chi va e quante persone stima di spostare
+  const riga = (dec.dialogo_dopo || []).find((m) => m.da === 'Turismo' && dec.avviso && m.testo.includes(dec.avviso.testo));
+  // «Avviso per chi è a Rotonda Diaz: …» → «chi è a Rotonda Diaz»
+  const aChi = riga ? riga.testo.split(':')[0].replace(/^Avviso per /, '') : '';
+  const stima = riga ? (/\((stimo [^)]+)\)\s*$/.exec(riga.testo) || [])[1] : '';
+  const marta = dec.notifica_a_marta && dec.uguale_alla_chat;
+  const url = String(mappa.url_pubblico || '').replace(/^https?:\/\//, '');
+  const [dominio, ...resto] = url.split('/');
+
+  r.innerHTML = `
+    <div class="testa">
+      <div class="etichetta" data-t="${TEMPI.etichetta}">Il secondo utente · sala operativa</div>
+      <h1 data-t="${TEMPI.titolo}">Chi governa: <span>l'operatore della Polizia Locale</span></h1>
+    </div>
+    <div class="sx">
+      <div class="browser" id="browser" data-t="${TEMPI.browser}">
+        <div class="barra"><div class="pallini"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+          <div class="indirizzo"><b>${esc(dominio)}</b>/${esc(resto.join('/'))}</div><span class="demo">${esc(mappa.modo || 'demo')}</span></div>
+        <div class="vista" id="vista">
+          <img id="img-mappa" src="operatore/${esc(mappa.immagine.file)}" alt="">
+          <div class="riquadro" id="r-legenda"></div><div class="riquadro" id="r-allerta"></div>
+          <div class="didascalia">
+            <div id="did-k0"><span class="chip"><i style="background:#94a3b8"></i>Mappa dimostrativa: folla e sensori simulati</span><span class="chip"><i style="background:var(--verde)"></i>Allerte, meteo, eventi: dati veri</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="terminale" id="terminale">${svg}
+        <div class="did-term" id="did-term"><span class="chip"><i style="background:var(--twin)"></i>La stessa decisione, nel terminale</span></div>
+      </div>
+    </div>
+    <div class="dx">
+      <section class="proposta" id="proposta" data-t="${TEMPI.proposta}">
+        <div class="p-testa"><span class="etichetta">Proposta degli agenti</span>
+          <span class="stato attesa" id="stato"><i id="stato-p"></i><span id="stato-t">${esc(String(p.stato || '').replace(/_/g, ' '))} dell'operatore</span></span></div>
+        <div class="p-sotto">Orchestratore · <b>${esc(p.id)}</b> · ore ${esc(p.ora)} · la giornata di Marta, simulata</div>
+        <div class="p-sez"><span>Cosa propone, e perché</span><small>persone in zona: stima simulata</small></div>
+        <div class="azioni">${azioni}</div>
+        <div class="fondo">
+          <div class="bottoni" id="bottoni">
+            <div class="riga-b"><span class="btn si" id="btn-si">✓ Approva</span><span class="btn no">✕ Blocca</span>
+              <span class="api">API della città<br><code>POST /operatore</code></span></div>
+            <div class="nota-p">Scheda ricostruita sull'API vera. Se nessuno risponde, dopo 10 minuti simulati la decisione parte da sola.</div>
+          </div>
+          <div class="esito" id="esito">
+            <div class="es-t">✓ ${esc(maiuscola(dec.eseguita?.stato || 'approvata'))} · ore ${esc(dec.eseguita?.ora || p.ora)}</div>
+            <div class="es-da">📣 Turismo → ${esc(aChi || 'i turisti')}${marta ? '<span class="marta">, anche Marta</span>' : ''}</div>
+            <div class="es-bolla">${esc(dec.avviso?.testo || 'avviso non catturato')}</div>
+            <div class="es-nota">${stima ? `${esc(stima.replace(/^stimo /, '').replace(/\s+(a|in|verso|alla|al|allo)\s+.+$/, ''))} · stima simulata dell'agente Turismo` : ''}</div>
+          </div>
+        </div>
+      </section>
+    </div>`;
+
+  // elementi che entrano con la loro data-t
+  el.voci = [...r.querySelectorAll('[data-t]')].map((e) => ({ e, t: Number(e.dataset.t) }));
+  for (const id of ['browser', 'img-mappa', 'r-legenda', 'r-allerta', 'did-k0', 'terminale', 'did-term', 'proposta', 'stato', 'stato-t', 'stato-p', 'btn-si', 'bottoni', 'esito']) {
+    el[id] = document.getElementById(id);
+  }
+  el.statoAttesa = el['stato-t'].textContent;
+  el.statoOk = maiuscola(dec.eseguita?.stato || 'approvata');
+
+  // telecamera sulla dashboard: prima i KPI (K0), poi scende su avvisi meteo e mappa (K0b). Il pannello delle
+  // decisioni e delle notifiche della mappa non si mostra: sono di un'altra simulazione (agenti nel browser)
+  const im = mappa.immagine;
+  const pos = mappa.pos;
+  const vista = { w: 1040, h: 736 - 48 };
+  const s0 = vista.w / im.larghezza_css;                      // px a schermo per px CSS della pagina
+  const yK0 = pos.kpi.y - 6;
+  cam = {
+    im, pos,
+    k0: { x: 0, y: yK0, s: s0 },
+    k0b: { x: 0, y: Math.max(yK0, pos.allerta.y - 10), s: s0 },   // dagli avvisi meteo in giù: tutta la mappa
+  };
+  await el['img-mappa'].decode().catch(() => {});
+  el['img-mappa'].style.width = `${im.larghezza}px`;
+
+  // la sala: misura dal viewBox dell'SVG; riquadri sulle righe da evidenziare (griglia di rich, calcolata dalla cattura)
+  const s = el.terminale.querySelector('svg');
+  const vb = s.viewBox.baseVal;
+  const hT = 1040 * vb.height / vb.width;
+  s.setAttribute('width', 1040);
+  s.setAttribute('height', hT.toFixed(1));
+  geo = dec.sala.geometria || null;
+  const ev = (geo && dec.sala.evidenze_dopo) || {};
+  const rett = (e, colore, fondo, id) => {
+    if (!e || !geo) return null;
+    const ns = 'http://www.w3.org/2000/svg';
+    const q = document.createElementNS(ns, 'rect');
+    q.setAttribute('x', geo.x0 + e.col * geo.cella - 6);
+    q.setAttribute('y', geo.y0 + e.riga * geo.riga - 1);
+    q.setAttribute('width', (e.col_fine - e.col) * geo.cella + 12);
+    q.setAttribute('height', e.righe * geo.riga + 2);
+    q.setAttribute('rx', 6);
+    q.setAttribute('class', 'ev');
+    q.setAttribute('stroke', colore);
+    q.setAttribute('fill', fondo);
+    q.id = id;
+    s.appendChild(q);
+    return q;
+  };
+  el.evRegia = rett(ev.regia, '#4ade80', 'rgba(74,222,128,0.13)', 'ev-regia');
+  el.evAvviso = rett(ev.avviso, '#ffb547', 'rgba(255,181,71,0.10)', 'ev-avviso');
+  el.terminale.style.top = `${Math.max(0, (736 - hT) / 2).toFixed(1)}px`;
+
+  await document.fonts.ready;
+  adatta();
+  window.imposta(0);
+  return { durata: DURATA };
+})();
+
+/** Se la proposta non sta nel riquadro (cattura con testi più lunghi), rimpicciolisce le motivazioni. */
+function adatta() {
+  const box = el.proposta;
+  const fondo = box.querySelector('.fondo');
+  const az = box.querySelector('.azioni');
+  let f = 18.5;
+  while (az.getBoundingClientRect().bottom > fondo.getBoundingClientRect().top - 4 && f > 15) {
+    f -= 0.5;
+    for (const m of box.querySelectorAll('.az-m')) m.style.fontSize = `${f}px`;
+  }
+  if (az.getBoundingClientRect().bottom > fondo.getBoundingClientRect().top - 4) console.error('proposta: le azioni non stanno nel riquadro');
+  const es = el.esito;
+  if (es.scrollHeight > es.clientHeight + 1) console.error('proposta: l\'esito non sta nel riquadro');
+}
+
+/** Vista della dashboard al tempo t: rettangolo {x, y, s} in px CSS della pagina. */
+function vistaAl(t) {
+  const { k0, k0b } = cam;
+  const [a, b] = TEMPI.scorri.map(T);
+  const d = morbido((t - a) / (b - a));
+  return { x: 0, y: k0.y + (k0b.y - k0.y) * d, s: k0.s };
+}
+
+/** Riquadro su un pannello della pagina (px CSS) nella vista corrente. */
+function riquadro(div, rett, v, k) {
+  if (!rett || !k) { div.style.opacity = 0; return; }
+  const m = 8;
+  div.style.left = `${(rett.x - v.x) * v.s - m}px`;
+  div.style.top = `${(rett.y - v.y) * v.s - m}px`;
+  div.style.width = `${rett.w * v.s + 2 * m}px`;
+  div.style.height = `${rett.h * v.s + 2 * m}px`;
+  div.style.opacity = k;
+}
+
+window.imposta = (t) => {
+  if (!cam) return;
+  // ingressi
+  for (const v of el.voci) {
+    const p = fumo((t - T(v.t)) / 0.6);
+    v.e.style.opacity = p;
+    v.e.style.transform = p < 1 ? (v.e.id === 'proposta' ? `translateX(${(1 - p) * 48}px)` : `translateY(${(1 - p) * 26}px)`) : '';
+  }
+  // 1. dashboard: telecamera, riquadri e didascalie
+  const v = vistaAl(t);
+  const z = v.s / cam.im.scala;                               // px a schermo per px dell'immagine
+  el['img-mappa'].style.transform = `translate(${(-v.x * cam.im.scala * z).toFixed(2)}px, ${(-(v.y - cam.im.origine) * cam.im.scala * z).toFixed(2)}px) scale(${z.toFixed(5)})`;
+  riquadro(el['r-legenda'], cam.pos.legenda, v, finestra(t, TEMPI.legenda));
+  riquadro(el['r-allerta'], cam.pos.allerta, v, finestra(t, TEMPI.allerta));
+  const k0 = fumo((t - T(TEMPI.didK0)) / 0.5);
+  el['did-k0'].style.opacity = k0;
+  el['did-k0'].style.transform = `translateY(${(1 - k0) * 14}px)`;
+  // la dashboard si abbassa quando entra la proposta e sparisce sotto il terminale
+  const giu = fumo((t - T(TEMPI.attenua)) / 0.6);
+  const via = fumo((t - T(TEMPI.terminale)) / 0.3);          // sparisce in fretta: due pagine di testo in dissolvenza si confondono
+  if (t >= T(TEMPI.browser) + 0.6) {
+    el.browser.style.opacity = (1 - via).toFixed(3);
+    el.browser.style.transform = via > 0 ? `scale(${1 - 0.03 * via})` : '';
+  }
+  el.browser.style.filter = giu > 0 ? `brightness(${1 - 0.18 * giu})` : '';
+
+  // 2. proposta: in attesa, «Approva», approvata, esito
+  const premi = T(TEMPI.premi);
+  const pr = t >= premi ? Math.sin(clamp((t - premi) / 0.25, 0, 1) * Math.PI) : 0;
+  el['btn-si'].style.transform = pr ? `scale(${1 - 0.06 * pr})` : '';
+  el['btn-si'].style.boxShadow = t >= premi ? `0 0 0 ${(6 * clamp((t - premi) / 0.3, 0, 1)).toFixed(1)}px rgb(74 222 128 / ${(0.35 * (1 - clamp((t - premi - 0.3) / 0.4, 0, 1))).toFixed(3)}), 0 8px 24px rgb(74 222 128 / 0.3)` : '';
+  const ok = t >= T(TEMPI.approvata);
+  el.stato.className = `stato ${ok ? 'ok' : 'attesa'}`;
+  el['stato-t'].textContent = ok ? `✓ ${el.statoOk}` : el.statoAttesa;
+  if (!ok) el['stato-p'].style.opacity = (0.45 + 0.55 * (0.5 + 0.5 * Math.cos((t * 2 * Math.PI) / 1.2))).toFixed(3);
+  const es = fumo((t - T(TEMPI.esito)) / 0.5);
+  el.bottoni.style.opacity = (1 - fumo((t - T(TEMPI.approvata)) / 0.35)).toFixed(3);
+  el.esito.style.opacity = es.toFixed(3);
+  el.esito.style.transform = es < 1 ? `translateY(${((1 - es) * 18).toFixed(1)}px)` : '';
+  const ri = finestra(t, TEMPI.rimarca, 0.3, 0.5);
+  el.esito.style.boxShadow = ri ? `0 0 0 ${(4 * ri).toFixed(1)}px rgb(74 222 128 / ${(0.28 * ri).toFixed(3)}), 0 0 ${(34 * ri).toFixed(0)}px rgb(74 222 128 / ${(0.35 * ri).toFixed(3)})` : '';
+
+  // 3. il terminale entra sopra la dashboard; poi i riquadri sulla regia e sull'avviso
+  const te = fumo((t - T(TEMPI.terminale)) / 0.7);
+  el.terminale.style.opacity = clamp((t - T(TEMPI.terminale)) / 0.22, 0, 1).toFixed(3);   // opaco quasi subito, poi scivola al suo posto
+  el.terminale.style.transform = te < 1 ? `translateY(${((1 - te) * 36).toFixed(1)}px) scale(${(0.97 + 0.03 * te).toFixed(4)})` : '';
+  const dt = fumo((t - T(TEMPI.didTerm)) / 0.5);
+  el['did-term'].style.opacity = dt.toFixed(3);
+  el['did-term'].style.transform = `translateY(${((1 - dt) * 14).toFixed(1)}px)`;
+  for (const [q, t0] of [[el.evRegia, TEMPI.evRegia], [el.evAvviso, TEMPI.evAvviso]]) {
+    if (!q) continue;
+    const k = fumo((t - T(t0)) / 0.45);
+    const pulsa = k ? 0.75 + 0.25 * Math.cos(((t - T(t0)) * 2 * Math.PI) / 1.4) : 0;
+    q.style.opacity = (k * pulsa).toFixed(3);
+  }
+};
+
+// Anteprima nel browser (senza renderer): parte da sola e ricomincia
+if (!P.has('fotogrammi')) {
+  window.pronta.then(() => {
+    const t0 = performance.now();
+    const giro = () => { window.imposta(((performance.now() - t0) / 1000) % (DURATA + 2)); requestAnimationFrame(giro); };
+    giro();
+  });
+}
+</script>
+</body>
+</html>

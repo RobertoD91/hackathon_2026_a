@@ -106,3 +106,5 @@ venv/
 
 ### Claude Code (impostazioni locali) ###
 .claude/settings.local.json
+# copie di lavoro temporanee degli agenti (git worktree)
+.claude/worktrees/

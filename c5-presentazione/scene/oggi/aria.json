@@ -1,0 +1,235 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/aria",
+  "formato": "json",
+  "http": 200,
+  "risposta": {
+    "ora": "2026-11-14 19:30",
+    "citta": {
+      "indice_europeo_max": 46,
+      "classe_nome": "moderata",
+      "origine": "modello Copernicus CAMS"
+    },
+    "luoghi": [
+      {
+        "id": "plebiscito",
+        "nome": "Piazza del Plebiscito",
+        "livello": "Moderata",
+        "classe_nome": "moderata",
+        "origine": "modello"
+      },
+      {
+        "id": "centro_storico",
+        "nome": "Spaccanapoli · Centro storico",
+        "livello": "Discreta",
+        "classe_nome": "discreta",
+        "origine": "centralina"
+      },
+      {
+        "id": "lungomare",
+        "nome": "Lungomare Caracciolo",
+        "livello": "Moderata",
+        "classe_nome": "moderata",
+        "origine": "modello"
+      },
+      {
+        "id": "mergellina",
+        "nome": "Mergellina",
+        "livello": "Moderata",
+        "classe_nome": "moderata",
+        "origine": "modello"
+      },
+      {
+        "id": "beverello",
+        "nome": "Molo Beverello · Stazione Marittima",
+        "livello": "Moderata",
+        "classe_nome": "moderata",
+        "origine": "modello"
+      },
+      {
+        "id": "castel_ovo",
+        "nome": "Castel dell'Ovo",
+        "livello": "Moderata",
+        "classe_nome": "moderata",
+        "origine": "modello"
+      },
+      {
+        "id": "garibaldi",
+        "nome": "Napoli Centrale · Garibaldi",
+        "livello": "Discreta",
+        "classe_nome": "discreta",
+        "origine": "centralina"
+      },
+      {
+        "id": "vomero",
+        "nome": "Vomero · Piazza Vanvitelli",
+        "livello": "Discreta",
+        "classe_nome": "discreta",
+        "origine": "centralina"
+      },
+      {
+        "id": "sanita",
+        "nome": "Rione Sanità",
+        "livello": "Buona",
+        "classe_nome": "buona",
+        "origine": "centralina"
+      },
+      {
+        "id": "maradona",
+        "nome": "Stadio Diego Armando Maradona",
+        "livello": "Discreta",
+        "classe_nome": "discreta",
+        "origine": "modello"
+      }
+    ],
+    "centraline": [
+      {
+        "nome": "NA06 MUSEO NAZIONALE",
+        "codice": "IT0898A",
+        "tipo": "traffico urbano",
+        "classe": "discreta",
+        "inquinante_peggiore": "PM10",
+        "valore_ugm3": 24.7,
+        "valore_tipo": "media delle ultime 24 ore",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "nome": "NA07 ENTE FERROVIE",
+        "codice": "IT1491A",
+        "tipo": "traffico urbano",
+        "classe": "discreta",
+        "inquinante_peggiore": "PM10",
+        "valore_ugm3": 27.8,
+        "valore_tipo": "media delle ultime 24 ore",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "nome": "NA09 I.T.I.S. ARGINE",
+        "codice": "IT1493A",
+        "tipo": null,
+        "classe": "discreta",
+        "inquinante_peggiore": "PM10",
+        "valore_ugm3": 21.8,
+        "valore_tipo": "media delle ultime 24 ore",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "nome": "NA08 OSPEDALE NUOVO PELLEGRINI",
+        "codice": "IT1495A",
+        "tipo": null,
+        "classe": "buona",
+        "inquinante_peggiore": "NO2",
+        "valore_ugm3": 9.5,
+        "valore_tipo": "misura oraria",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "nome": "NA02 OSPEDALE SANTOBONO",
+        "codice": "IT1496A",
+        "tipo": "traffico urbano",
+        "classe": "discreta",
+        "inquinante_peggiore": "PM10",
+        "valore_ugm3": 30.7,
+        "valore_tipo": "media delle ultime 24 ore",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "nome": "NA01 OSSERVATORIO ASTRONOMICO",
+        "codice": "IT1497A",
+        "tipo": "fondo urbano",
+        "classe": "buona",
+        "inquinante_peggiore": "PM2.5",
+        "valore_ugm3": 9,
+        "valore_tipo": "media delle ultime 24 ore",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "nome": "Casoria Scuola Palizzi (CAM)",
+        "codice": "IT2216A",
+        "tipo": null,
+        "classe": "discreta",
+        "inquinante_peggiore": "PM10",
+        "valore_ugm3": 31.1,
+        "valore_tipo": "media delle ultime 24 ore",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "nome": "Torre Annunziata Scuola Media Pascoli",
+        "codice": "IT2217A",
+        "tipo": null,
+        "classe": "buona",
+        "inquinante_peggiore": "NO2",
+        "valore_ugm3": 1.5,
+        "valore_tipo": "misura oraria",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "nome": "Tirrenopower Via Epomeo",
+        "codice": "IT2221A",
+        "tipo": "industriale",
+        "classe": "discreta",
+        "inquinante_peggiore": "PM10",
+        "valore_ugm3": 23.7,
+        "valore_tipo": "media delle ultime 24 ore",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "nome": "Tirrenopower Volla",
+        "codice": "IT2223A",
+        "tipo": null,
+        "classe": "discreta",
+        "inquinante_peggiore": "PM10",
+        "valore_ugm3": 23,
+        "valore_tipo": "media delle ultime 24 ore",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "nome": "Pomigliano d'Arco Area ASI",
+        "codice": "IT2226A",
+        "tipo": null,
+        "classe": "moderata",
+        "inquinante_peggiore": "PM10",
+        "valore_ugm3": 44.3,
+        "valore_tipo": "media delle ultime 24 ore",
+        "ora_dato": "2026-08-13 10:00"
+      },
+      {
+        "nome": "Portici parco reggia",
+        "codice": "IT2270A",
+        "tipo": null,
+        "classe": "discreta",
+        "inquinante_peggiore": "PM2.5",
+        "valore_ugm3": 10.4,
+        "valore_tipo": "media delle ultime 24 ore",
+        "ora_dato": "2026-11-14 15:00"
+      },
+      {
+        "nome": "Parco Virgiliano",
+        "codice": "IT2277A",
+        "tipo": "fondo suburbano",
+        "classe": "buona",
+        "inquinante_peggiore": "NO2",
+        "valore_ugm3": 1.8,
+        "valore_tipo": "misura oraria",
+        "ora_dato": "2026-11-14 15:00"
+      }
+    ],
+    "fonti": {
+      "centraline": {
+        "nome": "Centraline ARPAC via EEA (dati orari non validati)",
+        "stato": "snapshot",
+        "ora_dato": "2026-11-14 15:00",
+        "licenza": "riuso con citazione EEA",
+        "nota": "misure orarie non validate, salvate con lo script degli snapshot"
+      },
+      "modello": {
+        "nome": "Open-Meteo Air Quality (Copernicus CAMS)",
+        "stato": "reale",
+        "ora_dato": "2026-11-14 19:00",
+        "licenza": "CC BY 4.0, dati Copernicus",
+        "nota": "modello di fondo regionale (celle di circa 11 km)"
+      }
+    },
+    "testo": "Aria a Napoli: moderata secondo il modello Copernicus CAMS (indice europeo 46, dato delle 19:00). Centraline ARPAC (misure non validate, con qualche ora di ritardo): la peggiore è Pomigliano d'Arco Area ASI (moderata, PM10 44,3 µg/m³ di media nelle 24 ore fino al 13/08 alle 10:00)."
+  }
+}

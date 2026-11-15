@@ -1,0 +1,4668 @@
+{
+ "meta": {
+  "titolo": "TwinCIRO · la città come rete di relazioni — giornata della regata",
+  "descrizione": "Il knowledge graph della città il giorno della regata: luoghi, eventi e flussi di persone, stazioni, imprese, agenti, sensori e fonti, con le relazioni che gli agenti di TwinCIRO usano. È una rappresentazione delle relazioni, non un database interrogato dagli agenti.",
+  "script": "c5-presentazione/grafo/genera.mjs",
+  "scenario": "Napoli 2027, giornata di festa: Sabato con due navi da crociera, la regata dell'America's Cup davanti a via Caracciolo e la partita al Maradona in serata. Nessun guasto: l'unico problema è far stare bene tutti.",
+  "nota": "Relazioni ricavate dai file della repository, nessuna inventata. Eventi e flussi sono dello scenario simulato della regata (Napoli 2027); le imprese sono di fantasia; le presenze da rete mobile sono simulate; luoghi, stazioni e fonti sono reali.",
+  "dati_del": {
+   "trasporti": "2026-11-14",
+   "aria": "2026-11-14",
+   "eventi": "2026-11-14",
+   "catalogo_fonti": "2026-11-14"
+  },
+  "file": [
+   "c5-agentic-city/citta/agenti",
+   "c5-agentic-city/citta/api.py",
+   "c5-agentic-city/citta/sala.py",
+   "c5-agentic-city/citta/sensori.py",
+   "c5-agentic-city/dati/imprese.json",
+   "c5-agentic-city/dati/luoghi.json",
+   "c5-agentic-city/dati/scenario_regata.json",
+   "c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md",
+   "c5-agentic-city/openclaw/skills/twinciro-citta/SKILL.md",
+   "c5-presentazione/scene/fonti/catalogo.json",
+   "citta-api/dati/aria.json",
+   "citta-api/dati/eventi.json",
+   "citta-api/dati/trasporti.json",
+   "citta-api/fonti/dati.js",
+   "citta-api/fonti/luoghi.js",
+   "citta-api/src/punti.js",
+   "firmware/README.md",
+   "firmware/tasmota/README.md",
+   "firmware/why2025-badge/overlay/main/badge/telemetry_cfg.h"
+  ],
+  "area": {
+   "larghezza": 1920,
+   "altezza": 1080,
+   "x0": 70,
+   "x1": 1850,
+   "y0": 196,
+   "y1": 940
+  },
+  "conteggi": {
+   "nodi": 83,
+   "archi": 196,
+   "per_tipo": {
+    "luogo": 22,
+    "evento": 4,
+    "stazione": 28,
+    "impresa": 5,
+    "agente": 10,
+    "sensore": 2,
+    "fonte": 12
+   },
+   "per_relazione": {
+    "vicino a": 30,
+    "si svolge a": 4,
+    "flusso verso": 12,
+    "servito da": 42,
+    "offerta a": 5,
+    "monitora": 19,
+    "parla con": 26,
+    "alimenta": 58
+   }
+  },
+  "regole": {
+   "vicino a": "Due luoghi a meno di 1,2 km in linea d'aria (coordinate di citta-api/fonti/luoghi.js, src/punti.js e dello scenario; distanzaKm dell'API; per le zone con due punti di riferimento vale il più vicino). Un luogo per i turisti è vicino alla zona a cui lo assegna c5-agentic-city/dati/luoghi.json e al luogo che nomina (zonaPerTesto dell'API).",
+   "si svolge a": "Il luogo che l'evento dello scenario nomina (zonaPerTesto sulle parole dei luoghi dell'API), altrimenti la zona dell'evento.",
+   "flusso verso": "I flussi di persone degli eventi nello scenario, con la quota di persone verso ogni zona; «fuorigrotta» è lo stadio Maradona (assistente.py e parole del luogo nell'API).",
+   "servito da": "Le 3 stazioni su ferro più vicine entro 1,2 km (se non ce ne sono, le 2 più vicine entro 2,5 km): stazioniVicine() dell'API sullo snapshot GTFS, come /citta/trasporti/vicino.",
+   "offerta a": "L'impresa (di fantasia) propone sconti nelle sue ore vuote nella sua zona: imprese.json, agente Imprese; l'agente Turismo li suggerisce a chi è in una zona affollata.",
+   "monitora": "Folla → ogni zona dello scenario (stima delle persone), Eventi → gli eventi del calendario, Imprese → le imprese, Meteo&Mare → la regata (vento e onda decidono se si fa); un sensore → la zona configurata nel suo firmware.",
+   "parla con": "Uno pubblica sul bus MQTT un topic che l'altro ascolta o legge (topic letti nel codice di c5-agentic-city/citta/; per la sala operativa e il drone, gli endpoint dell'API della città che usano).",
+   "alimenta": "Una fonte che dà i dati a un luogo, a una stazione, a un evento o a un agente (citta-api: meteo e aria per luogo, GTFS per stazione, calendari degli eventi; c5-agentic-city: Open-Meteo per Meteo&Mare, presenze da rete mobile simulate per Folla); un sensore che manda le sue letture a un agente (topic napoli/sensori/...)."
+  }
+ },
+ "tipi_nodo": {
+  "luogo": {
+   "nome": "Luoghi e zone",
+   "colore": "#38d6f0",
+   "forma": "cerchio",
+   "strato": 1
+  },
+  "evento": {
+   "nome": "Eventi",
+   "colore": "#f45d5d",
+   "forma": "rombo",
+   "strato": 2
+  },
+  "stazione": {
+   "nome": "Stazioni",
+   "colore": "#a78bfa",
+   "forma": "quadrato",
+   "strato": 3
+  },
+  "impresa": {
+   "nome": "Imprese",
+   "colore": "#4ade80",
+   "forma": "triangolo",
+   "strato": 3
+  },
+  "agente": {
+   "nome": "Agenti",
+   "colore": "#ffb547",
+   "forma": "esagono",
+   "strato": 4
+  },
+  "sensore": {
+   "nome": "Sensori",
+   "colore": "#f1f5f9",
+   "forma": "onde",
+   "strato": 5
+  },
+  "fonte": {
+   "nome": "Fonti",
+   "colore": "#cbd5e1",
+   "forma": "logo",
+   "strato": 5
+  }
+ },
+ "tipi_arco": {
+  "vicino a": {
+   "colore": "#38d6f0",
+   "strato": 1
+  },
+  "si svolge a": {
+   "colore": "#f45d5d",
+   "strato": 2
+  },
+  "flusso verso": {
+   "colore": "#f45d5d",
+   "strato": 2
+  },
+  "servito da": {
+   "colore": "#a78bfa",
+   "strato": 3
+  },
+  "offerta a": {
+   "colore": "#4ade80",
+   "strato": 3
+  },
+  "monitora": {
+   "colore": "#ffb547",
+   "strato": 4
+  },
+  "parla con": {
+   "colore": "#ffb547",
+   "strato": 4
+  },
+  "alimenta": {
+   "colore": "#cbd5e1",
+   "strato": 5
+  }
+ },
+ "nodi": [
+  {
+   "id": "luogo:aeroporto",
+   "tipo": "luogo",
+   "nome": "Aeroporto di Napoli Capodichino",
+   "sottotipo": "luogo noto",
+   "chiave": "aeroporto",
+   "categoria": "Aeroporto",
+   "lat": 40.8862,
+   "lon": 14.2908,
+   "stato": "luogo reale senza sensori (coordinate indicative, circa 100 m)",
+   "origine": [
+    "citta-api/src/punti.js"
+   ],
+   "nota_stazioni": "nessuna stazione su ferro entro 2,5 km nel GTFS di ANM ed EAV",
+   "grado": 0,
+   "strato": 1,
+   "breve": "Aeroporto di Napoli Capodichino",
+   "importante": false,
+   "r": 7.5,
+   "x": 1700,
+   "y": 428.5,
+   "coordinate": [
+    {
+     "lat": 40.8862,
+     "lon": 14.2908,
+     "da": "citta-api/src/punti.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:beverello",
+   "tipo": "luogo",
+   "nome": "Molo Beverello / Stazione Marittima",
+   "sottotipo": "zona dello scenario e luogo monitorato",
+   "chiave": "beverello",
+   "lat": 40.8383,
+   "lon": 14.2537,
+   "capienza": 7000,
+   "stato": "zona dello scenario della regata: coordinate e capienza indicative",
+   "origine": [
+    "c5-agentic-city/dati/scenario_regata.json",
+    "citta-api/fonti/luoghi.js"
+   ],
+   "nome_api": "Molo Beverello · Stazione Marittima",
+   "categoria": "Lungomare e porto",
+   "capienza_mappa": 3500,
+   "parole": [
+    "Beverello",
+    "Stazione Marittima",
+    "Molo Angioino",
+    "Piazza Municipio",
+    "Maschio Angioino",
+    "Castel Nuovo",
+    "Molosiglio",
+    "Porto di Napoli",
+    "crociere",
+    "aliscafi"
+   ],
+   "grado": 14,
+   "strato": 1,
+   "breve": "Molo Beverello",
+   "importante": true,
+   "r": 16.2,
+   "x": 1324.3,
+   "y": 614.8,
+   "etichetta": {
+    "testo": "Molo Beverello",
+    "dimensione": 22,
+    "lato": "destra"
+   },
+   "coordinate": [
+    {
+     "lat": 40.838,
+     "lon": 14.256,
+     "da": "c5-agentic-city/dati/scenario_regata.json"
+    },
+    {
+     "lat": 40.8383,
+     "lon": 14.2537,
+     "da": "citta-api/fonti/luoghi.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:castel_ovo",
+   "tipo": "luogo",
+   "nome": "Castel dell'Ovo",
+   "sottotipo": "zona dello scenario e luogo monitorato",
+   "chiave": "castel_ovo",
+   "lat": 40.828,
+   "lon": 14.2476,
+   "capienza": 6500,
+   "stato": "zona dello scenario della regata: coordinate e capienza indicative",
+   "origine": [
+    "c5-agentic-city/dati/scenario_regata.json",
+    "citta-api/fonti/luoghi.js",
+    "c5-agentic-city/dati/luoghi.json"
+   ],
+   "nome_api": "Castel dell'Ovo",
+   "categoria": "Attrazioni",
+   "capienza_mappa": 1500,
+   "parole": [
+    "Castel dell'Ovo",
+    "Borgo Marinari",
+    "Via Partenope",
+    "Santa Lucia",
+    "Nazario Sauro"
+   ],
+   "turismo": {
+    "nome": "Castel dell'Ovo e Borgo Marinari",
+    "interessi": [
+     "storia",
+     "mare",
+     "foto",
+     "cibo"
+    ],
+    "dove": "al Castel dell'Ovo e al Borgo Marinari"
+   },
+   "grado": 11,
+   "strato": 1,
+   "breve": "Castel dell'Ovo",
+   "importante": true,
+   "r": 16,
+   "x": 1067.9,
+   "y": 661.8,
+   "etichetta": {
+    "testo": "Castel dell'Ovo",
+    "dimensione": 22,
+    "lato": "destra"
+   },
+   "coordinate": [
+    {
+     "lat": 40.8283,
+     "lon": 14.2475,
+     "da": "c5-agentic-city/dati/scenario_regata.json"
+    },
+    {
+     "lat": 40.828,
+     "lon": 14.2476,
+     "da": "citta-api/fonti/luoghi.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:centro_storico",
+   "tipo": "luogo",
+   "nome": "Spaccanapoli · Centro storico",
+   "nome_api": "Spaccanapoli · Centro storico",
+   "sottotipo": "luogo monitorato",
+   "chiave": "centro_storico",
+   "categoria": "Piazze e centro",
+   "lat": 40.8484,
+   "lon": 14.2558,
+   "capienza_mappa": 4500,
+   "parole": [
+    "Spaccanapoli",
+    "Via dei Tribunali",
+    "San Gregorio Armeno",
+    "Piazza del Gesù",
+    "Piazza Dante",
+    "San Domenico Maggiore",
+    "Piazza Bellini",
+    "Duomo",
+    "San Severo al Pendino",
+    "Decumani",
+    "Museo Archeologico",
+    "MANN"
+   ],
+   "stato": "luogo reale (coordinate dell'API dati città); capienza della mappa indicativa",
+   "origine": [
+    "citta-api/fonti/luoghi.js"
+   ],
+   "grado": 7,
+   "strato": 1,
+   "breve": "Centro storico",
+   "importante": true,
+   "r": 10,
+   "x": 1421.2,
+   "y": 503.7,
+   "etichetta": {
+    "testo": "Centro storico",
+    "dimensione": 19,
+    "lato": "destra"
+   },
+   "coordinate": [
+    {
+     "lat": 40.8484,
+     "lon": 14.2558,
+     "da": "citta-api/fonti/luoghi.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:citta_scienza",
+   "tipo": "luogo",
+   "nome": "Città della Scienza",
+   "sottotipo": "luogo noto",
+   "chiave": "citta_scienza",
+   "categoria": "Museo e centro congressi (Bagnoli-Coroglio)",
+   "lat": 40.8061,
+   "lon": 14.1781,
+   "stato": "luogo reale senza sensori (coordinate indicative, circa 100 m)",
+   "origine": [
+    "citta-api/src/punti.js"
+   ],
+   "grado": 3,
+   "strato": 1,
+   "breve": "Città della Scienza",
+   "importante": false,
+   "r": 7.5,
+   "x": 205.2,
+   "y": 714.7,
+   "coordinate": [
+    {
+     "lat": 40.8061,
+     "lon": 14.1781,
+     "da": "citta-api/src/punti.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:garibaldi",
+   "tipo": "luogo",
+   "nome": "Napoli Centrale · Garibaldi",
+   "nome_api": "Napoli Centrale · Garibaldi",
+   "sottotipo": "luogo monitorato",
+   "chiave": "garibaldi",
+   "categoria": "Stazioni",
+   "lat": 40.853,
+   "lon": 14.2725,
+   "capienza_mappa": 6000,
+   "parole": [
+    "Garibaldi",
+    "Napoli Centrale",
+    "Stazione Centrale",
+    "Corso Umberto",
+    "Porta Nolana",
+    "Circumvesuviana"
+   ],
+   "stato": "luogo reale (coordinate dell'API dati città); capienza della mappa indicativa",
+   "origine": [
+    "citta-api/fonti/luoghi.js"
+   ],
+   "grado": 5,
+   "strato": 1,
+   "breve": "Napoli Centrale",
+   "importante": true,
+   "r": 10,
+   "x": 1577.8,
+   "y": 476.7,
+   "etichetta": {
+    "testo": "Napoli Centrale",
+    "dimensione": 19,
+    "lato": "destra"
+   },
+   "coordinate": [
+    {
+     "lat": 40.853,
+     "lon": 14.2725,
+     "da": "citta-api/fonti/luoghi.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:gozzo",
+   "tipo": "luogo",
+   "nome": "Giro in gozzo da Mergellina",
+   "sottotipo": "luogo per i turisti",
+   "chiave": "gozzo",
+   "turismo": {
+    "nome": "Giro in gozzo da Mergellina",
+    "interessi": [
+     "mare",
+     "regata",
+     "esperienze"
+    ],
+    "dove": "su un gozzo da Mergellina"
+   },
+   "stato": "luogo reale, proposto dall'agente Turismo come alternativa",
+   "origine": [
+    "c5-agentic-city/dati/luoghi.json"
+   ],
+   "grado": 1,
+   "strato": 1,
+   "breve": "Giro in gozzo",
+   "importante": false,
+   "r": 7,
+   "x": 566.7,
+   "y": 600.5
+  },
+  {
+   "id": "luogo:lungomare",
+   "tipo": "luogo",
+   "nome": "Lungomare Caracciolo",
+   "nome_api": "Lungomare Caracciolo",
+   "sottotipo": "luogo monitorato",
+   "chiave": "lungomare",
+   "categoria": "Lungomare e porto",
+   "lat": 40.8329,
+   "lon": 14.2349,
+   "capienza_mappa": 5000,
+   "parole": [
+    "Caracciolo",
+    "Rotonda Diaz",
+    "Villa Comunale",
+    "Casina Pompeiana",
+    "Lungomare",
+    "Riviera di Chiaia"
+   ],
+   "stato": "luogo reale (coordinate dell'API dati città); capienza della mappa indicativa",
+   "origine": [
+    "citta-api/fonti/luoghi.js",
+    "c5-agentic-city/dati/luoghi.json"
+   ],
+   "turismo": {
+    "nome": "Lungomare di via Caracciolo",
+    "interessi": [
+     "regata",
+     "mare",
+     "passeggiata"
+    ],
+    "dove": "sul lungomare di via Caracciolo"
+   },
+   "grado": 14,
+   "strato": 1,
+   "breve": "Lungomare Caracciolo",
+   "importante": false,
+   "r": 10,
+   "x": 889.6,
+   "y": 640.8,
+   "coordinate": [
+    {
+     "lat": 40.8329,
+     "lon": 14.2349,
+     "da": "citta-api/fonti/luoghi.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:maradona",
+   "tipo": "luogo",
+   "nome": "Stadio Diego Armando Maradona",
+   "nome_api": "Stadio Diego Armando Maradona",
+   "sottotipo": "luogo monitorato",
+   "chiave": "maradona",
+   "categoria": "Eventi e sport",
+   "lat": 40.828,
+   "lon": 14.193,
+   "capienza_mappa": 12000,
+   "parole": [
+    "Maradona",
+    "stadio",
+    "Fuorigrotta",
+    "San Paolo",
+    "Mostra d'Oltremare",
+    "Piazzale Tecchio",
+    "SSC Napoli",
+    "partita"
+   ],
+   "stato": "luogo reale (coordinate dell'API dati città); capienza della mappa indicativa",
+   "origine": [
+    "citta-api/fonti/luoghi.js"
+   ],
+   "grado": 7,
+   "strato": 1,
+   "breve": "Stadio Maradona",
+   "importante": true,
+   "r": 10,
+   "x": 314.3,
+   "y": 648.2,
+   "etichetta": {
+    "testo": "Stadio Maradona",
+    "dimensione": 19,
+    "lato": "destra"
+   },
+   "coordinate": [
+    {
+     "lat": 40.828,
+     "lon": 14.193,
+     "da": "citta-api/fonti/luoghi.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:marechiaro",
+   "tipo": "luogo",
+   "nome": "Marechiaro",
+   "sottotipo": "luogo noto",
+   "chiave": "marechiaro",
+   "categoria": "Borgo sul mare (Posillipo)",
+   "lat": 40.7946,
+   "lon": 14.1968,
+   "stato": "luogo reale senza sensori (coordinate indicative, circa 100 m)",
+   "origine": [
+    "citta-api/src/punti.js"
+   ],
+   "nota_stazioni": "nessuna stazione su ferro entro 2,5 km nel GTFS di ANM ed EAV",
+   "grado": 0,
+   "strato": 1,
+   "breve": "Marechiaro",
+   "importante": false,
+   "r": 7.5,
+   "x": 406.5,
+   "y": 733.5,
+   "coordinate": [
+    {
+     "lat": 40.7946,
+     "lon": 14.1968,
+     "da": "citta-api/src/punti.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:maschio",
+   "tipo": "luogo",
+   "nome": "Maschio Angioino",
+   "sottotipo": "luogo per i turisti",
+   "chiave": "maschio",
+   "turismo": {
+    "nome": "Maschio Angioino",
+    "interessi": [
+     "storia",
+     "musei"
+    ],
+    "dove": "al Maschio Angioino"
+   },
+   "stato": "luogo reale, proposto dall'agente Turismo come alternativa",
+   "origine": [
+    "c5-agentic-city/dati/luoghi.json"
+   ],
+   "grado": 2,
+   "strato": 1,
+   "breve": "Maschio Angioino",
+   "importante": false,
+   "r": 7,
+   "x": 1311.4,
+   "y": 527.4
+  },
+  {
+   "id": "luogo:mergellina",
+   "tipo": "luogo",
+   "nome": "Mergellina",
+   "sottotipo": "zona dello scenario e luogo monitorato",
+   "chiave": "mergellina",
+   "lat": 40.8288,
+   "lon": 14.2183,
+   "capienza": 18000,
+   "stato": "zona dello scenario della regata: coordinate e capienza indicative",
+   "origine": [
+    "c5-agentic-city/dati/scenario_regata.json",
+    "citta-api/fonti/luoghi.js"
+   ],
+   "nome_api": "Mergellina",
+   "categoria": "Lungomare e porto",
+   "capienza_mappa": 2500,
+   "parole": [
+    "Mergellina",
+    "Piazza Sannazaro",
+    "Molo Mergellina",
+    "Posillipo",
+    "Pausilypon"
+   ],
+   "grado": 11,
+   "strato": 1,
+   "breve": "Mergellina",
+   "importante": true,
+   "r": 18.7,
+   "x": 567.8,
+   "y": 632.3,
+   "etichetta": {
+    "testo": "Mergellina",
+    "dimensione": 22,
+    "lato": "destra"
+   },
+   "coordinate": [
+    {
+     "lat": 40.829,
+     "lon": 14.224,
+     "da": "c5-agentic-city/dati/scenario_regata.json"
+    },
+    {
+     "lat": 40.8288,
+     "lon": 14.2183,
+     "da": "citta-api/fonti/luoghi.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:municipio",
+   "tipo": "luogo",
+   "nome": "Piazza Municipio",
+   "sottotipo": "zona dello scenario",
+   "chiave": "municipio",
+   "lat": 40.8395,
+   "lon": 14.2525,
+   "capienza": 9000,
+   "stato": "zona dello scenario della regata: coordinate e capienza indicative",
+   "origine": [
+    "c5-agentic-city/dati/scenario_regata.json"
+   ],
+   "grado": 11,
+   "strato": 1,
+   "breve": "Piazza Municipio",
+   "importante": true,
+   "r": 16.7,
+   "x": 1293.8,
+   "y": 558.1,
+   "etichetta": {
+    "testo": "Piazza Municipio",
+    "dimensione": 22,
+    "lato": "destra"
+   },
+   "coordinate": [
+    {
+     "lat": 40.8395,
+     "lon": 14.2525,
+     "da": "c5-agentic-city/dati/scenario_regata.json"
+    }
+   ]
+  },
+  {
+   "id": "luogo:pan",
+   "tipo": "luogo",
+   "nome": "PAN – Palazzo delle Arti",
+   "sottotipo": "luogo per i turisti",
+   "chiave": "pan",
+   "turismo": {
+    "nome": "PAN – Palazzo delle Arti",
+    "interessi": [
+     "musei",
+     "arte"
+    ],
+    "dove": "al PAN, il Palazzo delle Arti"
+   },
+   "stato": "luogo reale, proposto dall'agente Turismo come alternativa",
+   "origine": [
+    "c5-agentic-city/dati/luoghi.json"
+   ],
+   "grado": 1,
+   "strato": 1,
+   "breve": "PAN",
+   "importante": false,
+   "r": 7,
+   "x": 1010.6,
+   "y": 570.9
+  },
+  {
+   "id": "luogo:piazza_vittoria",
+   "tipo": "luogo",
+   "nome": "Piazza Vittoria",
+   "sottotipo": "zona dello scenario",
+   "chiave": "piazza_vittoria",
+   "lat": 40.8355,
+   "lon": 14.2445,
+   "capienza": 7000,
+   "stato": "zona dello scenario della regata: coordinate e capienza indicative",
+   "origine": [
+    "c5-agentic-city/dati/scenario_regata.json"
+   ],
+   "grado": 15,
+   "strato": 1,
+   "breve": "Piazza Vittoria",
+   "importante": true,
+   "r": 16.2,
+   "x": 1032.5,
+   "y": 622.6,
+   "etichetta": {
+    "testo": "Piazza Vittoria",
+    "dimensione": 22,
+    "lato": "destra"
+   },
+   "coordinate": [
+    {
+     "lat": 40.8355,
+     "lon": 14.2445,
+     "da": "c5-agentic-city/dati/scenario_regata.json"
+    }
+   ]
+  },
+  {
+   "id": "luogo:plebiscito",
+   "tipo": "luogo",
+   "nome": "Piazza del Plebiscito",
+   "nome_api": "Piazza del Plebiscito",
+   "sottotipo": "luogo monitorato",
+   "chiave": "plebiscito",
+   "categoria": "Piazze e centro",
+   "lat": 40.8359,
+   "lon": 14.2488,
+   "capienza_mappa": 3000,
+   "parole": [
+    "Plebiscito",
+    "Palazzo Reale",
+    "Teatro San Carlo",
+    "Galleria Umberto",
+    "Piazza Trieste e Trento",
+    "Via Toledo",
+    "Via Chiaia"
+   ],
+   "stato": "luogo reale (coordinate dell'API dati città); capienza della mappa indicativa",
+   "origine": [
+    "citta-api/fonti/luoghi.js",
+    "c5-agentic-city/dati/luoghi.json"
+   ],
+   "turismo": {
+    "nome": "Piazza del Plebiscito e Palazzo Reale",
+    "interessi": [
+     "storia",
+     "musei",
+     "foto"
+    ],
+    "dove": "in Piazza del Plebiscito e a Palazzo Reale"
+   },
+   "grado": 10,
+   "strato": 1,
+   "breve": "Piazza del Plebiscito",
+   "importante": false,
+   "r": 10,
+   "x": 1150.2,
+   "y": 589.3,
+   "coordinate": [
+    {
+     "lat": 40.8359,
+     "lon": 14.2488,
+     "da": "citta-api/fonti/luoghi.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:rotonda_diaz",
+   "tipo": "luogo",
+   "nome": "Rotonda Diaz",
+   "sottotipo": "zona dello scenario",
+   "chiave": "rotonda_diaz",
+   "lat": 40.8335,
+   "lon": 14.233,
+   "capienza": 26000,
+   "stato": "zona dello scenario della regata: coordinate e capienza indicative",
+   "origine": [
+    "c5-agentic-city/dati/scenario_regata.json"
+   ],
+   "grado": 14,
+   "strato": 1,
+   "breve": "Rotonda Diaz",
+   "importante": true,
+   "r": 20,
+   "x": 828.1,
+   "y": 604.4,
+   "etichetta": {
+    "testo": "Rotonda Diaz",
+    "dimensione": 22,
+    "lato": "destra"
+   },
+   "coordinate": [
+    {
+     "lat": 40.8335,
+     "lon": 14.233,
+     "da": "c5-agentic-city/dati/scenario_regata.json"
+    }
+   ]
+  },
+  {
+   "id": "luogo:sanita",
+   "tipo": "luogo",
+   "nome": "Rione Sanità",
+   "nome_api": "Rione Sanità",
+   "sottotipo": "luogo monitorato",
+   "chiave": "sanita",
+   "categoria": "Quartieri",
+   "lat": 40.8606,
+   "lon": 14.2497,
+   "capienza_mappa": 2000,
+   "parole": [
+    "Sanità",
+    "Rione Sanità",
+    "Catacombe",
+    "Capodimonte",
+    "Materdei",
+    "Vergini"
+   ],
+   "stato": "luogo reale (coordinate dell'API dati città); capienza della mappa indicativa",
+   "origine": [
+    "citta-api/fonti/luoghi.js"
+   ],
+   "grado": 5,
+   "strato": 1,
+   "breve": "Rione Sanità",
+   "importante": false,
+   "r": 10,
+   "x": 1179.5,
+   "y": 459.5,
+   "coordinate": [
+    {
+     "lat": 40.8606,
+     "lon": 14.2497,
+     "da": "citta-api/fonti/luoghi.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:sant_elmo",
+   "tipo": "luogo",
+   "nome": "Castel Sant'Elmo e Certosa di San Martino",
+   "sottotipo": "luogo per i turisti",
+   "chiave": "sant_elmo",
+   "turismo": {
+    "nome": "Castel Sant'Elmo e Certosa di San Martino",
+    "interessi": [
+     "storia",
+     "panorama",
+     "foto"
+    ],
+    "dove": "a Castel Sant'Elmo e alla Certosa di San Martino"
+   },
+   "stato": "luogo reale, proposto dall'agente Turismo come alternativa",
+   "origine": [
+    "c5-agentic-city/dati/luoghi.json"
+   ],
+   "grado": 1,
+   "strato": 1,
+   "breve": "Castel Sant'Elmo",
+   "importante": false,
+   "r": 7,
+   "x": 711.6,
+   "y": 501.9
+  },
+  {
+   "id": "luogo:village",
+   "tipo": "luogo",
+   "nome": "America's Cup Village (Rotonda Diaz)",
+   "sottotipo": "luogo per i turisti",
+   "chiave": "village",
+   "turismo": {
+    "nome": "America's Cup Village (Rotonda Diaz)",
+    "interessi": [
+     "regata",
+     "sport",
+     "eventi"
+    ],
+    "dove": "all'America's Cup Village di Rotonda Diaz"
+   },
+   "stato": "luogo reale, proposto dall'agente Turismo come alternativa",
+   "origine": [
+    "c5-agentic-city/dati/luoghi.json"
+   ],
+   "grado": 2,
+   "strato": 1,
+   "breve": "America's Cup Village",
+   "importante": false,
+   "r": 7,
+   "x": 852.3,
+   "y": 571.1
+  },
+  {
+   "id": "luogo:virgiliano",
+   "tipo": "luogo",
+   "nome": "Parco Virgiliano",
+   "sottotipo": "luogo noto",
+   "chiave": "virgiliano",
+   "categoria": "Parco (Posillipo)",
+   "lat": 40.7987,
+   "lon": 14.1829,
+   "stato": "luogo reale senza sensori (coordinate indicative, circa 100 m)",
+   "origine": [
+    "citta-api/src/punti.js"
+   ],
+   "grado": 3,
+   "strato": 1,
+   "breve": "Parco Virgiliano",
+   "importante": false,
+   "r": 7.5,
+   "x": 249.5,
+   "y": 728.3,
+   "coordinate": [
+    {
+     "lat": 40.7987,
+     "lon": 14.1829,
+     "da": "citta-api/src/punti.js"
+    }
+   ]
+  },
+  {
+   "id": "luogo:vomero",
+   "tipo": "luogo",
+   "nome": "Vomero",
+   "sottotipo": "zona dello scenario e luogo monitorato",
+   "chiave": "vomero",
+   "lat": 40.844,
+   "lon": 14.229,
+   "capienza": 14000,
+   "stato": "zona dello scenario della regata: coordinate e capienza indicative",
+   "origine": [
+    "c5-agentic-city/dati/scenario_regata.json",
+    "citta-api/fonti/luoghi.js"
+   ],
+   "nome_api": "Vomero · Piazza Vanvitelli",
+   "categoria": "Quartieri",
+   "capienza_mappa": 3000,
+   "parole": [
+    "Vomero",
+    "Vanvitelli",
+    "Via Scarlatti",
+    "Castel Sant'Elmo",
+    "San Martino",
+    "Floridiana",
+    "Arenella",
+    "funicolare"
+   ],
+   "grado": 14,
+   "strato": 1,
+   "breve": "Vomero",
+   "importante": true,
+   "r": 17.9,
+   "x": 711.6,
+   "y": 533,
+   "etichetta": {
+    "testo": "Vomero",
+    "dimensione": 22,
+    "lato": "destra"
+   },
+   "coordinate": [
+    {
+     "lat": 40.84,
+     "lon": 14.237,
+     "da": "c5-agentic-city/dati/scenario_regata.json"
+    },
+    {
+     "lat": 40.844,
+     "lon": 14.229,
+     "da": "citta-api/fonti/luoghi.js"
+    }
+   ]
+  },
+  {
+   "id": "evento:nave_1",
+   "tipo": "evento",
+   "nome": "Nave da crociera 1 alla Stazione Marittima",
+   "breve": "Nave da crociera 1",
+   "sottotipo": "nave",
+   "emoji": "🚢",
+   "orario": "09:30–11:00",
+   "persone": 2100,
+   "zona_scenario": "beverello",
+   "stato": "evento dello scenario simulato della regata (Napoli 2027)",
+   "origine": [
+    "c5-agentic-city/dati/scenario_regata.json"
+   ],
+   "grado": 6,
+   "strato": 2,
+   "importante": true,
+   "r": 16.4,
+   "x": 984.8,
+   "y": 794,
+   "etichetta": {
+    "testo": "Nave da crociera 1",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "evento:nave_2",
+   "tipo": "evento",
+   "nome": "Nave da crociera 2 alla Stazione Marittima",
+   "breve": "Nave da crociera 2",
+   "sottotipo": "nave",
+   "emoji": "🚢",
+   "orario": "13:15–14:30",
+   "persone": 2300,
+   "zona_scenario": "beverello",
+   "stato": "evento dello scenario simulato della regata (Napoli 2027)",
+   "origine": [
+    "c5-agentic-city/dati/scenario_regata.json"
+   ],
+   "grado": 6,
+   "strato": 2,
+   "importante": true,
+   "r": 16.5,
+   "x": 1228.8,
+   "y": 794,
+   "etichetta": {
+    "testo": "Nave da crociera 2",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "evento:partita",
+   "tipo": "evento",
+   "nome": "Partita al Maradona (Fuorigrotta)",
+   "breve": "Partita al Maradona",
+   "sottotipo": "partita",
+   "emoji": "⚽",
+   "orario": "20:45–22:45",
+   "persone": 50000,
+   "zona_scenario": "mergellina",
+   "stato": "evento dello scenario simulato della regata (Napoli 2027)",
+   "origine": [
+    "c5-agentic-city/dati/scenario_regata.json"
+   ],
+   "grado": 3,
+   "strato": 2,
+   "importante": true,
+   "r": 22,
+   "x": 314.3,
+   "y": 794,
+   "etichetta": {
+    "testo": "Partita al Maradona",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "evento:regata",
+   "tipo": "evento",
+   "nome": "Regata America's Cup davanti a via Caracciolo",
+   "breve": "Regata America's Cup",
+   "sottotipo": "regata",
+   "emoji": "⛵",
+   "orario": "14:00–17:30",
+   "persone": 40000,
+   "zona_scenario": "rotonda_diaz",
+   "stato": "evento dello scenario simulato della regata (Napoli 2027)",
+   "origine": [
+    "c5-agentic-city/dati/scenario_regata.json"
+   ],
+   "grado": 7,
+   "strato": 2,
+   "importante": true,
+   "r": 21.3,
+   "x": 728.8,
+   "y": 794,
+   "etichetta": {
+    "testo": "Regata America's Cup",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "stazione:anm-6201",
+   "tipo": "stazione",
+   "nome": "Parco Margherita",
+   "breve": "Parco Margherita · F1",
+   "sottotipo": "funicolare",
+   "linee": [
+    "F1"
+   ],
+   "operatore": "ANM",
+   "lat": 40.83802,
+   "lon": 14.23451,
+   "corse_sabato": {
+    "13": 12,
+    "14": 12,
+    "15": 12,
+    "16": 12,
+    "17": 12,
+    "18": 12,
+    "19": 12,
+    "20": 12,
+    "21": 12
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 3,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 871,
+   "y": 572.4
+  },
+  {
+   "id": "stazione:anm-6204",
+   "tipo": "stazione",
+   "nome": "Cimarosa",
+   "breve": "Cimarosa · F1",
+   "sottotipo": "funicolare",
+   "linee": [
+    "F1"
+   ],
+   "operatore": "ANM",
+   "lat": 40.84238,
+   "lon": 14.23189,
+   "corse_sabato": {
+    "13": 12,
+    "14": 12,
+    "15": 12,
+    "16": 12,
+    "17": 12,
+    "18": 12,
+    "19": 12,
+    "20": 12,
+    "21": 12
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 800.4,
+   "y": 562.7
+  },
+  {
+   "id": "stazione:anm-6211",
+   "tipo": "stazione",
+   "nome": "Augusteo",
+   "breve": "Augusteo · F3",
+   "sottotipo": "funicolare",
+   "linee": [
+    "F3"
+   ],
+   "operatore": "ANM",
+   "lat": 40.83909,
+   "lon": 14.24768,
+   "corse_sabato": {
+    "13": 12,
+    "14": 12,
+    "15": 12,
+    "16": 12,
+    "17": 12,
+    "18": 12,
+    "19": 12,
+    "20": 12,
+    "21": 12
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 5,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1094.1,
+   "y": 580.2
+  },
+  {
+   "id": "stazione:anm-6212",
+   "tipo": "stazione",
+   "nome": "Corso Vittorio Emanuele",
+   "breve": "Corso Vittorio Emanuele · F3",
+   "sottotipo": "funicolare",
+   "linee": [
+    "F3"
+   ],
+   "operatore": "ANM",
+   "lat": 40.8401,
+   "lon": 14.24292,
+   "corse_sabato": {
+    "13": 8,
+    "14": 8,
+    "15": 8,
+    "16": 8,
+    "17": 8,
+    "18": 8,
+    "19": 8,
+    "20": 8,
+    "21": 8
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 991.7,
+   "y": 564.7
+  },
+  {
+   "id": "stazione:anm-6218",
+   "tipo": "stazione",
+   "nome": "Mergellina",
+   "breve": "Mergellina · F4",
+   "sottotipo": "funicolare",
+   "linee": [
+    "F4"
+   ],
+   "operatore": "ANM",
+   "lat": 40.82639,
+   "lon": 14.21953,
+   "corse_sabato": {
+    "13": 12,
+    "14": 12,
+    "15": 12,
+    "16": 12,
+    "17": 12,
+    "18": 12,
+    "19": 12,
+    "20": 12,
+    "21": 12
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 623.4,
+   "y": 665.5
+  },
+  {
+   "id": "stazione:anm-6219",
+   "tipo": "stazione",
+   "nome": "Sant'Antonio",
+   "breve": "Sant'Antonio · F4",
+   "sottotipo": "funicolare",
+   "linee": [
+    "F4"
+   ],
+   "operatore": "ANM",
+   "lat": 40.82604,
+   "lon": 14.21767,
+   "corse_sabato": {
+    "13": 8,
+    "14": 8,
+    "15": 8,
+    "16": 8,
+    "17": 8,
+    "18": 8,
+    "19": 8,
+    "20": 8,
+    "21": 8
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 537.1,
+   "y": 662.3
+  },
+  {
+   "id": "stazione:anm-6231",
+   "tipo": "stazione",
+   "nome": "Mostra",
+   "breve": "Mostra · L6",
+   "sottotipo": "metro",
+   "linee": [
+    "L6"
+   ],
+   "operatore": "ANM",
+   "lat": 40.82427,
+   "lon": 14.19378,
+   "corse_sabato": {
+    "13": 8,
+    "14": 10,
+    "15": 8,
+    "16": 1,
+    "17": 0,
+    "18": 0,
+    "19": 0,
+    "20": 0,
+    "21": 0
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 369,
+   "y": 678.7
+  },
+  {
+   "id": "stazione:anm-6234",
+   "tipo": "stazione",
+   "nome": "Mergellina",
+   "breve": "Mergellina · L2 L6",
+   "sottotipo": "metro",
+   "linee": [
+    "L2",
+    "L6"
+   ],
+   "operatore": "ANM",
+   "lat": 40.83109,
+   "lon": 14.21901,
+   "corse_sabato": {
+    "13": 20,
+    "14": 20,
+    "15": 17,
+    "16": 12,
+    "17": 11,
+    "18": 10,
+    "19": 10,
+    "20": 10,
+    "21": 11
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 595.5,
+   "y": 601.8
+  },
+  {
+   "id": "stazione:anm-6236",
+   "tipo": "stazione",
+   "nome": "Arco Mirelli",
+   "breve": "Arco Mirelli · L6",
+   "sottotipo": "metro",
+   "linee": [
+    "L6"
+   ],
+   "operatore": "ANM",
+   "lat": 40.83149,
+   "lon": 14.23037,
+   "corse_sabato": {
+    "13": 9,
+    "14": 9,
+    "15": 9,
+    "16": 0,
+    "17": 0,
+    "18": 0,
+    "19": 0,
+    "20": 0,
+    "21": 0
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 3,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 742.8,
+   "y": 632
+  },
+  {
+   "id": "stazione:anm-6238",
+   "tipo": "stazione",
+   "nome": "San Pasquale",
+   "breve": "San Pasquale · L6",
+   "sottotipo": "metro",
+   "linee": [
+    "L6"
+   ],
+   "operatore": "ANM",
+   "lat": 40.83231,
+   "lon": 14.23889,
+   "corse_sabato": {
+    "13": 9,
+    "14": 9,
+    "15": 9,
+    "16": 0,
+    "17": 0,
+    "18": 0,
+    "19": 0,
+    "20": 0,
+    "21": 0
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 4,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 930.8,
+   "y": 636.4
+  },
+  {
+   "id": "stazione:anm-6240",
+   "tipo": "stazione",
+   "nome": "Chiaia",
+   "breve": "Chiaia · L6",
+   "sottotipo": "metro",
+   "linee": [
+    "L6"
+   ],
+   "operatore": "ANM",
+   "lat": 40.83545,
+   "lon": 14.24781,
+   "corse_sabato": {
+    "13": 9,
+    "14": 9,
+    "15": 9,
+    "16": 0,
+    "17": 0,
+    "18": 0,
+    "19": 0,
+    "20": 0,
+    "21": 0
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 4,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1120.5,
+   "y": 594.6
+  },
+  {
+   "id": "stazione:anm-6244",
+   "tipo": "stazione",
+   "nome": "Augusto",
+   "breve": "Augusto · L6",
+   "sottotipo": "metro",
+   "linee": [
+    "L6"
+   ],
+   "operatore": "ANM",
+   "lat": 40.826,
+   "lon": 14.19836,
+   "corse_sabato": {
+    "13": 9,
+    "14": 9,
+    "15": 8,
+    "16": 1,
+    "17": 0,
+    "18": 0,
+    "19": 0,
+    "20": 0,
+    "21": 0
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 438.4,
+   "y": 670.6
+  },
+  {
+   "id": "stazione:anm-6245",
+   "tipo": "stazione",
+   "nome": "Municipio",
+   "breve": "Municipio · L1 L6",
+   "sottotipo": "metro",
+   "linee": [
+    "L1",
+    "L6"
+   ],
+   "operatore": "ANM",
+   "lat": 40.83936,
+   "lon": 14.25379,
+   "corse_sabato": {
+    "13": 24,
+    "14": 23,
+    "15": 21,
+    "16": 14,
+    "17": 13,
+    "18": 13,
+    "19": 14,
+    "20": 13,
+    "21": 13
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 4,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1350.5,
+   "y": 586.8
+  },
+  {
+   "id": "stazione:anm-6271",
+   "tipo": "stazione",
+   "nome": "Piazza Garibaldi",
+   "breve": "Piazza Garibaldi · L2",
+   "sottotipo": "metro",
+   "linee": [
+    "L2"
+   ],
+   "operatore": "Trenitalia",
+   "lat": 40.85254,
+   "lon": 14.27253,
+   "corse_sabato": {
+    "13": 10,
+    "14": 10,
+    "15": 11,
+    "16": 10,
+    "17": 11,
+    "18": 10,
+    "19": 10,
+    "20": 11,
+    "21": 11
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1624.2,
+   "y": 499.7
+  },
+  {
+   "id": "stazione:anm-6272",
+   "tipo": "stazione",
+   "nome": "Cavour",
+   "breve": "Cavour · L2",
+   "sottotipo": "metro",
+   "linee": [
+    "L2"
+   ],
+   "operatore": "Trenitalia",
+   "lat": 40.85545,
+   "lon": 14.25479,
+   "corse_sabato": {
+    "13": 10,
+    "14": 10,
+    "15": 10,
+    "16": 11,
+    "17": 11,
+    "18": 10,
+    "19": 10,
+    "20": 10,
+    "21": 11
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1380.3,
+   "y": 475.1
+  },
+  {
+   "id": "stazione:anm-6319",
+   "tipo": "stazione",
+   "nome": "Vanvitelli",
+   "breve": "Vanvitelli · L1",
+   "sottotipo": "metro",
+   "linee": [
+    "L1"
+   ],
+   "operatore": "ANM",
+   "lat": 40.84383,
+   "lon": 14.23182,
+   "corse_sabato": {
+    "13": 13,
+    "14": 13,
+    "15": 14,
+    "16": 13,
+    "17": 13,
+    "18": 14,
+    "19": 13,
+    "20": 13,
+    "21": 14
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 774.2,
+   "y": 562.7
+  },
+  {
+   "id": "stazione:anm-6320",
+   "tipo": "stazione",
+   "nome": "Quattro Giornate",
+   "breve": "Quattro Giornate · L1",
+   "sottotipo": "metro",
+   "linee": [
+    "L1"
+   ],
+   "operatore": "ANM",
+   "lat": 40.84634,
+   "lon": 14.2252,
+   "corse_sabato": {
+    "13": 14,
+    "14": 13,
+    "15": 13,
+    "16": 14,
+    "17": 13,
+    "18": 13,
+    "19": 14,
+    "20": 13,
+    "21": 13
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 671.1,
+   "y": 528.8
+  },
+  {
+   "id": "stazione:anm-6322",
+   "tipo": "stazione",
+   "nome": "Materdei",
+   "breve": "Materdei · L1",
+   "sottotipo": "metro",
+   "linee": [
+    "L1"
+   ],
+   "operatore": "ANM",
+   "lat": 40.85546,
+   "lon": 14.2429,
+   "corse_sabato": {
+    "13": 13,
+    "14": 13,
+    "15": 14,
+    "16": 13,
+    "17": 13,
+    "18": 14,
+    "19": 13,
+    "20": 13,
+    "21": 14
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 972.2,
+   "y": 470.4
+  },
+  {
+   "id": "stazione:anm-6324",
+   "tipo": "stazione",
+   "nome": "Dante",
+   "breve": "Dante · L1",
+   "sottotipo": "metro",
+   "linee": [
+    "L1"
+   ],
+   "operatore": "ANM",
+   "lat": 40.84856,
+   "lon": 14.25003,
+   "corse_sabato": {
+    "13": 14,
+    "14": 13,
+    "15": 13,
+    "16": 14,
+    "17": 13,
+    "18": 13,
+    "19": 14,
+    "20": 13,
+    "21": 13
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1206.7,
+   "y": 511.9
+  },
+  {
+   "id": "stazione:anm-6325",
+   "tipo": "stazione",
+   "nome": "Toledo",
+   "breve": "Toledo · L1",
+   "sottotipo": "metro",
+   "linee": [
+    "L1"
+   ],
+   "operatore": "ANM",
+   "lat": 40.8427,
+   "lon": 14.25024,
+   "corse_sabato": {
+    "13": 14,
+    "14": 14,
+    "15": 12,
+    "16": 14,
+    "17": 14,
+    "18": 12,
+    "19": 14,
+    "20": 14,
+    "21": 12
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 3,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1233.3,
+   "y": 552.1
+  },
+  {
+   "id": "stazione:anm-6327",
+   "tipo": "stazione",
+   "nome": "Università",
+   "breve": "Università · L1",
+   "sottotipo": "metro",
+   "linee": [
+    "L1"
+   ],
+   "operatore": "ANM",
+   "lat": 40.84323,
+   "lon": 14.25559,
+   "corse_sabato": {
+    "13": 13,
+    "14": 13,
+    "15": 14,
+    "16": 13,
+    "17": 13,
+    "18": 14,
+    "19": 13,
+    "20": 13,
+    "21": 14
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1409.2,
+   "y": 529.1
+  },
+  {
+   "id": "stazione:anm-6335",
+   "tipo": "stazione",
+   "nome": "Museo",
+   "breve": "Museo · L1",
+   "sottotipo": "metro",
+   "linee": [
+    "L1"
+   ],
+   "operatore": "ANM",
+   "lat": 40.8536,
+   "lon": 14.25156,
+   "corse_sabato": {
+    "13": 12,
+    "14": 14,
+    "15": 14,
+    "16": 12,
+    "17": 14,
+    "18": 14,
+    "19": 12,
+    "20": 14,
+    "21": 14
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1264.3,
+   "y": 482.1
+  },
+  {
+   "id": "stazione:anm-6347",
+   "tipo": "stazione",
+   "nome": "Garibaldi",
+   "breve": "Garibaldi · L1",
+   "sottotipo": "metro",
+   "linee": [
+    "L1"
+   ],
+   "operatore": "ANM",
+   "lat": 40.85222,
+   "lon": 14.27253,
+   "corse_sabato": {
+    "13": 13,
+    "14": 13,
+    "15": 14,
+    "16": 13,
+    "17": 13,
+    "18": 14,
+    "19": 13,
+    "20": 13,
+    "21": 14
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1606.7,
+   "y": 502.7
+  },
+  {
+   "id": "stazione:anm-6348",
+   "tipo": "stazione",
+   "nome": "Duomo",
+   "breve": "Duomo · L1",
+   "sottotipo": "metro",
+   "linee": [
+    "L1"
+   ],
+   "operatore": "ANM",
+   "lat": 40.84765,
+   "lon": 14.26169,
+   "corse_sabato": {
+    "13": 12,
+    "14": 14,
+    "15": 14,
+    "16": 12,
+    "17": 14,
+    "18": 14,
+    "19": 12,
+    "20": 14,
+    "21": 14
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1484.5,
+   "y": 525.8
+  },
+  {
+   "id": "stazione:eav-6701",
+   "tipo": "stazione",
+   "nome": "Napoli Centrale",
+   "breve": "Napoli Centrale · Ferrovia EAV",
+   "sottotipo": "ferrovia",
+   "linee": [
+    "Ferrovia EAV"
+   ],
+   "operatore": "EAV",
+   "lat": 40.85247,
+   "lon": 14.27219,
+   "corse_sabato": {
+    "13": 2,
+    "14": 0,
+    "15": 1,
+    "16": 1,
+    "17": 0,
+    "18": 1,
+    "19": 2,
+    "20": 1,
+    "21": 0
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 1550.7,
+   "y": 525.7
+  },
+  {
+   "id": "stazione:eav-6804",
+   "tipo": "stazione",
+   "nome": "Mostra",
+   "breve": "Mostra · Cumana",
+   "sottotipo": "ferrovia",
+   "linee": [
+    "Cumana"
+   ],
+   "operatore": "EAV",
+   "lat": 40.82469,
+   "lon": 14.19321,
+   "corse_sabato": {
+    "13": 8,
+    "14": 8,
+    "15": 8,
+    "16": 8,
+    "17": 8,
+    "18": 8,
+    "19": 5,
+    "20": 4,
+    "21": 4
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 341,
+   "y": 673.4
+  },
+  {
+   "id": "stazione:eav-6806",
+   "tipo": "stazione",
+   "nome": "Agnano",
+   "breve": "Agnano · Cumana",
+   "sottotipo": "ferrovia",
+   "linee": [
+    "Cumana"
+   ],
+   "operatore": "EAV",
+   "lat": 40.81782,
+   "lon": 14.17654,
+   "corse_sabato": {
+    "13": 8,
+    "14": 8,
+    "15": 8,
+    "16": 8,
+    "17": 8,
+    "18": 8,
+    "19": 5,
+    "20": 4,
+    "21": 4
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 3,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 173.3,
+   "y": 691.2
+  },
+  {
+   "id": "stazione:eav-6808",
+   "tipo": "stazione",
+   "nome": "Bagnoli",
+   "breve": "Bagnoli · Cumana",
+   "sottotipo": "ferrovia",
+   "linee": [
+    "Cumana"
+   ],
+   "operatore": "EAV",
+   "lat": 40.81518,
+   "lon": 14.16682,
+   "corse_sabato": {
+    "13": 8,
+    "14": 8,
+    "15": 8,
+    "16": 8,
+    "17": 8,
+    "18": 8,
+    "19": 5,
+    "20": 4,
+    "21": 4
+   },
+   "giorno_gtfs_sabato": "20261114",
+   "prossimi_passaggi": true,
+   "stato": "stazione reale; orari programmati GTFS, non in tempo reale",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 3,
+   "strato": 3,
+   "importante": false,
+   "r": 5.5,
+   "x": 110,
+   "y": 699.1
+  },
+  {
+   "id": "impresa:friggitoria_chiaia",
+   "tipo": "impresa",
+   "nome": "Friggitoria del Vasto",
+   "breve": "Friggitoria del Vasto",
+   "sottotipo": "street food",
+   "descrizione": "cuoppo di fritti da asporto, ideale per la regata",
+   "posti": 40,
+   "sconto_ore_morte": 15,
+   "occupazione": {
+    "12": 0.6,
+    "13": 0.9,
+    "14": 0.7,
+    "15": 0.3,
+    "16": 0.4,
+    "17": 0.6,
+    "18": 0.7,
+    "19": 0.6,
+    "20": 0.5
+   },
+   "stato": "impresa di fantasia (non è un'attività reale)",
+   "origine": [
+    "c5-agentic-city/dati/imprese.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 8,
+   "x": 1054.9,
+   "y": 569.4
+  },
+  {
+   "id": "impresa:gozzo_mergellina",
+   "tipo": "impresa",
+   "nome": "Gozzi di Mergellina",
+   "breve": "Gozzi di Mergellina",
+   "sottotipo": "barca",
+   "descrizione": "giro in gozzo da 12 posti: la regata vista dal mare",
+   "posti": 12,
+   "sconto_ore_morte": 20,
+   "occupazione": {
+    "12": 0.3,
+    "13": 0.5,
+    "14": 1,
+    "15": 1,
+    "16": 0.9,
+    "17": 0.4,
+    "18": 0.2,
+    "19": 0.1,
+    "20": 0
+   },
+   "stato": "impresa di fantasia (non è un'attività reale)",
+   "origine": [
+    "c5-agentic-city/dati/imprese.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 8,
+   "x": 566.9,
+   "y": 579.3
+  },
+  {
+   "id": "impresa:museo_pan",
+   "tipo": "impresa",
+   "nome": "PAN – Palazzo delle Arti (visita guidata)",
+   "breve": "PAN – Palazzo delle Arti (visita guidata)",
+   "sottotipo": "museo",
+   "descrizione": "visita guidata di 45 minuti, al fresco e lontano dalla folla",
+   "posti": 25,
+   "sconto_ore_morte": 30,
+   "occupazione": {
+    "12": 0.4,
+    "13": 0.3,
+    "14": 0.2,
+    "15": 0.2,
+    "16": 0.3,
+    "17": 0.4,
+    "18": 0.3,
+    "19": 0,
+    "20": 0
+   },
+   "stato": "impresa di fantasia (non è un'attività reale)",
+   "origine": [
+    "c5-agentic-city/dati/imprese.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 8,
+   "x": 1032.6,
+   "y": 568.9
+  },
+  {
+   "id": "impresa:pizzeria_borgo",
+   "tipo": "impresa",
+   "nome": "Pizzeria 'O Scoglio",
+   "breve": "Pizzeria 'O Scoglio",
+   "sottotipo": "pizzeria",
+   "descrizione": "pizza a portafoglio e sedute vista Castel dell'Ovo",
+   "posti": 60,
+   "sconto_ore_morte": 10,
+   "occupazione": {
+    "12": 0.8,
+    "13": 1,
+    "14": 0.85,
+    "15": 0.4,
+    "16": 0.3,
+    "17": 0.4,
+    "18": 0.5,
+    "19": 0.8,
+    "20": 1
+   },
+   "stato": "impresa di fantasia (non è un'attività reale)",
+   "origine": [
+    "c5-agentic-city/dati/imprese.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 8,
+   "x": 1067.9,
+   "y": 591.9
+  },
+  {
+   "id": "impresa:terrazza_vomero",
+   "tipo": "impresa",
+   "nome": "Bar Terrazza San Martino",
+   "breve": "Bar Terrazza San Martino",
+   "sottotipo": "bar",
+   "descrizione": "aperitivo con vista sul golfo, raggiungibile con la funicolare di Chiaia",
+   "posti": 50,
+   "sconto_ore_morte": 15,
+   "occupazione": {
+    "12": 0.3,
+    "13": 0.4,
+    "14": 0.3,
+    "15": 0.2,
+    "16": 0.3,
+    "17": 0.6,
+    "18": 0.9,
+    "19": 1,
+    "20": 0.8
+   },
+   "stato": "impresa di fantasia (non è un'attività reale)",
+   "origine": [
+    "c5-agentic-city/dati/imprese.json"
+   ],
+   "grado": 2,
+   "strato": 3,
+   "importante": false,
+   "r": 8,
+   "x": 711.6,
+   "y": 479.9
+  },
+  {
+   "id": "agente:drone",
+   "tipo": "agente",
+   "nome": "Drone",
+   "sottotipo": "pilota umano nel loop",
+   "emoji": "🛸",
+   "descrizione": "Verifica dall'alto una zona quando la stima della folla è incerta: l'orchestratore chiede il volo, il pilota vola e l'osservazione torna sul bus (POST /drone).",
+   "stato": "persona nel loop (pilota) con lo strumento strumenti/drone_osserva.py",
+   "origine": [
+    "c5-agentic-city/citta/api.py",
+    "c5-agentic-city/citta/agenti/orchestratore.py"
+   ],
+   "grado": 3,
+   "strato": 4,
+   "breve": "Drone",
+   "importante": true,
+   "r": 21,
+   "x": 1540,
+   "y": 336,
+   "etichetta": {
+    "testo": "Drone",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "agente:eventi",
+   "tipo": "agente",
+   "nome": "Eventi",
+   "sottotipo": "agente della città",
+   "emoji": "📅",
+   "descrizione": "Agente Eventi: conosce il calendario (navi, regata, partita) e prevede i flussi di persone.",
+   "stato": "software della città (c5-agentic-city)",
+   "origine": [
+    "c5-agentic-city/citta/agenti/eventi.py"
+   ],
+   "grado": 8,
+   "strato": 4,
+   "breve": "Eventi",
+   "importante": true,
+   "r": 21,
+   "x": 380,
+   "y": 336,
+   "etichetta": {
+    "testo": "Eventi",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "agente:folla",
+   "tipo": "agente",
+   "nome": "Folla",
+   "sottotipo": "agente della città",
+   "emoji": "👥",
+   "descrizione": "Agente Folla: stima quante persone ci sono in ogni zona e quanto è piena.",
+   "stato": "software della città (c5-agentic-city)",
+   "origine": [
+    "c5-agentic-city/citta/agenti/folla.py"
+   ],
+   "grado": 15,
+   "strato": 4,
+   "breve": "Folla",
+   "importante": true,
+   "r": 21,
+   "x": 1135,
+   "y": 256,
+   "etichetta": {
+    "testo": "Folla",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "agente:imprese",
+   "tipo": "agente",
+   "nome": "Imprese",
+   "sottotipo": "agente della città",
+   "emoji": "🍕",
+   "descrizione": "Agenti delle imprese: pizzeria, friggitoria, gozzi, bar, museo (di fantasia).",
+   "stato": "software della città (c5-agentic-city)",
+   "origine": [
+    "c5-agentic-city/citta/agenti/imprese.py"
+   ],
+   "grado": 8,
+   "strato": 4,
+   "breve": "Imprese",
+   "importante": true,
+   "r": 21,
+   "x": 1405,
+   "y": 256,
+   "etichetta": {
+    "testo": "Imprese",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "agente:meteo",
+   "tipo": "agente",
+   "nome": "Meteo&Mare",
+   "sottotipo": "agente della città",
+   "emoji": "🌊",
+   "descrizione": "Agente Meteo & Mare: vento, onda e temperatura, e se la regata si può fare.",
+   "stato": "software della città (c5-agentic-city)",
+   "origine": [
+    "c5-agentic-city/citta/agenti/meteo.py"
+   ],
+   "grado": 9,
+   "strato": 4,
+   "breve": "Meteo&Mare",
+   "importante": true,
+   "r": 21,
+   "x": 515,
+   "y": 256,
+   "etichetta": {
+    "testo": "Meteo&Mare",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "agente:orchestratore",
+   "tipo": "agente",
+   "nome": "Orchestratore",
+   "sottotipo": "agente della città",
+   "emoji": "🎛️",
+   "descrizione": "Orchestratore: la regia comune.",
+   "stato": "software della città (c5-agentic-city)",
+   "origine": [
+    "c5-agentic-city/citta/agenti/orchestratore.py"
+   ],
+   "grado": 8,
+   "strato": 4,
+   "breve": "Orchestratore",
+   "importante": true,
+   "r": 25,
+   "x": 650,
+   "y": 336,
+   "etichetta": {
+    "testo": "Orchestratore",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "agente:sala",
+   "tipo": "agente",
+   "nome": "Sala operativa",
+   "sottotipo": "operatore umano nel loop",
+   "emoji": "🖥️",
+   "descrizione": "Sala operativa: console a schermo intero (niente webapp). L'operatore approva o blocca le decisioni dell'orchestratore e segnala gli eventi dal campo (POST /operatore e /evento). Nel video: la Polizia Locale.",
+   "stato": "persona nel loop (operatore) con la sala nel terminale",
+   "origine": [
+    "c5-agentic-city/citta/sala.py",
+    "c5-agentic-city/citta/sensori.py",
+    "c5-agentic-city/citta/api.py"
+   ],
+   "grado": 11,
+   "strato": 4,
+   "breve": "Sala operativa",
+   "importante": true,
+   "r": 21,
+   "x": 785,
+   "y": 256,
+   "etichetta": {
+    "testo": "Sala operativa",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "agente:traffico",
+   "tipo": "agente",
+   "nome": "Traffico",
+   "sottotipo": "agente della città",
+   "emoji": "🚦",
+   "descrizione": "Agente Traffico: decide la strategia dei semafori, cioè quali corridoi hanno priorità.",
+   "stato": "software della città (c5-agentic-city)",
+   "origine": [
+    "c5-agentic-city/citta/agenti/traffico.py"
+   ],
+   "grado": 3,
+   "strato": 4,
+   "breve": "Traffico",
+   "importante": true,
+   "r": 21,
+   "x": 245,
+   "y": 256,
+   "etichetta": {
+    "testo": "Traffico",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "agente:turismo",
+   "tipo": "agente",
+   "nome": "Turismo",
+   "sottotipo": "agente della città",
+   "emoji": "🧭",
+   "descrizione": "Agente Turismo: sposta la folla con suggerimenti utili invece che con divieti.",
+   "stato": "software della città (c5-agentic-city)",
+   "origine": [
+    "c5-agentic-city/citta/agenti/turismo.py"
+   ],
+   "grado": 5,
+   "strato": 4,
+   "breve": "Turismo",
+   "importante": true,
+   "r": 21,
+   "x": 1270,
+   "y": 336,
+   "etichetta": {
+    "testo": "Turismo",
+    "dimensione": 21,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "agente:twinciro",
+   "tipo": "agente",
+   "nome": "TwinCIRO",
+   "sottotipo": "assistente su WhatsApp",
+   "emoji": "💬",
+   "descrizione": "Assistenti personali di cittadini e turisti. Su WhatsApp con OpenClaw: la skill twinciro-citta passa i messaggi a /chiedi e /notifiche della città, la skill napoli-citta-dati legge i dati reali dall'API dati città.",
+   "stato": "software della città (c5-agentic-city)",
+   "origine": [
+    "c5-agentic-city/citta/agenti/assistente.py",
+    "c5-agentic-city/openclaw/skills/twinciro-citta/SKILL.md",
+    "c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md"
+   ],
+   "grado": 9,
+   "strato": 4,
+   "breve": "TwinCIRO",
+   "importante": true,
+   "r": 36,
+   "x": 960,
+   "y": 292,
+   "etichetta": {
+    "testo": "TwinCIRO",
+    "dimensione": 31,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "sensore:badge-1",
+   "tipo": "sensore",
+   "nome": "Badge WHY2025",
+   "breve": "Badge WHY2025",
+   "sottotipo": "badge Cyber Saiyan WHY2025 (ESP32-C3)",
+   "emoji": "📟",
+   "descrizione": "Contapersone a mano (rotella SU = un gruppo visto) e sensori I2C se collegati.",
+   "zona": "rotonda_diaz",
+   "grandezze": [
+    "temperatura",
+    "umidita",
+    "luce",
+    "pressione",
+    "persone"
+   ],
+   "stato": "dispositivo reale: compila, test sul PC passati; non ancora provato sul badge",
+   "origine": [
+    "firmware/why2025-badge/overlay/main/badge/telemetry_cfg.h",
+    "firmware/README.md"
+   ],
+   "grado": 4,
+   "strato": 5,
+   "importante": true,
+   "r": 15,
+   "x": 740,
+   "y": 672.3,
+   "etichetta": {
+    "testo": "Badge WHY2025",
+    "dimensione": 19,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "sensore:tasmota-1",
+   "tipo": "sensore",
+   "nome": "Scheda Tasmota",
+   "breve": "Scheda Tasmota",
+   "sottotipo": "ESP32 o ESP8266 con Tasmota",
+   "emoji": "🔌",
+   "descrizione": "Letture del sensore pubblicate con le Rules di Tasmota, configurate dalla console web.",
+   "zona": "rotonda_diaz",
+   "grandezze": [
+    "temperatura",
+    "umidita",
+    "luce",
+    "pressione"
+   ],
+   "stato": "dispositivo reale: si configura dalla console web; regole da provare sulla scheda",
+   "origine": [
+    "firmware/tasmota/README.md",
+    "firmware/README.md"
+   ],
+   "grado": 3,
+   "strato": 5,
+   "importante": true,
+   "r": 15,
+   "x": 920.6,
+   "y": 672.3,
+   "etichetta": {
+    "testo": "Scheda Tasmota",
+    "dimensione": 19,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "fonte:allerta",
+   "tipo": "fonte",
+   "breve": "Allerta meteo Campania",
+   "icona": "fonti/loghi/centro-funzionale.png",
+   "icona_sfondo": "chiaro",
+   "ente": "Regione Campania, Protezione Civile, Centro Funzionale Decentrato",
+   "esito_verifica": "confermata con correzioni",
+   "nome": "Allerta meteo Campania",
+   "sottotipo": "Protezione Civile, Centro Funzionale",
+   "url": "https://centrofunzionale.regione.campania.it/",
+   "licenza": "© Regione Campania, citata come fonte",
+   "catalogo": [
+    "allerta-campania"
+   ],
+   "stato": "fonte pubblica reale",
+   "origine": [
+    "citta-api/fonti/dati.js",
+    "c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md"
+   ],
+   "grado": 1,
+   "strato": 5,
+   "importante": false,
+   "r": 21,
+   "x": 798.5,
+   "y": 884
+  },
+  {
+   "id": "fonte:americas-cup",
+   "tipo": "fonte",
+   "breve": "America's Cup 2027",
+   "icona": "fonti/loghi/americascup.png",
+   "icona_sfondo": "chiaro",
+   "ente": "America's Cup (sito ufficiale); Comune di Napoli (comunicato)",
+   "esito_verifica": "confermata con correzioni",
+   "nome": "America's Cup 2027",
+   "sottotipo": "calendario delle regate a Napoli",
+   "url": "https://www.americascup.com/json/schedule-ac38.json",
+   "licenza": "contenuto del sito ufficiale, senza licenza dichiarata: citato come fonte",
+   "catalogo": [
+    "americas-cup"
+   ],
+   "stato": "fonte pubblica reale (sito ufficiale, citato)",
+   "origine": [
+    "citta-api/dati/eventi.json"
+   ],
+   "grado": 2,
+   "strato": 5,
+   "importante": false,
+   "r": 21,
+   "x": 732.5,
+   "y": 884
+  },
+  {
+   "id": "fonte:centraline",
+   "tipo": "fonte",
+   "breve": "Centraline aria ARPAC (EEA)",
+   "icona": "fonti/loghi/eea.png",
+   "icona_sfondo": "chiaro",
+   "ente": "European Environment Agency (dati di ARPA Campania trasmessi tramite ISPRA)",
+   "esito_verifica": "confermata con correzioni",
+   "nome": "Centraline aria ARPAC (EEA)",
+   "sottotipo": "qualità dell'aria misurata",
+   "url": "https://eeadmz1-downloads-webapp.azurewebsites.net/",
+   "licenza": "riuso con citazione EEA",
+   "catalogo": [
+    "eea-aria"
+   ],
+   "stato": "fonte pubblica reale (misure orarie non validate)",
+   "origine": [
+    "citta-api/dati/aria.json"
+   ],
+   "grado": 4,
+   "strato": 5,
+   "importante": false,
+   "r": 21,
+   "x": 1453.5,
+   "y": 884
+  },
+  {
+   "id": "fonte:comune-agenda",
+   "tipo": "fonte",
+   "breve": "Agenda del Comune",
+   "icona": "fonti/loghi/comune-napoli.png",
+   "icona_sfondo": "chiaro",
+   "ente": "Comune di Napoli",
+   "esito_verifica": "confermata con correzioni",
+   "nome": "Agenda del Comune",
+   "sottotipo": "eventi del Comune di Napoli",
+   "url": "https://www.comune.napoli.it/wp-json/api/v1/news",
+   "licenza": "CC BY 4.0 (note legali del sito); immagini escluse",
+   "catalogo": [
+    "comune-agenda"
+   ],
+   "stato": "fonte pubblica reale",
+   "origine": [
+    "citta-api/dati/eventi.json"
+   ],
+   "grado": 2,
+   "strato": 5,
+   "importante": false,
+   "r": 21,
+   "x": 1128.5,
+   "y": 884
+  },
+  {
+   "id": "fonte:crociere",
+   "tipo": "fonte",
+   "breve": "Cruise Timetables",
+   "icona": "fonti/loghi/cruisetimetables.png",
+   "icona_sfondo": "scuro",
+   "ente": "sito privato, non ufficiale",
+   "esito_verifica": "confermata",
+   "nome": "Cruise Timetables",
+   "sottotipo": "navi da crociera in porto",
+   "url": "https://www.cruisetimetables.com/cruises-to-naples-italy.html",
+   "licenza": "proprietaria: citata come fonte in una demo non commerciale",
+   "catalogo": [
+    "cruise-timetables"
+   ],
+   "stato": "fonte privata, citata (il porto non pubblica un calendario aperto degli accosti)",
+   "origine": [
+    "citta-api/dati/eventi.json"
+   ],
+   "grado": 1,
+   "strato": 5,
+   "importante": false,
+   "r": 21,
+   "x": 1519.5,
+   "y": 884
+  },
+  {
+   "id": "fonte:gtfs-anm",
+   "tipo": "fonte",
+   "breve": "Orari ANM (GTFS)",
+   "ente": "ANM (pubblicato anche come dataset del Comune)",
+   "esito_verifica": "confermata con correzioni",
+   "nome": "Orari ANM (GTFS)",
+   "emoji": "🚇",
+   "sottotipo": "metro L1, L2, L6 e funicolari",
+   "url": "https://www.anm.it/google/google-transit.zip",
+   "licenza": "CC BY 4.0 (dataset del Comune di Napoli su dati.gov.it)",
+   "catalogo": [
+    "anm-gtfs"
+   ],
+   "stato": "fonte pubblica reale (orari programmati)",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 24,
+   "strato": 5,
+   "importante": false,
+   "r": 21,
+   "x": 1062.5,
+   "y": 884
+  },
+  {
+   "id": "fonte:gtfs-eav",
+   "tipo": "fonte",
+   "breve": "Orari EAV (GTFS)",
+   "icona": "fonti/loghi/eav.png",
+   "icona_sfondo": "chiaro",
+   "ente": "EAV srl",
+   "esito_verifica": "confermata",
+   "nome": "Orari EAV (GTFS)",
+   "sottotipo": "Cumana, Circumflegrea, Circumvesuviana",
+   "url": "https://www.wimob.it/cfile/download.php?file=google-transit.zip",
+   "licenza": "non indicata dal fornitore (citare EAV)",
+   "catalogo": [
+    "eav-gtfs"
+   ],
+   "stato": "fonte pubblica reale (orari programmati)",
+   "origine": [
+    "citta-api/dati/trasporti.json"
+   ],
+   "grado": 4,
+   "strato": 5,
+   "importante": false,
+   "r": 21,
+   "x": 543.7,
+   "y": 884
+  },
+  {
+   "id": "fonte:ingv",
+   "tipo": "fonte",
+   "breve": "INGV terremoti",
+   "icona": "fonti/loghi/ingv.png",
+   "icona_sfondo": "chiaro",
+   "ente": "INGV",
+   "esito_verifica": "aggiunta dal verificatore",
+   "nome": "INGV terremoti",
+   "sottotipo": "terremoti in Campania",
+   "url": "https://terremoti.ingv.it/",
+   "licenza": "CC BY 4.0",
+   "catalogo": [
+    "ingv"
+   ],
+   "stato": "fonte pubblica reale",
+   "origine": [
+    "citta-api/fonti/dati.js",
+    "c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md"
+   ],
+   "grado": 1,
+   "strato": 5,
+   "importante": false,
+   "r": 21,
+   "x": 864.5,
+   "y": 884
+  },
+  {
+   "id": "fonte:open-meteo",
+   "tipo": "fonte",
+   "breve": "Open-Meteo",
+   "icona": "fonti/loghi/open-meteo.png",
+   "icona_sfondo": "chiaro",
+   "ente": "Open-Meteo.com (ECMWF, DWD ICON, Météo-France, ItaliaMeteo-ARPAE ICON-2I)",
+   "esito_verifica": "confermata con correzioni",
+   "nome": "Open-Meteo",
+   "sottotipo": "meteo, mare e aria (modello CAMS)",
+   "url": "https://open-meteo.com/",
+   "licenza": "CC BY 4.0",
+   "catalogo": [
+    "open-meteo-previsioni",
+    "open-meteo-aria",
+    "open-meteo-mare"
+   ],
+   "stato": "fonte pubblica reale",
+   "origine": [
+    "citta-api/fonti/dati.js",
+    "c5-agentic-city/citta/agenti/meteo.py"
+   ],
+   "grado": 11,
+   "strato": 5,
+   "importante": false,
+   "r": 21,
+   "x": 996.5,
+   "y": 884
+  },
+  {
+   "id": "fonte:openfootball",
+   "tipo": "fonte",
+   "breve": "Serie A (openfootball)",
+   "icona": "fonti/loghi/openfootball.png",
+   "icona_sfondo": "chiaro",
+   "ente": "openfootball",
+   "esito_verifica": "confermata",
+   "nome": "Serie A (openfootball)",
+   "sottotipo": "partite in casa del Napoli",
+   "url": "https://github.com/openfootball/football.json",
+   "licenza": "CC0 1.0 (pubblico dominio)",
+   "catalogo": [
+    "openfootball"
+   ],
+   "stato": "fonte pubblica reale",
+   "origine": [
+    "citta-api/dati/eventi.json"
+   ],
+   "grado": 1,
+   "strato": 5,
+   "importante": false,
+   "r": 21,
+   "x": 314.3,
+   "y": 884
+  },
+  {
+   "id": "fonte:rete-mobile",
+   "tipo": "fonte",
+   "breve": "Rete mobile (simulata)",
+   "ente": "Fastweb + Vodafone (sponsor della C5: un'unica azienda)",
+   "esito_verifica": "non verificabile",
+   "nome": "Presenze da rete mobile",
+   "sottotipo": "persone per zona, anonime e aggregate",
+   "emoji": "📶",
+   "catalogo": [
+    "presenze-rete-mobile"
+   ],
+   "stato": "SIMULATO: è il dato che la rete di Fastweb + Vodafone può dare; oggi non è pubblico",
+   "simulato": true,
+   "nota": null,
+   "origine": [
+    "c5-agentic-city/citta/agenti/folla.py",
+    "c5-agentic-city/dati/scenario_regata.json"
+   ],
+   "grado": 1,
+   "strato": 5,
+   "importante": true,
+   "r": 21,
+   "x": 1291,
+   "y": 884,
+   "etichetta": {
+    "testo": "Rete mobile (simulata)",
+    "dimensione": 19,
+    "lato": "sotto"
+   }
+  },
+  {
+   "id": "fonte:transitous",
+   "tipo": "fonte",
+   "breve": "Transitous",
+   "icona": "fonti/loghi/transitous.png",
+   "icona_sfondo": "chiaro",
+   "ente": "Progetto comunitario Transitous",
+   "esito_verifica": "aggiunta dal verificatore",
+   "nome": "Transitous",
+   "sottotipo": "prossime partenze dal vivo",
+   "url": "https://transitous.org/sources/",
+   "licenza": "servizio comunitario per progetti open source non commerciali",
+   "catalogo": [
+    "transitous"
+   ],
+   "stato": "fonte pubblica reale",
+   "origine": [
+    "citta-api/fonti/dati.js",
+    "c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md"
+   ],
+   "grado": 1,
+   "strato": 5,
+   "importante": false,
+   "r": 21,
+   "x": 930.5,
+   "y": 884
+  }
+ ],
+ "archi": [
+  {
+   "da": "luogo:beverello",
+   "a": "luogo:centro_storico",
+   "tipo": "vicino a",
+   "m": 1137,
+   "dettaglio": "1137 m in linea d'aria, circa 20 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:beverello",
+   "a": "luogo:plebiscito",
+   "tipo": "vicino a",
+   "m": 491,
+   "dettaglio": "491 m in linea d'aria, circa 9 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:castel_ovo",
+   "a": "luogo:lungomare",
+   "tipo": "vicino a",
+   "m": 1177,
+   "dettaglio": "1177 m in linea d'aria, circa 20 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:castel_ovo",
+   "a": "luogo:plebiscito",
+   "tipo": "vicino a",
+   "m": 852,
+   "dettaglio": "852 m in linea d'aria, circa 15 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:citta_scienza",
+   "a": "luogo:virgiliano",
+   "tipo": "vicino a",
+   "m": 917,
+   "dettaglio": "917 m in linea d'aria, circa 16 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:gozzo",
+   "a": "luogo:mergellina",
+   "tipo": "vicino a",
+   "dettaglio": "nella zona «Mergellina» per l'agente Turismo",
+   "origine": "c5-agentic-city/dati/luoghi.json"
+  },
+  {
+   "da": "luogo:lungomare",
+   "a": "luogo:mergellina",
+   "tipo": "vicino a",
+   "dettaglio": "nella zona «Mergellina» per l'agente Turismo",
+   "origine": "c5-agentic-city/dati/luoghi.json"
+  },
+  {
+   "da": "luogo:maschio",
+   "a": "luogo:beverello",
+   "tipo": "vicino a",
+   "dettaglio": "il nome cita Molo Beverello · Stazione Marittima (parole del luogo nell'API)",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:maschio",
+   "a": "luogo:municipio",
+   "tipo": "vicino a",
+   "dettaglio": "nella zona «Piazza Municipio» per l'agente Turismo",
+   "origine": "c5-agentic-city/dati/luoghi.json"
+  },
+  {
+   "da": "luogo:mergellina",
+   "a": "luogo:lungomare",
+   "tipo": "vicino a",
+   "m": 1014,
+   "dettaglio": "1014 m in linea d'aria, circa 18 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:mergellina",
+   "a": "luogo:rotonda_diaz",
+   "tipo": "vicino a",
+   "m": 908,
+   "dettaglio": "908 m in linea d'aria, circa 16 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:municipio",
+   "a": "luogo:beverello",
+   "tipo": "vicino a",
+   "m": 167,
+   "dettaglio": "167 m in linea d'aria, circa 3 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:municipio",
+   "a": "luogo:centro_storico",
+   "tipo": "vicino a",
+   "m": 1028,
+   "dettaglio": "1028 m in linea d'aria, circa 18 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:municipio",
+   "a": "luogo:plebiscito",
+   "tipo": "vicino a",
+   "m": 507,
+   "dettaglio": "507 m in linea d'aria, circa 9 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:pan",
+   "a": "luogo:piazza_vittoria",
+   "tipo": "vicino a",
+   "dettaglio": "nella zona «Piazza Vittoria» per l'agente Turismo",
+   "origine": "c5-agentic-city/dati/luoghi.json"
+  },
+  {
+   "da": "luogo:piazza_vittoria",
+   "a": "luogo:beverello",
+   "tipo": "vicino a",
+   "m": 834,
+   "dettaglio": "834 m in linea d'aria, circa 14 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:piazza_vittoria",
+   "a": "luogo:castel_ovo",
+   "tipo": "vicino a",
+   "m": 839,
+   "dettaglio": "839 m in linea d'aria, circa 15 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:piazza_vittoria",
+   "a": "luogo:lungomare",
+   "tipo": "vicino a",
+   "m": 858,
+   "dettaglio": "858 m in linea d'aria, circa 15 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:piazza_vittoria",
+   "a": "luogo:municipio",
+   "tipo": "vicino a",
+   "m": 807,
+   "dettaglio": "807 m in linea d'aria, circa 14 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:piazza_vittoria",
+   "a": "luogo:plebiscito",
+   "tipo": "vicino a",
+   "m": 364,
+   "dettaglio": "364 m in linea d'aria, circa 6 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:piazza_vittoria",
+   "a": "luogo:vomero",
+   "tipo": "vicino a",
+   "m": 805,
+   "dettaglio": "805 m in linea d'aria, circa 14 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:plebiscito",
+   "a": "luogo:piazza_vittoria",
+   "tipo": "vicino a",
+   "dettaglio": "nella zona «Piazza Vittoria» per l'agente Turismo",
+   "origine": "c5-agentic-city/dati/luoghi.json"
+  },
+  {
+   "da": "luogo:rotonda_diaz",
+   "a": "luogo:lungomare",
+   "tipo": "vicino a",
+   "m": 173,
+   "dettaglio": "173 m in linea d'aria, circa 3 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:rotonda_diaz",
+   "a": "luogo:piazza_vittoria",
+   "tipo": "vicino a",
+   "m": 993,
+   "dettaglio": "993 m in linea d'aria, circa 17 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:rotonda_diaz",
+   "a": "luogo:vomero",
+   "tipo": "vicino a",
+   "m": 797,
+   "dettaglio": "797 m in linea d'aria, circa 14 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:sant_elmo",
+   "a": "luogo:vomero",
+   "tipo": "vicino a",
+   "dettaglio": "nella zona «Vomero» per l'agente Turismo",
+   "origine": "c5-agentic-city/dati/luoghi.json"
+  },
+  {
+   "da": "luogo:village",
+   "a": "luogo:lungomare",
+   "tipo": "vicino a",
+   "dettaglio": "il nome cita Lungomare Caracciolo (parole del luogo nell'API)",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:village",
+   "a": "luogo:rotonda_diaz",
+   "tipo": "vicino a",
+   "dettaglio": "nella zona «Rotonda Diaz» per l'agente Turismo",
+   "origine": "c5-agentic-city/dati/luoghi.json"
+  },
+  {
+   "da": "luogo:vomero",
+   "a": "luogo:lungomare",
+   "tipo": "vicino a",
+   "m": 809,
+   "dettaglio": "809 m in linea d'aria, circa 14 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "luogo:vomero",
+   "a": "luogo:plebiscito",
+   "tipo": "vicino a",
+   "m": 1092,
+   "dettaglio": "1092 m in linea d'aria, circa 19 min a piedi",
+   "origine": "citta-api/fonti/luoghi.js"
+  },
+  {
+   "da": "evento:nave_1",
+   "a": "luogo:beverello",
+   "tipo": "si svolge a",
+   "dettaglio": "09:30–11:00, circa 2100 persone",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:nave_2",
+   "a": "luogo:beverello",
+   "tipo": "si svolge a",
+   "dettaglio": "13:15–14:30, circa 2300 persone",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:partita",
+   "a": "luogo:maradona",
+   "tipo": "si svolge a",
+   "dettaglio": "20:45–22:45, circa 50.000 persone (nello scenario è legato alla zona «Mergellina»)",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:regata",
+   "a": "luogo:lungomare",
+   "tipo": "si svolge a",
+   "dettaglio": "14:00–17:30, circa 40.000 persone (nello scenario è legato alla zona «Rotonda Diaz»)",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:nave_1",
+   "a": "luogo:castel_ovo",
+   "tipo": "flusso verso",
+   "quota": 0.25,
+   "dettaglio": "25% delle persone dell'evento, circa 525",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:nave_1",
+   "a": "luogo:municipio",
+   "tipo": "flusso verso",
+   "quota": 0.35,
+   "dettaglio": "35% delle persone dell'evento, circa 735",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:nave_1",
+   "a": "luogo:rotonda_diaz",
+   "tipo": "flusso verso",
+   "quota": 0.25,
+   "dettaglio": "25% delle persone dell'evento, circa 525",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:nave_1",
+   "a": "luogo:vomero",
+   "tipo": "flusso verso",
+   "quota": 0.15,
+   "dettaglio": "15% delle persone dell'evento, circa 315",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:nave_2",
+   "a": "luogo:castel_ovo",
+   "tipo": "flusso verso",
+   "quota": 0.25,
+   "dettaglio": "25% delle persone dell'evento, circa 575",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:nave_2",
+   "a": "luogo:municipio",
+   "tipo": "flusso verso",
+   "quota": 0.2,
+   "dettaglio": "20% delle persone dell'evento, circa 460",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:nave_2",
+   "a": "luogo:rotonda_diaz",
+   "tipo": "flusso verso",
+   "quota": 0.45,
+   "dettaglio": "45% delle persone dell'evento, circa 1035",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:nave_2",
+   "a": "luogo:vomero",
+   "tipo": "flusso verso",
+   "quota": 0.1,
+   "dettaglio": "10% delle persone dell'evento, circa 230",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:partita",
+   "a": "luogo:maradona",
+   "tipo": "flusso verso",
+   "quota": 1,
+   "dettaglio": "100% delle persone dell'evento, circa 50.000 («fuorigrotta» nello scenario)",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:regata",
+   "a": "luogo:castel_ovo",
+   "tipo": "flusso verso",
+   "quota": 0.08,
+   "dettaglio": "8% delle persone dell'evento, circa 3200",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:regata",
+   "a": "luogo:mergellina",
+   "tipo": "flusso verso",
+   "quota": 0.37,
+   "dettaglio": "37% delle persone dell'evento, circa 14.800",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "evento:regata",
+   "a": "luogo:rotonda_diaz",
+   "tipo": "flusso verso",
+   "quota": 0.55,
+   "dettaglio": "55% delle persone dell'evento, circa 22.000",
+   "origine": "c5-agentic-city/dati/scenario_regata.json"
+  },
+  {
+   "da": "luogo:beverello",
+   "a": "stazione:anm-6211",
+   "tipo": "servito da",
+   "m": 514,
+   "dettaglio": "514 m, circa 9 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:beverello",
+   "a": "stazione:anm-6245",
+   "tipo": "servito da",
+   "m": 118,
+   "dettaglio": "118 m, circa 2 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:beverello",
+   "a": "stazione:anm-6325",
+   "tipo": "servito da",
+   "m": 569,
+   "dettaglio": "569 m, circa 10 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:castel_ovo",
+   "a": "stazione:anm-6238",
+   "tipo": "servito da",
+   "m": 876,
+   "dettaglio": "876 m, circa 15 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:castel_ovo",
+   "a": "stazione:anm-6240",
+   "tipo": "servito da",
+   "m": 829,
+   "dettaglio": "829 m, circa 14 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:centro_storico",
+   "a": "stazione:anm-6324",
+   "tipo": "servito da",
+   "m": 486,
+   "dettaglio": "486 m, circa 8 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:centro_storico",
+   "a": "stazione:anm-6327",
+   "tipo": "servito da",
+   "m": 575,
+   "dettaglio": "575 m, circa 10 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:centro_storico",
+   "a": "stazione:anm-6348",
+   "tipo": "servito da",
+   "m": 502,
+   "dettaglio": "502 m, circa 9 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:citta_scienza",
+   "a": "stazione:eav-6806",
+   "tipo": "servito da",
+   "m": 1310,
+   "dettaglio": "1310 m, circa 23 min a piedi (nessuna stazione entro 1,2 km)",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:citta_scienza",
+   "a": "stazione:eav-6808",
+   "tipo": "servito da",
+   "m": 1386,
+   "dettaglio": "1386 m, circa 24 min a piedi (nessuna stazione entro 1,2 km)",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:garibaldi",
+   "a": "stazione:anm-6271",
+   "tipo": "servito da",
+   "m": 51,
+   "dettaglio": "51 m, circa 1 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:garibaldi",
+   "a": "stazione:anm-6347",
+   "tipo": "servito da",
+   "m": 87,
+   "dettaglio": "87 m, circa 2 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:garibaldi",
+   "a": "stazione:eav-6701",
+   "tipo": "servito da",
+   "m": 64,
+   "dettaglio": "64 m, circa 1 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:lungomare",
+   "a": "stazione:anm-6201",
+   "tipo": "servito da",
+   "m": 570,
+   "dettaglio": "570 m, circa 10 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:lungomare",
+   "a": "stazione:anm-6236",
+   "tipo": "servito da",
+   "m": 412,
+   "dettaglio": "412 m, circa 7 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:lungomare",
+   "a": "stazione:anm-6238",
+   "tipo": "servito da",
+   "m": 342,
+   "dettaglio": "342 m, circa 6 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:maradona",
+   "a": "stazione:anm-6231",
+   "tipo": "servito da",
+   "m": 420,
+   "dettaglio": "420 m, circa 7 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:maradona",
+   "a": "stazione:anm-6244",
+   "tipo": "servito da",
+   "m": 503,
+   "dettaglio": "503 m, circa 9 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:maradona",
+   "a": "stazione:eav-6804",
+   "tipo": "servito da",
+   "m": 368,
+   "dettaglio": "368 m, circa 6 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:mergellina",
+   "a": "stazione:anm-6218",
+   "tipo": "servito da",
+   "m": 287,
+   "dettaglio": "287 m, circa 5 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:mergellina",
+   "a": "stazione:anm-6219",
+   "tipo": "servito da",
+   "m": 311,
+   "dettaglio": "311 m, circa 5 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:mergellina",
+   "a": "stazione:anm-6234",
+   "tipo": "servito da",
+   "m": 262,
+   "dettaglio": "262 m, circa 5 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:municipio",
+   "a": "stazione:anm-6211",
+   "tipo": "servito da",
+   "m": 408,
+   "dettaglio": "408 m, circa 7 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:municipio",
+   "a": "stazione:anm-6245",
+   "tipo": "servito da",
+   "m": 110,
+   "dettaglio": "110 m, circa 2 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:municipio",
+   "a": "stazione:anm-6325",
+   "tipo": "servito da",
+   "m": 403,
+   "dettaglio": "403 m, circa 7 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:piazza_vittoria",
+   "a": "stazione:anm-6211",
+   "tipo": "servito da",
+   "m": 481,
+   "dettaglio": "481 m, circa 8 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:piazza_vittoria",
+   "a": "stazione:anm-6212",
+   "tipo": "servito da",
+   "m": 528,
+   "dettaglio": "528 m, circa 9 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:piazza_vittoria",
+   "a": "stazione:anm-6240",
+   "tipo": "servito da",
+   "m": 279,
+   "dettaglio": "279 m, circa 5 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:plebiscito",
+   "a": "stazione:anm-6211",
+   "tipo": "servito da",
+   "m": 367,
+   "dettaglio": "367 m, circa 6 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:plebiscito",
+   "a": "stazione:anm-6240",
+   "tipo": "servito da",
+   "m": 97,
+   "dettaglio": "97 m, circa 2 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:plebiscito",
+   "a": "stazione:anm-6245",
+   "tipo": "servito da",
+   "m": 569,
+   "dettaglio": "569 m, circa 10 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:rotonda_diaz",
+   "a": "stazione:anm-6201",
+   "tipo": "servito da",
+   "m": 518,
+   "dettaglio": "518 m, circa 9 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:rotonda_diaz",
+   "a": "stazione:anm-6236",
+   "tipo": "servito da",
+   "m": 315,
+   "dettaglio": "315 m, circa 5 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:rotonda_diaz",
+   "a": "stazione:anm-6238",
+   "tipo": "servito da",
+   "m": 513,
+   "dettaglio": "513 m, circa 9 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:sanita",
+   "a": "stazione:anm-6272",
+   "tipo": "servito da",
+   "m": 715,
+   "dettaglio": "715 m, circa 12 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:sanita",
+   "a": "stazione:anm-6322",
+   "tipo": "servito da",
+   "m": 809,
+   "dettaglio": "809 m, circa 14 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:sanita",
+   "a": "stazione:anm-6335",
+   "tipo": "servito da",
+   "m": 794,
+   "dettaglio": "794 m, circa 14 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:virgiliano",
+   "a": "stazione:eav-6806",
+   "tipo": "servito da",
+   "m": 2192,
+   "dettaglio": "2192 m, circa 38 min a piedi (nessuna stazione entro 1,2 km)",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:virgiliano",
+   "a": "stazione:eav-6808",
+   "tipo": "servito da",
+   "m": 2278,
+   "dettaglio": "2278 m, circa 39 min a piedi (nessuna stazione entro 1,2 km)",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:vomero",
+   "a": "stazione:anm-6204",
+   "tipo": "servito da",
+   "m": 303,
+   "dettaglio": "303 m, circa 5 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:vomero",
+   "a": "stazione:anm-6319",
+   "tipo": "servito da",
+   "m": 238,
+   "dettaglio": "238 m, circa 4 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "luogo:vomero",
+   "a": "stazione:anm-6320",
+   "tipo": "servito da",
+   "m": 412,
+   "dettaglio": "412 m, circa 7 min a piedi",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "impresa:friggitoria_chiaia",
+   "a": "luogo:piazza_vittoria",
+   "tipo": "offerta a",
+   "dettaglio": "−15% nelle ore vuote, 40 posti",
+   "origine": "c5-agentic-city/dati/imprese.json"
+  },
+  {
+   "da": "impresa:gozzo_mergellina",
+   "a": "luogo:mergellina",
+   "tipo": "offerta a",
+   "dettaglio": "−20% nelle ore vuote, 12 posti",
+   "origine": "c5-agentic-city/dati/imprese.json"
+  },
+  {
+   "da": "impresa:museo_pan",
+   "a": "luogo:piazza_vittoria",
+   "tipo": "offerta a",
+   "dettaglio": "−30% nelle ore vuote, 25 posti",
+   "origine": "c5-agentic-city/dati/imprese.json"
+  },
+  {
+   "da": "impresa:pizzeria_borgo",
+   "a": "luogo:castel_ovo",
+   "tipo": "offerta a",
+   "dettaglio": "−10% nelle ore vuote, 60 posti",
+   "origine": "c5-agentic-city/dati/imprese.json"
+  },
+  {
+   "da": "impresa:terrazza_vomero",
+   "a": "luogo:vomero",
+   "tipo": "offerta a",
+   "dettaglio": "−15% nelle ore vuote, 50 posti",
+   "origine": "c5-agentic-city/dati/imprese.json"
+  },
+  {
+   "da": "agente:eventi",
+   "a": "evento:nave_1",
+   "tipo": "monitora",
+   "dettaglio": "annuncia l'evento fino a 60 minuti prima e ne prevede i flussi",
+   "origine": "c5-agentic-city/citta/agenti/eventi.py"
+  },
+  {
+   "da": "agente:eventi",
+   "a": "evento:nave_2",
+   "tipo": "monitora",
+   "dettaglio": "annuncia l'evento fino a 60 minuti prima e ne prevede i flussi",
+   "origine": "c5-agentic-city/citta/agenti/eventi.py"
+  },
+  {
+   "da": "agente:eventi",
+   "a": "evento:partita",
+   "tipo": "monitora",
+   "dettaglio": "annuncia l'evento fino a 150 minuti prima e ne prevede i flussi",
+   "origine": "c5-agentic-city/citta/agenti/eventi.py"
+  },
+  {
+   "da": "agente:eventi",
+   "a": "evento:regata",
+   "tipo": "monitora",
+   "dettaglio": "annuncia l'evento fino a 60 minuti prima e ne prevede i flussi",
+   "origine": "c5-agentic-city/citta/agenti/eventi.py"
+  },
+  {
+   "da": "agente:folla",
+   "a": "luogo:beverello",
+   "tipo": "monitora",
+   "dettaglio": "stima delle persone e livello di affollamento (napoli/folla/beverello)",
+   "origine": "c5-agentic-city/citta/agenti/folla.py"
+  },
+  {
+   "da": "agente:folla",
+   "a": "luogo:castel_ovo",
+   "tipo": "monitora",
+   "dettaglio": "stima delle persone e livello di affollamento (napoli/folla/castel_ovo)",
+   "origine": "c5-agentic-city/citta/agenti/folla.py"
+  },
+  {
+   "da": "agente:folla",
+   "a": "luogo:mergellina",
+   "tipo": "monitora",
+   "dettaglio": "stima delle persone e livello di affollamento (napoli/folla/mergellina)",
+   "origine": "c5-agentic-city/citta/agenti/folla.py"
+  },
+  {
+   "da": "agente:folla",
+   "a": "luogo:municipio",
+   "tipo": "monitora",
+   "dettaglio": "stima delle persone e livello di affollamento (napoli/folla/municipio)",
+   "origine": "c5-agentic-city/citta/agenti/folla.py"
+  },
+  {
+   "da": "agente:folla",
+   "a": "luogo:piazza_vittoria",
+   "tipo": "monitora",
+   "dettaglio": "stima delle persone e livello di affollamento (napoli/folla/piazza_vittoria)",
+   "origine": "c5-agentic-city/citta/agenti/folla.py"
+  },
+  {
+   "da": "agente:folla",
+   "a": "luogo:rotonda_diaz",
+   "tipo": "monitora",
+   "dettaglio": "stima delle persone e livello di affollamento (napoli/folla/rotonda_diaz)",
+   "origine": "c5-agentic-city/citta/agenti/folla.py"
+  },
+  {
+   "da": "agente:folla",
+   "a": "luogo:vomero",
+   "tipo": "monitora",
+   "dettaglio": "stima delle persone e livello di affollamento (napoli/folla/vomero)",
+   "origine": "c5-agentic-city/citta/agenti/folla.py"
+  },
+  {
+   "da": "agente:imprese",
+   "a": "impresa:friggitoria_chiaia",
+   "tipo": "monitora",
+   "dettaglio": "posti liberi per fascia di 30 minuti, offerte e prenotazioni",
+   "origine": "c5-agentic-city/citta/agenti/imprese.py"
+  },
+  {
+   "da": "agente:imprese",
+   "a": "impresa:gozzo_mergellina",
+   "tipo": "monitora",
+   "dettaglio": "posti liberi per fascia di 30 minuti, offerte e prenotazioni",
+   "origine": "c5-agentic-city/citta/agenti/imprese.py"
+  },
+  {
+   "da": "agente:imprese",
+   "a": "impresa:museo_pan",
+   "tipo": "monitora",
+   "dettaglio": "posti liberi per fascia di 30 minuti, offerte e prenotazioni",
+   "origine": "c5-agentic-city/citta/agenti/imprese.py"
+  },
+  {
+   "da": "agente:imprese",
+   "a": "impresa:pizzeria_borgo",
+   "tipo": "monitora",
+   "dettaglio": "posti liberi per fascia di 30 minuti, offerte e prenotazioni",
+   "origine": "c5-agentic-city/citta/agenti/imprese.py"
+  },
+  {
+   "da": "agente:imprese",
+   "a": "impresa:terrazza_vomero",
+   "tipo": "monitora",
+   "dettaglio": "posti liberi per fascia di 30 minuti, offerte e prenotazioni",
+   "origine": "c5-agentic-city/citta/agenti/imprese.py"
+  },
+  {
+   "da": "agente:meteo",
+   "a": "evento:regata",
+   "tipo": "monitora",
+   "dettaglio": "vento tra 6 e 22 nodi, raffiche sotto 30, onda sotto 1,8 m: si può fare la regata?",
+   "origine": "c5-agentic-city/citta/agenti/meteo.py"
+  },
+  {
+   "da": "sensore:badge-1",
+   "a": "luogo:rotonda_diaz",
+   "tipo": "monitora",
+   "dettaglio": "zona configurata nel firmware: rotonda_diaz",
+   "origine": "firmware/why2025-badge/overlay/main/badge/telemetry_cfg.h"
+  },
+  {
+   "da": "sensore:tasmota-1",
+   "a": "luogo:rotonda_diaz",
+   "tipo": "monitora",
+   "dettaglio": "zona configurata nel firmware: rotonda_diaz",
+   "origine": "firmware/tasmota/README.md"
+  },
+  {
+   "da": "agente:drone",
+   "a": "agente:folla",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:drone",
+     "a": "agente:folla",
+     "topic": [
+      "napoli/drone/osservazioni"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Drone → Folla: napoli/drone/osservazioni",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:drone",
+   "a": "agente:sala",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:drone",
+     "a": "agente:sala",
+     "topic": [
+      "napoli/drone/osservazioni"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Drone → Sala operativa: napoli/drone/osservazioni",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:eventi",
+   "a": "agente:orchestratore",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:eventi",
+     "a": "agente:orchestratore",
+     "topic": [
+      "napoli/eventi/previsioni"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Eventi → Orchestratore: napoli/eventi/previsioni",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:eventi",
+   "a": "agente:sala",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:eventi",
+     "a": "agente:sala",
+     "topic": [
+      "napoli/agenti/dialogo"
+     ]
+    },
+    {
+     "da": "agente:sala",
+     "a": "agente:eventi",
+     "topic": [
+      "napoli/eventi/manuale"
+     ]
+    }
+   ],
+   "bidirezionale": true,
+   "dettaglio": "Eventi → Sala operativa: napoli/agenti/dialogo · Sala operativa → Eventi: napoli/eventi/manuale",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:eventi",
+   "a": "agente:traffico",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:eventi",
+     "a": "agente:traffico",
+     "topic": [
+      "napoli/eventi/conclusi",
+      "napoli/eventi/previsioni"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Eventi → Traffico: napoli/eventi/conclusi, napoli/eventi/previsioni",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:folla",
+   "a": "agente:orchestratore",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:folla",
+     "a": "agente:orchestratore",
+     "topic": [
+      "napoli/folla/+"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Folla → Orchestratore: napoli/folla/+",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:folla",
+   "a": "agente:sala",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:folla",
+     "a": "agente:sala",
+     "topic": [
+      "napoli/agenti/dialogo",
+      "napoli/folla/+"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Folla → Sala operativa: napoli/agenti/dialogo, napoli/folla/+",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:folla",
+   "a": "agente:turismo",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:folla",
+     "a": "agente:turismo",
+     "topic": [
+      "napoli/folla/+"
+     ]
+    },
+    {
+     "da": "agente:turismo",
+     "a": "agente:folla",
+     "topic": [
+      "napoli/turismo/spostamenti"
+     ]
+    }
+   ],
+   "bidirezionale": true,
+   "dettaglio": "Folla → Turismo: napoli/folla/+ · Turismo → Folla: napoli/turismo/spostamenti",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:folla",
+   "a": "agente:twinciro",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:folla",
+     "a": "agente:twinciro",
+     "topic": [
+      "napoli/folla/+"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Folla → TwinCIRO: napoli/folla/+",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:imprese",
+   "a": "agente:sala",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:imprese",
+     "a": "agente:sala",
+     "topic": [
+      "napoli/agenti/dialogo"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Imprese → Sala operativa: napoli/agenti/dialogo",
+   "solo_dialogo": true,
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:imprese",
+   "a": "agente:turismo",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:imprese",
+     "a": "agente:turismo",
+     "topic": [
+      "napoli/imprese/offerte"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Imprese → Turismo: napoli/imprese/offerte",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:meteo",
+   "a": "agente:eventi",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:meteo",
+     "a": "agente:eventi",
+     "topic": [
+      "napoli/meteo"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Meteo&Mare → Eventi: napoli/meteo",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:meteo",
+   "a": "agente:folla",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:meteo",
+     "a": "agente:folla",
+     "topic": [
+      "napoli/meteo"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Meteo&Mare → Folla: napoli/meteo",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:meteo",
+   "a": "agente:orchestratore",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:meteo",
+     "a": "agente:orchestratore",
+     "topic": [
+      "napoli/meteo"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Meteo&Mare → Orchestratore: napoli/meteo",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:meteo",
+   "a": "agente:sala",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:meteo",
+     "a": "agente:sala",
+     "topic": [
+      "napoli/agenti/dialogo",
+      "napoli/meteo"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Meteo&Mare → Sala operativa: napoli/agenti/dialogo, napoli/meteo",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:meteo",
+   "a": "agente:twinciro",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:meteo",
+     "a": "agente:twinciro",
+     "topic": [
+      "napoli/meteo"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Meteo&Mare → TwinCIRO: napoli/meteo",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:orchestratore",
+   "a": "agente:drone",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:orchestratore",
+     "a": "agente:drone",
+     "topic": [
+      "napoli/drone/richieste"
+     ]
+    },
+    {
+     "da": "agente:drone",
+     "a": "agente:orchestratore",
+     "topic": [
+      "napoli/drone/osservazioni"
+     ]
+    }
+   ],
+   "bidirezionale": true,
+   "dettaglio": "Orchestratore → Drone: napoli/drone/richieste · Drone → Orchestratore: napoli/drone/osservazioni",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:orchestratore",
+   "a": "agente:sala",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:orchestratore",
+     "a": "agente:sala",
+     "topic": [
+      "napoli/agenti/dialogo",
+      "napoli/drone/richieste",
+      "napoli/orchestratore/decisioni"
+     ]
+    },
+    {
+     "da": "agente:sala",
+     "a": "agente:orchestratore",
+     "topic": [
+      "napoli/operatore/comandi"
+     ]
+    }
+   ],
+   "bidirezionale": true,
+   "dettaglio": "Orchestratore → Sala operativa: napoli/agenti/dialogo, napoli/drone/richieste, napoli/orchestratore/decisioni · Sala operativa → Orchestratore: napoli/operatore/comandi",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:orchestratore",
+   "a": "agente:traffico",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:orchestratore",
+     "a": "agente:traffico",
+     "topic": [
+      "napoli/agenti/traffico/comandi"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Orchestratore → Traffico: napoli/agenti/traffico/comandi",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:orchestratore",
+   "a": "agente:turismo",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:orchestratore",
+     "a": "agente:turismo",
+     "topic": [
+      "napoli/agenti/turismo/comandi"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Orchestratore → Turismo: napoli/agenti/turismo/comandi",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:orchestratore",
+   "a": "agente:twinciro",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:orchestratore",
+     "a": "agente:twinciro",
+     "topic": [
+      "napoli/avvisi"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Orchestratore → TwinCIRO: napoli/avvisi",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:traffico",
+   "a": "agente:sala",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:traffico",
+     "a": "agente:sala",
+     "topic": [
+      "napoli/agenti/dialogo",
+      "napoli/semafori/piano"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Traffico → Sala operativa: napoli/agenti/dialogo, napoli/semafori/piano",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:turismo",
+   "a": "agente:sala",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:turismo",
+     "a": "agente:sala",
+     "topic": [
+      "napoli/agenti/dialogo"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Turismo → Sala operativa: napoli/agenti/dialogo",
+   "solo_dialogo": true,
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:turismo",
+   "a": "agente:twinciro",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:turismo",
+     "a": "agente:twinciro",
+     "topic": [
+      "napoli/avvisi"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "Turismo → TwinCIRO: napoli/avvisi",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:twinciro",
+   "a": "agente:imprese",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:twinciro",
+     "a": "agente:imprese",
+     "topic": [
+      "napoli/imprese/+/richieste"
+     ]
+    },
+    {
+     "da": "agente:imprese",
+     "a": "agente:twinciro",
+     "topic": [
+      "napoli/imprese/+/risposte",
+      "napoli/imprese/offerte"
+     ]
+    }
+   ],
+   "bidirezionale": true,
+   "dettaglio": "TwinCIRO → Imprese: napoli/imprese/+/richieste · Imprese → TwinCIRO: napoli/imprese/+/risposte, napoli/imprese/offerte",
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "agente:twinciro",
+   "a": "agente:sala",
+   "tipo": "parla con",
+   "messaggi": [
+    {
+     "da": "agente:twinciro",
+     "a": "agente:sala",
+     "topic": [
+      "napoli/agenti/dialogo"
+     ]
+    }
+   ],
+   "bidirezionale": false,
+   "dettaglio": "TwinCIRO → Sala operativa: napoli/agenti/dialogo",
+   "solo_dialogo": true,
+   "origine": "c5-agentic-city/citta/"
+  },
+  {
+   "da": "fonte:allerta",
+   "a": "agente:twinciro",
+   "tipo": "alimenta",
+   "dettaglio": "allerta meteo per Napoli, dall'API dati città con la skill napoli-citta-dati",
+   "origine": "c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md"
+  },
+  {
+   "da": "fonte:americas-cup",
+   "a": "evento:regata",
+   "tipo": "alimenta",
+   "dettaglio": "41 giorni di regata a Napoli dal 22/05/2027 al 20/07/2027 (più i giorni di riserva): la giornata dello scenario è una di queste, simulata",
+   "origine": "citta-api/dati/eventi.json"
+  },
+  {
+   "da": "fonte:americas-cup",
+   "a": "luogo:lungomare",
+   "tipo": "alimenta",
+   "dettaglio": "regate nel Golfo, campo davanti al Lungomare Caracciolo",
+   "origine": "citta-api/dati/eventi.json"
+  },
+  {
+   "da": "fonte:centraline",
+   "a": "luogo:centro_storico",
+   "tipo": "alimenta",
+   "dettaglio": "centralina IT0898A a 0,7 km",
+   "origine": "citta-api/dati/aria.json"
+  },
+  {
+   "da": "fonte:centraline",
+   "a": "luogo:garibaldi",
+   "tipo": "alimenta",
+   "dettaglio": "centralina IT1491A a 0,1 km",
+   "origine": "citta-api/dati/aria.json"
+  },
+  {
+   "da": "fonte:centraline",
+   "a": "luogo:sanita",
+   "tipo": "alimenta",
+   "dettaglio": "centralina IT1497A a 0,5 km",
+   "origine": "citta-api/dati/aria.json"
+  },
+  {
+   "da": "fonte:centraline",
+   "a": "luogo:vomero",
+   "tipo": "alimenta",
+   "dettaglio": "centralina IT1496A a 0,6 km",
+   "origine": "citta-api/dati/aria.json"
+  },
+  {
+   "da": "fonte:comune-agenda",
+   "a": "luogo:beverello",
+   "tipo": "alimenta",
+   "dettaglio": "eventi del Comune abbinati al luogo (snapshot: 5, es. «Mostra - “Viaggio Dharmico – Verso la terza via”»)",
+   "origine": "citta-api/dati/eventi.json"
+  },
+  {
+   "da": "fonte:comune-agenda",
+   "a": "luogo:lungomare",
+   "tipo": "alimenta",
+   "dettaglio": "eventi del Comune abbinati al luogo (snapshot: 1, es. «Tri Gold Caracciolo 2026»)",
+   "origine": "citta-api/dati/eventi.json"
+  },
+  {
+   "da": "fonte:crociere",
+   "a": "luogo:beverello",
+   "tipo": "alimenta",
+   "dettaglio": "navi in porto per giorno (snapshot: 119 giorni, es. 16/11/2026: Celebrity Equinox, MSC Magnifica, Oceania Marina)",
+   "origine": "citta-api/dati/eventi.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6201",
+   "tipo": "alimenta",
+   "dettaglio": "linee F1: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6204",
+   "tipo": "alimenta",
+   "dettaglio": "linee F1: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6211",
+   "tipo": "alimenta",
+   "dettaglio": "linee F3: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6212",
+   "tipo": "alimenta",
+   "dettaglio": "linee F3: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6218",
+   "tipo": "alimenta",
+   "dettaglio": "linee F4: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6219",
+   "tipo": "alimenta",
+   "dettaglio": "linee F4: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6231",
+   "tipo": "alimenta",
+   "dettaglio": "linee L6: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6234",
+   "tipo": "alimenta",
+   "dettaglio": "linee L2, L6: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6236",
+   "tipo": "alimenta",
+   "dettaglio": "linee L6: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6238",
+   "tipo": "alimenta",
+   "dettaglio": "linee L6: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6240",
+   "tipo": "alimenta",
+   "dettaglio": "linee L6: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6244",
+   "tipo": "alimenta",
+   "dettaglio": "linee L6: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6245",
+   "tipo": "alimenta",
+   "dettaglio": "linee L1, L6: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6271",
+   "tipo": "alimenta",
+   "dettaglio": "linee L2: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6272",
+   "tipo": "alimenta",
+   "dettaglio": "linee L2: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6319",
+   "tipo": "alimenta",
+   "dettaglio": "linee L1: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6320",
+   "tipo": "alimenta",
+   "dettaglio": "linee L1: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6322",
+   "tipo": "alimenta",
+   "dettaglio": "linee L1: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6324",
+   "tipo": "alimenta",
+   "dettaglio": "linee L1: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6325",
+   "tipo": "alimenta",
+   "dettaglio": "linee L1: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6327",
+   "tipo": "alimenta",
+   "dettaglio": "linee L1: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6335",
+   "tipo": "alimenta",
+   "dettaglio": "linee L1: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6347",
+   "tipo": "alimenta",
+   "dettaglio": "linee L1: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-anm",
+   "a": "stazione:anm-6348",
+   "tipo": "alimenta",
+   "dettaglio": "linee L1: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-eav",
+   "a": "stazione:eav-6701",
+   "tipo": "alimenta",
+   "dettaglio": "linee Ferrovia EAV: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-eav",
+   "a": "stazione:eav-6804",
+   "tipo": "alimenta",
+   "dettaglio": "linee Cumana: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-eav",
+   "a": "stazione:eav-6806",
+   "tipo": "alimenta",
+   "dettaglio": "linee Cumana: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:gtfs-eav",
+   "a": "stazione:eav-6808",
+   "tipo": "alimenta",
+   "dettaglio": "linee Cumana: corse programmate per ora",
+   "origine": "citta-api/dati/trasporti.json"
+  },
+  {
+   "da": "fonte:ingv",
+   "a": "agente:twinciro",
+   "tipo": "alimenta",
+   "dettaglio": "ultimi terremoti, dall'API dati città con la skill napoli-citta-dati",
+   "origine": "c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md"
+  },
+  {
+   "da": "fonte:open-meteo",
+   "a": "agente:meteo",
+   "tipo": "alimenta",
+   "dettaglio": "vento, raffiche, temperatura e onda di oggi (modalità --meteo reale)",
+   "origine": "c5-agentic-city/citta/agenti/meteo.py"
+  },
+  {
+   "da": "fonte:open-meteo",
+   "a": "luogo:beverello",
+   "tipo": "alimenta",
+   "dettaglio": "meteo del luogo (ICON-2I) e aria di fondo (Copernicus CAMS) nell'API dati città",
+   "origine": "citta-api/fonti/dati.js"
+  },
+  {
+   "da": "fonte:open-meteo",
+   "a": "luogo:castel_ovo",
+   "tipo": "alimenta",
+   "dettaglio": "meteo del luogo (ICON-2I) e aria di fondo (Copernicus CAMS) nell'API dati città",
+   "origine": "citta-api/fonti/dati.js"
+  },
+  {
+   "da": "fonte:open-meteo",
+   "a": "luogo:centro_storico",
+   "tipo": "alimenta",
+   "dettaglio": "meteo del luogo (ICON-2I) e aria di fondo (Copernicus CAMS) nell'API dati città",
+   "origine": "citta-api/fonti/dati.js"
+  },
+  {
+   "da": "fonte:open-meteo",
+   "a": "luogo:garibaldi",
+   "tipo": "alimenta",
+   "dettaglio": "meteo del luogo (ICON-2I) e aria di fondo (Copernicus CAMS) nell'API dati città",
+   "origine": "citta-api/fonti/dati.js"
+  },
+  {
+   "da": "fonte:open-meteo",
+   "a": "luogo:lungomare",
+   "tipo": "alimenta",
+   "dettaglio": "meteo del luogo (ICON-2I) e aria di fondo (Copernicus CAMS) nell'API dati città",
+   "origine": "citta-api/fonti/dati.js"
+  },
+  {
+   "da": "fonte:open-meteo",
+   "a": "luogo:maradona",
+   "tipo": "alimenta",
+   "dettaglio": "meteo del luogo (ICON-2I) e aria di fondo (Copernicus CAMS) nell'API dati città",
+   "origine": "citta-api/fonti/dati.js"
+  },
+  {
+   "da": "fonte:open-meteo",
+   "a": "luogo:mergellina",
+   "tipo": "alimenta",
+   "dettaglio": "meteo del luogo (ICON-2I) e aria di fondo (Copernicus CAMS) nell'API dati città",
+   "origine": "citta-api/fonti/dati.js"
+  },
+  {
+   "da": "fonte:open-meteo",
+   "a": "luogo:plebiscito",
+   "tipo": "alimenta",
+   "dettaglio": "meteo del luogo (ICON-2I) e aria di fondo (Copernicus CAMS) nell'API dati città",
+   "origine": "citta-api/fonti/dati.js"
+  },
+  {
+   "da": "fonte:open-meteo",
+   "a": "luogo:sanita",
+   "tipo": "alimenta",
+   "dettaglio": "meteo del luogo (ICON-2I) e aria di fondo (Copernicus CAMS) nell'API dati città",
+   "origine": "citta-api/fonti/dati.js"
+  },
+  {
+   "da": "fonte:open-meteo",
+   "a": "luogo:vomero",
+   "tipo": "alimenta",
+   "dettaglio": "meteo del luogo (ICON-2I) e aria di fondo (Copernicus CAMS) nell'API dati città",
+   "origine": "citta-api/fonti/dati.js"
+  },
+  {
+   "da": "fonte:openfootball",
+   "a": "luogo:maradona",
+   "tipo": "alimenta",
+   "dettaglio": "partite in casa del Napoli al Maradona (snapshot: 16)",
+   "origine": "citta-api/dati/eventi.json"
+  },
+  {
+   "da": "fonte:rete-mobile",
+   "a": "agente:folla",
+   "tipo": "alimenta",
+   "dettaglio": "presenze per zona simulate: stima del modello più un rumore del 10% (ipotesi dello scenario)",
+   "simulato": true,
+   "origine": "c5-agentic-city/citta/agenti/folla.py"
+  },
+  {
+   "da": "fonte:transitous",
+   "a": "agente:twinciro",
+   "tipo": "alimenta",
+   "dettaglio": "prossime partenze di metro e treni, dall'API dati città con la skill napoli-citta-dati",
+   "origine": "c5-agentic-city/openclaw/skills/napoli-citta-dati/SKILL.md"
+  },
+  {
+   "da": "sensore:badge-1",
+   "a": "agente:folla",
+   "tipo": "alimenta",
+   "topic": [
+    "napoli/sensori/badge-1/persone"
+   ],
+   "dettaglio": "napoli/sensori/badge-1/persone",
+   "origine": "firmware/README.md"
+  },
+  {
+   "da": "sensore:badge-1",
+   "a": "agente:meteo",
+   "tipo": "alimenta",
+   "topic": [
+    "napoli/sensori/badge-1/temperatura"
+   ],
+   "dettaglio": "napoli/sensori/badge-1/temperatura",
+   "origine": "firmware/README.md"
+  },
+  {
+   "da": "sensore:badge-1",
+   "a": "agente:sala",
+   "tipo": "alimenta",
+   "topic": [
+    "napoli/sensori/badge-1/temperatura",
+    "napoli/sensori/badge-1/umidita",
+    "napoli/sensori/badge-1/luce",
+    "napoli/sensori/badge-1/pressione",
+    "napoli/sensori/badge-1/persone"
+   ],
+   "dettaglio": "napoli/sensori/badge-1/temperatura, napoli/sensori/badge-1/umidita, napoli/sensori/badge-1/luce, napoli/sensori/badge-1/pressione, napoli/sensori/badge-1/persone",
+   "origine": "firmware/README.md"
+  },
+  {
+   "da": "sensore:tasmota-1",
+   "a": "agente:meteo",
+   "tipo": "alimenta",
+   "topic": [
+    "napoli/sensori/tasmota-1/temperatura"
+   ],
+   "dettaglio": "napoli/sensori/tasmota-1/temperatura",
+   "origine": "firmware/README.md"
+  },
+  {
+   "da": "sensore:tasmota-1",
+   "a": "agente:sala",
+   "tipo": "alimenta",
+   "topic": [
+    "napoli/sensori/tasmota-1/temperatura",
+    "napoli/sensori/tasmota-1/umidita",
+    "napoli/sensori/tasmota-1/luce",
+    "napoli/sensori/tasmota-1/pressione"
+   ],
+   "dettaglio": "napoli/sensori/tasmota-1/temperatura, napoli/sensori/tasmota-1/umidita, napoli/sensori/tasmota-1/luce, napoli/sensori/tasmota-1/pressione",
+   "origine": "firmware/README.md"
+  }
+ ]
+}

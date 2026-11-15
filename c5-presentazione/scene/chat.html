@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>TwinCIRO · chat</title>
+<link rel="stylesheet" href="stile.css">
+<style>
+  /* Telefono generico (nessun marchio): cornice scura, chat chiara, colori neutri */
+  .telefono { position: absolute; left: 150px; top: 54px; width: 470px; height: 900px; border-radius: 58px;
+    background: #1a2133; box-shadow: 0 0 0 2px #2c3650, 0 40px 90px rgb(0 0 0 / 0.55); padding: 12px; }
+  .schermo { position: relative; width: 446px; height: 876px; border-radius: 46px; overflow: hidden; background: #eef1f6; }
+  .barra-stato { height: 34px; padding: 10px 30px 0; display: flex; justify-content: space-between; font-size: 15px;
+    font-weight: 600; color: #fff; background: #1f2b47; }
+  .testata { height: 78px; background: #1f2b47; color: #fff; display: flex; align-items: center; gap: 14px; padding: 0 18px; }
+  .avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--twin), var(--ciro));
+    display: grid; place-items: center; font-weight: 800; font-size: 24px; color: #0a1020; flex: none; }
+  .testata .nome { font-size: 21px; font-weight: 700; }
+  /* TwinCIRO con i colori del marchio, come il telefono di adesso.html */
+  .testata .nome .twin { color: #7fe6f7; font-weight: 800; } .testata .nome .ciro { color: var(--ciro); font-weight: 800; }
+  .testata .stato { font-size: 15px; color: #b9c6e4; margin-top: 2px; }
+  .messaggi { position: absolute; top: 112px; bottom: 72px; left: 0; right: 0; overflow: hidden; }
+  .scorre { position: absolute; left: 0; right: 0; top: 0; }
+  .m { position: absolute; left: 12px; right: 12px; }
+  .bolla { max-width: 82%; padding: 10px 14px 8px; border-radius: 18px; font-size: 20px; line-height: 1.38; color: #111827;
+    box-shadow: 0 1px 1.5px rgb(15 23 42 / 0.12); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .m.utente .bolla { margin-left: auto; background: #d6e8ff; border-bottom-right-radius: 6px; }
+  .m.ciro .bolla { background: #fff; border-bottom-left-radius: 6px; }
+  .m.avviso .bolla { background: #fff5e0; border: 2px solid var(--ciro); }
+  .bolla .ora { display: block; text-align: right; font-size: 13px; color: #6b7280; margin-top: 2px; }
+  .bolla .titoletto { display: block; font-size: 14px; font-weight: 700; color: #b26b00; letter-spacing: 0.04em; margin-bottom: 2px; }
+  .chip { display: flex; justify-content: center; }
+  .chip span { background: #dde3ee; color: #475569; font-size: 14px; font-weight: 600; padding: 5px 12px; border-radius: 10px; }
+  .benvenuto .bolla { margin: 0 auto; max-width: 90%; text-align: center; text-wrap: balance; background: #fff7e6; color: #6b4e16; font-size: 15px; }
+  .scrive .bolla { width: 74px; padding: 14px 16px; }
+  .punti { display: flex; gap: 7px; justify-content: center; }
+  .punti i { width: 9px; height: 9px; border-radius: 50%; background: #94a3b8; display: block; }
+  .ingresso { position: absolute; left: 0; right: 0; bottom: 0; height: 72px; background: #f7f8fb; display: flex; align-items: center;
+    gap: 10px; padding: 0 12px 6px; border-top: 1px solid #e2e6ee; }
+  .campo { flex: 1; height: 46px; border-radius: 23px; background: #fff; border: 1px solid #dbe1ea; display: flex; align-items: center;
+    justify-content: flex-start; padding: 0 18px; font-size: 19px; color: #111827; overflow: hidden; white-space: nowrap; }
+  .campo.pieno { justify-content: flex-end; }
+  .campo .vuoto { color: #9aa3b2; }
+  .cursore { display: inline-block; width: 2px; height: 22px; background: #1f2b47; margin-left: 1px; vertical-align: middle; }
+  .invia { width: 46px; height: 46px; border-radius: 50%; background: #1f2b47; color: #fff; display: grid; place-items: center; font-size: 20px; }
+  .vuoto-reale .schermo { background: #000; }
+  .vuoto-reale .schermo > * { display: none; }
+  .didascalia-tel { position: absolute; left: 150px; width: 470px; top: 18px; text-align: center; font-size: 19px; color: var(--tenue); }
+
+  /* Pannello a destra: passo del racconto e "dietro le quinte" */
+  .destra { position: absolute; left: 720px; top: 70px; width: 1110px; }
+  .passi { display: flex; gap: 10px; margin-bottom: 26px; }
+  .passi i { width: 54px; height: 6px; border-radius: 3px; background: #2a3658; display: block; }
+  .passi i.su { background: var(--ciro); }
+  .passo { position: relative; height: 200px; }
+  .passo > div { position: absolute; inset: 0; }
+  .passo h2 { margin: 10px 0 12px; font-size: 62px; line-height: 1.05; font-weight: 800; letter-spacing: -0.02em; }
+  .passo p { margin: 0; font-size: 28px; line-height: 1.35; color: #c8d3ec; }
+  .quinte { margin-top: 26px; background: rgb(22 33 59 / 0.85); border: 1px solid var(--bordo); border-radius: 22px; padding: 24px 28px; min-height: 470px; }
+  .quinte h3 { margin: 0 0 18px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tenue); font-weight: 700; }
+  .righe { position: relative; }
+  .riga { margin-bottom: 16px; background: #0f182c; border: 1px solid #22305228; border-radius: 14px; padding: 14px 18px; }
+  .riga .chi { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+  .riga .chi b { padding: 3px 10px; border-radius: 8px; background: #23304f; color: #dbe5ff; font-weight: 700; }
+  .riga .chi span { color: #7c8db5; }
+  .riga .cosa { font-size: 24px; line-height: 1.35; color: #eef2fb; }
+  .riga .ora { float: right; color: #7c8db5; font-size: 17px; font-weight: 600; }
+  .vuota { color: #7c8db5; font-size: 22px; font-style: italic; }
+  .nota-onesta { position: absolute; left: 720px; width: 1110px; top: 896px; font-size: 18px; color: #8ea0c8; }
+</style>
+</head>
+<body>
+<div class="didascalia-tel" id="didascalia-tel"></div>
+<div class="telefono" id="telefono">
+  <div class="schermo">
+    <div class="barra-stato"><span id="ora-tel">12:10</span><span>●●● 5G ▮</span></div>
+    <div class="testata">
+      <div class="avatar">C</div>
+      <div><div class="nome" id="nome-contatto"><span class="twin">Twin</span><span class="ciro">CIRO</span></div><div class="stato" id="stato">online</div></div>
+    </div>
+    <div class="messaggi"><div class="scorre" id="scorre"></div></div>
+    <div class="ingresso"><div class="campo" id="campo"><span class="vuoto">Scrivi un messaggio</span></div><div class="invia">➤</div></div>
+  </div>
+</div>
+<div class="destra">
+  <div class="passi" id="passi"></div>
+  <div class="passo" id="passo"></div>
+  <div class="quinte"><h3>Dietro le quinte · cosa si dicono gli agenti</h3><div class="righe" id="righe"></div></div>
+</div>
+<div class="nota-onesta" id="nota"></div>
+<script>
+'use strict';
+const P = new URLSearchParams(location.search);
+const DURATA = Number(P.get('durata')) || null;      // secondi: le pause di lettura si allungano o accorciano per arrivarci
+const VUOTO = P.get('telefono') === 'vuoto';           // il telefono resta nero: sopra va la registrazione vera
+const fumo = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(1 - x, 3));
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const parole = (s) => s.split(/\s+/).filter(Boolean).length;
+// Un messaggio lungo degli agenti diventa una frase sola, presa così com'è dal testo vero. Se il messaggio parla di più
+// zone, vince la frase sulla zona dell'avviso (campo "zona" del messaggio in chat.json): così il pannello non decide
+// su Mergellina e poi avvisa la Rotonda Diaz. Lo dice la nota in basso.
+const accorcia = (s, n = 150, zona = '') => {
+  if (s.length <= n) return s;
+  const frasi = s.split(/(?<=[.?!])\s+/);
+  const sua = zona && frasi.length > 1 ? frasi.find((f) => f.includes(zona)) : null;
+  if (sua && sua.length <= n) return /[.?!…]$/.test(sua) ? sua : `${sua}.`;
+  const punto = s.indexOf('. ', 60);
+  if (punto > 0 && punto < n) return s.slice(0, punto + 1);
+  return s.slice(0, n).replace(/\s+\S*$/, '') + '…';
+};
+
+let chat, linea, voci, elRighe, totale;
+
+window.pronta = (async () => {
+  chat = await (await fetch('chat.json', { cache: 'no-store' })).json();
+  await document.fonts.ready;
+  // Nome del contatto: TwinCIRO resta con i colori del marchio; un altro nome in chat.json va come testo
+  if (chat.contatto && chat.contatto !== 'TwinCIRO') document.getElementById('nome-contatto').textContent = chat.contatto;
+  document.getElementById('didascalia-tel').textContent = VUOTO
+    ? 'Registrazione reale su WhatsApp'
+    : `Il telefono di ${chat.presentazione_utente || chat.utente}`;
+  document.getElementById('nota').textContent = VUOTO
+    ? 'A destra: i messaggi tra agenti registrati dall\'API della città per la stessa conversazione.'
+    : 'Chat ricostruita: risposte e avviso veri dell\'API della città (agenti a regole, senza LLM). Il meteo lo compone lo script con dati veri di Open-Meteo e Meteoalarm (14/11). Folla, offerte e imprese simulate; a destra, frasi lunghe accorciate.';
+  if (VUOTO) document.getElementById('telefono').classList.add('vuoto-reale');
+  costruisci();
+  return { durata: totale };
+})();
+
+function costruisci() {
+  const scorre = document.getElementById('scorre');
+  voci = [];   // elementi della chat con altezza e posizione
+  const aggiungi = (classe, html) => {
+    const el = document.createElement('div');
+    el.className = `m ${classe}`;
+    el.innerHTML = html;
+    scorre.appendChild(el);
+    const v = { el, h: el.offsetHeight, t: Infinity };
+    voci.push(v);
+    return v;
+  };
+  // Prima del primo messaggio: data e presentazione del servizio
+  const vData = aggiungi('chip', '<span>Oggi</span>');
+  const vBenv = aggiungi('benvenuto', '<div class="bolla">TwinCIRO risponde con gli agenti della città (prototipo)</div>');
+  vData.t = -1; vBenv.t = -1;
+
+  // Linea del tempo: segmenti fissi (scrittura, attesa) ed elastici (pause di lettura)
+  const seg = [];
+  let passi = [];
+  const msg = chat.messaggi;
+  seg.push({ tipo: 'pausa', d: 1.0, elastico: true, peso: 0.4 });
+  msg.forEach((m, i) => {
+    if (m.etichetta && (!passi.length || passi.at(-1).titolo !== m.etichetta.titolo)) passi.push({ ...m.etichetta, i });
+    if (m.da === 'utente') {
+      const v = aggiungi('utente', `<div class="bolla">${esc(m.testo)}<span class="ora">${esc(m.ora)} ✓</span></div>`);
+      seg.push({ tipo: 'scrivi-utente', d: clamp(m.testo.length * 0.034, 0.9, 2.6), m, i });
+      seg.push({ tipo: 'invia', d: 0.5, v, m, i });
+    } else {
+      const avviso = m.tipo === 'avviso';
+      let vChip = null;
+      if (avviso) {
+        vChip = aggiungi('chip', `<span>Più tardi · ${esc(m.ora)}</span>`);
+        seg.push({ tipo: 'stacco', d: 1.0, v: vChip, m, i });
+      }
+      const testo = avviso ? m.testo.replace(/^📣\s*/, '') : m.testo;
+      const v = aggiungi(avviso ? 'ciro avviso' : 'ciro',
+        `<div class="bolla">${avviso ? '<span class="titoletto">📣 AVVISO DELLA CITTÀ</span>' : ''}${esc(testo)}<span class="ora">${esc(m.ora)}</span></div>`);
+      const nq = (m.dietro_le_quinte || []).length;
+      seg.push({ tipo: avviso ? 'quinte-avviso' : 'pensa', d: avviso ? 0.4 + 0.5 * nq : clamp(1.3 + 0.45 * nq, 1.4, 3.0), m, i });
+      seg.push({ tipo: 'arriva', d: 0.45, v, m, i });
+      seg.push({ tipo: 'leggi', d: clamp(parole(testo) / 3.4, 2.2, 7.5), elastico: true, peso: 1, m, i, ultimo: i === msg.length - 1 });
+    }
+  });
+  seg.push({ tipo: 'pausa', d: 0.6, elastico: true, peso: 0.3 });
+
+  // Adatto le pause elastiche alla durata richiesta. Se la scena è più corta del naturale, l'ultimo messaggio tiene
+  // tutto il suo tempo di lettura: gli altri restano a schermo anche mentre arrivano i messaggi dopo, lui no.
+  const base = seg.reduce((s, x) => s + x.d, 0);
+  if (DURATA) {
+    const el = seg.filter((x) => x.elastico && !(DURATA < base && x.ultimo));
+    const pesoTot = el.reduce((s, x) => s + x.d * x.peso, 0);
+    let extra = DURATA - base;
+    el.forEach((x) => { x.d = Math.max(x.peso < 1 ? 0.3 : 1.2, x.d + extra * (x.d * x.peso) / pesoTot); });
+    const ora = seg.reduce((s, x) => s + x.d, 0);
+    if (Math.abs(ora - DURATA) > 0.01) {   // se non basta, scala tutto
+      const k = DURATA / ora;
+      seg.forEach((x) => { x.d *= k; });
+    }
+  }
+  let t = 0;
+  seg.forEach((x) => { x.t0 = t; t += x.d; x.t1 = t; });
+  totale = t;
+
+  // Eventi derivati
+  linea = { seg, passi, scrittura: [], pensa: [], quinte: [] };
+  for (const x of seg) {
+    if (x.tipo === 'scrivi-utente') linea.scrittura.push({ t0: x.t0, t1: x.t1, testo: x.m.testo });
+    if (x.tipo === 'invia' || x.tipo === 'arriva' || x.tipo === 'stacco') x.v.t = x.tipo === 'invia' ? x.t0 + 0.1 : x.t0;
+    if (x.tipo === 'pensa') linea.pensa.push({ t0: x.t0, t1: x.t1 });
+    if (x.tipo === 'pensa' || x.tipo === 'quinte-avviso') {
+      const q = x.m.dietro_le_quinte || [];
+      q.forEach((r, k) => linea.quinte.push({ ...r, t: x.t0 + 0.25 + (x.d - 0.4) * (q.length > 1 ? k / (q.length - 1) : 0), passo: x.i, zona: x.m.zona || '' }));
+    }
+  }
+  // Ogni passo inizia col messaggio dell'utente che lo apre (o con l'avviso)
+  passi = passi.map((p) => {
+    const primo = seg.find((x) => x.i === p.i);
+    return { ...p, t: primo ? primo.t0 : 0 };
+  });
+  linea.passi = passi;
+  document.getElementById('passi').innerHTML = passi.map(() => '<i></i>').join('');
+
+  // posizioni verticali
+  let y = 14;
+  for (const v of voci) { v.y = y; v.el.style.top = `${y}px`; y += v.h + 10; }
+  window.__linea = { totale, eventi: seg.map((x) => ({ tipo: x.tipo, t0: +x.t0.toFixed(2), i: x.i })) };
+}
+
+window.imposta = (t) => {
+  // messaggi della chat
+  const H = 876 - 112 - 72;
+  let fondo = 0;
+  for (const v of voci) {
+    const p = v.t < 0 ? 1 : fumo((t - v.t) / 0.4);
+    v.el.style.opacity = p;
+    v.el.style.transform = p < 1 ? `translateY(${(1 - p) * 18}px) scale(${0.97 + 0.03 * p})` : '';
+    if (p > 0) fondo = Math.max(fondo, v.y + v.h * p);
+  }
+  // "sta scrivendo"
+  const pensa = linea.pensa.find((x) => t >= x.t0 && t < x.t1);
+  let scrive = document.getElementById('scrive');
+  if (pensa) {
+    if (!scrive) {
+      scrive = document.createElement('div');
+      scrive.id = 'scrive';
+      scrive.className = 'm ciro scrive';
+      scrive.innerHTML = '<div class="bolla"><div class="punti"><i></i><i></i><i></i></div></div>';
+      document.getElementById('scorre').appendChild(scrive);
+    }
+    const top = fondo + 10;
+    scrive.style.top = `${top}px`;
+    const p = fumo((t - pensa.t0) / 0.3);
+    scrive.style.opacity = p;
+    [...scrive.querySelectorAll('i')].forEach((d, k) => { d.style.opacity = 0.35 + 0.65 * Math.max(0, Math.sin((t * 6) - k * 0.9)); });
+    fondo = top + 50 * p;
+  } else if (scrive) scrive.remove();
+  document.getElementById('stato').textContent = pensa ? 'sta scrivendo…' : 'online';
+  const sp = Math.max(0, fondo + 16 - H);
+  document.getElementById('scorre').style.transform = `translateY(${-sp}px)`;
+
+  // campo di scrittura
+  const sc = linea.scrittura.find((x) => t >= x.t0 && t < x.t1 + 0.5);
+  const campo = document.getElementById('campo');
+  if (sc) {
+    const n = Math.round(sc.testo.length * clamp((t - sc.t0) / (sc.t1 - sc.t0), 0, 1));
+    const lampeggia = Math.floor(t * 2.2) % 2 === 0 ? '<span class="cursore"></span>' : '<span class="cursore" style="opacity:0"></span>';
+    campo.classList.add('pieno');
+    campo.innerHTML = `<span>${esc(sc.testo.slice(0, n))}</span>${t < sc.t1 ? lampeggia : ''}`;
+    if (t >= sc.t1 + 0.1) { campo.classList.remove('pieno'); campo.innerHTML = '<span class="vuoto">Scrivi un messaggio</span>'; }
+  } else {
+    campo.classList.remove('pieno');
+    campo.innerHTML = '<span class="vuoto">Scrivi un messaggio</span>';
+  }
+  // orologio del telefono = ora dell'ultimo messaggio visibile
+  const visibili = chat.messaggi.filter((m, i) => linea.seg.some((x) => x.i === i && x.t0 <= t));
+  document.getElementById('ora-tel').textContent = (visibili.at(-1) || chat.messaggi[0]).ora;
+
+  // passo corrente
+  const idx = Math.max(0, linea.passi.findLastIndex((p) => p.t <= t));
+  const passo = linea.passi[idx];
+  const el = document.getElementById('passo');
+  if (el.dataset.idx !== String(idx)) {
+    el.dataset.idx = idx;
+    el.innerHTML = `<div><span class="etichetta">Passo ${idx + 1} di ${linea.passi.length}</span><h2>${esc(passo.titolo)}</h2><p>${esc(passo.sotto || '')}</p></div>`;
+  }
+  // Il primo passo è già in vista dall'inizio della scena (niente pannello vuoto)
+  const pp = idx === 0 ? fumo(t / 0.6) : fumo((t - passo.t) / 0.6);
+  el.firstElementChild.style.opacity = pp;
+  el.firstElementChild.style.transform = `translateY(${(1 - pp) * 22}px)`;
+  [...document.querySelectorAll('#passi i')].forEach((b, k) => b.classList.toggle('su', k <= idx));
+
+  // dietro le quinte: righe del passo corrente
+  const righe = linea.quinte.filter((r) => r.t <= t && linea.seg.find((x) => x.i === r.passo && x.tipo !== 'leggi') && passoDi(r.passo) === idx);
+  const contenitore = document.getElementById('righe');
+  const chiave = righe.length + ':' + idx;
+  if (contenitore.dataset.k !== chiave) {
+    contenitore.dataset.k = chiave;
+    contenitore.innerHTML = righe.length
+      ? righe.slice(-3).map((r) => `<div class="riga" data-t="${r.t}"><div class="chi"><b style="${colore(r.da)}">${esc(r.da)}</b><span>→</span><b style="${colore(r.a)}">${esc(r.a)}</b><span class="ora">${esc(r.ora || '')}</span></div><div class="cosa">${esc(accorcia(r.testo.replace(/^\[D\d+\]\s*/, ''), 150, r.zona))}</div></div>`).join('')
+      : '<div class="vuota">In ascolto…</div>';
+  }
+  for (const r of contenitore.querySelectorAll('.riga')) {
+    const p = fumo((t - Number(r.dataset.t)) / 0.45);
+    r.style.opacity = p;
+    r.style.transform = `translateX(${(1 - p) * 30}px)`;
+  }
+};
+
+function passoDi(i) { return Math.max(0, linea.passi.findLastIndex((p) => p.i <= i)); }
+function colore(nome) {
+  const n = nome.toLowerCase();
+  if (n.includes('twinciro')) return 'background:#4a3510;color:#ffd38a';
+  if (n.includes('pizzeria') || n.includes('friggitoria') || n.includes('bar ') || n.includes('gozzi') || n.includes('imprese')) return 'background:#4a1f26;color:#ffb3b3';
+  if (n.includes('folla')) return 'background:#123d2a;color:#9cf5c0';
+  if (n.includes('orchestratore')) return 'background:#2f2457;color:#cdbcff';
+  if (n.includes('turismo') || n.includes('assistenti')) return 'background:#0f3a46;color:#9ff0ff';
+  if (n.includes('meteo') || n.includes('skill')) return 'background:#1d3157;color:#b7cdfa';
+  return '';
+}
+
+// Anteprima nel browser (senza renderer): parte da sola
+if (!P.has('fotogrammi')) {
+  window.pronta.then(() => {
+    const t0 = performance.now();
+    const giro = () => { window.imposta(((performance.now() - t0) / 1000) % (totale + 2)); requestAnimationFrame(giro); };
+    giro();
+  });
+}
+</script>
+</body>
+</html>

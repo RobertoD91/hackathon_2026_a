@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920">
+<title>Il grafo della città</title>
+<link rel="stylesheet" href="stile.css">
+<style>
+  /* Scena 9 del video: il knowledge graph della città il giorno della regata. La rete si costruisce per
+     strati (luoghi → eventi e flussi → stazioni e imprese → agenti → sensori e fonti). Posizioni, nodi e
+     archi vengono da ../grafo/grafo.json (genera.mjs li scrive qui sotto, in #dati-grafo): niente scritto
+     a mano. Tutto il movimento è in imposta(t), deterministico. I 130 px in basso restano liberi. */
+  .testa { position: absolute; left: 72px; top: 30px; right: 72px; }
+  .testa h1 { margin: 4px 0 0; font-size: 56px; line-height: 1.12; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap; }
+  .nota-g { position: absolute; right: 72px; top: 38px; font-size: 17px; color: var(--tenue); white-space: nowrap; }
+  .chips { position: absolute; left: 72px; top: 136px; display: flex; gap: 10px; align-items: center; }
+  .chip { display: flex; align-items: center; gap: 9px; height: 38px; padding: 0 16px 0 11px; border-radius: 19px; background: rgb(22 33 59 / 0.92);
+    border: 2px solid var(--bordo); font-size: 20px; font-weight: 600; color: #c8d3ec; white-space: nowrap; }
+  .chip svg { width: 22px; height: 22px; flex: none; overflow: visible; }
+  .chip b { font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+  .chip.somma { display: block; line-height: 34px; background: transparent; border-color: transparent; color: var(--tenue); font-weight: 600; padding-left: 6px; }
+  .chip.somma b { color: #fff; }
+  svg#grafo { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+  #grafo text { font-family: 'Inter', 'DejaVu Sans', sans-serif; paint-order: stroke; stroke: #0a1020; stroke-width: 6px; stroke-linejoin: round; fill: #eef2fb; }
+  #grafo .em { stroke: none; paint-order: normal; font-family: 'Noto Color Emoji', 'Inter', sans-serif; }
+</style>
+</head>
+<body>
+<div class="testa"><span class="etichetta" id="etichetta">Knowledge graph · giornata della regata</span>
+  <h1 id="titolo">Napoli come rete di relazioni</h1></div>
+<div class="nota-g" id="nota">Ricavato dai dati e dal codice del repository · eventi e flussi: scenario simulato (2027) · imprese di fantasia · rete mobile simulata</div>
+<div class="chips" id="chips"></div>
+<svg id="grafo" viewBox="0 0 1920 1080" aria-label="Grafo della città">
+  <defs>
+    <filter id="bagliore" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="alone" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="14"/></filter>
+  </defs>
+  <g id="camera">
+    <g id="archi"></g>
+    <g id="particelle" filter="url(#bagliore)"></g>
+    <g id="nodi"></g>
+    <g id="etichette"></g>
+  </g>
+</svg>
+<script id="dati-grafo" type="application/json">{"titolo":"TwinCIRO · la città come rete di relazioni — giornata della regata","conteggi":{"nodi":83,"archi":196,"per_tipo":{"luogo":22,"evento":4,"stazione":28,"impresa":5,"agente":10,"sensore":2,"fonte":12},"per_relazione":{"vicino a":30,"si svolge a":4,"flusso verso":12,"servito da":42,"offerta a":5,"monitora":19,"parla con":26,"alimenta":58}},"tipi":{"luogo":{"nome":"Luoghi e zone","colore":"#38d6f0","forma":"cerchio","strato":1},"evento":{"nome":"Eventi","colore":"#f45d5d","forma":"rombo","strato":2},"stazione":{"nome":"Stazioni","colore":"#a78bfa","forma":"quadrato","strato":3},"impresa":{"nome":"Imprese","colore":"#4ade80","forma":"triangolo","strato":3},"agente":{"nome":"Agenti","colore":"#ffb547","forma":"esagono","strato":4},"sensore":{"nome":"Sensori","colore":"#f1f5f9","forma":"onde","strato":5},"fonte":{"nome":"Fonti","colore":"#cbd5e1","forma":"logo","strato":5}},"colori_archi":{"vicino a":"#38d6f0","si svolge a":"#f45d5d","flusso verso":"#f45d5d","servito da":"#a78bfa","offerta a":"#4ade80","monitora":"#ffb547","parla con":"#ffb547","alimenta":"#cbd5e1"},"nodi":[{"id":"luogo:aeroporto","t":"luogo","x":1700,"y":428.5,"r":7.5,"s":1},{"id":"luogo:beverello","t":"luogo","x":1324.3,"y":614.8,"r":16.2,"s":1,"e":"Molo Beverello","d":22,"l":"destra","cap":7000},{"id":"luogo:castel_ovo","t":"luogo","x":1067.9,"y":661.8,"r":16,"s":1,"e":"Castel dell'Ovo","d":22,"l":"destra","cap":6500},{"id":"luogo:centro_storico","t":"luogo","x":1421.2,"y":503.7,"r":10,"s":1,"e":"Centro storico","d":19,"l":"destra"},{"id":"luogo:citta_scienza","t":"luogo","x":205.2,"y":714.7,"r":7.5,"s":1},{"id":"luogo:garibaldi","t":"luogo","x":1577.8,"y":476.7,"r":10,"s":1,"e":"Napoli Centrale","d":19,"l":"destra"},{"id":"luogo:gozzo","t":"luogo","x":566.7,"y":600.5,"r":7,"s":1},{"id":"luogo:lungomare","t":"luogo","x":889.6,"y":640.8,"r":10,"s":1},{"id":"luogo:maradona","t":"luogo","x":314.3,"y":648.2,"r":10,"s":1,"e":"Stadio Maradona","d":19,"l":"destra"},{"id":"luogo:marechiaro","t":"luogo","x":406.5,"y":733.5,"r":7.5,"s":1},{"id":"luogo:maschio","t":"luogo","x":1311.4,"y":527.4,"r":7,"s":1},{"id":"luogo:mergellina","t":"luogo","x":567.8,"y":632.3,"r":18.7,"s":1,"e":"Mergellina","d":22,"l":"destra","cap":18000},{"id":"luogo:municipio","t":"luogo","x":1293.8,"y":558.1,"r":16.7,"s":1,"e":"Piazza Municipio","d":22,"l":"destra","cap":9000},{"id":"luogo:pan","t":"luogo","x":1010.6,"y":570.9,"r":7,"s":1},{"id":"luogo:piazza_vittoria","t":"luogo","x":1032.5,"y":622.6,"r":16.2,"s":1,"e":"Piazza Vittoria","d":22,"l":"destra","cap":7000},{"id":"luogo:plebiscito","t":"luogo","x":1150.2,"y":589.3,"r":10,"s":1},{"id":"luogo:rotonda_diaz","t":"luogo","x":828.1,"y":604.4,"r":20,"s":1,"e":"Rotonda Diaz","d":22,"l":"destra","cap":26000},{"id":"luogo:sanita","t":"luogo","x":1179.5,"y":459.5,"r":10,"s":1},{"id":"luogo:sant_elmo","t":"luogo","x":711.6,"y":501.9,"r":7,"s":1},{"id":"luogo:village","t":"luogo","x":852.3,"y":571.1,"r":7,"s":1},{"id":"luogo:virgiliano","t":"luogo","x":249.5,"y":728.3,"r":7.5,"s":1},{"id":"luogo:vomero","t":"luogo","x":711.6,"y":533,"r":17.9,"s":1,"e":"Vomero","d":22,"l":"destra","cap":14000},{"id":"evento:nave_1","t":"evento","x":984.8,"y":794,"r":16.4,"s":2,"e":"Nave da crociera 1","d":21,"l":"sotto","m":"🚢"},{"id":"evento:nave_2","t":"evento","x":1228.8,"y":794,"r":16.5,"s":2,"e":"Nave da crociera 2","d":21,"l":"sotto","m":"🚢"},{"id":"evento:partita","t":"evento","x":314.3,"y":794,"r":22,"s":2,"e":"Partita al Maradona","d":21,"l":"sotto","m":"⚽"},{"id":"evento:regata","t":"evento","x":728.8,"y":794,"r":21.3,"s":2,"e":"Regata America's Cup","d":21,"l":"sotto","m":"⛵"},{"id":"stazione:anm-6201","t":"stazione","x":871,"y":572.4,"r":5.5,"s":3},{"id":"stazione:anm-6204","t":"stazione","x":800.4,"y":562.7,"r":5.5,"s":3},{"id":"stazione:anm-6211","t":"stazione","x":1094.1,"y":580.2,"r":5.5,"s":3},{"id":"stazione:anm-6212","t":"stazione","x":991.7,"y":564.7,"r":5.5,"s":3},{"id":"stazione:anm-6218","t":"stazione","x":623.4,"y":665.5,"r":5.5,"s":3},{"id":"stazione:anm-6219","t":"stazione","x":537.1,"y":662.3,"r":5.5,"s":3},{"id":"stazione:anm-6231","t":"stazione","x":369,"y":678.7,"r":5.5,"s":3},{"id":"stazione:anm-6234","t":"stazione","x":595.5,"y":601.8,"r":5.5,"s":3},{"id":"stazione:anm-6236","t":"stazione","x":742.8,"y":632,"r":5.5,"s":3},{"id":"stazione:anm-6238","t":"stazione","x":930.8,"y":636.4,"r":5.5,"s":3},{"id":"stazione:anm-6240","t":"stazione","x":1120.5,"y":594.6,"r":5.5,"s":3},{"id":"stazione:anm-6244","t":"stazione","x":438.4,"y":670.6,"r":5.5,"s":3},{"id":"stazione:anm-6245","t":"stazione","x":1350.5,"y":586.8,"r":5.5,"s":3},{"id":"stazione:anm-6271","t":"stazione","x":1624.2,"y":499.7,"r":5.5,"s":3},{"id":"stazione:anm-6272","t":"stazione","x":1380.3,"y":475.1,"r":5.5,"s":3},{"id":"stazione:anm-6319","t":"stazione","x":774.2,"y":562.7,"r":5.5,"s":3},{"id":"stazione:anm-6320","t":"stazione","x":671.1,"y":528.8,"r":5.5,"s":3},{"id":"stazione:anm-6322","t":"stazione","x":972.2,"y":470.4,"r":5.5,"s":3},{"id":"stazione:anm-6324","t":"stazione","x":1206.7,"y":511.9,"r":5.5,"s":3},{"id":"stazione:anm-6325","t":"stazione","x":1233.3,"y":552.1,"r":5.5,"s":3},{"id":"stazione:anm-6327","t":"stazione","x":1409.2,"y":529.1,"r":5.5,"s":3},{"id":"stazione:anm-6335","t":"stazione","x":1264.3,"y":482.1,"r":5.5,"s":3},{"id":"stazione:anm-6347","t":"stazione","x":1606.7,"y":502.7,"r":5.5,"s":3},{"id":"stazione:anm-6348","t":"stazione","x":1484.5,"y":525.8,"r":5.5,"s":3},{"id":"stazione:eav-6701","t":"stazione","x":1550.7,"y":525.7,"r":5.5,"s":3},{"id":"stazione:eav-6804","t":"stazione","x":341,"y":673.4,"r":5.5,"s":3},{"id":"stazione:eav-6806","t":"stazione","x":173.3,"y":691.2,"r":5.5,"s":3},{"id":"stazione:eav-6808","t":"stazione","x":110,"y":699.1,"r":5.5,"s":3},{"id":"impresa:friggitoria_chiaia","t":"impresa","x":1054.9,"y":569.4,"r":8,"s":3},{"id":"impresa:gozzo_mergellina","t":"impresa","x":566.9,"y":579.3,"r":8,"s":3},{"id":"impresa:museo_pan","t":"impresa","x":1032.6,"y":568.9,"r":8,"s":3},{"id":"impresa:pizzeria_borgo","t":"impresa","x":1067.9,"y":591.9,"r":8,"s":3},{"id":"impresa:terrazza_vomero","t":"impresa","x":711.6,"y":479.9,"r":8,"s":3},{"id":"agente:drone","t":"agente","x":1540,"y":336,"r":21,"s":4,"e":"Drone","d":21,"l":"sotto","m":"🛸"},{"id":"agente:eventi","t":"agente","x":380,"y":336,"r":21,"s":4,"e":"Eventi","d":21,"l":"sotto","m":"📅"},{"id":"agente:folla","t":"agente","x":1135,"y":256,"r":21,"s":4,"e":"Folla","d":21,"l":"sotto","m":"👥"},{"id":"agente:imprese","t":"agente","x":1405,"y":256,"r":21,"s":4,"e":"Imprese","d":21,"l":"sotto","m":"🍕"},{"id":"agente:meteo","t":"agente","x":515,"y":256,"r":21,"s":4,"e":"Meteo&Mare","d":21,"l":"sotto","m":"🌊"},{"id":"agente:orchestratore","t":"agente","x":650,"y":336,"r":25,"s":4,"e":"Orchestratore","d":21,"l":"sotto","m":"🎛️"},{"id":"agente:sala","t":"agente","x":785,"y":256,"r":21,"s":4,"e":"Sala operativa","d":21,"l":"sotto","m":"🖥️"},{"id":"agente:traffico","t":"agente","x":245,"y":256,"r":21,"s":4,"e":"Traffico","d":21,"l":"sotto","m":"🚦"},{"id":"agente:turismo","t":"agente","x":1270,"y":336,"r":21,"s":4,"e":"Turismo","d":21,"l":"sotto","m":"🧭"},{"id":"agente:twinciro","t":"agente","x":960,"y":292,"r":36,"s":4,"e":"TwinCIRO","d":31,"l":"sotto","m":"💬"},{"id":"sensore:badge-1","t":"sensore","x":740,"y":672.3,"r":15,"s":5,"e":"Badge WHY2025","d":19,"l":"sotto","m":"📟"},{"id":"sensore:tasmota-1","t":"sensore","x":920.6,"y":672.3,"r":15,"s":5,"e":"Scheda Tasmota","d":19,"l":"sotto","m":"🔌"},{"id":"fonte:allerta","t":"fonte","x":798.5,"y":884,"r":21,"s":5,"i":"fonti/loghi/centro-funzionale.png"},{"id":"fonte:americas-cup","t":"fonte","x":732.5,"y":884,"r":21,"s":5,"i":"fonti/loghi/americascup.png"},{"id":"fonte:centraline","t":"fonte","x":1453.5,"y":884,"r":21,"s":5,"i":"fonti/loghi/eea.png"},{"id":"fonte:comune-agenda","t":"fonte","x":1128.5,"y":884,"r":21,"s":5,"i":"fonti/loghi/comune-napoli.png"},{"id":"fonte:crociere","t":"fonte","x":1519.5,"y":884,"r":21,"s":5,"i":"fonti/loghi/cruisetimetables.png","sf":1},{"id":"fonte:gtfs-anm","t":"fonte","x":1062.5,"y":884,"r":21,"s":5,"m":"🚇"},{"id":"fonte:gtfs-eav","t":"fonte","x":543.7,"y":884,"r":21,"s":5,"i":"fonti/loghi/eav.png"},{"id":"fonte:ingv","t":"fonte","x":864.5,"y":884,"r":21,"s":5,"i":"fonti/loghi/ingv.png"},{"id":"fonte:open-meteo","t":"fonte","x":996.5,"y":884,"r":21,"s":5,"i":"fonti/loghi/open-meteo.png"},{"id":"fonte:openfootball","t":"fonte","x":314.3,"y":884,"r":21,"s":5,"i":"fonti/loghi/openfootball.png"},{"id":"fonte:rete-mobile","t":"fonte","x":1291,"y":884,"r":21,"s":5,"e":"Rete mobile (simulata)","d":19,"l":"sotto","m":"📶","sim":1},{"id":"fonte:transitous","t":"fonte","x":930.5,"y":884,"r":21,"s":5,"i":"fonti/loghi/transitous.png"}],"archi":[{"a":1,"b":3,"t":"vicino a"},{"a":1,"b":15,"t":"vicino a"},{"a":2,"b":7,"t":"vicino a"},{"a":2,"b":15,"t":"vicino a"},{"a":4,"b":20,"t":"vicino a"},{"a":6,"b":11,"t":"vicino a"},{"a":7,"b":11,"t":"vicino a"},{"a":10,"b":1,"t":"vicino a"},{"a":10,"b":12,"t":"vicino a"},{"a":11,"b":7,"t":"vicino a"},{"a":11,"b":16,"t":"vicino a"},{"a":12,"b":1,"t":"vicino a"},{"a":12,"b":3,"t":"vicino a"},{"a":12,"b":15,"t":"vicino a"},{"a":13,"b":14,"t":"vicino a"},{"a":14,"b":1,"t":"vicino a"},{"a":14,"b":2,"t":"vicino a"},{"a":14,"b":7,"t":"vicino a"},{"a":14,"b":12,"t":"vicino a"},{"a":14,"b":15,"t":"vicino a"},{"a":14,"b":21,"t":"vicino a"},{"a":15,"b":14,"t":"vicino a"},{"a":16,"b":7,"t":"vicino a"},{"a":16,"b":14,"t":"vicino a"},{"a":16,"b":21,"t":"vicino a"},{"a":18,"b":21,"t":"vicino a"},{"a":19,"b":7,"t":"vicino a"},{"a":19,"b":16,"t":"vicino a"},{"a":21,"b":7,"t":"vicino a"},{"a":21,"b":15,"t":"vicino a"},{"a":22,"b":1,"t":"si svolge a"},{"a":23,"b":1,"t":"si svolge a"},{"a":24,"b":8,"t":"si svolge a"},{"a":25,"b":7,"t":"si svolge a"},{"a":22,"b":2,"t":"flusso verso","q":0.25},{"a":22,"b":12,"t":"flusso verso","q":0.35},{"a":22,"b":16,"t":"flusso verso","q":0.25},{"a":22,"b":21,"t":"flusso verso","q":0.15},{"a":23,"b":2,"t":"flusso verso","q":0.25},{"a":23,"b":12,"t":"flusso verso","q":0.2},{"a":23,"b":16,"t":"flusso verso","q":0.45},{"a":23,"b":21,"t":"flusso verso","q":0.1},{"a":24,"b":8,"t":"flusso verso","q":1},{"a":25,"b":2,"t":"flusso verso","q":0.08},{"a":25,"b":11,"t":"flusso verso","q":0.37},{"a":25,"b":16,"t":"flusso verso","q":0.55},{"a":1,"b":28,"t":"servito da"},{"a":1,"b":38,"t":"servito da"},{"a":1,"b":45,"t":"servito da"},{"a":2,"b":35,"t":"servito da"},{"a":2,"b":36,"t":"servito da"},{"a":3,"b":44,"t":"servito da"},{"a":3,"b":46,"t":"servito da"},{"a":3,"b":49,"t":"servito da"},{"a":4,"b":52,"t":"servito da"},{"a":4,"b":53,"t":"servito da"},{"a":5,"b":39,"t":"servito da"},{"a":5,"b":48,"t":"servito da"},{"a":5,"b":50,"t":"servito da"},{"a":7,"b":26,"t":"servito da"},{"a":7,"b":34,"t":"servito da"},{"a":7,"b":35,"t":"servito da"},{"a":8,"b":32,"t":"servito da"},{"a":8,"b":37,"t":"servito da"},{"a":8,"b":51,"t":"servito da"},{"a":11,"b":30,"t":"servito da"},{"a":11,"b":31,"t":"servito da"},{"a":11,"b":33,"t":"servito da"},{"a":12,"b":28,"t":"servito da"},{"a":12,"b":38,"t":"servito da"},{"a":12,"b":45,"t":"servito da"},{"a":14,"b":28,"t":"servito da"},{"a":14,"b":29,"t":"servito da"},{"a":14,"b":36,"t":"servito da"},{"a":15,"b":28,"t":"servito da"},{"a":15,"b":36,"t":"servito da"},{"a":15,"b":38,"t":"servito da"},{"a":16,"b":26,"t":"servito da"},{"a":16,"b":34,"t":"servito da"},{"a":16,"b":35,"t":"servito da"},{"a":17,"b":40,"t":"servito da"},{"a":17,"b":43,"t":"servito da"},{"a":17,"b":47,"t":"servito da"},{"a":20,"b":52,"t":"servito da"},{"a":20,"b":53,"t":"servito da"},{"a":21,"b":27,"t":"servito da"},{"a":21,"b":41,"t":"servito da"},{"a":21,"b":42,"t":"servito da"},{"a":54,"b":14,"t":"offerta a"},{"a":55,"b":11,"t":"offerta a"},{"a":56,"b":14,"t":"offerta a"},{"a":57,"b":2,"t":"offerta a"},{"a":58,"b":21,"t":"offerta a"},{"a":60,"b":22,"t":"monitora"},{"a":60,"b":23,"t":"monitora"},{"a":60,"b":24,"t":"monitora"},{"a":60,"b":25,"t":"monitora"},{"a":61,"b":1,"t":"monitora"},{"a":61,"b":2,"t":"monitora"},{"a":61,"b":11,"t":"monitora"},{"a":61,"b":12,"t":"monitora"},{"a":61,"b":14,"t":"monitora"},{"a":61,"b":16,"t":"monitora"},{"a":61,"b":21,"t":"monitora"},{"a":62,"b":54,"t":"monitora"},{"a":62,"b":55,"t":"monitora"},{"a":62,"b":56,"t":"monitora"},{"a":62,"b":57,"t":"monitora"},{"a":62,"b":58,"t":"monitora"},{"a":63,"b":25,"t":"monitora"},{"a":69,"b":16,"t":"monitora"},{"a":70,"b":16,"t":"monitora"},{"a":59,"b":61,"t":"parla con"},{"a":59,"b":65,"t":"parla con"},{"a":60,"b":64,"t":"parla con"},{"a":60,"b":65,"t":"parla con","bi":1},{"a":60,"b":66,"t":"parla con"},{"a":61,"b":64,"t":"parla con"},{"a":61,"b":65,"t":"parla con"},{"a":61,"b":67,"t":"parla con","bi":1},{"a":61,"b":68,"t":"parla con"},{"a":62,"b":65,"t":"parla con","dia":1},{"a":62,"b":67,"t":"parla con"},{"a":63,"b":60,"t":"parla con"},{"a":63,"b":61,"t":"parla con"},{"a":63,"b":64,"t":"parla con"},{"a":63,"b":65,"t":"parla con"},{"a":63,"b":68,"t":"parla con"},{"a":64,"b":59,"t":"parla con","bi":1},{"a":64,"b":65,"t":"parla con","bi":1},{"a":64,"b":66,"t":"parla con"},{"a":64,"b":67,"t":"parla con"},{"a":64,"b":68,"t":"parla con"},{"a":66,"b":65,"t":"parla con"},{"a":67,"b":65,"t":"parla con","dia":1},{"a":67,"b":68,"t":"parla con"},{"a":68,"b":62,"t":"parla con","bi":1},{"a":68,"b":65,"t":"parla con","dia":1},{"a":71,"b":68,"t":"alimenta"},{"a":72,"b":25,"t":"alimenta"},{"a":72,"b":7,"t":"alimenta"},{"a":73,"b":3,"t":"alimenta"},{"a":73,"b":5,"t":"alimenta"},{"a":73,"b":17,"t":"alimenta"},{"a":73,"b":21,"t":"alimenta"},{"a":74,"b":1,"t":"alimenta"},{"a":74,"b":7,"t":"alimenta"},{"a":75,"b":1,"t":"alimenta"},{"a":76,"b":26,"t":"alimenta"},{"a":76,"b":27,"t":"alimenta"},{"a":76,"b":28,"t":"alimenta"},{"a":76,"b":29,"t":"alimenta"},{"a":76,"b":30,"t":"alimenta"},{"a":76,"b":31,"t":"alimenta"},{"a":76,"b":32,"t":"alimenta"},{"a":76,"b":33,"t":"alimenta"},{"a":76,"b":34,"t":"alimenta"},{"a":76,"b":35,"t":"alimenta"},{"a":76,"b":36,"t":"alimenta"},{"a":76,"b":37,"t":"alimenta"},{"a":76,"b":38,"t":"alimenta"},{"a":76,"b":39,"t":"alimenta"},{"a":76,"b":40,"t":"alimenta"},{"a":76,"b":41,"t":"alimenta"},{"a":76,"b":42,"t":"alimenta"},{"a":76,"b":43,"t":"alimenta"},{"a":76,"b":44,"t":"alimenta"},{"a":76,"b":45,"t":"alimenta"},{"a":76,"b":46,"t":"alimenta"},{"a":76,"b":47,"t":"alimenta"},{"a":76,"b":48,"t":"alimenta"},{"a":76,"b":49,"t":"alimenta"},{"a":77,"b":50,"t":"alimenta"},{"a":77,"b":51,"t":"alimenta"},{"a":77,"b":52,"t":"alimenta"},{"a":77,"b":53,"t":"alimenta"},{"a":78,"b":68,"t":"alimenta"},{"a":79,"b":63,"t":"alimenta"},{"a":79,"b":1,"t":"alimenta"},{"a":79,"b":2,"t":"alimenta"},{"a":79,"b":3,"t":"alimenta"},{"a":79,"b":5,"t":"alimenta"},{"a":79,"b":7,"t":"alimenta"},{"a":79,"b":8,"t":"alimenta"},{"a":79,"b":11,"t":"alimenta"},{"a":79,"b":15,"t":"alimenta"},{"a":79,"b":17,"t":"alimenta"},{"a":79,"b":21,"t":"alimenta"},{"a":80,"b":8,"t":"alimenta"},{"a":81,"b":61,"t":"alimenta","sim":1},{"a":82,"b":68,"t":"alimenta"},{"a":69,"b":61,"t":"alimenta"},{"a":69,"b":63,"t":"alimenta"},{"a":69,"b":65,"t":"alimenta"},{"a":70,"b":63,"t":"alimenta"},{"a":70,"b":65,"t":"alimenta"}]}</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById('dati-grafo').textContent);
+  const P = new URLSearchParams(location.search);
+  const BASE = 9;                                   // la scena è disegnata per 9 s
+  const DURATA = Number(P.get('durata')) || BASE;
+  const K = Math.max(0.75, Math.min(1.4, DURATA / BASE));   // con un'altra durata i tempi si allungano o si accorciano
+  const NS = 'http://www.w3.org/2000/svg';
+  // Strati: [inizio, fine] in secondi (a 9 s); il finale mostra il totale di nodi e relazioni
+  const STRATI = { 1: [0.35, 1.75], 2: [1.75, 3.05], 3: [3.05, 4.35], 4: [4.35, 5.95], 5: [5.95, 7.35] };
+  const FINALE = 7.45;
+  const POP = 0.42;                                  // comparsa di un nodo
+  const TRACCIA = 0.55;                              // disegno di un arco
+
+  const fumo = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(1 - x, 3));
+  const morbido = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const rimbalzo = (x) => { const c = 1.6; return x <= 0 ? 0 : x >= 1 ? 1 : 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+  const tra = (t, a, b) => Math.max(0, Math.min(1, (t - a) / (b - a)));
+  const el = (nome, attr = {}, padre) => {
+    const e = document.createElementNS(NS, nome);
+    for (const [k, v] of Object.entries(attr)) e.setAttribute(k, v);
+    if (padre) padre.appendChild(e);
+    return e;
+  };
+  const hash = (s) => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
+
+  const nodi = D.nodi || [];
+  const archi = D.archi || [];
+  const tipi = D.tipi || {};
+  const coloreArco = D.colori_archi || {};
+
+  // --- tempi: ogni nodo compare nel suo strato, da ovest a est (gli agenti da TwinCIRO verso i lati) ---
+  const perStrato = {};
+  for (const n of nodi) (perStrato[n.s] ||= []).push(n);
+  for (const [s, lista] of Object.entries(perStrato)) {
+    const [a, b] = STRATI[s];
+    const chiave = (n) => (n.t === 'agente' ? Math.abs(n.x - 960) + (n.id === 'agente:twinciro' ? -1e6 : 0) : n.x);
+    lista.sort((p, q) => chiave(p) - chiave(q) || p.id.localeCompare(q.id));
+    lista.forEach((n, i) => { n.t0 = a + (lista.length > 1 ? i / (lista.length - 1) : 0) * (b - a) * 0.62; });
+  }
+  for (const e of archi) {
+    const A = nodi[e.a];
+    const B = nodi[e.b];
+    e.t0 = Math.max(A.t0, B.t0) + POP * 0.5;
+  }
+
+  // --- forme ---
+  const forma = {
+    cerchio: (r) => `M${-r},0a${r},${r} 0 1,0 ${2 * r},0a${r},${r} 0 1,0 ${-2 * r},0`,
+    rombo: (r) => `M0,${-r}L${r},0L0,${r}L${-r},0Z`,
+    quadrato: (r) => `M${-r},${-r}H${r}V${r}H${-r}Z`,
+    triangolo: (r) => `M0,${-r * 1.1}L${r * 1.05},${r * 0.75}L${-r * 1.05},${r * 0.75}Z`,
+    esagono: (r) => Array.from({ length: 6 }, (_, i) => { const a = Math.PI / 6 + (i * Math.PI) / 3; return `${i ? 'L' : 'M'}${(r * Math.cos(a)).toFixed(2)},${(r * Math.sin(a)).toFixed(2)}`; }).join('') + 'Z',
+  };
+
+  // --- archi: curve quadratiche (gli agenti si parlano con archi che salgono sopra le loro file) ---
+  const gArchi = document.getElementById('archi');
+  const gPart = document.getElementById('particelle');
+  const STILE = {
+    'vicino a': { w: 1.7, o: 0.42 },
+    'servito da': { w: 1.3, o: 0.4 },
+    'si svolge a': { w: 2.6, o: 0.7 },
+    'flusso verso': { w: 1.6, o: 0.62 },
+    'offerta a': { w: 1.6, o: 0.55 },
+    monitora: { w: 1.3, o: 0.34, tratteggio: '5 6' },
+    'parla con': { w: 1.8, o: 0.42 },
+    alimenta: { w: 1.1, o: 0.26 },
+  };
+  const ORDINE = ['servito da', 'alimenta', 'vicino a', 'monitora', 'offerta a', 'si svolge a', 'flusso verso', 'parla con'];
+  const punto = (c, s) => {
+    const u = 1 - s;
+    return [u * u * c.x0 + 2 * u * s * c.cx + s * s * c.x1, u * u * c.y0 + 2 * u * s * c.cy + s * s * c.y1];
+  };
+  for (const e of [...archi].sort((p, q) => ORDINE.indexOf(p.t) - ORDINE.indexOf(q.t))) {
+    const A = nodi[e.a];
+    const B = nodi[e.b];
+    const dx = B.x - A.x;
+    const dy = B.y - A.y;
+    const L0 = Math.hypot(dx, dy) || 1;
+    let cx;
+    let cy;
+    if (e.t === 'parla con') {
+      cx = (A.x + B.x) / 2;
+      cy = Math.max(200, Math.min(A.y, B.y) - (0.15 * Math.abs(dx) + 20));
+    } else {
+      const piega = (hash(A.id + B.id) % 2 ? 1 : -1) * (e.t === 'alimenta' ? 0.06 : 0.1);
+      cx = (A.x + B.x) / 2 - (dy / L0) * piega * L0;
+      cy = (A.y + B.y) / 2 + (dx / L0) * piega * L0;
+    }
+    const c = { x0: A.x, y0: A.y, cx, cy, x1: B.x, y1: B.y };
+    let L = 0;
+    let [px, py] = [A.x, A.y];
+    for (let i = 1; i <= 24; i++) { const [x, y] = punto(c, i / 24); L += Math.hypot(x - px, y - py); px = x; py = y; }
+    const st = STILE[e.t] || { w: 1.2, o: 0.4 };
+    const larghezza = e.t === 'flusso verso' ? st.w + 3.2 * (e.q || 0) : st.w;
+    e.c = c;
+    e.L = L;
+    e.st = st;
+    e.p = el('path', {
+      d: `M${A.x},${A.y}Q${cx.toFixed(1)},${cy.toFixed(1)} ${B.x},${B.y}`,
+      fill: 'none', stroke: coloreArco[e.t] || '#9fb0d3', 'stroke-width': larghezza.toFixed(2), 'stroke-linecap': 'round', opacity: 0,
+    }, gArchi);
+    if (e.sim) e.p.setAttribute('stroke-dasharray', '3 7');
+    // particelle: persone che arrivano (flussi), dati che entrano (alimenta), messaggi tra agenti (parla con)
+    e.part = [];
+    const quante = e.t === 'flusso verso' ? 1 + Math.round(3 * (e.q || 0)) : e.t === 'alimenta' ? 1 : e.t === 'parla con' ? (e.bi ? 2 : 1) : 0;
+    for (let k = 0; k < quante; k++) {
+      const inverso = e.t === 'parla con' && k % 2 === 1;
+      e.part.push({
+        el: el('circle', { r: e.t === 'flusso verso' ? 4 : 3.2, fill: coloreArco[e.t], opacity: 0 }, gPart),
+        fase: ((hash(A.id + B.id) % 97) / 97 + k / quante) % 1,
+        periodo: e.t === 'flusso verso' ? 1.5 : e.t === 'alimenta' ? 1.9 : 1.3,
+        inverso,
+      });
+    }
+  }
+
+  // --- nodi ---
+  const gNodi = document.getElementById('nodi');
+  const gEt = document.getElementById('etichette');
+  const img = [];
+  for (const n of nodi) {
+    const colore = tipi[n.t]?.colore || '#fff';
+    const g = el('g', { opacity: 0 }, gNodi);
+    const corpo = el('g', {}, g);
+    n.g = g;
+    n.corpo = corpo;
+    if (n.id === 'agente:twinciro') {
+      n.alone = el('circle', { r: n.r * 1.9, fill: '#ffb547', opacity: 0, filter: 'url(#alone)' }, corpo);
+    }
+    switch (n.t) {
+      case 'luogo':
+        if (n.cap) el('path', { d: forma.cerchio(n.r + 6), fill: 'none', stroke: colore, 'stroke-width': 1.5, opacity: 0.38 }, corpo);
+        el('path', { d: forma.cerchio(n.r), fill: n.e || n.cap ? colore : 'rgb(56 214 240 / 0.78)', stroke: '#0a1020', 'stroke-width': 2 }, corpo);
+        break;
+      case 'evento':
+        el('path', { d: forma.rombo(n.r * 1.18), fill: 'rgb(244 93 93 / 0.22)', stroke: colore, 'stroke-width': 3 }, corpo);
+        break;
+      case 'stazione':
+        el('path', { d: forma.quadrato(n.r), fill: colore, stroke: '#0a1020', 'stroke-width': 1.5 }, corpo);
+        break;
+      case 'impresa':
+        el('path', { d: forma.triangolo(n.r), fill: colore, stroke: '#0a1020', 'stroke-width': 2 }, corpo);
+        break;
+      case 'agente':
+        el('path', { d: forma.esagono(n.r), fill: n.id === 'agente:twinciro' ? '#ffb547' : '#161f38', stroke: n.id === 'agente:twinciro' ? '#fff3dc' : colore, 'stroke-width': n.id === 'agente:twinciro' ? 3 : 2.5 }, corpo);
+        break;
+      case 'sensore':
+        n.onde = [el('circle', { r: n.r, fill: 'none', stroke: colore, 'stroke-width': 2, opacity: 0.5 }, corpo), el('circle', { r: n.r, fill: 'none', stroke: colore, 'stroke-width': 2, opacity: 0.5 }, corpo)];
+        el('circle', { r: n.r * 0.62, fill: '#161f38', stroke: colore, 'stroke-width': 2.5 }, corpo);
+        el('circle', { r: n.r * 0.26, fill: colore }, corpo);
+        break;
+      case 'fonte': {
+        el('circle', { r: n.r, fill: n.sf ? '#0f172a' : '#ffffff', stroke: n.sim ? colore : n.sf ? '#cbd5e1' : '#0a1020', 'stroke-width': n.sim ? 2.5 : 2, ...(n.sim ? { 'stroke-dasharray': '4 4' } : {}) }, corpo);
+        if (n.sim) corpo.firstChild.setAttribute('fill', '#161f38');
+        if (n.i) {
+          const id = `clip-${n.id.replace(/[^a-z0-9]/gi, '-')}`;
+          const cp = el('clipPath', { id }, document.querySelector('#grafo defs'));
+          el('circle', { r: n.r - 3 }, cp);
+          const lato = (n.r - 3) * 2 * 0.86;
+          el('image', { href: n.i, x: -lato / 2, y: -lato / 2, width: lato, height: lato, 'clip-path': `url(#${id})`, preserveAspectRatio: 'xMidYMid meet' }, corpo);
+          img.push(n.i);
+        }
+        break;
+      }
+      default:
+        el('circle', { r: n.r, fill: colore }, corpo);
+    }
+    if (n.m && (n.t === 'agente' || n.t === 'evento' || (n.t === 'fonte' && !n.i))) {
+      const fs = n.t === 'agente' ? n.r * 0.95 : n.r * 0.92;
+      el('text', { class: 'em', 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-size': fs.toFixed(1), y: (fs * 0.04).toFixed(1) }, corpo).textContent = n.m;
+    }
+    // etichetta (solo i nodi importanti, scelti in genera.mjs)
+    if (n.e) {
+      const d = n.d || 20;
+      const attr = { 'font-size': d, 'font-weight': n.t === 'agente' || n.t === 'evento' ? 700 : 650, opacity: 0 };
+      if (n.l === 'sotto') Object.assign(attr, { x: n.x, y: n.y + n.r * (n.t === 'evento' ? 1.18 : 1) + 6 + d * 0.86, 'text-anchor': 'middle' });
+      else if (n.l === 'sinistra') Object.assign(attr, { x: n.x - n.r - 8, y: n.y + d * 0.35, 'text-anchor': 'end' });
+      else Object.assign(attr, { x: n.x + n.r + (n.cap ? 12 : 8), y: n.y + d * 0.35 });
+      const t = el('text', attr, gEt);
+      if (n.id === 'agente:twinciro') {
+        t.setAttribute('font-weight', 800);
+        el('tspan', { fill: '#38d6f0' }, t).textContent = 'Twin';
+        el('tspan', { fill: '#ffb547' }, t).textContent = 'CIRO';
+      } else t.textContent = n.e;
+      // i due sensori fatti da noi: le prove sui dispositivi veri sono in corso (firmware/README.md)
+      if (n.t === 'sensore') {
+        el('tspan', { x: attr.x, dy: d * 1.05, 'font-size': d * 0.8, 'font-weight': 600, fill: '#9fb0d3' }, t).textContent = 'in prova';
+      }
+      n.et = t;
+    }
+    g.setAttribute('transform', `translate(${n.x},${n.y})`);
+  }
+
+  // --- legenda in alto: si accende strato per strato, il conto sale con i nodi ---
+  const chips = document.getElementById('chips');
+  const ordineTipi = Object.keys(tipi);
+  const miniForma = { cerchio: 'cerchio', rombo: 'rombo', quadrato: 'quadrato', triangolo: 'triangolo', esagono: 'esagono', onde: 'cerchio', logo: 'cerchio' };
+  const chipTipi = ordineTipi.map((t) => {
+    const c = document.createElement('div');
+    c.className = 'chip';
+    const s = document.createElementNS(NS, 'svg');
+    s.setAttribute('viewBox', '-11 -11 22 22');
+    const f = tipi[t].forma;
+    const pieno = !['onde', 'logo'].includes(f) && t !== 'agente' && t !== 'evento';
+    el('path', { d: forma[miniForma[f]](f === 'triangolo' ? 8 : 8.5), fill: pieno ? tipi[t].colore : t === 'fonte' ? '#ffffff' : '#161f38', stroke: tipi[t].colore, 'stroke-width': 2.2 }, s);
+    c.appendChild(s);
+    const b = document.createElement('b');
+    const sp = document.createElement('span');
+    sp.textContent = tipi[t].nome.split(' ')[0].toLowerCase();
+    c.append(b, sp);
+    chips.appendChild(c);
+    return { t, c, b, tot: nodi.filter((n) => n.t === t).length, strato: tipi[t].strato, colore: tipi[t].colore };
+  });
+  const somma = document.createElement('div');
+  somma.className = 'chip somma';
+  somma.innerHTML = `<b>${nodi.length}</b>&nbsp;nodi&nbsp;·&nbsp;<b>${archi.length}</b>&nbsp;relazioni`;
+  chips.appendChild(somma);
+
+  const titolo = [document.getElementById('etichetta'), document.getElementById('titolo')];
+  const nota = document.getElementById('nota');
+  const camera = document.getElementById('camera');
+
+  window.imposta = (tt) => {
+    const t = tt / K;
+    // titolo e nota
+    titolo.forEach((e, i) => {
+      const p = fumo(tra(t, 0.02 + i * 0.1, 0.62 + i * 0.1));
+      e.style.opacity = p.toFixed(3);
+      e.style.transform = `translateY(${((1 - p) * 22).toFixed(1)}px)`;
+    });
+    nota.style.opacity = (0.95 * fumo(tra(t, 0.5, 1.2))).toFixed(3);
+    // legenda
+    for (const c of chipTipi) {
+      const [a] = STRATI[c.strato];
+      const p = fumo(tra(t, a - 0.15, a + 0.25));
+      const visti = nodi.filter((n) => n.t === c.t && t >= n.t0 + 0.05).length;
+      c.c.style.opacity = (0.3 + 0.7 * p).toFixed(3);
+      c.c.style.borderColor = p > 0.5 ? c.colore : '';
+      if (c.b.textContent !== String(visti)) c.b.textContent = String(visti);
+    }
+    const ps = fumo(tra(t, FINALE, FINALE + 0.5));
+    somma.style.opacity = ps.toFixed(3);
+    somma.style.transform = `translateX(${((1 - ps) * -14).toFixed(1)}px)`;
+    // camera: un leggero arretramento
+    const s = 1.03 - 0.03 * morbido(tra(t, 0, BASE));
+    camera.setAttribute('transform', `translate(960 560) scale(${s.toFixed(5)}) translate(-960 -560)`);
+    // nodi
+    for (const n of nodi) {
+      const k = tra(t, n.t0, n.t0 + POP);
+      const sc = rimbalzo(k);
+      n.g.setAttribute('opacity', fumo(tra(t, n.t0, n.t0 + POP * 0.5)).toFixed(3));
+      n.corpo.setAttribute('transform', `scale(${Math.max(0.001, sc).toFixed(4)})`);
+      if (n.et) n.et.setAttribute('opacity', fumo(tra(t, n.t0 + 0.12, n.t0 + 0.12 + POP)).toFixed(3));
+      if (n.onde) {
+        n.onde.forEach((o, i) => {
+          const f = t > n.t0 ? ((t - n.t0) / 1.6 + i * 0.5) % 1 : 0;
+          o.setAttribute('r', (n.r * (0.7 + 1.1 * f)).toFixed(2));
+          o.setAttribute('opacity', (t > n.t0 ? 0.6 * (1 - f) : 0).toFixed(3));
+        });
+      }
+      if (n.alone) {
+        const a = tra(t, n.t0, n.t0 + 0.6);
+        n.alone.setAttribute('opacity', (a * (0.42 + 0.12 * Math.sin(t * 3.1))).toFixed(3));
+      }
+    }
+    // archi: si disegnano, brillano un momento, poi restano tenui; le particelle scorrono
+    for (const e of archi) {
+      const k = tra(t, e.t0, e.t0 + TRACCIA);
+      if (k <= 0) {
+        e.p.setAttribute('opacity', 0);
+      } else {
+        const nuovo = 1 - tra(t, e.t0 + TRACCIA, e.t0 + TRACCIA + 1.0);
+        e.p.setAttribute('opacity', Math.min(1, e.st.o + 0.45 * nuovo).toFixed(3));
+        if (!e.sim) {
+          if (k < 1) {
+            e.p.setAttribute('stroke-dasharray', `${e.L.toFixed(1)} ${e.L.toFixed(1)}`);
+            e.p.setAttribute('stroke-dashoffset', (e.L * (1 - morbido(k))).toFixed(1));
+          } else if (e.st.tratteggio) {
+            e.p.setAttribute('stroke-dasharray', e.st.tratteggio);
+            e.p.removeAttribute('stroke-dashoffset');
+          } else {
+            e.p.removeAttribute('stroke-dasharray');
+            e.p.removeAttribute('stroke-dashoffset');
+          }
+        } else {
+          e.p.setAttribute('opacity', (e.st.o * morbido(k) + 0.3 * nuovo).toFixed(3));
+        }
+      }
+      for (const q of e.part) {
+        const via = t - (e.t0 + TRACCIA * 0.6);
+        if (via <= 0) { q.el.setAttribute('opacity', 0); continue; }
+        let s = (via / q.periodo + q.fase) % 1;
+        if (q.inverso) s = 1 - s;
+        const [x, y] = punto(e.c, s);
+        q.el.setAttribute('cx', x.toFixed(1));
+        q.el.setAttribute('cy', y.toFixed(1));
+        const bordo = Math.min(s, 1 - s);
+        q.el.setAttribute('opacity', (fumo(tra(via, 0, 0.4)) * Math.min(1, bordo * 7) * 0.95).toFixed(3));
+      }
+    }
+  };
+
+  window.pronta = (async () => {
+    await Promise.all([...new Set(img)].map((src) => new Promise((ok) => {
+      const i = new Image();
+      i.onload = () => (i.decode ? i.decode().then(ok, ok) : ok());
+      i.onerror = ok;
+      i.src = src;
+    })));
+    await document.fonts.ready;
+    window.imposta(0);
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    return { durata: DURATA };
+  })();
+
+  // Nel browser (senza ?fotogrammi) la scena gira da sola, in loop
+  window.pronta.then(() => {
+    if (P.has('fotogrammi')) return;
+    const t0 = performance.now();
+    const giro = () => { window.imposta(((performance.now() - t0) / 1000) % (DURATA + 1.5)); requestAnimationFrame(giro); };
+    giro();
+  });
+})();
+</script>
+</body>
+</html>

@@ -3,7 +3,10 @@
 Fonti, in ordine di fiducia crescente:
 1. modello: presenza di base del sabato + flussi degli eventi (navi, regata);
 2. presenze da rete mobile, anonime e aggregate (SIMULATE: modello + rumore, ipotesi dichiarata);
-3. sensori ESP32 sul plastico (napoli/sensori/<nodo>/persone);
+3. contapersone vero del badge WHY2025 (napoli/sensori/<id>/persone, {"zona", "valore", "moltiplicatore"}):
+   si aggiunge valore × moltiplicatore (200 se manca) alla zona. Si scartano le letture con una zona sconosciuta
+   o con numeri non validi; contano solo quelle degli ultimi 3 minuti reali (il badge le ripete ogni 15 s)
+   e di un dispositivo non offline (last will su napoli/nodi/<id>/stato, tele/LWT per Tasmota);
 4. osservazione del drone (napoli/drone/osservazioni), che vale per 30 minuti.
 
 Tiene conto anche delle persone che l'agente Turismo riesce a spostare (napoli/turismo/spostamenti).
@@ -12,8 +15,10 @@ Tiene conto anche delle persone che l'agente Turismo riesce a spostare (napoli/t
 from __future__ import annotations
 
 import random
+import time
 
 from ..bus import secondi_da_ora
+from ..sensori import SensoriReali, numero_valido
 from .base import Agente, numero
 
 BASE_SABATO = {"mergellina": 2000, "rotonda_diaz": 3000, "piazza_vittoria": 1500, "castel_ovo": 1500,
@@ -24,6 +29,7 @@ LIVELLI = [(0.5, "basso"), (0.8, "medio"), (1.0, "alto"), (9e9, "critico")]
 ORDINE = [n for _, n in LIVELLI]
 ISTERESI = 0.07
 DURATA_SPOSTAMENTO = 90 * 60  # le persone spostate tornano gradualmente in 90 minuti
+SCADENZA_SENSORI_S = 180  # secondi REALI: una lettura del badge più vecchia non conta (lui la ripete ogni 15 s)
 
 
 def livello(persone: float, capienza: float, precedente: str | None = None) -> str:
@@ -59,7 +65,8 @@ class AgenteFolla(Agente):
     def __init__(self, *a, **k) -> None:
         super().__init__(*a, **k)
         self.rnd = random.Random(7)
-        self.sensori: dict[str, dict] = {}
+        self.sensori: dict[str, dict] = {}  # topic → ultima lettura valida, con l'ora reale di arrivo
+        self.reali = SensoriReali(self.bus)  # online/offline dei dispositivi, con lo stesso criterio di sala e /stato
         self.drone: dict[str, tuple[int, int]] = {}  # zona → (persone, t)
         self.spostati: list[tuple[int, str, float]] = []  # (t, zona, persone ±)
         self.livelli: dict[str, str] = {}
@@ -74,8 +81,9 @@ class AgenteFolla(Agente):
 
     def gestisci(self, topic: str, m: dict) -> None:
         if topic.startswith("napoli/sensori/"):
-            if m.get("zona") in self.scenario["zone"]:
-                self.sensori[topic] = m
+            molt = m.get("moltiplicatore", 200)
+            if m.get("zona") in self.scenario["zone"] and numero_valido(m.get("valore")) and numero_valido(molt):
+                self.sensori[topic] = {**m, "moltiplicatore": molt, "ricevuto": time.monotonic()}
         elif topic == "napoli/drone/osservazioni":
             z = m.get("zona")
             if z in self.scenario["zone"] and m.get("persone_stimate") is not None:
@@ -106,15 +114,18 @@ class AgenteFolla(Agente):
         return persone
 
     def stima(self) -> None:
+        adesso = time.monotonic()
         for zona, info in self.scenario["zone"].items():
             modello = self._modello(zona)
             celle = modello * self.rnd.uniform(0.9, 1.1)
             fonti = ["modello", "celle (simulato)"]
             stima = 0.4 * modello + 0.6 * celle
-            for s in self.sensori.values():
-                if s.get("zona") == zona:
-                    stima += float(s.get("valore", 0)) * float(s.get("moltiplicatore", 200))
-                    fonti.append("sensori ESP32")
+            for topic, s in self.sensori.items():
+                recente = adesso - s["ricevuto"] <= SCADENZA_SENSORI_S
+                if s["zona"] == zona and recente and self.reali.online(topic.split("/")[2]) is not False:
+                    stima += s["valore"] * s["moltiplicatore"]
+                    if "contapersone badge (reale)" not in fonti:
+                        fonti.append("contapersone badge (reale)")
             if zona in self.drone:
                 persone, quando = self.drone[zona]
                 if self.t - quando <= 30 * 60:

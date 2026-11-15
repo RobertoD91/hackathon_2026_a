@@ -1,0 +1,10 @@
+1
+00:00:00,300 --> 00:00:05,400
+Con un'adesione ipotizzata,
+un avviso sposta circa 1.900 persone.
+
+2
+00:00:05,700 --> 00:00:11,600
+Perché Napoli? Nessuna app nuova,
+i dati ci sono già, e si parte da un quartiere.
+

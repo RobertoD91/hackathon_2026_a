@@ -5,8 +5,9 @@
             locale), più una quota di guidatori che segue i consigli di percorso dell'assistente.
 
 Le due simulazioni ricevono gli stessi veicoli con gli stessi orari. A ogni minuto simulato
-il gemello pubblica l'orologio e i KPI; a ogni cambio di fase pubblica lo stato dei 4 incroci
-del plastico, che gli ESP32 rispecchiano.
+il gemello pubblica l'orologio e i KPI; a ogni cambio di fase pubblica lo stato di 4 incroci
+di riferimento (chiave "plastico" di dati/incroci.json, nome storico) per la sala e l'API.
+I semafori sono solo simulati: nessun semaforo fisico.
 """
 
 from __future__ import annotations
@@ -188,7 +189,7 @@ class Simulazione:
         return t
 
     def stato_testa(self, tls: str, principali: set[str]) -> dict:
-        """Colore delle due teste del semaforo fisico: A = vie principali, B = le altre."""
+        """Colore delle due teste del semaforo (simulato): A = vie principali, B = le altre."""
         stato = self.c.trafficlight.getRedYellowGreenState(tls)
         collegamenti = self.semafori[tls]["collegamenti"]
         teste = {"a": set(), "b": set()}
@@ -246,7 +247,7 @@ class Gemello(threading.Thread):
         self._extra: list[dict] = []
 
     def _evento_manuale(self, topic: str, m: dict) -> None:
-        # Un pulsante sul plastico (es. "arriva un pullman") aggiunge veicoli a entrambe le simulazioni.
+        # Un evento manuale (es. "arriva un pullman", da strumenti/operatore.py) aggiunge veicoli a entrambe le simulazioni.
         if m.get("veicoli"):
             self._extra.append(m)
 
@@ -289,8 +290,7 @@ class Gemello(threading.Thread):
                     self._aggiungi_extra([oggi, agenti], t)
                     oggi.passo()
                     t = agenti.passo()
-                    # Stato dei semafori del plastico: a ogni cambio e comunque ogni 2 secondi reali
-                    # (battito: se gli ESP32 non ricevono nulla per 5 s passano ai "riflessi").
+                    # Stato dei 4 incroci di riferimento: a ogni cambio e comunque ogni 2 secondi reali (battito).
                     battito = time.monotonic() - ultimo_battito > 2
                     if battito:
                         ultimo_battito = time.monotonic()

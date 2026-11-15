@@ -1,0 +1,9 @@
+1
+00:00:00,300 --> 00:00:03,800
+TwinCIRO: City Intelligence
+and Responsive Orchestration.
+
+2
+00:00:04,000 --> 00:00:06,700
+Il gemello di Napoli, che ci pensa.
+

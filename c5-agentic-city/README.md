@@ -1,25 +1,24 @@
-# TwinCiro
+# TwinCIRO
 
-**TwinCiro** è il progetto del nostro team per la Challenge 05 di The Big Hack 2026, promossa da **Fastweb + Vodafone**: *"Napoli Agentic City: la città che Ci pensa"*.
+**TwinCIRO** è il progetto del nostro team per la Challenge 05 di The Big Hack 2026, promossa da **Fastweb + Vodafone**: *"Napoli Agentic City: la città che Ci pensa"*.
 
 Il nome unisce le due anime del progetto:
-- **Twin**: il gemello digitale della città, con sensori ESP32 su un plastico e la simulazione sulle strade vere;
-- **Ciro**: **CiroGPT**, l'assistente su WhatsApp (agente OpenClaw) che parla con cittadini e turisti e con gli agenti della città.
+- **Twin**: il gemello digitale della città: agenti che leggono le misure vere di due dispositivi (badge WHY2025 e scheda Tasmota) e la simulazione sulle strade vere;
+- **CIRO**: *City Intelligence & Responsive Orchestration*: gli agenti della città coordinati dall'orchestratore e l'assistente su WhatsApp (agente OpenClaw) che parla con cittadini e turisti e con gli agenti. Anche l'assistente si chiama **TwinCIRO**; in chat lo chiamano «Ciro».
 
-## I pezzi di TwinCiro
+## I pezzi di TwinCIRO
 
 | Pezzo | Dove | Stato |
 |---|---|---|
-| **CiroGPT**: skill OpenClaw (città + fonti aperte di Napoli) | [`openclaw/skills/`](openclaw/skills/README.md) | la skill della città funziona su CiroGPT; quelle delle fonti sono da caricare |
-| Agenti della città, assistenti personali, API per CiroGPT | `citta/`, `avvia.py` | funzionano (con LLM o con regole) |
-| Nodi ESP32 del plastico (semaforo o sensore) | [`firmware/twinciro-nodo/`](firmware/README.md) | compila per ESP32, S3 e C3; da provare su hardware |
-| **Flasher web** per gli ESP32 | [`flasher/`](https://robertodisanto.it/hackathon_2026_a/c5-agentic-city/flasher/) | binari compilati a richiesta dall'action "Firmware TwinCiro" |
+| **TwinCIRO su WhatsApp**: skill OpenClaw, cioè città (`twinciro-citta`), dati reali (`napoli-citta-dati`, dall'API [`citta-api`](../citta-api/README.md)) e riserva (`napoli-fonti-riserva`, fonti aperte lette direttamente) | [`openclaw/skills/`](openclaw/skills/README.md) | la skill della città funziona sull'agente OpenClaw; le altre due sono da caricare |
+| Agenti della città, assistenti personali, API per TwinCIRO su WhatsApp | `citta/`, `avvia.py` | funzionano (con LLM o con regole) |
+| Dispositivi veri: **badge WHY2025** e **scheda Tasmota** (letture e stato nel formato `napoli/`) | [`../firmware/`](../firmware/README.md) | la città li legge: Folla, Meteo&Mare, sala (pannello "Sensori reali"), `GET /stato`; provati con messaggi finti, da provare con i dispositivi veri |
 | **Napoli 3D navigabile** (regata, folla, barche, dialogo tra agenti) | [`visore3d/`](https://robertodisanto.it/hackathon_2026_a/c5-agentic-city/visore3d/) | funziona; dati da `visore3d/prepara_dati.py` |
 | Gemello digitale SUMO | `citta/gemello/` | funziona |
-| Video | `media/regata_3d.mp4` (regata in 3D), `media/demo_gemello.mp4` | pronti; consegna finale: video di massimo 3 minuti |
+| Video | `media/regata_3d.mp4` (regata in 3D), `media/demo_gemello.mp4` | pronti; il video di consegna (massimo 3 minuti) si monta in [`../c5-presentazione/`](../c5-presentazione/README.md) |
 | Docker | `compose.yaml` | provato (Mosquitto + città + API) |
 
-> **In una frase:** un ecosistema di agenti AI che **negoziano tra loro**. Ci sono gli agenti della città, gli agenti personali di cittadini e turisti, e gli agenti delle imprese. Hanno un sistema nervoso fisico (semafori ESP32 su un plastico, sensori, droni) e un **gemello digitale sulle strade vere di Napoli** che misura quanto si guadagna rispetto a una città senza agenti.
+> **In una frase:** un ecosistema di agenti AI che **negoziano tra loro**. Ci sono gli agenti della città, gli agenti personali di cittadini e turisti, e gli agenti delle imprese. Hanno un sistema nervoso fisico (un badge WHY2025 e una scheda Tasmota con sensori veri, il drone) e un **gemello digitale sulle strade vere di Napoli** che misura quanto si guadagna rispetto a una città senza agenti.
 
 ## Feedback dei partner e consegna (14/11)
 
@@ -27,13 +26,13 @@ Incontro con Fastweb e Vodafone:
 
 | Parte | Giudizio |
 |---|---|
-| IoT (ESP32, sensori, plastico) | piaciuta |
-| **CiroGPT** (agente OpenClaw su WhatsApp con le skill di `openclaw/skills/`) | **la più apprezzata**: va messa al centro |
-| Gemello digitale | piaciuto, ma meno di CiroGPT |
-| Traffico e semafori | **non piaciuto**: da ridimensionare |
+| IoT (sensori veri: oggi badge WHY2025 e scheda Tasmota) | piaciuta |
+| **TwinCIRO su WhatsApp** (agente OpenClaw con le skill di `openclaw/skills/`) | **la più apprezzata**: va messa al centro |
+| Gemello digitale | piaciuto, ma meno dell'assistente su WhatsApp |
+| Traffico e semafori | **non piaciuto**: ridimensionato, resta solo come simulazione nel gemello SUMO |
 | Video 3D della regata (`media/regata_3d.mp4`) | piaciuto |
 
-**Consegna:** un **video di massimo 3 minuti**. La live demo è facoltativa: c'è un gruppo WhatsApp con CiroGPT dentro.
+**Consegna:** un **video di massimo 3 minuti**. La live demo è facoltativa: c'è un gruppo WhatsApp con TwinCIRO dentro.
 
 ## Il brief (in sintesi)
 
@@ -63,18 +62,18 @@ Napoli ospita l'**America's Cup nel 2027**. Raccontiamo un sabato di festa, **se
 ## Architettura
 
 ```
-            SENSI (ESP32)                      OCCHI (drone)            ATTUATORI (ESP32)
-  conteggio auto/persone, pulsanti,     pilota umano + frame  ──┐     semafori del plastico,
-  meteo locale, (modulo 5G)                al modello visione   │     pannelli alle fermate
-        │                                                       │             ▲
-        ▼                                                       ▼             │
+         SENSI (dispositivi veri)                              OCCHI (drone)
+  badge WHY2025: contapersone a mano, sensori I2C         pilota umano + frame ──┐
+  scheda Tasmota: temperatura, umidità, luce, pressione     al modello visione   │
+        │  napoli/sensori/<id>/<grandezza>, napoli/nodi/<id>/stato               │
+        ▼                                                                        ▼
  ═══════════════════════════  BUS MQTT  napoli/#  ═══════════════════════════════════
         │          │            │            │            │            │          │
    Agente      Agente       Agente       Agente       Agente       Agenti     Gemello
    Meteo&Mare  Eventi       Folla        Traffico     Turismo      Imprese    digitale
-   (Open-Meteo)(calendario) (sensori,    (piani       (luoghi,     (pizzeria, (SUMO sulle
-                             celle,       semafori,    visitatori,  bar, gozzi, strade OSM:
-                             drone)       onde verdi)  offerte)     museo)      con vs senza
+   (Open-Meteo,(calendario) (badge,      (piani dei   (luoghi,     (pizzeria, (SUMO sulle
+   termometri               celle,       semafori     visitatori,  bar, gozzi, strade OSM:
+   veri)                    drone)       simulati)    offerte)     museo)      con vs senza
         │          │            │            │            │            │       agenti)
         └──────────┴────────────┴─────┬──────┴────────────┴────────────┘
                                       ▼
@@ -91,21 +90,26 @@ Napoli ospita l'**America's Cup nel 2027**. Raccontiamo un sabato di festa, **se
 2. **Agenti personali** di cittadini e turisti. L'utente scrive su WhatsApp (OpenClaw, già funzionante nel team) o da terminale. Il suo agente **negozia con la città**: chiede un percorso, l'orchestratore risponde tenendo conto di traffico, folla ed eventi. Poi negozia con le imprese (prenotazione, controproposta).
 3. **Agenti delle imprese**: pubblicano disponibilità e offerte. Quando un posto è pieno fanno una **controproposta**, per esempio *"alle 13:00 siamo pieni, alle 14:15 c'è posto e 10% di sconto"*. L'agente Turismo li usa per spostare la folla, e le imprese riempiono le ore morte.
 
-### Sistema nervoso in due livelli
+### Sensi veri: badge WHY2025 e scheda Tasmota
 
-- **Riflessi (ESP32):** ogni semaforo del plastico ha un ciclo locale. Se non riceve piani dal bus per qualche secondo continua da solo, e i semafori vicini si coordinano in **ESP-NOW** senza rete. *Se cade internet la città non si ferma, perde solo la strategia.*
-- **Cervello (LLM):** gli agenti ragionano **solo quando succede qualcosa** (arriva una nave, inizia la regata, cambia il vento, un cittadino chiede). Il ciclo veloce dei semafori è codice normale, quindi poche chiamate al modello.
+Due dispositivi veri, sull'hotspot del team, mandano le loro misure al broker MQTT nel formato unico `napoli/` (firmware, configurazione e formato completo in [`../firmware/README.md`](../firmware/README.md)):
+- **badge Cyber Saiyan WHY2025** (ESP32-C3): contapersone a mano (rotella SU = un gruppo di persone visto) e, se collegati, sensori I2C di temperatura, umidità, luce e pressione;
+- **scheda con Tasmota** (ESP32 o ESP8266 con un sensore): letture pubblicate con le Rules.
+
+Cosa ne fa la città:
+- **Folla** aggiunge alla stima della zona il contapersone del badge (`valore × moltiplicatore`), se la zona è una di quelle dello scenario. Contano solo le letture degli ultimi 3 minuti (il badge le ripete ogni 15 s) di un badge non offline; i messaggi con numeri non validi si scartano;
+- **Meteo&Mare** dice in dialogo la temperatura vera, alla prima misura e quando cambia di almeno 1 °C (la regata resta decisa da vento e onda);
+- la **sala** mostra il pannello "Sensori reali": ultimo valore per dispositivo e grandezza, zona, da quanto tempo, online/offline;
+- **`GET /stato`** dell'API ha `sensori` (ultimo valore per dispositivo e grandezza, con `secondi_fa`) e `nodi` (stato con `online`).
+
+Il codice è in `citta/sensori.py`. Gli agenti ragionano con l'LLM **solo quando succede qualcosa** (arriva una nave, inizia la regata, cambia il vento, un cittadino chiede): il resto è codice normale, quindi poche chiamate al modello.
 
 ### Gemello digitale (i numeri per la giuria)
 
 - **SUMO** (simulatore di traffico open source) sulla **rete stradale vera** del lungomare, da Mergellina a Piazza Municipio, presa da OpenStreetMap: 494 strade, 8 incroci semaforizzati.
 - La **stessa giornata gira due volte in parallelo**, con la stessa domanda di traffico. Da una parte i semafori fissi di oggi, dall'altra i semafori guidati dagli agenti.
 - KPI in diretta: tempo perso in coda, durata media dei viaggi, veicoli fermi, CO₂.
-- I semafori del plastico **rispecchiano 4 incroci veri** del gemello:
-  - Viale Gramsci / via Campanella (Mergellina);
-  - Riviera di Chiaia / via San Pasquale;
-  - Riviera di Chiaia / via Santa Maria in Portico;
-  - Galleria della Vittoria / via Acton (verso il Beverello).
+- I semafori sono **solo simulati** (nessun semaforo fisico). La sala e `/stato` mostrano lo stato di 4 incroci di riferimento: Viale Gramsci / via Campanella, Riviera di Chiaia / via San Pasquale, Riviera di Chiaia / via Santa Maria in Portico, Galleria della Vittoria / via Acton.
 
 ### Il drone
 
@@ -115,30 +119,32 @@ Napoli ospita l'**America's Cup nel 2027**. Raccontiamo un sabato di festa, **se
 
 - **Sala operativa:** console a schermo intero nel terminale (`sala.py`), niente webapp. Mostra:
   - i messaggi tra agenti ("chi dice cosa a chi");
-  - lo stato dei semafori;
   - la folla per zona;
-  - i KPI con e senza agenti.
+  - le misure vere del badge e della scheda Tasmota (pannello "Sensori reali");
+  - i semafori simulati e i KPI del gemello con e senza agenti.
 
   L'operatore può approvare o bloccare le decisioni.
 - **Cittadini e turisti:** WhatsApp tramite una **skill OpenClaw** che chiama l'API HTTP della città (`/chiedi`). In alternativa `strumenti/chat.py` da terminale.
-- **La giuria dentro la demo:** un QR sul plastico apre la chat. *"Sei un crocerista sbarcato alle 10, hai 6 ore."*
+- **La giuria dentro la demo:** il gruppo WhatsApp con TwinCIRO. *"Sei un crocerista sbarcato alle 10, hai 6 ore."*
 
-## Topic MQTT (contratto tra agenti, firmware e strumenti)
+## Topic MQTT (contratto tra agenti, dispositivi e strumenti)
 
-Tutti i messaggi sono JSON. Il prefisso è `napoli/`.
+Tutti i messaggi sono JSON. Il prefisso è `napoli/`. Per i dispositivi veri il formato completo (zone ammesse, campi, utenti del broker) è in [`../firmware/README.md`](../firmware/README.md#formato-mqtt-unico).
 
 | Topic | Chi pubblica | Contenuto |
 |---|---|---|
 | `napoli/orologio` | avvio | ora simulata `{"ora": "14:05", "t": 50700}` |
 | `napoli/meteo` | Meteo&Mare | vento, raffiche, onde, temperatura, `regata_ok` |
 | `napoli/eventi/previsioni` | Eventi | flussi attesi per zona e fascia oraria |
-| `napoli/eventi/manuale` | pulsanti ESP32 | `{"evento": "nave_arrivata"}` e simili |
-| `napoli/sensori/<nodo>/<grandezza>` | ESP32 | `{"valore": 12}` (conteggi, temperatura, ...) |
-| `napoli/folla/<zona>` | Folla | `{"persone": 4200, "livello": "alto", "fonte": [...]}` |
+| `napoli/eventi/manuale` | operatore (`strumenti/operatore.py`, `POST /evento`) | `{"evento": "pullman", "veicoli": 25}` e simili |
+| `napoli/sensori/<id>/<grandezza>` | badge WHY2025, Tasmota | `{"zona": "rotonda_diaz", "valore": 21.5}`; grandezze `temperatura`, `umidita`, `luce`, `pressione`, `persone` (con `"moltiplicatore"`) |
+| `napoli/nodi/<id>/stato` | badge, Tasmota (trattenuto; last will `{"online": false}`) | `{"online": true, "ruolo": "badge", "zona", "versione", "ip", "rssi"}`; per Tasmota l'offline arriva su `napoli/nodi/<id>/tele/LWT` |
+| `napoli/nodi/<id>/cmd` | operatore → badge | testo sullo schermo, cambio di zona, azzera (vedi il README del badge) |
+| `napoli/folla/<zona>` | Folla | `{"persone": 4200, "livello": "alto", "fonti": [...]}`, trattenuto; tra le fonti "contapersone badge (reale)" quando conta il badge |
 | `napoli/drone/richieste` | Orchestratore | `{"zona": "mergellina", "motivo": "..."}` |
 | `napoli/drone/osservazioni` | strumento drone | `{"zona": ..., "persone_stimate": ..., "foto": ...}` |
 | `napoli/semafori/piano` | Traffico | pesi per corridoio e onde verdi |
-| `napoli/semafori/<incrocio>/stato` | gemello | `{"fase": "verde"|"giallo"|"rosso", "direzione": "ns"|"eo"}` → letto dagli ESP32 |
+| `napoli/semafori/<incrocio>/stato` | gemello | `{"a": "verde", "b": "rosso", "nome": "..."}` (simulato, per sala e API) |
 | `napoli/kpi` | gemello | KPI con e senza agenti |
 | `napoli/imprese/offerte` | Imprese | disponibilità e offerte |
 | `napoli/imprese/<id>/richieste` · `.../risposte` | assistenti ↔ imprese | prenotazioni e controproposte |
@@ -153,27 +159,51 @@ c5-agentic-city/
   avvia.py                  # avvia città, agenti e gemello (bus in memoria o MQTT)
   citta/
     bus.py                  # bus in memoria o MQTT, stessa interfaccia
-    llm/                    # provider intercambiabili: claude.py, codex.py (+ regole senza LLM)
+    llm/                    # provider intercambiabili: claude.py, codex.py, compatibile.py (API compatibili OpenAI, es. MIIA), più le regole senza LLM
     agenti/                 # meteo, eventi, folla, traffico, turismo, imprese, orchestratore, assistente
     gemello/                # SUMO: domanda di traffico, controllo semafori, KPI
     api.py                  # HTTP per la skill OpenClaw (/chiedi, /stato)
+    sensori.py              # misure vere del badge e di Tasmota (per la sala e /stato)
     sala.py                 # console della sala operativa
   dati/                     # scenario, luoghi, imprese, rete stradale SUMO
-  strumenti/                # chat.py, drone_osserva.py, confronto.py (KPI senza GUI)
-  firmware/twinciro-nodo/   # firmware unico dei nodi ESP32 (ruolo semaforo o sensore scelto dal portale Wi-Fi)
-  flasher/                  # pagina web per installare il firmware dal browser (ESP Web Tools)
-  openclaw/skills/          # skill di CiroGPT: città + fonti aperte di Napoli
+  docker/                   # configurazione del Mosquitto locale (compose.yaml)
+  strumenti/                # chat.py, operatore.py, drone_osserva.py, taratura.py, video (video_demo.py, video3d/)
+  visore3d/                 # Napoli 3D navigabile nel browser
+  media/                    # video e immagini della simulazione
+  openclaw/skills/          # skill di TwinCIRO: città, dati reali (citta-api) e riserva (fonti aperte)
 ```
 
-È tutto in questa cartella. Il bus e il firmware sono scritti per poter essere spostati in `shared/` se servono anche a C2.
+Fuori da questa cartella: il firmware dei dispositivi veri ([`../firmware/`](../firmware/README.md)), l'API dati città usata da TwinCIRO ([`../citta-api/`](../citta-api/README.md)) e il video di consegna ([`../c5-presentazione/`](../c5-presentazione/README.md)).
 
 ## LLM
 
-- I provider sono intercambiabili e si scelgono con `--llm`:
+- I provider sono intercambiabili e si scelgono con `--llm` (o con la variabile `C5_LLM`):
   - `claude`: SDK Anthropic, legge `ANTHROPIC_API_KEY`;
   - `codex`: CLI `codex exec` con l'abbonamento ChatGPT;
+  - `compatibile` (alias `miia`): qualsiasi LLM dietro un'API Chat Completions compatibile con OpenAI (vLLM, SGLang, Ollama, LM Studio, LiteLLM, piattaforme aziendali o on-premise), configurato solo con variabili d'ambiente (`citta/llm/compatibile.py`, solo libreria standard). È la strada per **MIIA**, l'LLM italiano di Fastweb + Vodafone: [sotto](#miia-di-fastweb--vodafone);
   - `regole`: nessun LLM, decisioni a regole. Serve per provare tutto senza chiavi e come piano B in demo.
+- `auto`, il predefinito: l'API compatibile se c'è `C5_LLM_URL`, poi Claude se c'è `ANTHROPIC_API_KEY`, poi Codex se c'è la CLI, altrimenti le regole.
 - Gli agenti chiedono all'LLM **JSON strutturato**: decisione + motivazione leggibile. La motivazione è quella mostrata in sala.
+- Se l'LLM non risponde o risponde male (rete assente, timeout, JSON senza un campo obbligatorio), l'agente decide con le regole: la demo non resta appesa.
+
+### MIIA di Fastweb + Vodafone
+
+**[FastwebMIIA-7B su Hugging Face](https://huggingface.co/Fastweb/FastwebMIIA-7B)**: il modello italiano di Fastweb + Vodafone (7,4 miliardi di parametri, architettura Mistral, italiano e inglese, contesto di 16k token), addestrato su un corpus soprattutto italiano. Il repository è pubblico, ma i file si scaricano dopo aver accettato la licenza, che è **non commerciale** (ricerca, didattica, uso interno): per un servizio vero serve la licenza commerciale di Fastweb.
+
+Come collegarlo alla città:
+
+1. servirlo con un'API compatibile con OpenAI, come indica la sua pagina su Hugging Face (servono l'accesso al modello e una GPU):
+   ```bash
+   vllm serve Fastweb/FastwebMIIA-7B          # risponde su http://<host>:8000/v1
+   ```
+2. avviare la città con il provider `miia`:
+   ```bash
+   C5_LLM=miia C5_LLM_URL=http://<host>:8000/v1 C5_LLM_MODELLO=Fastweb/FastwebMIIA-7B python avvia.py
+   ```
+
+All'avvio una riga dice host, modello e se la chiave c'è (mai la chiave). Nella sala e tra le fonti il provider si chiama sempre "compatibile", anche con l'alias `miia`: così nessuna ripresa può far passare per MIIA un altro modello.
+
+**Stato:** provato con un server di prova (57 prove: gli schemi JSON degli agenti, risposte sporche, errori e pause) e con un server vero, llama.cpp con un modello aperto piccolo, anche con la città intera che risponde a `/chiedi` passando dall'LLM. **Non ancora con MIIA**: né servito in proprio né da un'API di Fastweb + Vodafone (se quell'API vuole un header diverso da `Authorization: Bearer`, `compatibile.py` va adattato).
 
 ## Fonti dati
 
@@ -258,10 +288,10 @@ python avvia.py --llm regole              # tutto in un processo, senza chiavi, 
 
 | Opzione | Cosa fa |
 |---|---|
-| `--llm claude` / `codex` / `regole` | provider degli agenti. `auto` (default) usa Claude se c'è `ANTHROPIC_API_KEY`, altrimenti Codex se c'è la CLI, altrimenti le regole |
+| `--llm claude` / `codex` / `compatibile` (alias `miia`) / `regole` | provider degli agenti ([LLM](#llm)). Senza `--llm` vale la variabile `C5_LLM`, altrimenti `auto`: l'API compatibile se c'è `C5_LLM_URL`, poi Claude se c'è `ANTHROPIC_API_KEY`, poi Codex se c'è la CLI, altrimenti le regole |
 | `--velocita 20` | secondi simulati per secondo reale. Con 20, la giornata di 7,5 ore dura circa 22 minuti; con 0 va al massimo |
 | `--inizio 13:45 --fine 15:30` | finestra della demo |
-| `--broker localhost` | bus MQTT (serve Mosquitto) per gli ESP32 del plastico |
+| `--broker localhost` (o `host:porta`) | bus MQTT (serve Mosquitto): così arrivano le misure vere del badge e di Tasmota. Per il broker del team servono `C5_MQTT_UTENTE` e `C5_MQTT_PASSWORD` ([sotto](#collegarsi-al-broker-del-team)) |
 | `--gui` | apre `sumo-gui` sulla simulazione con agenti, da mettere sul secondo schermo |
 | `--approvazione` | le decisioni dell'orchestratore aspettano l'operatore (`strumenti/operatore.py approva D3`) |
 | `--meteo reale` | dati di oggi da Open-Meteo |
@@ -271,6 +301,7 @@ python avvia.py --llm regole              # tutto in un processo, senza chiavi, 
 Variabili per l'LLM:
 - Claude: `ANTHROPIC_API_KEY`, `C5_MODELLO` (default `claude-opus-5-5`), `C5_EFFORT` (default `low`).
 - Codex: `C5_CODEX_ARGS`.
+- Compatibile con OpenAI (`C5_LLM=compatibile`, alias `miia`): `C5_LLM_URL` (indirizzo base, es. `https://<host>/v1`; va bene anche quello completo con `/chat/completions`), `C5_LLM_MODELLO` (senza: il primo modello di `GET /models`), `C5_LLM_CHIAVE` (mandata come `Authorization: Bearer`, solo dall'ambiente: mai nei file né nei log), `C5_LLM_TIMEOUT` (secondi per richiesta, default 60), `C5_LLM_PARALLELE` (richieste contemporanee, default 4), `C5_LLM_MAX_TOKEN` (default 2000; 0 = non mandarlo), `C5_LLM_PAUSA` (secondi con le sole regole dopo un errore di rete o del server, default 60). Esempio con MIIA: [sopra](#miia-di-fastweb--vodafone).
 
 Altri strumenti, mentre `avvia.py` è acceso:
 
@@ -287,12 +318,58 @@ python strumenti/drone_osserva.py foto --zona castel_ovo --file frame.jpg --scal
 ```
 
 ```bash
-python strumenti/operatore.py evento pullman --veicoli 25   # come il pulsante sul plastico
+python strumenti/operatore.py evento pullman --veicoli 25   # evento manuale: arriva un pullman
 ```
 
 ```bash
 python -m citta.sala --broker localhost                     # sala su un altro PC (con MQTT)
 ```
+
+### Provare le misure vere senza i dispositivi
+
+Con un Mosquitto locale (`docker compose up -d mosquitto`) e la città su MQTT (`python avvia.py --broker localhost --senza-gemello`), si fingono un badge e la sua lettura (zona tra quelle di `dati/scenario_regata.json`):
+
+```bash
+docker compose exec mosquitto mosquitto_pub -r -t napoli/nodi/badge-prova/stato -m '{"online":true,"ruolo":"badge","zona":"castel_ovo","versione":"prova"}'
+docker compose exec mosquitto mosquitto_pub -t napoli/sensori/badge-prova/temperatura -m '{"zona":"castel_ovo","valore":21.5}'
+curl -s localhost:8080/stato | python3 -m json.tool | grep -A 12 '"sensori"'
+```
+
+La sala mostra il pannello "Sensori reali" e Meteo&Mare dice la temperatura in dialogo. Il broker del team invece vuole utente e password: sezione qui sotto.
+
+### Collegarsi al broker del team
+
+Il broker del team ([`../cloud/mqtt/`](../cloud/mqtt/README.md), MQTT in chiaro sulla 1883 di `twinciro.robertodisanto.it`) vuole utente e password. La città entra con l'utente **`c5`**, che legge e scrive `napoli/#`. La password di `c5` è quella stampata da `cloud/mqtt/scripts/inizializza.sh` alla prima installazione (sul server resta in `cloud/mqtt/segreti/credenziali-iniziali.txt`). Utente e password si danno con le variabili `C5_MQTT_UTENTE` e `C5_MQTT_PASSWORD`, mai scritte nei file; senza le due variabili il collegamento è anonimo, come al Mosquitto locale.
+
+- **La città gira sul server stesso** (il broker è sulla stessa macchina):
+
+  ```bash
+  C5_MQTT_UTENTE=c5 C5_MQTT_PASSWORD=... python avvia.py --broker localhost:1883
+  ```
+
+- **La città gira su un portatile**:
+
+  ```bash
+  C5_MQTT_UTENTE=c5 C5_MQTT_PASSWORD=... python avvia.py --broker twinciro.robertodisanto.it:1883
+  ```
+
+  La sala su un altro PC si collega allo stesso modo: `python -m citta.sala --broker twinciro.robertodisanto.it:1883`, con le stesse variabili.
+
+Per non lasciare la password nella cronologia della shell: `read -rs C5_MQTT_PASSWORD && export C5_MQTT_PASSWORD`, poi i comandi senza `C5_MQTT_PASSWORD=...`.
+
+All'avvio la città scrive `[bus] collegato al broker ... con utente c5` (mai la password). Con utente o password sbagliati si ferma subito con un errore chiaro (`il broker ... rifiuta utente o password`); se il broker non risponde riprova per circa un minuto, dicendolo, poi si ferma. Se il collegamento cade mentre la città gira, si ricollega da sola e lo scrive.
+
+**Con Docker** (`compose.yaml`): `C5_BROKER` sceglie il broker e `--no-deps` lascia spento il Mosquitto locale (sul server occuperebbe la 1883 del broker del team). Dal container il broker sul server stesso si raggiunge come `host.docker.internal:1883`; da un portatile si usa `twinciro.robertodisanto.it:1883`.
+
+```bash
+export C5_BROKER=host.docker.internal:1883 C5_MQTT_UTENTE=c5    # più C5_MQTT_PASSWORD, come sopra
+docker compose up -d --no-deps citta
+docker compose run --rm --no-deps sala
+```
+
+Le tre variabili si possono anche mettere in `c5-agentic-city/.env` (ignorato da git, `chmod 600`): compose lo legge da solo.
+
+Provato il 14/11 con una copia di `cloud/mqtt` in Docker (stesse ACL, porta di prova): la città entra come `c5`; un utente `badge-prova` pubblica stato e contapersone, e `/stato`, la sala e la Folla li vedono; provati anche password sbagliata, riavvio del broker e città e sala in compose con `host.docker.internal`. Sul server vero non ancora.
 
 ## Con Docker
 
@@ -309,12 +386,13 @@ docker compose run --rm sala         # sala operativa a schermo intero nel termi
 docker compose logs -f citta         # dialogo tra agenti a righe
 ```
 
-- **Chiavi e opzioni** si prendono dall'ambiente della macchina, mai scritte nei file: `ANTHROPIC_API_KEY`, `C5_LLM`, `C5_MODELLO`, `C5_API_TOKEN`, `C5_VELOCITA` (default 20), `C5_INIZIO` (default 13:00), `C5_METEO`.
-- **Gli ESP32** si collegano al broker sulla porta 1883 del portatile.
+- **Chiavi e opzioni** si prendono dall'ambiente della macchina, mai scritte nei file: `ANTHROPIC_API_KEY`, `C5_LLM`, `C5_MODELLO`, `C5_LLM_URL`, `C5_LLM_MODELLO`, `C5_LLM_CHIAVE` (LLM compatibile, es. MIIA; vuote: non usato), `C5_API_TOKEN`, `C5_VELOCITA` (default 20), `C5_INIZIO` (default 13:00), `C5_METEO`; per il broker `C5_BROKER` (default `mosquitto`, il Mosquitto locale), `C5_MQTT_UTENTE` e `C5_MQTT_PASSWORD` (vuote: anonimo).
+- **Il Mosquitto di compose** (porta 1883, senza password) serve per le prove in locale: il badge e la scheda Tasmota in evento usano il broker del team ([`../firmware/README.md`](../firmware/README.md#broker)). Per collegare la città a quel broker: [Collegarsi al broker del team](#collegarsi-al-broker-del-team).
 - **Fine giornata**: alla fine della giornata simulata il servizio `citta` riparte da capo (`restart: unless-stopped`).
 - **Cosa resta fuori**:
   - `sumo-gui` (`--gui`) gira solo fuori da Docker, sul portatile con lo schermo;
   - Codex (`--llm codex`) richiede la CLI installata.
+- **LLM compatibile dal container:** un server LLM sulla stessa macchina (vLLM, llama.cpp…) si raggiunge come `host.docker.internal`, non `127.0.0.1`: per esempio `C5_LLM_URL=http://host.docker.internal:8000/v1`.
 
 Provato: costruzione dell'immagine, città + Mosquitto su MQTT, API (`/stato`, `/chiedi` con negoziazione con la pizzeria), sala in container.
 
@@ -360,18 +438,17 @@ strumenti/video3d/fai_video.sh 13:35 14:50 media/regata_3d.mp4
 
 Servono Node con Playwright e Chromium. Lo script scarica da solo l'estratto OSM e deck.gl. Senza GPU va a circa un fotogramma al secondo, cioè 40 minuti per la regata.
 
-## La demo (4 minuti)
+## La demo
 
-1. **Il gancio** (30 s): *"Napoli 2027, America's Cup. Un sabato con due navi, la regata e la partita. Oggi ogni servizio fa da sé: noi li facciamo parlare."*
-2. **La sala** (60 s): `avvia.py --inizio 13:40 --velocita 15`.
-   - Eventi annuncia la regata, Traffico dà priorità al lungomare e i semafori del plastico cambiano.
-   - Folla vede Castel dell'Ovo che si riempie e l'orchestratore chiede il drone.
-3. **Il drone** (45 s): il pilota fa un volo sul plastico e manda il frame. Il modello conta, la stima si aggiorna e l'orchestratore sposta la folla con un'offerta della friggitoria o del bar al Vomero.
-4. **La giuria gioca** (60 s): il QR apre WhatsApp. *"Siamo 4 croceristi, vogliamo una pizza vicino al Castel dell'Ovo alle 13:30."*
+La consegna è il **video di massimo 3 minuti** ([`../c5-presentazione/`](../c5-presentazione/README.md)). La live demo è facoltativa:
+
+1. **Il gancio**: *"Napoli 2027, America's Cup. Un sabato con due navi, la regata e la partita. Oggi ogni servizio fa da sé: noi li facciamo parlare."*
+2. **TwinCIRO su WhatsApp** (il pezzo centrale): *"Siamo 4 croceristi, vogliamo una pizza vicino al Castel dell'Ovo alle 13:30."*
    - L'assistente negozia con la pizzeria: "pieni, alle 14:00 sì".
    - Il giurato risponde "ok" e la prenotazione è confermata.
-5. **I numeri** (30 s): il pannello KPI con e senza agenti, poi la scoperta sui consigli non coordinati.
-6. **Il riflesso** (15 s): si stacca il portatile. I semafori del plastico passano al ciclo locale coordinato in ESP-NOW: *"se cade la rete la città non si ferma"*.
+3. **La sala**: `avvia.py --broker <broker> --inizio 13:40 --velocita 15`. Eventi annuncia la regata, Folla vede Castel dell'Ovo che si riempie, l'orchestratore sposta la folla con un'offerta della friggitoria o del bar al Vomero.
+4. **Il badge**: qualche giro di rotella SU e la folla della zona sale nella stima; nel pannello "Sensori reali" arrivano le misure vere del badge e della scheda Tasmota.
+5. **I numeri** (breve): i KPI del gemello con e senza agenti.
 
 ## Stato
 
@@ -382,14 +459,16 @@ Servono Node con Playwright e Chromium. Lo script scarica da solo l'estratto OSM
 - [x] Assistenti personali con negoziazione con le imprese, API HTTP, skill OpenClaw
 - [x] Sala operativa in console
 - [x] Strumento drone (stima manuale o conteggio da foto con Claude)
-- [x] Firmware ESP32 (semaforo con riflessi ESP-NOW, sensore di passaggio): compila, da provare su hardware
+- [x] Misure vere del badge WHY2025 e di Tasmota nella città (Folla, Meteo&Mare, sala, `/stato`): provate con Mosquitto locale e messaggi finti
 
 Da fare:
 - [x] Taratura dei pesi dei corridoi (verificata su 4 semi).
 - [ ] Controllo semaforico più evoluto (oggi semplice: estende il verde dove c'è coda).
 - [ ] Provare con un LLM vero: Claude (chiave del team) e Codex (verificare i flag di `codex exec`).
-- [ ] Provare il firmware su hardware (flasher web) e caricare su CiroGPT le skill delle fonti.
-- [ ] Costruire il plastico.
+- [x] Provider `compatibile` (alias `miia`) per le API compatibili con OpenAI: provato con un server di prova e con llama.cpp.
+- [ ] Provare il provider `compatibile` con MIIA vero (accesso al modello su Hugging Face e una GPU, oppure un'API di Fastweb + Vodafone).
+- [ ] Provare la città con il badge e la scheda Tasmota veri sul broker del team. Il collegamento con utente e password c'è (`C5_MQTT_UTENTE`, `C5_MQTT_PASSWORD`), provato con una copia del broker in Docker: [Collegarsi al broker del team](#collegarsi-al-broker-del-team).
+- [ ] Caricare sull'agente OpenClaw di TwinCIRO `napoli-citta-dati` e `napoli-fonti-riserva` (e togliere le 6 skill delle fonti di prima, se erano state caricate).
 - [ ] Integrare i dati del Comune.
 - [ ] Preparare il video di riserva del drone.
 - [x] Video della simulazione (`media/demo_gemello.mp4`) e immagine Docker con compose.

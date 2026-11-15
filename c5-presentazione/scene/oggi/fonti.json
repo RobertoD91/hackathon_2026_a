@@ -1,0 +1,474 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/fonti",
+  "formato": "json",
+  "http": 200,
+  "risposta": {
+    "ora": "2026-11-14 19:30",
+    "fonti": [
+      {
+        "id": "meteo",
+        "dato": "Meteo per luogo",
+        "catena_delle_riserve": "Open-Meteo ICON-2I → Open-Meteo predefinito → MET Norway (un punto) → ultimo dato salvato",
+        "stato": "reale",
+        "nome": "Open-Meteo (modello ICON-2I di ItaliaMeteo-ARPAE)",
+        "url": "https://open-meteo.com/",
+        "licenza": "CC BY 4.0",
+        "ora_dato": "2026-11-14 19:30",
+        "letto_alle": "2026-11-14 19:30",
+        "durata_ms": 152,
+        "nota": "previsione per l'ora corrente, griglia di 2,2 km",
+        "cache_min": 15,
+        "richieste_ricevute": 10,
+        "letture_fatte": 1
+      },
+      {
+        "id": "aria_modello",
+        "dato": "Qualità dell'aria, modello",
+        "catena_delle_riserve": "Open-Meteo Air Quality (Copernicus CAMS) → ultimo dato salvato",
+        "stato": "reale",
+        "nome": "Open-Meteo Air Quality (Copernicus CAMS)",
+        "url": "https://open-meteo.com/en/docs/air-quality-api",
+        "licenza": "CC BY 4.0, dati Copernicus",
+        "ora_dato": "2026-11-14 19:00",
+        "letto_alle": "2026-11-14 19:30",
+        "durata_ms": 551,
+        "nota": "modello di fondo regionale (celle di circa 11 km)",
+        "cache_min": 60,
+        "richieste_ricevute": 4,
+        "letture_fatte": 1
+      },
+      {
+        "id": "aria_centraline",
+        "dato": "Qualità dell'aria, centraline ARPAC",
+        "catena_delle_riserve": "EEA, misure orarie non validate (snapshot)",
+        "stato": "snapshot",
+        "nome": "Centraline ARPAC via EEA (dati orari non validati)",
+        "url": "https://eeadmz1-downloads-webapp.azurewebsites.net/",
+        "licenza": "riuso con citazione EEA",
+        "ora_dato": "2026-11-14 15:00",
+        "letto_alle": "2026-11-14 19:30",
+        "durata_ms": 6,
+        "nota": "misure orarie non validate, salvate con lo script degli snapshot",
+        "cache_min": 360,
+        "richieste_ricevute": 4,
+        "letture_fatte": 1
+      },
+      {
+        "id": "allerta",
+        "dato": "Allerta meteo regionale e Meteoalarm",
+        "catena_delle_riserve": "Centro Funzionale Campania dal vivo → ultimo avviso salvato; Meteoalarm dallo snapshot",
+        "stato": "reale",
+        "nome": "Protezione Civile Regione Campania, Centro Funzionale",
+        "url": "https://centrofunzionale.regione.campania.it/",
+        "licenza": "© Regione Campania, citata come fonte",
+        "ora_dato": "2026-11-14 19:30",
+        "letto_alle": "2026-11-14 19:30",
+        "durata_ms": 1316,
+        "nota": "senza avvisi in vigore",
+        "cache_min": 20,
+        "richieste_ricevute": 4,
+        "letture_fatte": 1
+      },
+      {
+        "id": "terremoti",
+        "dato": "Terremoti dei Campi Flegrei",
+        "catena_delle_riserve": "INGV dal vivo → snapshot",
+        "stato": "reale",
+        "nome": "INGV, terremoti",
+        "url": "https://terremoti.ingv.it/",
+        "licenza": "CC BY 4.0",
+        "ora_dato": "2026-11-13 08:22",
+        "letto_alle": "2026-11-14 19:30",
+        "durata_ms": 585,
+        "nota": null,
+        "cache_min": 30,
+        "richieste_ricevute": 4,
+        "letture_fatte": 1
+      },
+      {
+        "id": "trasporti",
+        "dato": "Linee, stazioni e corse programmate",
+        "catena_delle_riserve": "GTFS ANM ed EAV (snapshot)",
+        "stato": "programmato",
+        "nome": "GTFS ANM ed EAV (orari programmati)",
+        "url": "https://mobilitydatabase.org/",
+        "licenza": "ANM: CC BY 4.0 (Comune di Napoli); EAV: citata",
+        "ora_dato": "2026-11-14 08:40",
+        "letto_alle": "2026-11-14 19:30",
+        "durata_ms": 4,
+        "nota": "corse programmate, non in tempo reale",
+        "cache_min": 360,
+        "richieste_ricevute": 10,
+        "letture_fatte": 1
+      },
+      {
+        "id": "passaggi",
+        "dato": "Prossimi passaggi (metro, funicolari, treni)",
+        "catena_delle_riserve": "Transitous dal vivo, a richiesta → orario programmato GTFS",
+        "stato": "reale",
+        "nome": "Transitous (prossimi passaggi)",
+        "url": "https://transitous.org/sources/",
+        "licenza": "servizio comunitario per progetti open source non commerciali",
+        "ora_dato": "2026-11-14 19:30",
+        "letto_alle": "2026-11-14 19:30",
+        "durata_ms": 1065,
+        "nota": "orari programmati (nessun dato in tempo reale per questa fermata)",
+        "cache_min": 1,
+        "richieste_ricevute": 8,
+        "letture_fatte": 3
+      },
+      {
+        "id": "avvisi",
+        "dato": "Avvisi treni EAV (guasti, scioperi, ascensori)",
+        "catena_delle_riserve": "EAV dal vivo",
+        "stato": "reale",
+        "nome": "EAV, infomobilità",
+        "url": "https://www.eavsrl.it/",
+        "licenza": "contenuti del sito EAV, citati",
+        "ora_dato": "2026-11-14 11:58",
+        "letto_alle": "2026-11-14 19:30",
+        "durata_ms": 1197,
+        "nota": null,
+        "cache_min": 15,
+        "richieste_ricevute": 6,
+        "letture_fatte": 1
+      },
+      {
+        "id": "traffico",
+        "dato": "Traffico su tangenziale e autostrade",
+        "catena_delle_riserve": "Autostrade per l'Italia dal vivo (il traffico urbano non ha dati aperti)",
+        "stato": "reale",
+        "nome": "Autostrade per l'Italia, viabilità",
+        "url": "https://viabilita.autostrade.it/",
+        "licenza": "© Autostrade per l'Italia: dato di contesto citato",
+        "ora_dato": "2026-11-14 19:30",
+        "letto_alle": "2026-11-14 19:30",
+        "durata_ms": 989,
+        "nota": "nessun evento in corso nell'area di Napoli",
+        "cache_min": 5,
+        "richieste_ricevute": 2,
+        "letture_fatte": 1
+      },
+      {
+        "id": "eventi",
+        "dato": "Eventi, partite, navi da crociera, America's Cup",
+        "catena_delle_riserve": "snapshot + calendario Serie A dal vivo (openfootball)",
+        "stato": "snapshot",
+        "nome": "Comune di Napoli, openfootball, Cruise Timetables, America's Cup",
+        "url": "https://www.comune.napoli.it/",
+        "licenza": "Comune: CC BY 4.0; openfootball: CC0; altre citate",
+        "ora_dato": "2026-11-14 19:29",
+        "letto_alle": "2026-11-14 19:30",
+        "durata_ms": 74,
+        "nota": "snapshot, partite di Serie A aggiornate dal vivo (openfootball)",
+        "cache_min": 360,
+        "richieste_ricevute": 4,
+        "letture_fatte": 1
+      },
+      {
+        "id": "riferimenti",
+        "dato": "Visitatori, stagionalità, porto, mare, affitti brevi",
+        "catena_delle_riserve": "snapshot",
+        "stato": "snapshot",
+        "nome": "Comune di Napoli, ISTAT, Wikidata, Inside Airbnb, EEA, AdSP",
+        "url": "https://dati.comune.napoli.it/",
+        "licenza": "CC BY 4.0 / CC0 / citate",
+        "ora_dato": "2026-11-14 08:47",
+        "letto_alle": "2026-11-14 19:30",
+        "durata_ms": 4,
+        "nota": null,
+        "cache_min": 360,
+        "richieste_ricevute": 2,
+        "letture_fatte": 1
+      },
+      {
+        "id": "folla",
+        "dato": "Folla stimata per luogo",
+        "catena_delle_riserve": "simulatore della demo (citta-api/simulatore/sim-config.json) + eventi reali di oggi + stagionalità ISTAT",
+        "stato": "simulato",
+        "nome": "Simulatore della demo",
+        "url": null,
+        "licenza": "stima dichiarata",
+        "ora_dato": "2026-11-14 19:30",
+        "nota": "le presenze da rete mobile non sono pubbliche: vanno chieste a Fastweb + Vodafone"
+      }
+    ],
+    "rete": [
+      {
+        "dominio": "autostrade.it",
+        "richieste": 1,
+        "ok": 1,
+        "errori": 0,
+        "non_inviate_per_pausa": 0,
+        "ultima": {
+          "ts": "2026-11-14 19:30",
+          "url": "https://viabilita.autostrade.it/json/eventi.json",
+          "esito": "HTTP 200"
+        },
+        "in_pausa_fino": null,
+        "motivo_pausa": null
+      },
+      {
+        "dominio": "campania.it",
+        "richieste": 2,
+        "ok": 2,
+        "errori": 0,
+        "non_inviate_per_pausa": 0,
+        "ultima": {
+          "ts": "2026-11-14 19:30",
+          "url": "https://centrofunzionale.regione.campania.it/CentroFunzionalePortaleRest/rest/bollettinometeo/findAllertaDomaniNew",
+          "esito": "HTTP 200"
+        },
+        "in_pausa_fino": null,
+        "motivo_pausa": null
+      },
+      {
+        "dominio": "eavsrl.it",
+        "richieste": 1,
+        "ok": 1,
+        "errori": 0,
+        "non_inviate_per_pausa": 0,
+        "ultima": {
+          "ts": "2026-11-14 19:30",
+          "url": "https://www.eavsrl.it/wp-json/wp/v2/posts",
+          "esito": "HTTP 200"
+        },
+        "in_pausa_fino": null,
+        "motivo_pausa": null
+      },
+      {
+        "dominio": "githubusercontent.com",
+        "richieste": 1,
+        "ok": 1,
+        "errori": 0,
+        "non_inviate_per_pausa": 0,
+        "ultima": {
+          "ts": "2026-11-14 19:30",
+          "url": "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/it.1.json",
+          "esito": "HTTP 200"
+        },
+        "in_pausa_fino": null,
+        "motivo_pausa": null
+      },
+      {
+        "dominio": "ingv.it",
+        "richieste": 1,
+        "ok": 1,
+        "errori": 0,
+        "non_inviate_per_pausa": 0,
+        "ultima": {
+          "ts": "2026-11-14 19:30",
+          "url": "https://webservices.ingv.it/fdsnws/event/1/query",
+          "esito": "HTTP 200"
+        },
+        "in_pausa_fino": null,
+        "motivo_pausa": null
+      },
+      {
+        "dominio": "open-meteo.com",
+        "richieste": 2,
+        "ok": 2,
+        "errori": 0,
+        "non_inviate_per_pausa": 0,
+        "ultima": {
+          "ts": "2026-11-14 19:30",
+          "url": "https://air-quality-api.open-meteo.com/v1/air-quality",
+          "esito": "HTTP 200"
+        },
+        "in_pausa_fino": null,
+        "motivo_pausa": null
+      },
+      {
+        "dominio": "transitous.org",
+        "richieste": 5,
+        "ok": 5,
+        "errori": 0,
+        "non_inviate_per_pausa": 0,
+        "ultima": {
+          "ts": "2026-11-14 19:30",
+          "url": "https://api.transitous.org/api/v1/stoptimes",
+          "esito": "HTTP 200"
+        },
+        "in_pausa_fino": null,
+        "motivo_pausa": null
+      }
+    ],
+    "snapshot": {
+      "trasporti": {
+        "generato": "2026-11-14 08:40",
+        "fonti": [
+          {
+            "nome": "GTFS ANM (metro L1, L6, L2 e funicolari)",
+            "ente": "ANM / Comune di Napoli",
+            "licenza": "CC BY 4.0 (dataset del Comune di Napoli su dati.gov.it)",
+            "stato": "ok"
+          },
+          {
+            "nome": "GTFS EAV (Cumana, Circumflegrea, Circumvesuviana, Metrocampania)",
+            "ente": "EAV srl",
+            "licenza": "non indicata dal fornitore (citare EAV)",
+            "stato": "ok"
+          },
+          {
+            "nome": "Transitous: fermate (id per i prossimi passaggi)",
+            "ente": "Transitous (comunità, MOTIS)",
+            "licenza": "servizio gratuito per progetti open source non commerciali; dati delle aziende di trasporto",
+            "stato": "ok"
+          }
+        ]
+      },
+      "aria": {
+        "generato": "2026-11-14 19:29",
+        "fonti": [
+          {
+            "nome": "Anagrafica delle stazioni di qualità dell'aria",
+            "ente": "European Environment Agency",
+            "licenza": "riuso libero con citazione dell'EEA",
+            "stato": "ok"
+          },
+          {
+            "nome": "Dati orari aggiornati (E2a, non validati) delle centraline ARPAC dell'area di Napoli",
+            "ente": "EEA, dati trasmessi da ARPA Campania tramite ISPRA",
+            "licenza": "riuso libero con citazione dell'EEA; dati E2a non validati",
+            "stato": "ok"
+          }
+        ]
+      },
+      "eventi": {
+        "generato": "2026-11-14 19:29",
+        "fonti": [
+          {
+            "nome": "Eventi del Comune di Napoli",
+            "ente": "Comune di Napoli",
+            "licenza": "CC BY 4.0 (note legali del sito); immagini escluse",
+            "stato": "ok"
+          },
+          {
+            "nome": "Calendario Serie A 2026/27 (partite in casa del Napoli)",
+            "ente": "openfootball",
+            "licenza": "CC0 1.0 (pubblico dominio)",
+            "stato": "ok"
+          },
+          {
+            "nome": "Prossima partita del Napoli (anche coppe)",
+            "ente": "TheSportsDB",
+            "licenza": "termini TheSportsDB (chiave pubblica di prova, citare la fonte)",
+            "stato": "ok"
+          },
+          {
+            "nome": "Calendario degli scali delle navi da crociera a Napoli",
+            "ente": "Cruise Timetables (fonte privata, non ufficiale)",
+            "licenza": "proprietaria: citata come fonte in una demo non commerciale",
+            "stato": "ok"
+          },
+          {
+            "nome": "Calendario America's Cup 2027 (Napoli)",
+            "ente": "America's Cup Event",
+            "licenza": "contenuto del sito ufficiale, senza licenza dichiarata: citato come fonte",
+            "stato": "ok"
+          }
+        ]
+      },
+      "riferimenti": {
+        "generato": "2026-11-14 08:47",
+        "fonti": [
+          {
+            "nome": "Visitatori mensili dei siti culturali comunali",
+            "ente": "Comune di Napoli (dati.comune.napoli.it)",
+            "licenza": "CC BY 4.0",
+            "stato": "precedente",
+            "errore": "https://dati.comune.napoli.it/api/3/action/package_search: curl: Command failed: curl -sS -L --compressed -X GET -o - -w ",
+            "dato_del": "2026-11-14T01:38:35.833Z"
+          },
+          {
+            "nome": "Arrivi e presenze turistiche mensili, provincia di Napoli",
+            "ente": "ISTAT (esploradati, SDMX)",
+            "licenza": "CC BY 4.0",
+            "stato": "ok"
+          },
+          {
+            "nome": "Visitatori annui di musei e monumenti (Wikidata, proprietà P1174)",
+            "ente": "Wikidata",
+            "licenza": "CC0 1.0",
+            "stato": "ok"
+          },
+          {
+            "nome": "Annunci di affitti brevi (densità di turisti che dormono in zona)",
+            "ente": "Inside Airbnb",
+            "licenza": "CC BY 4.0",
+            "stato": "ok"
+          },
+          {
+            "nome": "Acque di balneazione: classe di qualità 2025 per sito",
+            "ente": "EEA (dati del Ministero della Salute e di ARPAC)",
+            "licenza": "riuso libero con citazione dell'EEA",
+            "stato": "ok"
+          },
+          {
+            "nome": "Statistiche del porto (crocieristi, passeggeri del golfo)",
+            "ente": "Autorità di Sistema Portuale del Mar Tirreno Centrale",
+            "licenza": "contenuti riservati: valori aggregati citati, non ripubblicati",
+            "stato": "trascritto"
+          }
+        ]
+      },
+      "meteo": {
+        "generato": "2026-11-14 19:29",
+        "fonti": [
+          {
+            "nome": "Meteo attuale per luogo (modello ICON-2I, 2,2 km)",
+            "ente": "Open-Meteo.com (ItaliaMeteo-ARPAE)",
+            "licenza": "CC BY 4.0",
+            "stato": "precedente",
+            "errore": "https://api.open-meteo.com/v1/forecast: open-meteo.com in pausa fino alle 19:45 dopo un 429 (limite di richieste della fonte): nessuna richiesta inviata",
+            "dato_del": "2026-11-14T07:47:43.411Z"
+          },
+          {
+            "nome": "Indice europeo della qualità dell'aria (modello CAMS)",
+            "ente": "Open-Meteo.com su dati Copernicus CAMS",
+            "licenza": "CC BY 4.0 (dati Copernicus)",
+            "stato": "precedente",
+            "errore": "https://air-quality-api.open-meteo.com/v1/air-quality: open-meteo.com in pausa fino alle 19:45 dopo un 429 (limite di richieste della fonte): nessuna richiesta inviata",
+            "dato_del": "2026-11-14T07:47:43.411Z"
+          },
+          {
+            "nome": "Allerta meteo regionale (Zona 1, Napoli)",
+            "ente": "Protezione Civile Regione Campania, Centro Funzionale",
+            "licenza": "© Protezione Civile Regione Campania: citata come fonte",
+            "stato": "ok"
+          },
+          {
+            "nome": "Avvisi Meteoalarm per la Campania",
+            "ente": "EUMETNET Meteoalarm (dati dell'Aeronautica Militare)",
+            "licenza": "riuso con attribuzione a Meteoalarm/EUMETNET",
+            "stato": "ok"
+          },
+          {
+            "nome": "Terremoti dei Campi Flegrei (ultimi 30 giorni)",
+            "ente": "INGV",
+            "licenza": "CC BY 4.0",
+            "stato": "ok"
+          }
+        ]
+      }
+    },
+    "aggiornamento_snapshot": {
+      "attivo": false,
+      "piano_ore": {},
+      "in_corso": false,
+      "ultimi_tentativi": {},
+      "da_rigenerare": []
+    },
+    "legenda_stati": {
+      "reale": "letto dal vivo dalla fonte ufficiale (con cache di pochi minuti)",
+      "riserva": "la fonte principale non risponde: dato dal vivo di una fonte di riserva (es. MET Norway al posto di Open-Meteo)",
+      "salvato": "la fonte dal vivo non risponde: ultimo dato salvato nello snapshot, con la sua ora",
+      "snapshot": "dato statico o a lenta variazione dallo snapshot rigenerato periodicamente (eventi, centraline, visitatori)",
+      "programmato": "orario programmato GTFS, non in tempo reale",
+      "simulato": "stima del simulatore della demo, non una misura (es. la folla)",
+      "assente": "nessuna fonte disponibile: non dare numeri"
+    },
+    "catalogo_completo": "docs/fonti-dati-napoli.md nella repo (59 fonti verificate, licenze ed esiti delle prove)"
+  }
+}

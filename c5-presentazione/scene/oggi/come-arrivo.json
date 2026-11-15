@@ -1,0 +1,8 @@
+{
+  "catturato_il": "2026-11-14 19:30:20",
+  "richiesta": "GET /citta/trasporti/vicino?luogo=Città della Scienza&passaggi=1&formato=testo",
+  "domanda": "Come arrivo a Città della Scienza?",
+  "formato": "testo",
+  "http": 200,
+  "risposta": "Nessuna stazione entro 1200 m da Città della Scienza; le più vicine: Agnano (Cumana) a 23 min a piedi; Bagnoli (Cumana) a 24 min a piedi; Edenlandia (Cumana) a 29 min a piedi. Orari GTFS di ANM ed EAV (programmati). Prossime partenze da Agnano: 19:30 Cumana per Torregaveta, 19:33 Cumana per Montesanto, 20:00 Cumana per Torregaveta."
+}

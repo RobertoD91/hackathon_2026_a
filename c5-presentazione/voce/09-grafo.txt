@@ -1,0 +1,12 @@
+TwinCIRO · voce fuori campo · scena 09 di 15: grafo
+Nel video da 1:43,0 a 1:52,0 · clip clip/09-grafo.mp4 di 9,0 s
+
+1 · MARIO · da 0,3 a 4,4 s della clip · durata disponibile 4,1 s · nel video 1:43,3 → 1:47,4
+    Ecco la città come rete: luoghi, eventi, flussi, stazioni.
+    9 parole, ritmo di circa 139 al minuto · registra in girato/voce/09-grafo-1.m4a
+
+2 · ROBERTO · da 4,7 a 8,7 s della clip · durata disponibile 4,0 s · nel video 1:47,7 → 1:51,7
+    Poi agenti, sensori e fonti, e come sono collegati.
+    9 parole, ritmo di circa 143 al minuto · registra in girato/voce/09-grafo-2.m4a
+
+Tutta la scena in un file: girato/voce/09-grafo.m4a (la prima parola va a 0,3 s dall'inizio della clip, il silenzio prima si toglie da solo).

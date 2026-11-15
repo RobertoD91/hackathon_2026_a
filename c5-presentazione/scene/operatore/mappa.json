@@ -1,0 +1,164 @@
+{
+  "catturato_il": "2026-11-14T19:53:48.608Z",
+  "ora_locale": "sabato 14 novembre 2026 alle ore 20:53",
+  "come": "scene/operatore/cattura_mappa.mjs: pagina c5-presentazione/mappa/?demo=1 servita in locale, viewport 1280 px CSS × 1.50; pulsanti degli scenari \"Arrivo navi da crociera\" e \"Partita al Maradona\", foto dopo 18 s.",
+  "nota": "Folla, sensori, decisioni e notifiche sono della SIMULAZIONE della mappa (modalità demo, agenti nel browser, notifiche WhatsApp simulate); meteo, aria, trasporti, eventi e allerte sono dati veri letti dalla pagina. Gli orari delle decisioni nella pagina sono quelli reali della cattura, l'ora in alto è quella simulata.",
+  "url_pubblico": "https://robertodisanto.it/hackathon_2026_a/c5-presentazione/mappa/",
+  "immagine": {
+    "file": "mappa.jpg",
+    "larghezza": 1920,
+    "altezza": 3750,
+    "scala": 1.5,
+    "origine": 148,
+    "larghezza_css": 1280
+  },
+  "ora_simulata": "15:22",
+  "velocita": "×60",
+  "modo": "DEMO · nel browser",
+  "kpi": [
+    {
+      "nome": "Luoghi affollati",
+      "valore": "4",
+      "agente": "folla"
+    },
+    {
+      "nome": "Persone nei luoghi monitorati",
+      "valore": "31,9K",
+      "agente": "folla"
+    },
+    {
+      "nome": "Eventi reali oggi",
+      "valore": "3",
+      "agente": "fonti"
+    },
+    {
+      "nome": "Temperatura reale",
+      "valore": "18,7°C",
+      "agente": "fonti"
+    },
+    {
+      "nome": "Indice aria europeo",
+      "valore": "48",
+      "agente": "fonti"
+    },
+    {
+      "nome": "Allerta meteo (1-4)",
+      "valore": "1verde",
+      "agente": "fonti"
+    },
+    {
+      "nome": "Temperatura sensori",
+      "valore": "19°C",
+      "agente": "clima"
+    },
+    {
+      "nome": "Zone con caldo",
+      "valore": "0",
+      "agente": "clima"
+    },
+    {
+      "nome": "Energia risparmiata",
+      "valore": "0kWh",
+      "agente": "illuminazione"
+    },
+    {
+      "nome": "Zone con lampioni accesi",
+      "valore": "0zone",
+      "agente": "illuminazione"
+    },
+    {
+      "nome": "Dispositivi attivi",
+      "valore": "11",
+      "agente": "orchestrator"
+    }
+  ],
+  "allerta": "Avvisi meteo · Meteoalarm: temporali arancione 15 nov 07:00-18:59, pioggia gialla 15 nov 07:00-18:59 snapshot",
+  "scenari_attivi": [
+    "Evento reale: Lungomare Caracciolo",
+    "Bassa stagione turistica (ISTAT)",
+    "Arrivo navi da crociera",
+    "Partita al Maradona",
+    "Ondata di calore"
+  ],
+  "legenda": [
+    "Affollato · 5",
+    "Un po’ affollato · 2",
+    "Normale · 3",
+    "Tranquillo · 0"
+  ],
+  "decisioni": [
+    "ⓘ info · orchestrator · 20:53:47 · Consiglio anti-folla inviato per Napoli Centrale · Garibaldi · Messaggio da folla: \"Napoli Centrale · Garibaldi affollato\". Testo deterministico (nessun LLM). · notify turisti",
+    "▲ attenzione · folla · 20:53:47 · Napoli Centrale · Garibaldi è affollato: ~5340 persone · Stima 5340 persone su una soglia di 6000. Alternativa più vicina e tranquilla: Rione Sanità (2.1 km, normale). · suggerisci_alternativa garibaldi · alternativa sanita",
+    "ⓘ info · orchestrator · 20:53:46 · Consiglio anti-folla inviato per Piazza del Plebiscito · Messaggio da folla: \"Piazza del Plebiscito affollato\". Testo deterministico (nessun LLM). · notify turisti",
+    "▲ attenzione · folla · 20:53:46 · Piazza del Plebiscito è affollato: ~2628 persone · Stima 2628 persone su una soglia di 3000. Alternativa più vicina e tranquilla: Lungomare Caracciolo (1.2 km, normale). · suggerisci_alternativa plebiscito · alternativa lungomare",
+    "ⓘ info · orchestrator · 20:53:45 · Scenario \"ondata_calore\" avviato · Parametri: {\"fonte\":\"timeline\"}",
+    "ⓘ info · orchestrator · 20:53:41 · Consiglio anti-folla inviato per Castel dell'Ovo · Messaggio da folla: \"Castel dell'Ovo affollato\". Testo deterministico (nessun LLM). · notify turisti",
+    "ⓘ info · orchestrator · 20:53:41 · Consiglio anti-folla inviato per Molo Beverello · Stazione Marittima · Messaggio da folla: \"Molo Beverello · Stazione Marittima affollato\". Testo deterministico (nessun LLM). · notify turisti",
+    "▲ attenzione · folla · 20:53:41 · Castel dell'Ovo è affollato: ~1379 persone · Stima 1379 persone su una soglia di 1500. Alternativa più vicina e tranquilla: Lungomare Caracciolo (1.2 km, normale). · suggerisci_alternativa castel_ovo · alternativa lungomare"
+  ],
+  "notifiche": [
+    "WhatsApp · → turisti · orchestrator · 20:53:47 · Napoli Centrale · Garibaldi adesso è molto affollato (circa 5340 persone). Se puoi, vai a Rione Sanità: è a 2.1 km ed è più tranquillo. Stazione più vicina a Rione Sanità: Cavour (L2), 12 min a piedi.",
+    "WhatsApp · → turisti · orchestrator · 20:53:46 · Piazza del Plebiscito adesso è molto affollato (circa 2628 persone). Se puoi, vai a Lungomare Caracciolo: è a 1.2 km ed è più tranquillo. Stazione più vicina a Lungomare Caracciolo: San Pasquale (L6), 6 min a piedi.",
+    "WhatsApp · → turisti · orchestrator · 20:53:41 · Castel dell'Ovo adesso è molto affollato (circa 1379 persone). Se puoi, vai a Lungomare Caracciolo: è a 1.2 km ed è più tranquillo. Stazione più vicina a Lungomare Caracciolo: San Pasquale (L6), 6 min a piedi.",
+    "WhatsApp · → turisti · orchestrator · 20:53:41 · Molo Beverello · Stazione Marittima adesso è molto affollato (circa 3280 persone). Se puoi, vai a Lungomare Caracciolo: è a 1.7 km ed è più tranquillo. Oggi c'è \"Alla prova del tempo - Storia con metamorfosi\". Stazione più vicina a Lungomare Caracciolo: San Pasquale (L6), 6 min a piedi.",
+    "WhatsApp · → turisti · orchestrator · 20:53:41 · Spaccanapoli · Centro storico adesso è molto affollato (circa 3892 persone). Se puoi, vai a Rione Sanità: è a 1.5 km ed è più tranquillo. Stazione più vicina a Rione Sanità: Cavour (L2), 12 min a piedi."
+  ],
+  "pos": {
+    "testata": {
+      "y": 16,
+      "h": 53,
+      "x": 16,
+      "w": 1248
+    },
+    "kpi": {
+      "y": 160,
+      "h": 230,
+      "x": 16,
+      "w": 1248
+    },
+    "allerta": {
+      "y": 407,
+      "h": 44,
+      "x": 16,
+      "w": 1248
+    },
+    "mappa": {
+      "y": 463,
+      "h": 697,
+      "x": 16,
+      "w": 1248
+    },
+    "legenda": {
+      "y": 650,
+      "h": 100,
+      "x": 42,
+      "w": 218
+    },
+    "oggi": {
+      "y": 1176,
+      "h": 652,
+      "x": 16,
+      "w": 1248
+    },
+    "decisioni": {
+      "y": 1843,
+      "h": 781,
+      "x": 437,
+      "w": 442
+    },
+    "notifiche": {
+      "y": 2206,
+      "h": 361,
+      "x": 896,
+      "w": 368
+    },
+    "scenari": {
+      "y": 1843,
+      "h": 347,
+      "x": 896,
+      "w": 368
+    }
+  },
+  "altezza_pagina": 3842,
+  "errori_pagina": []
+}

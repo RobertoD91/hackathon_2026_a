@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>TwinCIRO · titolo</title>
+<link rel="stylesheet" href="stile.css">
+<style>
+  /* Titolo animato: "TwinCIRO" → CIRO si stacca da Twin e si apre nell'acronimo.
+     Tempo deterministico: window.imposta(t) muove le lettere (posizioni misurate su due impaginazioni
+     invisibili, "parola" e "finale") e porta le animazioni CSS al tempo t. Nessun logo: solo la scritta. */
+  .alone { position: absolute; left: 50%; top: 40%; width: 1100px; height: 1100px; margin: -550px 0 0 -550px; border-radius: 50%;
+    background: radial-gradient(circle, rgb(56 214 240 / 0.11), rgb(255 181 71 / 0.04) 45%, transparent 64%);
+    animation: respira 7s ease-in-out infinite; }
+  @keyframes respira { 0%,100% { transform: scale(0.94); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
+
+  .scritta { font-family: 'Inter Display', 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.02em; line-height: normal; white-space: pre; }
+  .fantasma { visibility: hidden; }
+
+  /* Impaginazione 1: la parola intera, al centro */
+  #parola { position: absolute; left: 0; right: 0; top: 0; height: 800px; display: flex; align-items: center; justify-content: center; font-size: 250px; }
+
+  /* Impaginazione 2: Twin a sinistra con "gemello digitale", l'acronimo in colonna a destra */
+  #finale { position: absolute; left: 0; right: 0; top: 30px; height: 680px; display: flex; align-items: center; justify-content: center; gap: 64px; }
+  .blocco-twin { display: flex; flex-direction: column; align-items: flex-end; }
+  .blocco-twin .scritta { font-size: 200px; line-height: 1; }
+  .gemello { margin-top: 8px; margin-right: 6px; font-size: 46px; font-weight: 600; color: #a9ecf7; letter-spacing: 0.01em; }
+  .divisore { width: 5px; height: 500px; border-radius: 3px; background: linear-gradient(180deg, var(--twin), var(--ciro)); transform-origin: center; }
+  .colonna { display: flex; flex-direction: column; gap: 6px; }
+  .riga { font-size: 112px; line-height: 1.04; }
+  .resto { color: var(--testo); font-weight: 600; letter-spacing: -0.01em; }
+  .resto .e { color: var(--tenue); font-weight: 500; }
+
+  /* Lettere che si muovono (sopra a tutto) */
+  .mobile { position: absolute; left: 0; top: 0; z-index: 2; }
+  .mobile.twin, .blocco-twin .twin { color: var(--twin); }
+  .mobile.ciro { color: var(--ciro); text-shadow: 0 0 40px rgb(255 181 71 / 0.25); }
+
+  /* In chiusura: il motto */
+  #motto { position: absolute; left: 0; right: 0; top: 742px; display: flex; flex-direction: column; align-items: center; }
+  .linea { width: 640px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--twin), var(--ciro)); transform-origin: center; }
+  .motto { margin-top: 30px; font-size: 64px; font-weight: 700; letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+<div class="alone"></div>
+
+<!-- impaginazioni invisibili da cui si misurano le posizioni di partenza e di arrivo -->
+<div id="parola" class="scritta fantasma"><span data-a="twin">Twin</span><span data-a="C">C</span><span data-a="I">I</span><span data-a="R">R</span><span data-a="O">O</span></div>
+
+<div id="finale">
+  <div class="blocco-twin">
+    <span class="scritta twin fantasma" data-b="twin">Twin</span>
+    <div class="gemello" id="gemello">gemello digitale</div>
+  </div>
+  <div class="divisore" id="divisore"></div>
+  <div class="colonna scritta">
+    <div class="riga"><span class="fantasma" data-b="C">C</span><span class="resto">ity</span></div>
+    <div class="riga"><span class="fantasma" data-b="I">I</span><span class="resto">ntelligence <span class="e">&amp;</span></span></div>
+    <div class="riga"><span class="fantasma" data-b="R">R</span><span class="resto">esponsive</span></div>
+    <div class="riga"><span class="fantasma" data-b="O">O</span><span class="resto">rchestration</span></div>
+  </div>
+</div>
+
+<span class="scritta mobile twin" data-m="twin">Twin</span>
+<span class="scritta mobile ciro" data-m="C">C</span>
+<span class="scritta mobile ciro" data-m="I">I</span>
+<span class="scritta mobile ciro" data-m="R">R</span>
+<span class="scritta mobile ciro" data-m="O">O</span>
+
+<div id="motto"><div class="linea" id="linea"></div><div class="motto" id="motto-t">Napoli che ci pensa</div></div>
+
+<script>
+'use strict';
+const P = new URLSearchParams(location.search);
+let DURATA = 7;
+const clamp = (x) => Math.max(0, Math.min(1, x));
+const fase = (t, t0, d) => clamp((t - t0) / d);
+const eo = (x) => 1 - Math.pow(1 - x, 3);                                         // rallenta all'arrivo
+const eio = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);   // parte e arriva piano
+const lerp = (a, b, p) => a + (b - a) * p;
+
+// Tempi in secondi. La parola intera resta ferma fino a STACCA; ogni testo resta poi a schermo più di 2,5 s.
+const T = {
+  entra: 0.05,    // "TwinCIRO" compare
+  stacca: 1.45,   // CIRO si allontana da Twin
+  muovi: 1.7,     // Twin va a sinistra, le lettere di CIRO vanno in colonna (una dopo l'altra)
+  viaggio: 0.85,  // durata dello spostamento di ogni lettera
+  gemello: 2.9,   // "gemello digitale" sotto Twin
+  motto: 3.75,    // "Napoli che ci pensa" (a schermo fino alla fine: oltre 3 s)
+};
+
+const pezzi = ['twin', 'C', 'I', 'R', 'O'].map((id, k) => ({
+  id,
+  el: document.querySelector(`[data-m="${id}"]`),
+  a: document.querySelector(`[data-a="${id}"]`),
+  b: document.querySelector(`[data-b="${id}"]`),
+  stacco: id === 'twin' ? -46 : 46,                   // il primo passo: si separano
+  ritardo: id === 'twin' ? 0 : 0.05 + (k - 1) * 0.1,  // C, I, R, O partono in cascata
+}));
+// Ogni parola si apre quando la sua iniziale è arrivata (poco prima, mentre rallenta)
+const resti = [...document.querySelectorAll('.resto')].map((el, k) => ({ el, t0: T.muovi + pezzi[k + 1].ritardo + T.viaggio - 0.12 }));
+
+function misura() {
+  for (const p of pezzi) {
+    const ra = p.a.getBoundingClientRect();
+    const rb = p.b.getBoundingClientRect();
+    p.A = { x: ra.left, y: ra.top, fs: parseFloat(getComputedStyle(p.a).fontSize) };
+    p.B = { x: rb.left, y: rb.top, fs: parseFloat(getComputedStyle(p.b).fontSize) };
+  }
+}
+
+window.imposta = (t) => {
+  // animazioni CSS (alone) al tempo t
+  for (const a of document.getAnimations()) { a.pause(); a.currentTime = t * 1000; }
+
+  const ingresso = eo(fase(t, T.entra, 0.8));
+  const stacco = eo(fase(t, T.stacca, 0.4));
+  for (const p of pezzi) {
+    const m = eio(fase(t, T.muovi + p.ritardo, T.viaggio));
+    const x = lerp(p.A.x + p.stacco * stacco, p.B.x, m);
+    const y = lerp(p.A.y, p.B.y, m) + (1 - ingresso) * 34;
+    p.el.style.left = `${x.toFixed(2)}px`;
+    p.el.style.top = `${y.toFixed(2)}px`;
+    // font-size e non scale(): il testo resta nitido in ogni fotogramma
+    p.el.style.fontSize = `${lerp(p.A.fs, p.B.fs, m).toFixed(2)}px`;
+    p.el.style.opacity = ingresso;
+  }
+
+  // le parole escono dalle iniziali con una tendina morbida da sinistra a destra
+  for (const r of resti) {
+    const q = eo(fase(t, r.t0, 0.6));
+    const g = `linear-gradient(90deg, #000 ${(q * 135 - 35).toFixed(1)}%, transparent ${(q * 135).toFixed(1)}%)`;
+    r.el.style.webkitMaskImage = g;
+    r.el.style.maskImage = g;
+  }
+
+  const dv = eio(fase(t, T.muovi + 0.6, 0.7));   // quando le lettere sono già passate
+  document.getElementById('divisore').style.transform = `scaleY(${dv.toFixed(3)})`;
+  document.getElementById('divisore').style.opacity = dv;
+
+  const gm = eo(fase(t, T.gemello, 0.6));
+  const gemello = document.getElementById('gemello');
+  gemello.style.opacity = gm;
+  gemello.style.transform = `translateY(${((1 - gm) * 18).toFixed(1)}px)`;
+
+  const li = eio(fase(t, T.motto - 0.25, 0.9));
+  document.getElementById('linea').style.transform = `scaleX(${li.toFixed(3)})`;
+  const mo = eo(fase(t, T.motto, 0.7));
+  const motto = document.getElementById('motto-t');
+  motto.style.opacity = mo;
+  motto.style.transform = `translateY(${((1 - mo) * 24).toFixed(1)}px)`;
+};
+
+// Durata da ?durata= oppure da scaletta.json (la scena con "pagina": "titolo.html"), altrimenti 7 s.
+// Con una scena più corta il motto entra prima, così resta comunque a schermo 3 s.
+async function durataScena(pagina, predefinita) {
+  const q = Number(P.get('durata'));
+  if (q) return q;
+  try {
+    const s = await (await fetch('scaletta.json', { cache: 'no-store' })).json();
+    const sc = s.scene.find((x) => !x.salta && x.sorgente?.tipo === 'pagina' && x.sorgente.pagina === pagina);
+    if (sc) return Number(sc.durata);
+  } catch { /* anteprima senza scaletta: valore predefinito */ }
+  return predefinita;
+}
+
+window.pronta = (async () => {
+  DURATA = await durataScena('titolo.html', 7);
+  T.motto = Math.min(T.motto, DURATA - 3);
+  await document.fonts.ready;
+  misura();
+  window.imposta(0);
+  return { durata: DURATA };
+})();
+
+// Anteprima nel browser (senza renderer): gira da sola, in loop
+if (!P.has('fotogrammi')) {
+  window.pronta.then(() => {
+    const t0 = performance.now();
+    const giro = () => { window.imposta(((performance.now() - t0) / 1000) % (DURATA + 1.5)); requestAnimationFrame(giro); };
+    giro();
+  });
+}
+</script>
+</body>
+</html>

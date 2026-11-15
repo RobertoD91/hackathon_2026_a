@@ -4,9 +4,14 @@
 Esempi:
   python avvia.py                               # tutto in un processo, LLM automatico, sala a schermo
   python avvia.py --llm regole --velocita 60    # senza LLM, giornata accelerata 60x
-  python avvia.py --broker localhost            # bus MQTT (per gli ESP32 del plastico)
+  python avvia.py --broker localhost            # bus MQTT (misure vere del badge e di Tasmota)
   python avvia.py --senza-sala                  # stampa il dialogo tra agenti nel terminale
   python avvia.py --velocita 0 --senza-sala     # giornata intera il più veloce possibile (KPI finali)
+
+Broker del team (utente c5; utente e password dall'ambiente, mai nei file; la password di c5 la
+stampa cloud/mqtt/scripts/inizializza.sh). Senza le due variabili il collegamento è anonimo.
+  C5_MQTT_UTENTE=c5 C5_MQTT_PASSWORD=... python avvia.py --broker twinciro.robertodisanto.it:1883
+  C5_MQTT_UTENTE=c5 C5_MQTT_PASSWORD=... python avvia.py --broker localhost:1883   # sul server stesso
 """
 
 from __future__ import annotations
@@ -30,14 +35,18 @@ from citta.agenti.orchestratore import Orchestratore
 from citta.agenti.traffico import AgenteTraffico
 from citta.agenti.turismo import AgenteTurismo
 from citta.api import avvia_api
-from citta.bus import crea_bus, secondi_da_ora
+from citta.bus import ErroreBroker, crea_bus, secondi_da_ora
 from citta.llm import crea_llm
 
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--broker", default="memoria", help="memoria (default) oppure host[:porta] del broker MQTT")
-    p.add_argument("--llm", default="auto", help="auto | claude | codex | regole")
+    p.add_argument("--broker", default="memoria",
+                   help="memoria (default) oppure host[:porta] del broker MQTT; utente e password dalle variabili "
+                        "C5_MQTT_UTENTE e C5_MQTT_PASSWORD (senza: anonimo)")
+    p.add_argument("--llm", help="auto | claude | codex | compatibile (alias miia: API compatibile OpenAI, "
+                                 "variabili C5_LLM_URL, C5_LLM_MODELLO, C5_LLM_CHIAVE) | regole "
+                                 "(default: la variabile C5_LLM, altrimenti auto)")
     p.add_argument("--velocita", type=float, default=20, help="secondi simulati per secondo reale (0 = massimo)")
     p.add_argument("--inizio", help="ora di inizio (default dallo scenario, es. 13:00)")
     p.add_argument("--fine", help="ora di fine (default dallo scenario)")
@@ -54,7 +63,10 @@ def main() -> None:
     scenario = json.loads((DATI / "scenario_regata.json").read_text(encoding="utf-8"))
     if a.inizio:
         scenario["inizio"] = a.inizio
-    bus = crea_bus(a.broker)
+    try:
+        bus = crea_bus(a.broker)
+    except ErroreBroker as e:  # utente o password sbagliati, broker spento: errore chiaro, niente traceback
+        sys.exit(f"[bus] ERRORE: {e}")
     llm = crea_llm(a.llm)
 
     agenti = [
@@ -82,7 +94,7 @@ def main() -> None:
     motore.start()
     signal.signal(signal.SIGINT, lambda *_: fermo.set())
 
-    print(f"Napoli Agentic City · LLM: {llm.nome} · bus: {a.broker} · API: "
+    print(f"Napoli Agentic City · LLM: {llm.nome} · bus: {bus.descrizione} · API: "
           f"{'http://localhost:%d' % a.api_porta if a.api_porta else 'spenta'}", file=sys.stderr)
 
     if a.senza_sala:

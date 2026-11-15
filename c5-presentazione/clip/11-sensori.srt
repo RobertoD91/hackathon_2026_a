@@ -1,0 +1,9 @@
+1
+00:00:00,300 --> 00:00:04,400
+Sensori fatti da noi:
+badge WHY2025 e Tasmota.
+
+2
+00:00:04,700 --> 00:00:07,800
+Oggi in Wi-Fi, domani con una SIM IoT.
+

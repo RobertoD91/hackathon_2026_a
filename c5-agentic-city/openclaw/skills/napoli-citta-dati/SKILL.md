@@ -1,6 +1,6 @@
 ---
 name: napoli-citta-dati
-description: Dati reali di Napoli adesso (meteo, allerta, aria, eventi, partite, navi da crociera, metro e treni, prossime partenze, terremoti) da una sola API con cache. Usala PRIMA delle fonti dirette per qualunque domanda su com'è la città, cosa succede, come muoversi o se c'è un'allerta.
+description: Dati reali di Napoli adesso (meteo, allerta, aria, eventi, partite, navi da crociera, metro e treni, prossime partenze, terremoti) da una sola API con cache. Usala PRIMA della skill napoli-fonti-riserva per qualunque domanda su com'è la città, cosa succede, come muoversi o se c'è un'allerta.
 ---
 
 # Dati della città di Napoli
@@ -56,4 +56,4 @@ Se il luogo non si trova, il JSON ha `errore`, `suggerimenti` e `altri_luoghi_no
 4. Se nel `testo` c'è "ALLERTA" (allerta regionale gialla o superiore per Napoli, in corso o prevista), mettila all'inizio della risposta e invita a seguire i canali ufficiali della Protezione Civile. Gli avvisi Meteoalarm valgono per tutta la Campania: citali come tali.
 5. Navi da crociera e regate non hanno orari nelle fonti: non inventarli.
 6. Metro e funicolari ANM non hanno un'API dello stato del servizio: per guasti rimanda all'app ANM Go.
-7. Se l'API non risponde (errore di curl o timeout), usa le skill delle fonti dirette (`napoli-meteo-allerte`, `napoli-trasporti`, …) e dillo.
+7. Se l'API non risponde (errore di curl o timeout), usa la skill `napoli-fonti-riserva` e dillo ("dato letto direttamente dalla fonte, l'API non risponde"). La stessa skill serve per i dati che l'API non ha: mare (onde e temperatura dell'acqua), farmacie, indirizzi qualsiasi, percorsi in auto.

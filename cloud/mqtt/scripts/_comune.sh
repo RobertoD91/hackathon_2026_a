@@ -48,7 +48,7 @@ genera_password() {
     printf '%s' "${p:0:24}"
 }
 
-# Nome utente ammesso: quello dei deviceId del contratto, senza ":" (separatore del file
+# Nome utente ammesso: quello degli id dei dispositivi (firmware/README.md), senza ":" (separatore del file
 # delle password) e senza / + # (romperebbero i pattern %u delle ACL).
 utente_valido() { [[ "$1" =~ ^[A-Za-z0-9._-]{1,64}$ ]]; }
 

@@ -2,8 +2,9 @@
 
 POST /chiedi       {"utente": "+39...", "testo": "..."}  → {"risposta": "..."}
 GET  /notifiche?utente=+39...                            → {"notifiche": [...]}  (avvisi proattivi)
-GET  /stato                                              → stato della città (folla, meteo, KPI, semafori)
-POST /evento       {"evento": "...", "veicoli": 20}       → come un pulsante del plastico
+GET  /stato                                              → stato della città (folla, meteo, KPI, semafori simulati,
+                                                            misure vere del badge e di Tasmota in "sensori" e "nodi")
+POST /evento       {"evento": "...", "veicoli": 20}       → evento manuale (es. arriva un pullman)
 GET  /drone/richieste                                    → ultima richiesta di volo dell'orchestratore
 POST /drone        {"zona": "...", "persone_stimate": N, "note": "..."} → osservazione del drone
 POST /operatore    {"decisione": "D3", "esito": "approva"|"blocca"}   → risposta dell'operatore
@@ -19,9 +20,12 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
+from .sensori import SensoriReali
+
 
 def avvia_api(assistenti, bus, porta: int = 8080, host: str = "0.0.0.0") -> ThreadingHTTPServer:
     token = os.environ.get("C5_API_TOKEN")
+    sensori = SensoriReali(bus)
 
     class Gestore(BaseHTTPRequestHandler):
         def log_message(self, *args):
@@ -56,6 +60,7 @@ def avvia_api(assistenti, bus, porta: int = 8080, host: str = "0.0.0.0") -> Thre
                 stato = assistenti.stato_citta()
                 stato["semafori"] = {t.split("/")[2]: m for t, m in bus.trattenuti("napoli/semafori/+/stato").items()}
                 stato["piano_semafori"] = bus.ultimo("napoli/semafori/piano")
+                stato.update(sensori.stato())
                 self._rispondi(200, stato)
             elif url.path == "/drone/richieste":
                 self._rispondi(200, {"richiesta": bus.ultimo("napoli/drone/richieste")})
