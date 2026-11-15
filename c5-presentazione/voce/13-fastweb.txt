@@ -2,16 +2,15 @@ TwinCIRO · voce fuori campo · scena 13 di 15: fastweb
 Nel video da 2:23,0 a 2:39,0 · clip clip/13-fastweb.mp4 di 16,0 s
 
 1 · MARIO · da 0,3 a 5,0 s della clip · durata disponibile 4,7 s · nel video 2:23,3 → 2:28,0
-    Con Fastweb e Vodafone la folla non si simula più: si misura.
-    12 parole, ritmo di circa 134 al minuto · registra in girato/voce/13-fastweb-1.m4a
+    Con Fastweb e Vodafone la folla non si simula più: si può misurare.
+    13 parole, ritmo di circa 147 al minuto · registra in girato/voce/13-fastweb-1.m4a
 
 2 · ROBERTO · da 5,3 a 9,4 s della clip · durata disponibile 4,1 s · nel video 2:28,3 → 2:32,4
     Con le loro SIM IoT, i sensori si mettono dove servono.
     11 parole, ritmo di circa 154 al minuto · registra in girato/voce/13-fastweb-2.m4a
 
 3 · MARIO · da 9,7 a 15,6 s della clip · durata disponibile 5,9 s · nel video 2:32,7 → 2:38,6
-    E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: dati in Italia, sovranità
-    digitale.
-    14 parole, ritmo di circa 163 al minuto · registra in girato/voce/13-fastweb-3.m4a
+    E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: sovranità digitale.
+    11 parole, ritmo di circa 158 al minuto · registra in girato/voce/13-fastweb-3.m4a
 
 Tutta la scena in un file: girato/voce/13-fastweb.m4a (la prima parola va a 0,3 s dall'inizio della clip, il silenzio prima si toglie da solo).

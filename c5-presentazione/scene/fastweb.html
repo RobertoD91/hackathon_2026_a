@@ -2,15 +2,17 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<title>TwinCIRO × Fastweb + Vodafone</title>
+<title>TwinCIRO · Fastweb + Vodafone</title>
 <link rel="stylesheet" href="stile.css">
 <style>
   /* Cosa aggiunge Fastweb + Vodafone: tre schede che entrano una dopo l'altra (circa 16 s), con la voce.
      Quando entra una scheda le precedenti si attenuano; in chiusura tornano tutte accese con la riga
-     "TwinCIRO × Fastweb + Vodafone". Solo testo: nessun logo di Fastweb, Vodafone o Hugging Face.
-     Fonti dei fatti: comunicati Istat del 9/5/2023 (Istat e Vodafone Business, turismo, Vodafone Analytics)
-     e del 17/3/2026 (MNO-MINDS: "per l'Italia ha partecipato alla sperimentazione Fastweb + Vodafone");
-     crowdsupply.com/dptechnics/walter; huggingface.co/Fastweb/FastwebMIIA-7B; corrierecomunicazioni.it/?p=349938.
+     "TwinCIRO · Challenge 05 di Fastweb + Vodafone" (non una collaborazione ufficiale). Solo testo: nessun logo di
+     Fastweb, Vodafone o Hugging Face.
+     Fonti dei fatti: comunicati Istat del 9/5/2023 (studio sperimentale Istat e Vodafone Business sul turismo, Vodafone
+     Analytics) e del 17/3/2026 (MNO-MINDS, a guida Istat, e il progetto Eurostat Multi-MNO, a cui ha partecipato
+     Fastweb + Vodafone); crowdsupply.com/dptechnics/walter (modem Sequans, SIM integrata e slot nano-SIM);
+     huggingface.co/Fastweb/FastwebMIIA-7B (licenza non commerciale); corrierecomunicazioni.it/?p=349938.
      Tempi (secondi dall'inizio della scena): schede a 0,35 · 5,0 · 9,5; chiusura a 12,9. */
   .testa { position: absolute; left: 90px; right: 90px; top: 40px; }
   .testa h1 { margin: 0; font-size: 54px; font-weight: 800; letter-spacing: -0.02em; }
@@ -53,32 +55,32 @@
     <div class="blocco persone a" style="--d:.35s">
       <div class="capo"><span class="ic">👥</span><span class="n">1</span></div>
       <h2>Il dato che manca:<br>le persone.</h2>
-      <p>Con le analytics di rete di Fastweb&nbsp;+&nbsp;Vodafone la folla, oggi <b>simulata</b> in TwinCIRO, diventa <b>misurata</b>, zona&nbsp;per&nbsp;zona.</p>
+      <p>Con le analytics di rete di Fastweb&nbsp;+&nbsp;Vodafone la folla, oggi <b>simulata</b> in TwinCIRO, si può <b>misurare</b>, zona&nbsp;per&nbsp;zona.</p>
       <div class="dett"><b>Vodafone Analytics</b>: presenze anonime e aggregate dalle celle della rete mobile.</div>
-      <div class="fonte">Già usate da Istat per le statistiche del turismo (studio Istat–Vodafone, 2023) e nella sperimentazione Istat con gli operatori mobili, a cui ha partecipato Fastweb&nbsp;+&nbsp;Vodafone (MNO-MINDS, marzo 2026).</div>
+      <div class="fonte">Già sperimentate con Istat: turismo (2023) e progetti europei sui dati di rete mobile (2023-25).</div>
     </div>
   </div>
   <div class="posto" style="--spegni:9.5s;--riaccendi:12.9s">
     <div class="blocco rete a" style="--d:5.0s">
       <div class="capo"><span class="ic">📡</span><span class="n">2</span></div>
       <h2>Sensori<br>sulla rete.</h2>
-      <p>Oggi i sensori di TwinCIRO sono su Wi&#8209;Fi; domani con <b>SIM IoT</b> sulla rete NB&#8209;IoT / LTE&#8209;M e 5G di Fastweb&nbsp;+&nbsp;Vodafone.</p>
-      <div class="dett">Per esempio con <b>Walter</b>: ESP32&#8209;S3 con modem LTE&#8209;M/NB&#8209;IoT e SIM integrata.</div>
+      <p>I sensori di TwinCIRO usano il Wi&#8209;Fi; con una <b>SIM IoT</b> sulla rete NB&#8209;IoT / LTE&#8209;M di Fastweb&nbsp;+&nbsp;Vodafone vanno dove servono.</p>
+      <div class="dett">Per esempio con <b>Walter</b>: ESP32&#8209;S3 con modem LTE&#8209;M/NB&#8209;IoT e slot per la SIM IoT.</div>
       <div class="fonte">Walter: scheda di DPTechnics<br><span class="u">crowdsupply.com/dptechnics/walter</span></div>
     </div>
   </div>
   <div class="posto">
     <div class="blocco ai a" style="--d:9.5s">
       <div class="capo"><span class="ic">🇮🇹</span><span class="n">3</span></div>
-      <h2>AI italiana,<br>dati in Italia.</h2>
-      <p>TwinCIRO <b>può integrare</b> via API <b>MIIA</b>, l'LLM italiano di Fastweb&nbsp;+&nbsp;Vodafone: addestrato in italiano, alla base di FastwebAI&nbsp;Suite per imprese e PA.</p>
-      <div class="dett">Gira nell'AI Factory di Fastweb vicino a Bergamo: modello e dati della città restano in Italia. <span class="sovrano">Sovranità digitale.</span></div>
-      <div class="hf"><div class="t">FastwebMIIA-7B su Hugging Face</div><div class="u">huggingface.co/Fastweb/FastwebMIIA-7B</div><div class="s">con la documentazione per l'AI Act</div></div>
+      <h2>AI italiana,<br>sovranità digitale.</h2>
+      <p>TwinCIRO <b>può integrare</b> via API <b>MIIA</b>, l'LLM italiano di Fastweb&nbsp;+&nbsp;Vodafone, addestrato in italiano.</p>
+      <div class="dett">In produzione, con FastwebAI&nbsp;Suite, gira nell'AI Factory di Fastweb vicino a Bergamo: <span class="sovrano">il modello resta in Italia.</span></div>
+      <div class="hf"><div class="t">FastwebMIIA-7B su Hugging Face</div><div class="u">huggingface.co/Fastweb/FastwebMIIA-7B</div><div class="s">licenza non commerciale, per le prove · documentazione per l'AI Act</div></div>
     </div>
   </div>
 </div>
 
-<div class="chiusura a" style="--d:12.9s"><span class="marchio"><span class="twin">Twin</span><span class="ciro">CIRO</span></span><span class="x">×</span>Fastweb + Vodafone</div>
+<div class="chiusura a" style="--d:12.9s"><span class="marchio"><span class="twin">Twin</span><span class="ciro">CIRO</span></span><span class="x">·</span>Challenge 05 di Fastweb + Vodafone</div>
 
 <script>
 'use strict';

@@ -6,9 +6,9 @@
 <link rel="stylesheet" href="stile.css">
 <style>
   /* Due utenti affiancati: chi visita (turista su WhatsApp) e chi governa (Polizia Locale in sala operativa).
-     Scena corta (circa 4 s): tutto entra entro 1,2 s, poi resta fermo con un lento avvicinamento.
+     Scena corta (6 s): le due schede entrano insieme entro 1 s, poi restano ferme con un lento avvicinamento.
      Icone emoji generiche: nessun marchio di WhatsApp o della Polizia Locale, solo testo. */
-  .scena { position: absolute; inset: 0; animation: avvicina 4.5s linear both; transform-origin: 50% 45%; }
+  .scena { position: absolute; inset: 0; animation: avvicina 6.5s linear both; transform-origin: 50% 45%; }
   @keyframes avvicina { from { transform: scale(1); } to { transform: scale(1.025); } }
   .testa { position: absolute; left: 0; right: 0; top: 86px; text-align: center; }
   .testa .etichetta { font-size: 27px; }
@@ -41,8 +41,8 @@
       <h2>Marta,<br>crocierista</h2>
       <p>Scrive a <span class="marchio"><span class="twin">Twin</span><span class="ciro">CIRO</span></span><br>su WhatsApp</p>
     </div>
-    <div class="utente governa a" style="--d:.45s">
-      <div class="avatar">👮<span class="distintivo c" style="--d:1.05s">🖥️</span></div>
+    <div class="utente governa a" style="--d:.3s">
+      <div class="avatar">👮<span class="distintivo c" style="--d:.9s">🖥️</span></div>
       <div class="etichetta chi">Chi governa</div>
       <h2>Operatore della<br>Polizia Locale</h2>
       <p>In sala operativa:<br><b>dashboard</b> e <b>gemello 3D</b></p>
@@ -51,7 +51,7 @@
 </div>
 <script>
 // Solo animazioni CSS: il renderer le porta al tempo t (vedi rendi_html.mjs); nel browser si vedono da sole.
-window.pronta = document.fonts.ready.then(() => ({ durata: Number(new URLSearchParams(location.search).get('durata')) || 4 }));
+window.pronta = document.fonts.ready.then(() => ({ durata: Number(new URLSearchParams(location.search).get('durata')) || 6 }));
 </script>
 </body>
 </html>

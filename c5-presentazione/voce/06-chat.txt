@@ -1,29 +1,32 @@
 TwinCIRO · voce fuori campo · scena 06 di 15: chat
-Nel video da 0:38,0 a 1:18,0 · clip clip/06-chat.mp4 di 40,0 s
+Nel video da 0:40,0 a 1:18,0 · clip clip/06-chat.mp4 di 38,0 s
 
-1 · MARIO · da 0,5 a 4,1 s della clip · durata disponibile 3,6 s · nel video 0:38,5 → 0:42,1
+1 · MARIO · da 0,5 a 4,1 s della clip · durata disponibile 3,6 s · nel video 0:40,5 → 0:44,1
     Marta, in crociera, scrive a TwinCIRO come a un amico.
     10 parole, ritmo di circa 158 al minuto · registra in girato/voce/06-chat-1.m4a
 
-2 · ROBERTO · da 4,3 a 9,1 s della clip · durata disponibile 4,8 s · nel video 0:42,3 → 0:47,1
+2 · ROBERTO · da 4,3 a 9,0 s della clip · durata disponibile 4,7 s · nel video 0:44,3 → 0:49,0
     TwinCIRO chiede alla pizzeria: alle 13 è piena, propone le 14.
-    11 parole, ritmo di circa 162 al minuto · registra in girato/voce/06-chat-2.m4a
+    11 parole, ritmo di circa 166 al minuto · registra in girato/voce/06-chat-2.m4a
 
-3 · MARIO · da 9,4 a 13,6 s della clip · durata disponibile 4,2 s · nel video 0:47,4 → 0:51,6
+3 · MARIO · da 9,2 a 13,3 s della clip · durata disponibile 4,1 s · nel video 0:49,2 → 0:53,3
     Marta dice «ok»: tavolo prenotato, nessuna telefonata.
-    7 parole, ritmo di circa 143 al minuto · registra in girato/voce/06-chat-3.m4a
+    7 parole, ritmo di circa 146 al minuto · registra in girato/voce/06-chat-3.m4a
 
-4 · ROBERTO · da 15,6 a 20,4 s della clip · durata disponibile 4,8 s · nel video 0:53,6 → 0:58,4
+4 · ROBERTO · da 14,9 a 19,7 s della clip · durata disponibile 4,8 s · nel video 0:54,9 → 0:59,7
     Poi TwinCIRO le dice come arrivare alla regata, e quanta gente c'è.
     12 parole, ritmo di circa 150 al minuto · registra in girato/voce/06-chat-4.m4a
 
-5 · MARIO · da 22,6 a 26,4 s della clip · durata disponibile 3,8 s · nel video 1:00,6 → 1:04,4
+5 · MARIO · da 21,3 a 25,1 s della clip · durata disponibile 3,8 s · nel video 1:01,3 → 1:05,1
     Per il meteo usa dati veri, e cita sempre la fonte.
     11 parole, ritmo di circa 142 al minuto · registra in girato/voce/06-chat-5.m4a
 
-6 · ROBERTO · da 28,6 a 35,6 s della clip · durata disponibile 7,0 s · nel video 1:06,6 → 1:13,6
-    E quando la Rotonda Diaz si riempie, è TwinCIRO a scrivere per primo: c'è un posto
-    più tranquillo, con un'offerta.
-    20 parole, ritmo di circa 150 al minuto · registra in girato/voce/06-chat-6.m4a
+6 · ROBERTO · da 26,5 a 30,6 s della clip · durata disponibile 4,1 s · nel video 1:06,5 → 1:10,6
+    E quando la Rotonda Diaz si riempie, è TwinCIRO a scrivere per primo:
+    13 parole, ritmo di circa 161 al minuto · registra in girato/voce/06-chat-6.m4a
+
+7 · ROBERTO · da 30,8 a 34,0 s della clip · durata disponibile 3,2 s · nel video 1:10,8 → 1:14,0
+    c'è un posto più tranquillo, con un'offerta.
+    7 parole, ritmo di circa 122 al minuto · registra in girato/voce/06-chat-7.m4a
 
 Tutta la scena in un file: girato/voce/06-chat.m4a (la prima parola va a 0,5 s dall'inizio della clip, il silenzio prima si toglie da solo).

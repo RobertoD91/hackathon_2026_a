@@ -1,7 +1,7 @@
 {
   "generato": {
     "quando": "2026-11-14T14:51:18",
-    "come": "scene/chat_da_api.py: messaggi veri all'API /chiedi di c5-agentic-city (LLM a regole, senza SUMO) e meteo da Open-Meteo. Ritocchi di forma da chat_domande.json: il testo originale dell'API resta in 'testo_api'. Puoi ritoccare i testi a mano: il renderer legge solo questo file.",
+    "come": "scene/chat_da_api.py: messaggi veri all'API /chiedi di c5-agentic-city (agenti a regole, senza LLM né SUMO) e meteo da Open-Meteo. Ritocchi di forma da chat_domande.json: il testo originale dell'API resta in 'testo_api'. Puoi ritoccare i testi a mano: il renderer legge solo questo file.",
     "api": "c5-agentic-city/avvia.py --llm regole --senza-gemello --inizio 12:10 --velocita 30",
     "nota": "Folla, offerte e imprese sono SIMULATE (imprese di fantasia); il meteo è reale."
   },
@@ -24,7 +24,7 @@
       "da": "ciro",
       "ora": "12:10",
       "testo": "Pizzeria 'O Scoglio alle 13:00 non ha posto, ma vi propone le 14:00 per 4. Prenoto? Per arrivare: a piedi da via Acton e via Partenope (15 minuti). Al Castel dell'Ovo c'è poca gente (stima della città simulata).",
-      "fonte": "API della città /chiedi (agenti, LLM a regole)",
+      "fonte": "API della città /chiedi (agenti a regole, senza LLM)",
       "dietro_le_quinte": [
         {
           "ora": "12:10",
@@ -65,7 +65,7 @@
       "da": "ciro",
       "ora": "12:11",
       "testo": "Fatto! Prenotato da Pizzeria 'O Scoglio alle 14:00 per 4.",
-      "fonte": "API della città /chiedi (agenti, LLM a regole)",
+      "fonte": "API della città /chiedi (agenti a regole, senza LLM)",
       "dietro_le_quinte": [
         {
           "ora": "12:10",
@@ -94,7 +94,7 @@
       "da": "ciro",
       "ora": "12:11",
       "testo": "Per arrivare: Linea 6 da Municipio a San Pasquale e poi 5 minuti a piedi, oppure a piedi lungo via Partenope e via Caracciolo (25 minuti). A Rotonda Diaz c'è poca gente (stima della città simulata).",
-      "fonte": "API della città /chiedi (agenti, LLM a regole)",
+      "fonte": "API della città /chiedi (agenti a regole, senza LLM)",
       "dietro_le_quinte": [
         {
           "ora": "12:11",
@@ -153,6 +153,7 @@
       "id": 9,
       "da": "ciro",
       "tipo": "avviso",
+      "zona": "Rotonda Diaz",
       "ora": "14:41",
       "testo": "📣 C'è il pienone a Rotonda Diaz: adesso si sta molto più tranquilli in Piazza del Plebiscito e a Palazzo Reale. Friggitoria del Vasto vi aspetta alle 15:00 con il 15% di sconto.",
       "fonte": "API della città /notifiche (agente Turismo, regole)",
@@ -183,7 +184,7 @@
         }
       ],
       "etichetta": {
-        "titolo": "Ti avvisa prima del problema",
+        "titolo": "Ti avvisa quando c'è il pienone",
         "sotto": "Folla e Orchestratore vedono il pienone; Turismo propone un'alternativa con l'offerta di un'impresa."
       }
     }

@@ -96,8 +96,14 @@ const fumo = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(1 - x, 3));
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const parole = (s) => s.split(/\s+/).filter(Boolean).length;
-const accorcia = (s, n = 150) => {
+// Un messaggio lungo degli agenti diventa una frase sola, presa così com'è dal testo vero. Se il messaggio parla di più
+// zone, vince la frase sulla zona dell'avviso (campo "zona" del messaggio in chat.json): così il pannello non decide
+// su Mergellina e poi avvisa la Rotonda Diaz. Lo dice la nota in basso.
+const accorcia = (s, n = 150, zona = '') => {
   if (s.length <= n) return s;
+  const frasi = s.split(/(?<=[.?!])\s+/);
+  const sua = zona && frasi.length > 1 ? frasi.find((f) => f.includes(zona)) : null;
+  if (sua && sua.length <= n) return /[.?!…]$/.test(sua) ? sua : `${sua}.`;
   const punto = s.indexOf('. ', 60);
   if (punto > 0 && punto < n) return s.slice(0, punto + 1);
   return s.slice(0, n).replace(/\s+\S*$/, '') + '…';
@@ -115,7 +121,7 @@ window.pronta = (async () => {
     : `Il telefono di ${chat.presentazione_utente || chat.utente}`;
   document.getElementById('nota').textContent = VUOTO
     ? 'A destra: i messaggi tra agenti registrati dall\'API della città per la stessa conversazione.'
-    : 'Chat ricostruita con le risposte vere dell\'API della città (agenti con LLM a regole, testi così come escono dall\'API). Folla, offerte e imprese sono simulate; il meteo è reale (Open-Meteo, Meteoalarm).';
+    : 'Chat ricostruita: risposte e avviso veri dell\'API della città (agenti a regole, senza LLM). Il meteo lo compone lo script con dati veri di Open-Meteo e Meteoalarm (14/11). Folla, offerte e imprese simulate; a destra, frasi lunghe accorciate.';
   if (VUOTO) document.getElementById('telefono').classList.add('vuoto-reale');
   costruisci();
   return { durata: totale };
@@ -135,7 +141,7 @@ function costruisci() {
   };
   // Prima del primo messaggio: data e presentazione del servizio
   const vData = aggiungi('chip', '<span>Oggi</span>');
-  const vBenv = aggiungi('benvenuto', '<div class="bolla">TwinCIRO risponde con gli agenti della città di Napoli</div>');
+  const vBenv = aggiungi('benvenuto', '<div class="bolla">TwinCIRO risponde con gli agenti della città (prototipo)</div>');
   vData.t = -1; vBenv.t = -1;
 
   // Linea del tempo: segmenti fissi (scrittura, attesa) ed elastici (pause di lettura)
@@ -193,7 +199,7 @@ function costruisci() {
     if (x.tipo === 'pensa') linea.pensa.push({ t0: x.t0, t1: x.t1 });
     if (x.tipo === 'pensa' || x.tipo === 'quinte-avviso') {
       const q = x.m.dietro_le_quinte || [];
-      q.forEach((r, k) => linea.quinte.push({ ...r, t: x.t0 + 0.25 + (x.d - 0.4) * (q.length > 1 ? k / (q.length - 1) : 0), passo: x.i }));
+      q.forEach((r, k) => linea.quinte.push({ ...r, t: x.t0 + 0.25 + (x.d - 0.4) * (q.length > 1 ? k / (q.length - 1) : 0), passo: x.i, zona: x.m.zona || '' }));
     }
   }
   // Ogni passo inizia col messaggio dell'utente che lo apre (o con l'avviso)
@@ -280,7 +286,7 @@ window.imposta = (t) => {
   if (contenitore.dataset.k !== chiave) {
     contenitore.dataset.k = chiave;
     contenitore.innerHTML = righe.length
-      ? righe.slice(-3).map((r) => `<div class="riga" data-t="${r.t}"><div class="chi"><b style="${colore(r.da)}">${esc(r.da)}</b><span>→</span><b style="${colore(r.a)}">${esc(r.a)}</b><span class="ora">${esc(r.ora || '')}</span></div><div class="cosa">${esc(accorcia(r.testo.replace(/^\[D\d+\]\s*/, '')))}</div></div>`).join('')
+      ? righe.slice(-3).map((r) => `<div class="riga" data-t="${r.t}"><div class="chi"><b style="${colore(r.da)}">${esc(r.da)}</b><span>→</span><b style="${colore(r.a)}">${esc(r.a)}</b><span class="ora">${esc(r.ora || '')}</span></div><div class="cosa">${esc(accorcia(r.testo.replace(/^\[D\d+\]\s*/, ''), 150, r.zona))}</div></div>`).join('')
       : '<div class="vuota">In ascolto…</div>';
   }
   for (const r of contenitore.querySelectorAll('.riga')) {

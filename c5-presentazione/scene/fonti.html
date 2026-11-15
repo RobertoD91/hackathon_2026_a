@@ -7,7 +7,8 @@
 <link rel="stylesheet" href="stile.css">
 <style>
   /* Scena 4 del video: le isole della scena 2 convergono in un muro di fonti per dominio, con TwinCIRO al centro.
-     Il contatore arriva al numero di fonti pubbliche di fonti/catalogo.json; i 130 px in basso restano liberi. */
+     Il contatore arriva al numero di fonti pubbliche di fonti/catalogo.json che si vedono nel muro (fuori quelle di
+     FUORI_DAL_VIDEO in isole.js), con sotto «nel catalogo»: non dice quante ne usa TwinCIRO. I 130 px in basso restano liberi. */
   #mare { position: absolute; inset: 0; }
   svg#flussi { position: absolute; inset: 0; pointer-events: none; }
   .isola[data-dominio="meteo"] .corpo { border-color: rgb(56 214 240 / var(--tinta, 0)); }
@@ -26,7 +27,8 @@
   .hub .marchio { font-size: 104px; line-height: 1; }
   .hub .conta { margin-top: 18px; font-size: 176px; line-height: 0.9; font-weight: 800; letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
     color: #fff; text-shadow: 0 0 40px rgb(56 214 240 / 0.35); }
-  .hub .frase { margin-top: 26px; font-size: 37px; line-height: 1.18; font-weight: 700; }
+  .hub .conta-nota { margin-top: 8px; font-size: 25px; font-weight: 600; letter-spacing: 0.06em; color: var(--tenue); }
+  .hub .frase { margin-top: 22px; font-size: 37px; line-height: 1.18; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -37,6 +39,7 @@
 <div class="hub">
   <div class="marchio" id="marchio"><span class="twin">Twin</span><span class="ciro">CIRO</span></div>
   <div class="conta" id="conta">0</div>
+  <div class="conta-nota" id="conta-nota">nel catalogo</div>
   <div class="frase" id="frase"></div>
 </div>
 <script type="module">
@@ -166,6 +169,7 @@ window.imposta = (t) => {
   const pc = tra(t, T.marchio + 0.2, T.marchio + 0.7);
   const colpo = t >= fine ? 1 + 0.08 * Math.sin(Math.PI * tra(t, fine, fine + 0.35)) : 1;
   conta.style.opacity = fumo(pc).toFixed(3);
+  document.getElementById('conta-nota').style.opacity = fumo(pc).toFixed(3);
   conta.style.transform = `scale(${colpo.toFixed(4)})`;
   conta.style.color = t >= fine ? '#ffffff' : '#cfe9f7';
   for (const [id, t0] of [['frase', T.frase]]) {

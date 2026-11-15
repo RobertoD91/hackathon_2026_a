@@ -112,7 +112,7 @@
   .rete-sens .chip-i { font-size: 28px; padding: 12px 22px; }
   .rete-sens .chip-i.domani { border-color: var(--twin); color: #bff4ff; background: #0f2533; }
   .rete-sens .fr { font-size: 34px; color: var(--tenue); }
-  .sens .fonte-r { margin-top: 26px; font-size: 22px; }
+  .sens .fonte-r { margin-top: 26px; font-size: 24px; color: #b9c6e4; }
 
   /* due colonne: cosa cambia (con i numeri) e perché Napoli */
   .due { position: absolute; left: 90px; right: 90px; top: 0; height: 950px; display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 56px; }
@@ -166,9 +166,11 @@ window.pronta = (async () => {
     // Scurisce le parti dei video già pronti che non servono (vecchio titolo in alto, riquadri dei KPI in basso)
     document.body.className = 'trasparente';
     const regata = 'linear-gradient(180deg, rgb(10 16 32 / 1) 0px, rgb(10 16 32 / 1) 112px, rgb(10 16 32 / 0) 190px, rgb(10 16 32 / 0) 780px, rgb(10 16 32 / 0.97) 870px, rgb(10 16 32 / 1) 900px, rgb(10 16 32 / 1) 1080px)';
-    // Apertura: ritaglio più largo (si vede Mergellina), quindi copro anche la legenda in alto a sinistra
+    // Apertura: ritaglio più largo (si vede Mergellina), quindi copro anche la legenda in alto a sinistra; in basso il
+    // velo diventa pieno prima (848 px), così il bordo del riquadro dei KPI del video 3D (y ≈ 852) non si vede sul mare
+    const apertura = 'linear-gradient(180deg, rgb(10 16 32 / 1) 0px, rgb(10 16 32 / 1) 112px, rgb(10 16 32 / 0) 190px, rgb(10 16 32 / 0) 790px, rgb(10 16 32 / 0.98) 846px, rgb(10 16 32 / 1) 870px, rgb(10 16 32 / 1) 1080px)';
     const g = id === 'velo-regata' ? regata
-      : id === 'velo-apertura' ? `radial-gradient(900px 380px at 0 0, rgb(10 16 32 / 1) 72%, rgb(10 16 32 / 0) 100%), ${regata}`
+      : id === 'velo-apertura' ? `radial-gradient(900px 380px at 0 0, rgb(10 16 32 / 1) 72%, rgb(10 16 32 / 0) 100%), ${apertura}`
       : 'linear-gradient(180deg, rgb(10 16 32 / 0.97) 0px, rgb(10 16 32 / 0.97) 94px, rgb(10 16 32 / 0) 96px, rgb(10 16 32 / 0) 708px, rgb(10 16 32 / 1) 716px, rgb(10 16 32 / 1) 1080px)';
     const c = s.cartelli[id] || {};
     const numeri = (c.numeri || []).map((n) => `<div class="kpi"><b>${esc(n.valore)}</b><span>${esc(n.testo)}</span></div>`).join('');
@@ -182,6 +184,7 @@ window.pronta = (async () => {
     const avviso = chat.messaggi.find((m) => m.tipo === 'avviso') || {};
     const testo = String(c.testo || avviso.testo || '').replace(/^📣\s*/, '');
     const { x = 1400, y = 150, w = 470 } = c.posizione || {};
+    if (c.carattere) document.head.insertAdjacentHTML('beforeend', `<style>.notifica p { font-size: ${Number(c.carattere)}px; }</style>`);
     r.innerHTML = `<div class="notifica" style="left:${x}px;top:${y}px;width:${w}px">
       <div class="capo"><div class="av">C</div><div class="chi">TwinCIRO</div><div class="quando">${esc(c.quando || 'adesso')}</div></div>
       <div class="tit">📣 AVVISO DELLA CITTÀ</div><p>${esc(testo)}</p>${c.nota ? `<div class="nota-n">${esc(c.nota)}</div>` : ''}</div>`;
@@ -241,7 +244,7 @@ window.pronta = (async () => {
           <div class="nodo ag a" style="--d:2.7s"><div class="ic">${ag.icona}</div><h3>${esc(ag.nome)}</h3><p>${esc(ag.testo).replace('napoli/#', '<code>napoli/#</code>')}</p></div>
         </div>
         <div class="rete-sens"><span class="chip-i a" style="--d:${c.d_rete ?? 4.4}s">${esc(c.rete[0])}</span><span class="fr f" style="--d:${(c.d_rete ?? 4.4) + 0.4}s">→</span><span class="chip-i domani a" style="--d:${(c.d_rete ?? 4.4) + 0.6}s">${esc(c.rete[1])}</span></div>
-        <div class="fonte-r f" style="--d:${(c.d_rete ?? 4.4) + 1.2}s">${esc(c.fonte)}</div></div>`;
+        <div class="fonte-r f" style="--d:${c.d_fonte ?? (c.d_rete ?? 4.4) + 1.2}s">${esc(c.fonte)}</div></div>`;
     } else if (c.tipo === 'due-colonne') {
       // Due colonne di righe (icona, numero facoltativo, testo, fonte), ognuna con il suo "d" (secondo di ingresso)
       const riga = (v) => `<div class="rigad a" style="--d:${v.d}s"><div class="ic">${v.icona}</div><div class="num">${esc(v.numero || '')}</div>`

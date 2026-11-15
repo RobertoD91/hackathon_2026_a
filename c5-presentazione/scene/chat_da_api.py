@@ -256,7 +256,7 @@ def main() -> None:
                         quinte.append({"ora": stato.get("ora", ora), "da": "Folla", "a": "TwinCIRO",
                                        "testo": f"{f['nome']}: {numero(f['persone'])} persone, livello {f['livello']} "
                                                 "(stima simulata, letta dal bus)"})
-                nuovo(da="ciro", ora=ora_api(api), testo=risposta, fonte="API della città /chiedi (agenti, LLM a regole)",
+                nuovo(da="ciro", ora=ora_api(api), testo=risposta, fonte="API della città /chiedi (agenti a regole, senza LLM)",
                       dietro_le_quinte=quinte)
                 print(f"[{ora}] {utente}: {turno['testo']}\n        TwinCIRO: {risposta}", file=sys.stderr)
             elif turno["tipo"] == "meteo_reale":
@@ -313,7 +313,8 @@ def main() -> None:
                           and r["da"] in ("Folla", "Orchestratore", "Turismo", "Eventi", "Pilota drone")
                           and r["a"] != "Semafori" and "Traffico" not in (r["da"], r["a"])
                           and (not zona_nome or zona_nome in r["testo"])]
-                nuovo(da="ciro", tipo="avviso", ora=ora_avv, testo="📣 " + scelto["testo"],
+                # "zona": la zona dell'avviso; chat.html la usa per scegliere, nei messaggi lunghi tra agenti, la frase giusta
+                nuovo(da="ciro", tipo="avviso", **({"zona": zona_nome} if zona_nome else {}), ora=ora_avv, testo="📣 " + scelto["testo"],
                       fonte=f"API della città /notifiche (agente {'Turismo' if scelto.get('per') == 'turisti' else 'Orchestratore'}, regole)",
                       dietro_le_quinte=vicine[-4:])
                 print(f"[{ora_avv}] TwinCIRO (avviso): {scelto['testo']}", file=sys.stderr)
@@ -321,8 +322,8 @@ def main() -> None:
         uscita = {
             "generato": {
                 "quando": dt.datetime.now().isoformat(timespec="seconds"),
-                "come": "scene/chat_da_api.py: messaggi veri all'API /chiedi di c5-agentic-city (LLM a regole, "
-                        "senza SUMO) e meteo da Open-Meteo. Ritocchi di forma da chat_domande.json: il testo originale "
+                "come": "scene/chat_da_api.py: messaggi veri all'API /chiedi di c5-agentic-city (agenti a regole, "
+                        "senza LLM né SUMO) e meteo da Open-Meteo. Ritocchi di forma da chat_domande.json: il testo originale "
                         "dell'API resta in 'testo_api'. Puoi ritoccare i testi a mano: il renderer legge solo questo file.",
                 "api": api if a.api else f"c5-agentic-city/avvia.py --llm regole --senza-gemello --inizio "
                                          f"{d['citta']['inizio']} --velocita {d['citta']['velocita']}",

@@ -6,7 +6,7 @@
 <title>Il grafo della città</title>
 <link rel="stylesheet" href="stile.css">
 <style>
-  /* Scena 8 del video: il knowledge graph della città il giorno della regata. La rete si costruisce per
+  /* Scena 9 del video: il knowledge graph della città il giorno della regata. La rete si costruisce per
      strati (luoghi → eventi e flussi → stazioni e imprese → agenti → sensori e fonti). Posizioni, nodi e
      archi vengono da ../grafo/grafo.json (genera.mjs li scrive qui sotto, in #dati-grafo): niente scritto
      a mano. Tutto il movimento è in imposta(t), deterministico. I 130 px in basso restano liberi. */
@@ -27,8 +27,8 @@
 </head>
 <body>
 <div class="testa"><span class="etichetta" id="etichetta">Knowledge graph · giornata della regata</span>
-  <h1 id="titolo">Così <span class="marchio"><span class="twin">Twin</span><span class="ciro">CIRO</span></span> vede la città il giorno della regata</h1></div>
-<div class="nota-g" id="nota">Dai file della repository · eventi e flussi: scenario simulato (2027) · imprese di fantasia · rete mobile simulata</div>
+  <h1 id="titolo">Napoli come rete di relazioni</h1></div>
+<div class="nota-g" id="nota">Ricavato dai dati e dal codice del repository · eventi e flussi: scenario simulato (2027) · imprese di fantasia · rete mobile simulata</div>
 <div class="chips" id="chips"></div>
 <svg id="grafo" viewBox="0 0 1920 1080" aria-label="Grafo della città">
   <defs>
@@ -228,6 +228,10 @@
         el('tspan', { fill: '#38d6f0' }, t).textContent = 'Twin';
         el('tspan', { fill: '#ffb547' }, t).textContent = 'CIRO';
       } else t.textContent = n.e;
+      // i due sensori fatti da noi: le prove sui dispositivi veri sono in corso (firmware/README.md)
+      if (n.t === 'sensore') {
+        el('tspan', { x: attr.x, dy: d * 1.05, 'font-size': d * 0.8, 'font-weight': 600, fill: '#9fb0d3' }, t).textContent = 'in prova';
+      }
       n.et = t;
     }
     g.setAttribute('transform', `translate(${n.x},${n.y})`);

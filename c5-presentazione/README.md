@@ -43,13 +43,13 @@ In modalità demo la console mostra un 404 su `/api/state`: è normale, perché 
 - È una rappresentazione delle relazioni, non un database interrogato dagli agenti; cosa è simulato è scritto in pagina.
 
 ```bash
-node c5-presentazione/grafo/genera.mjs              # rigenera grafo.json e i dati della scena 8
+node c5-presentazione/grafo/genera.mjs              # rigenera grafo.json e i dati della scena 09
 node c5-presentazione/grafo/genera.mjs --controlla  # esce con 1 se non sono aggiornati
 ```
 
 ## Il video di consegna (v3)
 
-- [`bozza.mp4`](bozza.mp4): la bozza montata. Dura **2:58** (15 scene), è 1920×1080 a 30 fps, H.264, ha i sottotitoli impressi e pesa meno di 40 MB. Mancano le voci di Roberto e Mario e le riprese vere. Al loro posto ci sono la chat ricostruita (con le risposte vere dell'API) e, per l'IoT, il cartello «Sensori fatti da noi» (i due dispositivi reali e il formato unico dei messaggi, senza valori inventati).
+- [`bozza.mp4`](bozza.mp4): la bozza montata. Dura **2:59** (15 scene), è 1920×1080 a 30 fps, H.264, ha i sottotitoli impressi e pesa meno di 40 MB. Mancano le voci di Roberto e Mario e le riprese vere. Al loro posto ci sono la chat ricostruita (con le risposte vere dell'API) e, per l'IoT, il cartello «Sensori fatti da noi» (i due dispositivi reali e il formato unico dei messaggi, senza valori inventati).
 - [`clip/`](clip/LEGGIMI.md): ogni scena come clip a sé senza sottotitoli, con il suo SRT, più `sottotitoli.srt`, `sottotitoli.ass` e `00-finale-senza-sottotitoli.mp4`, per rimontare a mano. Sono nel repository.
 - [`voce/`](voce/COPIONE-VOCE.md): le battute scena per scena con chi le legge (Roberto o Mario), i tempi e il nome del file da registrare.
 - [`copione.md`](copione.md): scene con i tempi, testi a schermo, voce da leggere, **riprese da girare** e tabella di cosa è reale e cosa è simulato.
@@ -61,10 +61,10 @@ Il feedback dei partner del 14/11 chiede di mettere **l'assistente su WhatsApp a
 1. il gancio (Napoli 2027, la regata) e il problema: i dati ci sono ma sono sparsi, e manca il dato delle persone;
 2. TwinCIRO e le sue fonti (oltre 50 fonti pubbliche, verificate una per una), i due utenti;
 3. **il turista**: Marta scrive a TwinCIRO su WhatsApp; TwinCIRO negozia con la pizzeria, prenota con un «ok», la porta alla regata, usa i dati veri e **avvisa per primo** quando la Rotonda Diaz si riempie;
-4. dietro: un **sistema multi-agente** (agenti specializzati e orchestratore sul bus MQTT `napoli/#`), il grafo della città, Napoli adesso con i dati veri;
-5. **chi governa**: l'operatore della Polizia Locale approva o blocca le proposte degli agenti;
-6. i **sensori fatti da noi** (badge WHY2025 e scheda Tasmota), il gemello digitale con l'avviso di TwinCIRO;
-7. tre passi con Fastweb + Vodafone, i benefici con i numeri e il perché Napoli, la chiusura.
+4. **chi governa**, subito dopo: l'operatore della Polizia Locale approva proprio quell'avviso (gli agenti propongono, l'operatore approva o blocca);
+5. dietro: un **sistema multi-agente** (agenti specializzati e orchestratore sul bus MQTT `napoli/#`; i dati veri dall'API dati città), il grafo della città, Napoli adesso con i dati veri;
+6. i **sensori fatti da noi** (badge WHY2025 e scheda Tasmota, prove sui dispositivi veri in corso), il gemello digitale con l'avviso di TwinCIRO;
+7. tre passi con Fastweb + Vodafone, i benefici con i numeri e le loro ipotesi, il perché Napoli, la chiusura.
 
 ### Scene e cartelle
 
@@ -74,16 +74,16 @@ Il feedback dei partner del 14/11 chiede di mettere **l'assistente su WhatsApp a
 | 02 | motivazione | 11 s | `scene/motivazione.html` | `scene/fonti/`: `catalogo.json` (da `costruisci.py`, righe di `docs/fonti-dati-napoli.md`), `isole.js`, `loghi/` (icone ufficiali dei siti) |
 | 03 | titolo | 7 s | `scene/titolo.html` | durata da `scaletta.json` |
 | 04 | fonti | 8 s | `scene/fonti.html` | `scene/fonti/`, come la 02 |
-| 05 | utenti | 4 s | `scene/utenti.html` | – |
-| 06 | chat del turista | 40 s | `scene/chat.html` (oppure `girato/chat.mp4` nel telefono) | `scene/chat.json` (da `chat_da_api.py`) |
-| 07 | architettura multi-agente | 11 s | `scene/architettura.html` | – |
-| 08 | grafo | 9 s | `scene/grafo.html` | dati incorporati da `grafo/genera.mjs`, loghi da `scene/fonti/loghi/` |
-| 09 | Napoli adesso | 14 s | `scene/adesso.html` | `scene/oggi/*.json` (da `oggi/cattura.mjs`) |
-| 10 | operatore della Polizia Locale | 14 s | `scene/operatore.html` | `scene/operatore/` (da `cattura_mappa.mjs` e `cattura_citta.py`) |
+| 05 | utenti | 6 s | `scene/utenti.html` | – |
+| 06 | chat del turista | 38 s | `scene/chat.html` (oppure `girato/chat.mp4` nel telefono) | `scene/chat.json` (da `chat_da_api.py`) |
+| 07 | operatore della Polizia Locale | 14 s | `scene/operatore.html` | `scene/operatore/` (da `cattura_mappa.mjs` e `cattura_citta.py`) |
+| 08 | architettura multi-agente | 11 s | `scene/architettura.html` | – |
+| 09 | grafo | 9 s | `scene/grafo.html` | dati incorporati da `grafo/genera.mjs`, loghi da `scene/fonti/loghi/` |
+| 10 | Napoli adesso | 14 s | `scene/adesso.html` | `scene/oggi/*.json` (da `oggi/cattura.mjs`) |
 | 11 | sensori fatti da noi | 8 s | `girato/badge.mp4` e `girato/tasmota.mp4`, altrimenti il cartello `sensori` di `scene/cartelli.html` | testi in `scaletta.json` |
-| 12 | gemello digitale | 9 s | `regata_3d.mp4` da 0:40, con la notifica di TwinCIRO | avviso di `scene/chat.json` |
+| 12 | gemello digitale | 9 s | `regata_3d.mp4` da 0:58 (14:33–14:42 simulate), con la notifica di TwinCIRO quando parte l'avviso vero della simulazione | avviso di `scene/chat.json` |
 | 13 | Fastweb + Vodafone | 16 s | `scene/fastweb.html` | durata da `scaletta.json` |
-| 14 | benefici e perché Napoli | 11 s | cartello `benefici` di `scene/cartelli.html` | testi in `scaletta.json` |
+| 14 | benefici e perché Napoli | 12 s | cartello `benefici` di `scene/cartelli.html` | testi in `scaletta.json` |
 | 15 | chiusura | 8 s | cartello `chiusura` | testi in `scaletta.json` |
 
 Le scene di tipo `"pagina"` elencano in `"dipende"` i file che leggono: se una cattura li cambia, al montaggio dopo la scena si rigenera da sola (non serve `--rigenera`).
@@ -100,7 +100,7 @@ cd c5-presentazione
 ./monta.sh --segnaposto     # dove manca una ripresa vera mostra il cartello «Qui va una ripresa reale»
 ```
 
-Servono ffmpeg, Node con Playwright e Chromium, e python3 (solo libreria standard). La prima volta ci vogliono circa 10 minuti, perché si genera ogni fotogramma delle scene HTML; dopo, con la cache, 3-4 minuti (si rigenerano solo le scene cambiate; la codifica finale è in due passate). La registrazione della mappa (`--rigenera-mappa`, tipo di scena `"mappa"`) resta disponibile, ma la v3 non la usa: la dashboard compare come foto nella scena 10.
+Servono ffmpeg, Node con Playwright e Chromium, e python3 (solo libreria standard). La prima volta ci vogliono circa 10 minuti, perché si genera ogni fotogramma delle scene HTML; dopo, con la cache, 3-4 minuti (si rigenerano solo le scene cambiate; la codifica finale è in due passate). La registrazione della mappa (`--rigenera-mappa`, tipo di scena `"mappa"`) resta disponibile, ma la v3 non la usa: la dashboard compare come foto nella scena 07.
 
 ### Rifare le catture
 
@@ -111,16 +111,16 @@ Dalla radice della repo. Dopo ogni cattura basta `./monta.sh`: la scena che legg
 (cd c5-presentazione/scene/fonti && PYTHONDONTWRITEBYTECODE=1 python3 costruisci.py)
 # Scena 06: la chat dall'API vera di c5-agentic-city (circa 6 minuti, porta 8805)
 PYTHONDONTWRITEBYTECODE=1 python3 c5-presentazione/scene/chat_da_api.py
-# Scena 08: il grafo
+# Scena 09: il grafo
 node c5-presentazione/grafo/genera.mjs
-# Scena 09: Napoli adesso, dati veri dell'API dati città (rinfresca eventi, aria e meteo, poi 15 domande)
+# Scena 10: Napoli adesso, dati veri dell'API dati città (rinfresca eventi, aria e meteo, poi 15 domande)
 node c5-presentazione/scene/oggi/cattura.mjs                 # oppure --api https://twinciro.robertodisanto.it/citta-api con CITTA_API_TOKEN
-# Scena 10: la dashboard (mappa in modalità demo) e la città con --approvazione (circa 5 minuti, venv di c5-agentic-city)
+# Scena 07: la dashboard (mappa in modalità demo) e la città con --approvazione (circa 5 minuti, venv di c5-agentic-city)
 NODE_PATH=$(npm root -g) node c5-presentazione/scene/operatore/cattura_mappa.mjs
 PYTHONDONTWRITEBYTECODE=1 <venv>/bin/python c5-presentazione/scene/operatore/cattura_citta.py
 ```
 
-- Se si rifà la cattura di Napoli adesso, va riletta la battuta dell'allerta della scena 09 (dipende dal giorno).
+- La voce di Napoli adesso (scena 10) vale con qualsiasi cattura. Con l'API di adesso (dal 14/11 sera) il pannello dell'allerta mostra anche l'avviso della Protezione Civile per domani, che la cattura delle 19:30 non ha: conviene rifarla domenica mattina, quando passano i treni.
 - Se si rigenera la chat, va rifatta anche `cattura_citta.py`: controlla che l'avviso della proposta D4 sia identico a quello della chat.
 
 #### Riprese vere, voce, musica
@@ -152,18 +152,18 @@ Se un file c'è, `monta.sh` lo usa al posto della scena generata. Nella scena 11
 | `scene/chat.html` | telefono generico (nessun marchio WhatsApp) con la chat, più il pannello «dietro le quinte» a destra; `?telefono=vuoto` lascia lo schermo nero per la ripresa vera |
 | `scene/motivazione.html`, `scene/fonti.html`, `scene/fonti/` | le fonti come isole sparse e poi come muro intorno a TwinCIRO; catalogo, icone ufficiali e codice comune |
 | `scene/titolo.html`, `scene/utenti.html`, `scene/architettura.html`, `scene/grafo.html`, `scene/adesso.html`, `scene/operatore.html`, `scene/fastweb.html` | le scene a pagina intera della v3 (ognuna con `window.pronta` e `window.imposta(t)`, 1920×1080, i 130 px in basso liberi per i sottotitoli) |
-| `scene/oggi/`, `scene/operatore/` | le catture con i dati veri (scene 09 e 10) e gli script che le rifanno |
+| `scene/oggi/`, `scene/operatore/` | le catture con i dati veri (scene 10 e 07) e gli script che le rifanno |
 | `scene/cartelli.html`, `scene/stile.css` | cartelli (sensori, benefici, chiusura, segnaposto), testate, veli, notifica di TwinCIRO e stile comune |
 | `scene/chat_da_api.py` | genera `chat.json` dall'API vera della città |
 | `scene/registra_mappa.mjs` | registra la mappa reale (`mappa/`) con lo screencast di Chromium (non usata dalla v3) |
 
-Ogni pagina si apre anche nel browser, per un'anteprima: per esempio `python3 -m http.server -d c5-presentazione/scene 8000` e poi http://localhost:8000/chat.html?durata=40 o http://localhost:8000/cartelli.html?id=sensori.
+Ogni pagina si apre anche nel browser, per un'anteprima: per esempio `python3 -m http.server -d c5-presentazione/scene 8000` e poi http://localhost:8000/chat.html?durata=38 o http://localhost:8000/cartelli.html?id=sensori.
 
 **Perché non `recordVideo` di Playwright:** registra in VP8 a circa 1 Mbit/s. A 1080p il testo della chat si sgrana e i tempi dipendono dal carico della macchina. Il rendering fotogramma per fotogramma è nitido e cade sempre negli stessi secondi dei sottotitoli.
 
 ### Fonti nel video
 
-`c5-agentic-city` è usata in sola lettura: media (`regata_3d.mp4`), API `/chiedi`, `/notifiche` e `/operatore`, sala nel terminale, dati. Ci sono anche l'API dati città (`citta-api/`, cattura del 14/11 alle 19:30), la mappa `mappa/` (dashboard della scena 10), il catalogo `docs/fonti-dati-napoli.md` e Open-Meteo dal vivo nella chat. Il formato MQTT del cartello dei sensori è quello unico della città, descritto in [`firmware/`](../firmware/).
+`c5-agentic-city` è usata in sola lettura: media (`regata_3d.mp4`), API `/chiedi`, `/notifiche` e `/operatore`, sala nel terminale, dati. Ci sono anche l'API dati città (`citta-api/`, cattura del 14/11 alle 19:30), la mappa `mappa/` (dashboard della scena 07), il catalogo `docs/fonti-dati-napoli.md` e Open-Meteo dal vivo nella chat. Il formato MQTT del cartello dei sensori è quello unico della città, descritto in [`firmware/`](../firmware/).
 
 Cosa è reale e cosa è simulato: tabella in fondo a [`copione.md`](copione.md#cosa-è-reale-e-cosa-è-simulato-lo-diciamo-anche-nel-video).
 
@@ -174,6 +174,7 @@ Cosa è reale e cosa è simulato: tabella in fondo a [`copione.md`](copione.md#c
 - [x] Revisione del 14/11 pomeriggio: l'assistente su WhatsApp al centro, scena SUMO esclusa, «fonti pubbliche» invece di «aperte», voce a circa 150 parole al minuto
 - [x] Hardware del 14/11 sera: i due dispositivi reali (badge WHY2025 e scheda Tasmota sull'hotspot) e il formato unico `napoli/...`
 - [x] v3 del 14/11 sera (2:58, 15 scene): motivazione, fonti, titolo, due utenti, chat del turista, architettura multi-agente, grafo, Napoli adesso con i dati veri, operatore della Polizia Locale, sensori fatti da noi, gemello, Fastweb + Vodafone, benefici e perché Napoli; voce divisa tra Roberto e Mario
+- [x] Revisione della notte del 15/11 (fatti e forma): operatore subito dopo la chat, gemello sull'avviso vero della simulazione, allerta senza livelli in contrasto con la Protezione Civile, architettura con l'API dati città, quinte coerenti, stime con le loro ipotesi, testi di Fastweb + Vodafone verificati, sottotitoli su due righe (2:59)
 - [ ] Riprese vere: chat di TwinCIRO su WhatsApp (R1), badge WHY2025 (R2), scheda Tasmota (R3)
 - [ ] Voci di Roberto e Mario (R4)
 - [ ] Controllo finale dei fotogrammi con le riprese vere

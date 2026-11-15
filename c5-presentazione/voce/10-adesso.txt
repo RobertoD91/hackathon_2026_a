@@ -1,0 +1,16 @@
+TwinCIRO · voce fuori campo · scena 10 di 15: adesso
+Nel video da 1:52,0 a 2:06,0 · clip clip/10-adesso.mp4 di 14,0 s
+
+1 · MARIO · da 0,3 a 4,2 s della clip · durata disponibile 3,9 s · nel video 1:52,3 → 1:56,2
+    Questa è Napoli adesso: dati veri, ognuno con la sua fonte.
+    11 parole, ritmo di circa 162 al minuto · registra in girato/voce/10-adesso-1.m4a
+
+2 · ROBERTO · da 4,4 a 7,8 s della clip · durata disponibile 3,4 s · nel video 1:56,4 → 1:59,8
+    Allerte, treni, aria e Campi Flegrei, con l'ora del dato.
+    10 parole, ritmo di circa 159 al minuto · registra in girato/voce/10-adesso-2.m4a
+
+3 · MARIO · da 8,0 a 13,6 s della clip · durata disponibile 5,6 s · nel video 2:00,0 → 2:05,6
+    Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà stazioni e orari.
+    13 parole, ritmo di circa 145 al minuto · registra in girato/voce/10-adesso-3.m4a
+
+Tutta la scena in un file: girato/voce/10-adesso.m4a (la prima parola va a 0,3 s dall'inizio della clip, il silenzio prima si toglie da solo).

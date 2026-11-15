@@ -1,13 +1,25 @@
 {
-  "nota": "Scaletta v3 del video di consegna di TwinCIRO (C5): 15 scene, 2:58. È l'unica fonte di durate, testi a schermo e voce fuori campo: monta.py la legge, cartelli.html prende da qui i testi dei cartelli, titolo.html e fastweb.html la loro durata. Ogni battuta ha \"chi\" (Roberto o Mario); tempi in secondi dall'inizio della scena, a circa 150 parole al minuto contando le sigle come si pronunciano (controllo: ./monta.sh --solo-testi). Le scene di tipo \"pagina\" elencano in \"dipende\" i file che leggono: se cambiano, la scena si rigenera da sola. Una scena con \"salta\": true resta descritta ma non entra nel video. Se cambi qualcosa qui, aggiorna anche copione.md.",
+  "nota": "Scaletta v3 del video di consegna di TwinCIRO (C5): 15 scene, 2:59. È l'unica fonte di durate, testi a schermo e voce fuori campo: monta.py la legge, cartelli.html prende da qui i testi dei cartelli, titolo.html e fastweb.html la loro durata. Ogni battuta ha \"chi\" (Roberto o Mario); tempi in secondi dall'inizio della scena, a circa 150 parole al minuto contando le sigle come si pronunciano (controllo: ./monta.sh --solo-testi). Le scene di tipo \"pagina\" elencano in \"dipende\" i file che leggono: se cambiano, la scena si rigenera da sola. Una scena con \"salta\": true resta descritta ma non entra nel video. Se cambi qualcosa qui, aggiorna anche copione.md.",
   "fps": 30,
   "dissolvenza": 0.2,
-  "pronuncia": { "Cumana": "cumàna" },
+  "pronuncia": {
+    "Cumana": "cumàna",
+    "MIIA": "emme i i a",
+    "AI": "a i",
+    "America's Cup": "amèrica's cap",
+    "Diaz": "dìaz",
+    "Flegrei": "flegrèi",
+    "City Intelligence and Responsive Orchestration": "sìti intèlligens end rispònsiv orchestrèiscion",
+    "13": "tredici",
+    "14": "quattordici",
+    "50": "cinquanta",
+    "1.900": "millenovecento"
+  },
   "scene": [
     {
       "id": "01-regata",
       "durata": 8,
-      "nota": "Il gancio: la regata 3D del gemello digitale (stessa sorgente dell'apertura della v2), ritagliata con Mergellina e con il velo sul vecchio titolo e sui riquadri dei KPI.",
+      "nota": "Il gancio: la regata 3D del gemello digitale, ritagliata con Mergellina e con il velo sul vecchio titolo e sui riquadri dei KPI. La testata dice la posta in gioco (non ripete il sottotitolo) e che lo scenario è simulato.",
       "sorgente": {
         "tipo": "video",
         "file": "../../c5-agentic-city/media/regata_3d.mp4",
@@ -15,7 +27,7 @@
         "ritaglio": [0, 120, 1600, 900],
         "velo": "velo-apertura"
       },
-      "testata": { "etichetta": "Napoli 2027 · lo scenario", "testo": "America's Cup, due navi da crociera, la partita al Maradona: lo stesso sabato" },
+      "testata": { "etichetta": "Napoli 2027 · scenario simulato", "testo": "Tre grandi eventi lo stesso sabato: chi guida la folla?" },
       "voce": [
         { "da": 0.6, "a": 3.0, "chi": "Roberto", "testo": "Napoli, 2027." },
         { "da": 3.2, "a": 7.7, "chi": "Mario", "testo": "Un sabato: America's Cup, navi da crociera e partita al Maradona." }
@@ -24,7 +36,7 @@
     {
       "id": "02-motivazione",
       "durata": 11,
-      "nota": "Nessuna testata: la pagina ha il suo titolo. Le 56 fonti pubbliche del catalogo come isole sparse (logo ufficiale o nome, formato), collegamenti che si interrompono, poi il dato che manca: le persone per zona (riga «Presenze da rete mobile», non pubblica).",
+      "nota": "Nessuna testata: la pagina ha il suo titolo. Le fonti pubbliche del catalogo come isole sparse (logo ufficiale o nome, formato), collegamenti che si interrompono, poi il dato che manca: le persone per zona (riga «Presenze da rete mobile», non pubblica). Le fonti di FUORI_DAL_VIDEO (fonti/isole.js) restano nel catalogo ma non in scena.",
       "sorgente": { "tipo": "pagina", "pagina": "motivazione.html", "dipende": ["fonti/catalogo.json", "fonti/isole.js", "fonti/loghi/*.png"] },
       "voce": [
         { "da": 0.3, "a": 4.3, "chi": "Roberto", "testo": "I dati ci sono. Ma sono sparsi, e non si parlano." },
@@ -44,83 +56,84 @@
     {
       "id": "04-fonti",
       "durata": 8,
-      "nota": "Le isole della scena 2 convergono nel muro per dominio; il contatore arriva al numero di fonti pubbliche del catalogo (56) e «Oltre 50» è calcolato. Per scelta di Roberto la pagina non dice quante fonti sono già collegate all'API: i punti luminosi partono solo da quelle (campo in_uso), senza numeri né evidenze.",
+      "nota": "Le isole della scena 2 convergono nel muro per tema; il contatore arriva al numero di fonti pubbliche che si vedono (55: TIM Big Data, dati di Milano del 2013, resta nel catalogo ma non in scena), con sotto «nel catalogo», e «Oltre 50» è calcolato. Per scelta di Roberto la pagina non dice quante fonti sono già collegate all'API: i punti luminosi partono solo da quelle (campo in_uso), senza numeri né evidenze.",
       "sorgente": { "tipo": "pagina", "pagina": "fonti.html", "dipende": ["fonti/catalogo.json", "fonti/isole.js", "fonti/loghi/*.png"] },
       "voce": [
-        { "da": 0.3, "a": 4.1, "chi": "Roberto", "testo": "Oltre cinquanta fonti pubbliche, verificate una per una." },
-        { "da": 4.3, "a": 7.8, "chi": "Mario", "testo": "Un catalogo unico: licenza e stato di ogni fonte." }
+        { "da": 0.3, "a": 4.1, "chi": "Roberto", "testo": "Oltre 50 fonti pubbliche, verificate una per una." },
+        { "da": 4.3, "a": 7.8, "chi": "Mario", "testo": "Un catalogo unico, diviso per temi." }
       ]
     },
     {
       "id": "05-utenti",
-      "durata": 4,
-      "nota": "Due utenti: chi visita (Marta, crocerista, su WhatsApp) e chi governa (l'operatore della Polizia Locale, in sala operativa).",
+      "durata": 6,
+      "nota": "Due utenti: chi visita (Marta, crocerista, su WhatsApp) e chi governa (l'operatore della Polizia Locale, in sala operativa). Le due schede entrano insieme entro 1 s e restano leggibili per 5 s. Le scene 6 e 7 li mostrano uno dopo l'altro.",
       "sorgente": { "tipo": "pagina", "pagina": "utenti.html" },
       "voce": [
-        { "da": 0.2, "a": 3.8, "chi": "Roberto", "testo": "Due utenti: chi visita Napoli, e chi la governa." }
+        { "da": 0.4, "a": 4.4, "chi": "Roberto", "testo": "Due utenti: chi visita Napoli, e chi la governa." }
       ]
     },
     {
       "id": "06-chat",
-      "durata": 40,
-      "nota": "Il turista: la chat di Marta con TwinCIRO, 5 passi, risposte vere dell'API (chat.json). A 40 s le pause di lettura si accorciano ma l'ultimo messaggio (l'avviso) tiene tutto il suo tempo: ogni messaggio resta a schermo almeno 8 s. Arrivi delle risposte: pizzeria 6,4 s, conferma 12,3, percorso 18,7, meteo 25,5, avviso 31,6. Con la ripresa vera girato/chat.mp4 il telefono vero va al posto di quello disegnato.",
+      "durata": 38,
+      "nota": "Il turista: la chat di Marta con TwinCIRO, 5 passi, risposte vere dell'API (chat.json). A 38 s le pause di lettura si accorciano ma l'ultimo messaggio (l'avviso) tiene tutto il suo tempo: resta a schermo 8 s. Arrivi delle risposte: pizzeria 6,4 s, conferma 11,7, percorso 18,0, meteo 24,2, avviso 29,7 (stacco «Più tardi» a 26,3). Nel pannello «dietro le quinte» un messaggio lungo diventa una frase sola, quella sulla zona dell'avviso. Con la ripresa vera girato/chat.mp4 il telefono vero va al posto di quello disegnato.",
       "sorgente": { "tipo": "chat" },
       "girato": { "file": "chat", "modo": "telefono", "da": 0 },
       "voce": [
         { "da": 0.5, "a": 4.1, "chi": "Mario", "testo": "Marta, in crociera, scrive a TwinCIRO come a un amico." },
-        { "da": 4.3, "a": 9.1, "chi": "Roberto", "testo": "TwinCIRO chiede alla pizzeria: alle 13 è piena, propone le 14." },
-        { "da": 9.4, "a": 13.6, "chi": "Mario", "testo": "Marta dice «ok»: tavolo prenotato, nessuna telefonata." },
-        { "da": 15.6, "a": 20.4, "chi": "Roberto", "testo": "Poi TwinCIRO le dice come arrivare alla regata, e quanta gente c'è." },
-        { "da": 22.6, "a": 26.4, "chi": "Mario", "testo": "Per il meteo usa dati veri, e cita sempre la fonte." },
-        { "da": 28.6, "a": 35.6, "chi": "Roberto", "testo": "E quando la Rotonda Diaz si riempie, è TwinCIRO a scrivere per primo: c'è un posto più tranquillo, con un'offerta." }
+        { "da": 4.3, "a": 9.0, "chi": "Roberto", "testo": "TwinCIRO chiede alla pizzeria: alle 13 è piena, propone le 14." },
+        { "da": 9.2, "a": 13.3, "chi": "Mario", "testo": "Marta dice «ok»: tavolo prenotato, nessuna telefonata." },
+        { "da": 14.9, "a": 19.7, "chi": "Roberto", "testo": "Poi TwinCIRO le dice come arrivare alla regata, e quanta gente c'è." },
+        { "da": 21.3, "a": 25.1, "chi": "Mario", "testo": "Per il meteo usa dati veri, e cita sempre la fonte." },
+        { "da": 26.5, "a": 30.6, "chi": "Roberto", "testo": "E quando la Rotonda Diaz si riempie, è TwinCIRO a scrivere per primo:" },
+        { "da": 30.8, "a": 34.0, "chi": "Roberto", "testo": "c'è un posto più tranquillo, con un'offerta." }
       ]
     },
     {
-      "id": "07-architettura",
-      "durata": 11,
-      "nota": "Un sistema multi-agente: persone → TwinCIRO → API della città → orchestratore e sei agenti specializzati, che si parlano sul bus MQTT napoli/#, con le fonti pubbliche e i sensori fatti da noi (badge WHY2025 e Tasmota). Tempi della pagina: agenti 2,2–4,2 s, orchestratore che spiega 4,9 s, bus 6,0 s, fonti 7,4 s, sensori 8,6 s.",
-      "sorgente": { "tipo": "pagina", "pagina": "architettura.html" },
-      "voce": [
-        { "da": 0.3, "a": 5.8, "chi": "Mario", "testo": "Dietro TwinCIRO c'è un sistema multi-agente: agenti specializzati e un orchestratore." },
-        { "da": 6.0, "a": 10.8, "chi": "Roberto", "testo": "Si parlano su MQTT, con le fonti pubbliche e i sensori fatti da noi." }
-      ]
-    },
-    {
-      "id": "08-grafo",
-      "durata": 9,
-      "nota": "Knowledge graph della giornata della regata (83 nodi, 196 relazioni) da grafo/grafo.json, generato da grafo/genera.mjs con i dati e il codice della repository; i dati sono incorporati nella pagina. Pagina navigabile: c5-presentazione/grafo/.",
-      "sorgente": { "tipo": "pagina", "pagina": "grafo.html", "dipende": ["fonti/loghi/*.png"] },
-      "voce": [
-        { "da": 0.3, "a": 4.4, "chi": "Mario", "testo": "Così TwinCIRO vede la città: luoghi, eventi, flussi, stazioni." },
-        { "da": 4.7, "a": 8.7, "chi": "Roberto", "testo": "Poi agenti, sensori e fonti: la rete con cui decidono." }
-      ]
-    },
-    {
-      "id": "09-adesso",
+      "id": "07-operatore",
       "durata": 14,
-      "nota": "Napoli adesso, con i dati veri dell'API dati città catturati il 14/11/2026 alle 19:30 (scene/oggi/, rifare con node c5-presentazione/scene/oggi/cattura.mjs). Se si rifà la cattura, rileggere la battuta dell'allerta sui dati nuovi.",
-      "sorgente": { "tipo": "pagina", "pagina": "adesso.html", "dipende": ["oggi/*.json"] },
-      "voce": [
-        { "da": 0.3, "a": 4.4, "chi": "Mario", "testo": "Questa è Napoli adesso: dati veri, ognuno con la sua fonte." },
-        { "da": 4.6, "a": 8.2, "chi": "Roberto", "testo": "Domani, in Campania, allerta arancione per temporali." },
-        { "da": 8.4, "a": 13.6, "chi": "Mario", "testo": "Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà la prossima Cumana." }
-      ]
-    },
-    {
-      "id": "10-operatore",
-      "durata": 14,
-      "nota": "Chi governa: l'operatore della Polizia Locale. Dashboard (mappa in demo: folla simulata, allerte vere), proposta D4 delle 14:41 della città vera con --approvazione, approvata con POST /operatore (avviso identico a quello della chat), sala nel terminale resa con rich. Catture in scene/operatore/ (cattura_mappa.mjs, cattura_citta.py).",
+      "nota": "Chi governa, subito dopo la chat: l'operatore della Polizia Locale approva proprio l'avviso arrivato a Marta. Dashboard (la mappa in modalità demo: folla e sensori simulati, allerte vere; senza il suo pannello delle decisioni, che sono di un'altra simulazione), proposta D4 delle 14:41 della città vera con --approvazione, approvata con POST /operatore (avviso identico a quello della chat), sala nel terminale resa con rich. Catture in scene/operatore/ (cattura_mappa.mjs, cattura_citta.py).",
       "sorgente": { "tipo": "pagina", "pagina": "operatore.html", "dipende": ["operatore/*"] },
       "voce": [
-        { "da": 0.3, "a": 4.5, "chi": "Roberto", "testo": "E la Polizia Locale vede folla, allerte e decisioni." },
+        { "da": 0.3, "a": 4.5, "chi": "Roberto", "testo": "Quell'avviso passa dalla Polizia Locale, in sala operativa." },
         { "da": 4.8, "a": 9.0, "chi": "Mario", "testo": "Gli agenti propongono: l'operatore approva, o blocca." },
         { "da": 9.3, "a": 13.7, "chi": "Roberto", "testo": "Nel terminale della sala, la stessa decisione: l'avviso è partito." }
       ]
     },
     {
+      "id": "08-architettura",
+      "durata": 11,
+      "nota": "Un sistema multi-agente. Da TwinCIRO due strade: verso gli agenti (API della città /chiedi e /notifiche → orchestratore e sei agenti specializzati, che si parlano sul bus MQTT napoli/#, con sensori fatti da noi, drone, gemello e sala) e verso i dati veri (API dati città, citta-api, che legge le fonti pubbliche: non stanno sul bus degli agenti). Tempi della pagina: agenti 2,2–4,2 s, orchestratore che spiega 4,9 s, bus e riga in basso 6,0–6,9 s, fonti 7,5 s, API dati città 8,5 s.",
+      "sorgente": { "tipo": "pagina", "pagina": "architettura.html" },
+      "voce": [
+        { "da": 0.3, "a": 5.7, "chi": "Mario", "testo": "Dietro TwinCIRO c'è un sistema multi-agente: agenti specializzati e un orchestratore." },
+        { "da": 5.9, "a": 10.8, "chi": "Roberto", "testo": "Si parlano su MQTT; le fonti pubbliche arrivano dall'API dati città." }
+      ]
+    },
+    {
+      "id": "09-grafo",
+      "durata": 9,
+      "nota": "Knowledge graph della giornata della regata (83 nodi, 196 relazioni) da grafo/grafo.json, generato da grafo/genera.mjs con i dati e il codice della repository; i dati sono incorporati nella pagina. È una rappresentazione delle relazioni, non un database interrogato dagli agenti: lo dicono titolo, nota e voce. I due sensori sono «in prova». Pagina navigabile: c5-presentazione/grafo/.",
+      "sorgente": { "tipo": "pagina", "pagina": "grafo.html", "dipende": ["fonti/loghi/*.png"] },
+      "voce": [
+        { "da": 0.3, "a": 4.4, "chi": "Mario", "testo": "Ecco la città come rete: luoghi, eventi, flussi, stazioni." },
+        { "da": 4.7, "a": 8.7, "chi": "Roberto", "testo": "Poi agenti, sensori e fonti, e come sono collegati." }
+      ]
+    },
+    {
+      "id": "10-adesso",
+      "durata": 14,
+      "nota": "Napoli adesso, con i dati veri dell'API dati città catturati il 14/11/2026 alle 19:30 (scene/oggi/, rifare con node c5-presentazione/scene/oggi/cattura.mjs). La battuta dei pannelli vale con qualsiasi cattura: mentre la dice, si accendono allerta, treni, aria, Campi Flegrei e la legenda degli stati. Con l'API di adesso il pannello dell'allerta mostra anche l'avviso della Protezione Civile per domani (chiave \"domani\").",
+      "sorgente": { "tipo": "pagina", "pagina": "adesso.html", "dipende": ["oggi/*.json"] },
+      "voce": [
+        { "da": 0.3, "a": 4.2, "chi": "Mario", "testo": "Questa è Napoli adesso: dati veri, ognuno con la sua fonte." },
+        { "da": 4.4, "a": 7.8, "chi": "Roberto", "testo": "Allerte, treni, aria e Campi Flegrei, con l'ora del dato." },
+        { "da": 8.0, "a": 13.6, "chi": "Mario", "testo": "Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà stazioni e orari." }
+      ]
+    },
+    {
       "id": "11-sensori",
       "durata": 8,
-      "nota": "Sensori fatti da noi: le riprese vere girato/badge.mp4 e girato/tasmota.mp4 (quelle che ci sono si dividono la scena, con la testata); se mancano tutte e due, il cartello «sensori»: i due dispositivi, il formato unico napoli/ e la rete, senza valori inventati. Con --segnaposto: il cartello «qui-sensori».",
+      "nota": "Sensori fatti da noi: le riprese vere girato/badge.mp4 e girato/tasmota.mp4 (quelle che ci sono si dividono la scena, con la testata); se mancano tutte e due, il cartello «sensori»: i due dispositivi, il formato unico napoli/ e la rete, senza valori inventati, con la nota sulle prove in corso a schermo da 1,8 s. Con --segnaposto: il cartello «qui-sensori».",
       "sorgente": { "tipo": "cartello", "id": "sensori" },
       "segnaposto": "qui-sensori",
       "girato": { "file": ["badge", "tasmota"], "modo": "pieno", "da": 0 },
@@ -133,49 +146,50 @@
     {
       "id": "12-gemello",
       "durata": 9,
-      "nota": "Il gemello digitale: la regata 3D (stessa sorgente della v2), con la notifica di TwinCIRO che riprende il testo dell'avviso di chat.json.",
+      "nota": "Il gemello digitale: la regata 3D da 58 s (14:33–14:42 simulate, prima del riquadro finale). L'avviso vero della simulazione per la Rotonda Diaz parte alle 14:37 (62 s del file): la notifica di TwinCIRO, con il testo dell'avviso di chat.json, compare allora (4,4 s della scena), in alto a sinistra per non coprire le etichette; poi Piazza Vittoria passa da circa 1.500 a 3.300 persone.",
       "sorgente": {
         "tipo": "video",
         "file": "../../c5-agentic-city/media/regata_3d.mp4",
-        "da": 40.0,
+        "da": 58.0,
         "ritaglio": [320, 100, 1440, 810],
         "velo": "velo-regata"
       },
       "sovrapposti": [ { "id": "notifica-avviso", "da": 4.4, "a": 9.0 } ],
-      "testata": { "etichetta": "Gemello digitale", "testo": "La giornata della regata simulata sulle strade vere: folla per zona e barche" },
+      "testata": { "etichetta": "Gemello digitale", "testo": "Regata simulata sulle strade vere: le colonne sono le persone per zona" },
       "voce": [
         { "da": 0.3, "a": 4.3, "chi": "Mario", "testo": "Il gemello digitale prova la giornata sulle strade vere." },
-        { "da": 4.6, "a": 8.6, "chi": "Roberto", "testo": "E mostra quante persone sposta un avviso di TwinCIRO." }
+        { "da": 4.6, "a": 8.6, "chi": "Roberto", "testo": "E l'avviso di TwinCIRO arriva quando la Rotonda Diaz si riempie." }
       ]
     },
     {
       "id": "13-fastweb",
       "durata": 16,
-      "nota": "Tre passi con Fastweb + Vodafone: analytics di rete (folla misurata), SIM IoT per i sensori, MIIA (FastwebMIIA-7B su Hugging Face). Schede a 0,35 · 5,0 · 9,5 s, riga finale a 12,9 s. Solo testo, nessun logo.",
+      "nota": "Tre passi con Fastweb + Vodafone: analytics di rete (la folla si può misurare), SIM IoT per i sensori, MIIA (FastwebMIIA-7B su Hugging Face, licenza non commerciale). Schede a 0,35 · 5,0 · 9,5 s, riga finale a 12,9 s. Solo testo, nessun logo.",
       "sorgente": { "tipo": "pagina", "pagina": "fastweb.html" },
       "voce": [
-        { "da": 0.3, "a": 5.0, "chi": "Mario", "testo": "Con Fastweb e Vodafone la folla non si simula più: si misura." },
+        { "da": 0.3, "a": 5.0, "chi": "Mario", "testo": "Con Fastweb e Vodafone la folla non si simula più: si può misurare." },
         { "da": 5.3, "a": 9.4, "chi": "Roberto", "testo": "Con le loro SIM IoT, i sensori si mettono dove servono." },
-        { "da": 9.7, "a": 15.6, "chi": "Mario", "testo": "E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: dati in Italia, sovranità digitale." }
+        { "da": 9.7, "a": 15.6, "chi": "Mario", "testo": "E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: sovranità digitale." }
       ]
     },
     {
       "id": "14-benefici",
-      "durata": 11,
-      "nota": "Benefici con i numeri già verificati (tutti da simulazione o dalla demo, e lo dice il piede) e perché Napoli dovrebbe adottarla, in un cartello solo.",
+      "durata": 12,
+      "nota": "Benefici con i numeri già verificati e le loro ipotesi (tutti da simulazione o dalla demo, e lo dice il piede) e perché Napoli dovrebbe adottarla, in un cartello solo.",
       "sorgente": { "tipo": "cartello", "id": "benefici" },
       "voce": [
-        { "da": 0.3, "a": 5.1, "chi": "Roberto", "testo": "Nella simulazione, un avviso sposta circa millenovecento persone." },
-        { "da": 5.4, "a": 10.7, "chi": "Mario", "testo": "Perché Napoli? Nessuna app nuova, i dati ci sono già, e si parte da un quartiere." }
+        { "da": 0.3, "a": 5.4, "chi": "Roberto", "testo": "Con un'adesione ipotizzata, un avviso sposta circa 1.900 persone." },
+        { "da": 5.7, "a": 11.6, "chi": "Mario", "testo": "Perché Napoli? Nessuna app nuova, i dati ci sono già, e si parte da un quartiere." }
       ]
     },
     {
       "id": "15-chiusura",
       "durata": 8,
+      "nota": "Non c'è un numero pubblico di TwinCIRO: l'invito porta al gruppo WhatsApp della demo, dove c'è l'agente vero.",
       "sorgente": { "tipo": "cartello", "id": "chiusura" },
       "voce": [
         { "da": 0.4, "a": 3.0, "chi": "Roberto", "testo": "TwinCIRO. Napoli che ci pensa." },
-        { "da": 3.3, "a": 6.3, "chi": "Mario", "testo": "Scrivi a TwinCIRO su WhatsApp." }
+        { "da": 3.3, "a": 6.3, "chi": "Mario", "testo": "Provalo nel gruppo WhatsApp della demo." }
       ]
     }
   ],
@@ -186,8 +200,8 @@
       "titolo": "Sensori fatti da noi",
       "sotto": "Due dispositivi veri, un solo formato: quello degli agenti, `napoli/`",
       "dispositivi": [
-        { "icona": "📛", "nome": "Badge WHY2025", "nostro": "firmware nostro", "testo": "Cyber Saiyan, ESP32-C3: sensori I2C di luce, temperatura e umidità, contapersone con la rotella" },
-        { "icona": "🔌", "nome": "Scheda Tasmota", "nostro": "regole nostre", "testo": "ESP32 con Tasmota: sensori e regole dalla console web, senza compilare" }
+        { "icona": "📛", "nome": "Badge WHY2025", "nostro": "firmware nostro", "testo": "Cyber Saiyan, ESP32-C3: contapersone con la rotella e sensori I2C collegati (luce, temperatura, umidità)" },
+        { "icona": "🔌", "nome": "Scheda Tasmota", "nostro": "regole nostre", "testo": "ESP32 o ESP8266 con Tasmota: sensori e regole dalla console web, senza compilare" }
       ],
       "messaggi": [
         { "topic": "napoli/sensori/<id>/<grandezza>", "contenuto": "{\"zona\": \"<zona>\", \"valore\": <numero>}", "nota": "`temperatura` · `umidita` · `luce` · `pressione` · `persone`" },
@@ -196,6 +210,7 @@
       "agenti": { "icona": "👥", "nome": "Agenti della città", "testo": "ascoltano il bus napoli/#" },
       "rete": ["📶 Oggi: hotspot Wi-Fi", "📡 Domani: SIM IoT sulla rete mobile"],
       "d_rete": 4.2,
+      "d_fonte": 1.8,
       "fonte": "Firmware del badge compilato e provato sul PC, regole di Tasmota pronte: le prove sui dispositivi veri sono in corso"
     },
     "qui-sensori": {
@@ -207,8 +222,9 @@
     },
     "notifica-avviso": {
       "tipo": "notifica",
-      "nota_uso": "Riquadro sopra la regata 3D (scena 12): il testo è quello dell'avviso in chat.json, così coincide con la chat. Per scriverne un altro usa \"testo\".",
-      "posizione": { "x": 1390, "y": 150, "w": 480 },
+      "nota_uso": "Riquadro sopra la regata 3D (scena 12): il testo è quello dell'avviso in chat.json, così coincide con la chat. Per scriverne un altro usa \"testo\". In alto a sinistra, stretto: nella finestra 14:33–14:42 a destra ci sono le etichette di Mergellina, in basso a sinistra il Vomero.",
+      "posizione": { "x": 30, "y": 112, "w": 430 },
+      "carattere": 20,
       "quando": "adesso",
       "nota": "avviso dell'agente Turismo · simulazione"
     },
@@ -217,34 +233,34 @@
       "colonne": [
         {
           "titolo": "Cosa cambia",
-          "sotto": "con i numeri, onesti",
+          "sotto": "con i numeri, e le loro ipotesi",
           "d": 0.1,
           "voci": [
-            { "icona": "📣", "numero": "≈ 1.900", "testo": "persone spostate con un avviso, prima del pienone", "fonte": "simulazione della regata, adesione 6–12% (ipotesi)", "d": 0.3 },
-            { "icona": "💬", "numero": "", "titolo": "Tavolo negoziato e prenotato", "testo": "con un «ok», senza telefonate", "fonte": "demo con l'API della città", "d": 0.9 },
-            { "icona": "🍕", "numero": "10–30%", "testo": "sconti mirati delle imprese, solo dove c'è posto", "fonte": "imprese di fantasia, regole dichiarate", "d": 1.5 },
-            { "icona": "🚦", "numero": "−9%", "testo": "ore perse in coda, in media su 4 simulazioni (da −1% a −18%)", "fonte": "gemello SUMO sulle strade OpenStreetMap", "d": 2.1 }
+            { "icona": "📣", "numero": "≈ 1.900", "testo": "persone spostate da un avviso, quando la zona si riempie", "fonte": "stima dell'agente Turismo nella simulazione: adesione ipotizzata del 6–12% dei presenti", "d": 0.3 },
+            { "icona": "💬", "numero": "", "titolo": "Tavolo negoziato e prenotato", "testo": "con un «ok», senza telefonate", "fonte": "demo con l'API della città (agenti a regole)", "d": 0.9 },
+            { "icona": "🍕", "numero": "", "titolo": "Offerte solo dove c'è posto:", "testo": "gli sconti li decidono le imprese", "fonte": "imprese di fantasia, regole di prova", "d": 1.5 },
+            { "icona": "🚗", "numero": "−9%", "testo": "ore perse in coda, in media su 4 giornate simulate (da −1% a −18%)", "fonte": "gemello SUMO, rispetto ai semafori fissi (−7,9% già con adattivi semplici)", "d": 2.1 }
           ]
         },
         {
           "titolo": "Perché Napoli",
           "sotto": "dovrebbe adottarla",
-          "d": 5.2,
+          "d": 5.4,
           "voci": [
-            { "icona": "📱", "titolo": "Nessuna app nuova:", "testo": "si usa WhatsApp, che hanno già tutti", "d": 5.8 },
-            { "icona": "🗂️", "titolo": "I dati ci sono già:", "testo": "oltre 50 fonti pubbliche, verificate una per una", "d": 7.0 },
-            { "icona": "⛵", "titolo": "America's Cup 2027:", "testo": "la città va messa alla prova adesso", "d": 7.8 },
-            { "icona": "🧩", "titolo": "Si parte da un quartiere,", "testo": "si misura e poi si allarga", "d": 8.8 }
+            { "icona": "📱", "titolo": "Nessuna app nuova:", "testo": "basta WhatsApp, che usano quasi tutti", "d": 6.0 },
+            { "icona": "🗂️", "titolo": "I dati ci sono già:", "testo": "oltre 50 fonti pubbliche, verificate una per una", "d": 7.2 },
+            { "icona": "⛵", "titolo": "America's Cup 2027:", "testo": "la città va messa alla prova adesso", "d": 8.0 },
+            { "icona": "🧩", "titolo": "Si parte da un quartiere,", "testo": "si misura e poi si allarga", "d": 9.0 }
           ]
         }
       ],
       "piede": "Numeri da simulazione o dalla demo, con le ipotesi scritte nel repository. Il passo successivo è un pilota su strada.",
-      "d_piede": 9.4
+      "d_piede": 6.2
     },
     "chiusura": {
       "tipo": "chiusura",
       "sotto": "Napoli che ci pensa",
-      "invito": "Scrivi a TwinCIRO su WhatsApp",
+      "invito": "Provalo nel gruppo WhatsApp della demo",
       "squadra": "Roberto D'Isanto · Mario Varlese",
       "evento": "The Big Hack 2026 · Challenge 05 Fastweb + Vodafone",
       "link": "robertodisanto.it/hackathon_2026_a"

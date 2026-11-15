@@ -24,9 +24,14 @@ export function casuale(seme) {
   };
 }
 
+// Fonti del catalogo che restano nel catalogo (docs/fonti-dati-napoli.md) ma non entrano nelle scene del video:
+// tim-big-data sono dati di Milano del 2013, con il marchio di un altro operatore, in un video per Fastweb + Vodafone.
+// Il contatore di fonti.html conta le fonti che si vedono (55: sempre «oltre 50»).
+export const FUORI_DAL_VIDEO = ['tim-big-data'];
+
 export async function carica() {
   const cat = await (await fetch('fonti/catalogo.json', { cache: 'no-store' })).json();
-  const pubbliche = cat.fonti.filter((f) => f.pubblica);
+  const pubbliche = cat.fonti.filter((f) => f.pubblica && !FUORI_DAL_VIDEO.includes(f.id));
   const ordine = cat.domini.map((d) => d.id);
   pubbliche.sort((a, b) => ordine.indexOf(a.dominio) - ordine.indexOf(b.dominio));   // stabile: resta l'ordine del catalogo
   return {
@@ -66,7 +71,7 @@ export const CSS = `
   .isola.testo .formato { top: 34px; }
 `;
 
-// Colonne del muro (fonti.html): a sinistra meteo e territorio, a destra mobilità ed eventi (27 e 29 fonti, stessa altezza).
+// Colonne del muro (fonti.html): a sinistra meteo e territorio, a destra mobilità ed eventi (26 e 29 fonti).
 // Anche nella disposizione sparsa le fonti di ogni colonna stanno dalla loro metà dello schermo: quando convergono
 // nessuna attraversa il centro, dove compare TwinCIRO.
 export const COLONNE = [['meteo', 'territorio'], ['mobilita', 'eventi']];

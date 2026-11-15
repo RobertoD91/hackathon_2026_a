@@ -385,7 +385,10 @@ def sottotitoli(scaletta: dict, file: Path) -> int:
     inizio, n = 0.0, 0
     for sc in scaletta["scene"]:
         for v in sc.get("voce", []):
-            testo = v["testo"].replace("{", "(").replace("}", ")").replace("\n", "\\N")
+            # Stesse righe degli SRT: una battuta lunga va a capo in due righe equilibrate (a_capo), non a fine schermo
+            t = v["testo"].replace("{", "(").replace("}", ")")
+            parti = [r.strip() for r in t.split("\n") if r.strip()]
+            testo = "\\N".join(a_capo(parti[0]) if len(parti) == 1 else parti)
             righe.append(f"Dialogue: 0,{tempo_ass(inizio + v['da'])},{tempo_ass(inizio + v['a'])},Voce,,0,0,0,,{testo}")
             n += 1
         inizio += float(sc["durata"])
@@ -558,14 +561,26 @@ def tempo_srt(t: float) -> str:
     return f"{ms // 3600000:02d}:{ms // 60000 % 60:02d}:{ms // 1000 % 60:02d},{ms % 1000:03d}"
 
 
+_DEBOLI = set("il lo la i gli le un uno una di a da in con su per tra fra e o del della dei delle al alla ai alle "
+               "dal dalla nel nella sul sulla che".split())
+
+
 def a_capo(riga: str, larghezza: int = 42) -> list[str]:
-    """Una riga lunga diventa due righe equilibrate (taglio a uno spazio, meglio dopo la punteggiatura)."""
+    """Una riga lunga diventa due righe equilibrate: taglio a uno spazio, di preferenza dopo la punteggiatura
+    («Questa è Napoli adesso: dati veri, / ognuno con la sua fonte.», non «dati / veri»), mai dopo un articolo o una
+    preposizione se si può evitare, e senza righe oltre i 48 caratteri."""
     if len(riga) <= larghezza:
         return [riga]
     spazi = [i for i, c in enumerate(riga) if c == " "]
     if not spazi:
         return [riga]
-    i = min(spazi, key=lambda i: abs(len(riga[:i]) - len(riga[i + 1:])) - (6 if riga[i - 1] in ",.;:!?»" else 0))
+
+    def costo(i: int) -> float:
+        sx, dx = riga[:i], riga[i + 1:]
+        return (abs(len(sx) - len(dx)) - (20 if riga[i - 1] in ",.;:!?»" else 0)
+                + (8 if sx.split()[-1].lower() in _DEBOLI else 0)
+                + (100 if max(len(sx), len(dx)) > larghezza + 6 else 0))
+    i = min(spazi, key=costo)
     return [riga[:i], riga[i + 1:]]
 
 

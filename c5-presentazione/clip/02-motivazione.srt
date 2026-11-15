@@ -1,10 +1,10 @@
 1
 00:00:00,300 --> 00:00:04,300
-I dati ci sono. Ma sono
-sparsi, e non si parlano.
+I dati ci sono. Ma sono sparsi,
+e non si parlano.
 
 2
 00:00:05,000 --> 00:00:10,700
-E manca il dato più importante: quante
-persone ci sono, adesso, in ogni zona.
+E manca il dato più importante:
+quante persone ci sono, adesso, in ogni zona.
 

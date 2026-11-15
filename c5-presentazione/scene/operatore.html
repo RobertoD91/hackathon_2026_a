@@ -105,9 +105,10 @@ const DURATA = Number(P.get('durata')) || 14;
 const K = DURATA / 14;                          // i tempi qui sotto sono per 14 s
 const TEMPI = {
   etichetta: 0, titolo: 0.1,
-  browser: 0.45, didK0: 1.0, legenda: [2.0, 3.0], allerta: [2.6, 3.5], scorri: [3.3, 4.1], didK1: 4.1,
-  // la voce: «E la Polizia Locale vede folla, allerte e decisioni.» (0,3–4,5 s)
-  proposta: 4.6, attenua: 4.6,
+  // la voce: «Quell'avviso passa dalla Polizia Locale, in sala operativa.» (0,3–4,5 s). La proposta entra subito accanto
+  // alla dashboard; la dashboard mostra KPI, avvisi meteo e mappa (non il pannello delle decisioni della mappa, che
+  // sono di un'altra simulazione, nel browser)
+  browser: 0.45, proposta: 0.9, didK0: 1.2, allerta: [1.4, 2.6], scorri: [1.8, 4.0], legenda: [3.8, 5.0], attenua: 5.0,
   // «Gli agenti propongono: l'operatore approva, o blocca.» (4,8–9,0 s)
   premi: 7.6, approvata: 7.85, esito: 8.15, rimarca: [9.3, 10.4],
   // «Nel terminale della sala, la stessa decisione: l'avviso è partito.» (9,3–13,7 s)
@@ -185,8 +186,7 @@ window.pronta = (async () => {
           <img id="img-mappa" src="operatore/${esc(mappa.immagine.file)}" alt="">
           <div class="riquadro" id="r-legenda"></div><div class="riquadro" id="r-allerta"></div>
           <div class="didascalia">
-            <div id="did-k0"><span class="chip"><i style="background:#94a3b8"></i>Folla per zona: simulata</span><span class="chip"><i style="background:var(--verde)"></i>Allerte, meteo, eventi: dati veri</span></div>
-            <div id="did-k1"><span class="chip"><i style="background:var(--viola)"></i>Decisioni degli agenti e notifiche <small>simulate, nel browser</small></span></div>
+            <div id="did-k0"><span class="chip"><i style="background:#94a3b8"></i>Mappa dimostrativa: folla e sensori simulati</span><span class="chip"><i style="background:var(--verde)"></i>Allerte, meteo, eventi: dati veri</span></div>
           </div>
         </div>
       </div>
@@ -205,13 +205,13 @@ window.pronta = (async () => {
           <div class="bottoni" id="bottoni">
             <div class="riga-b"><span class="btn si" id="btn-si">✓ Approva</span><span class="btn no">✕ Blocca</span>
               <span class="api">API della città<br><code>POST /operatore</code></span></div>
-            <div class="nota-p">Se nessuno risponde, dopo 10 minuti simulati la decisione parte da sola.</div>
+            <div class="nota-p">Scheda ricostruita sull'API vera. Se nessuno risponde, dopo 10 minuti simulati la decisione parte da sola.</div>
           </div>
           <div class="esito" id="esito">
             <div class="es-t">✓ ${esc(maiuscola(dec.eseguita?.stato || 'approvata'))} · ore ${esc(dec.eseguita?.ora || p.ora)}</div>
             <div class="es-da">📣 Turismo → ${esc(aChi || 'i turisti')}${marta ? '<span class="marta">, anche Marta</span>' : ''}</div>
             <div class="es-bolla">${esc(dec.avviso?.testo || 'avviso non catturato')}</div>
-            <div class="es-nota">${stima ? `${esc(stima.replace(/^stimo /, ''))} · stima simulata` : ''}</div>
+            <div class="es-nota">${stima ? `${esc(stima.replace(/^stimo /, '').replace(/\s+(a|in|verso|alla|al|allo)\s+.+$/, ''))} · stima simulata dell'agente Turismo` : ''}</div>
           </div>
         </div>
       </section>
@@ -219,23 +219,23 @@ window.pronta = (async () => {
 
   // elementi che entrano con la loro data-t
   el.voci = [...r.querySelectorAll('[data-t]')].map((e) => ({ e, t: Number(e.dataset.t) }));
-  for (const id of ['browser', 'img-mappa', 'r-legenda', 'r-allerta', 'did-k0', 'did-k1', 'terminale', 'did-term', 'proposta', 'stato', 'stato-t', 'stato-p', 'btn-si', 'bottoni', 'esito']) {
+  for (const id of ['browser', 'img-mappa', 'r-legenda', 'r-allerta', 'did-k0', 'terminale', 'did-term', 'proposta', 'stato', 'stato-t', 'stato-p', 'btn-si', 'bottoni', 'esito']) {
     el[id] = document.getElementById(id);
   }
   el.statoAttesa = el['stato-t'].textContent;
   el.statoOk = maiuscola(dec.eseguita?.stato || 'approvata');
 
-  // telecamera sulla dashboard: KPI, allerta e mappa (K0), poi decisioni e notifiche (K1)
+  // telecamera sulla dashboard: prima i KPI (K0), poi scende su avvisi meteo e mappa (K0b). Il pannello delle
+  // decisioni e delle notifiche della mappa non si mostra: sono di un'altra simulazione (agenti nel browser)
   const im = mappa.immagine;
   const pos = mappa.pos;
   const vista = { w: 1040, h: 736 - 48 };
   const s0 = vista.w / im.larghezza_css;                      // px a schermo per px CSS della pagina
-  const x1 = Math.max(0, pos.decisioni.x - 14);
-  const s1 = Math.min(1.25, vista.w / (im.larghezza_css - x1));
+  const yK0 = pos.kpi.y - 6;
   cam = {
     im, pos,
-    k0: { x: 0, y: pos.kpi.y - 6, s: s0 }, k0b: { x: 0, y: pos.kpi.y + 18, s: s0 },
-    k1: { x: x1, y: pos.decisioni.y - 14, s: s1 },
+    k0: { x: 0, y: yK0, s: s0 },
+    k0b: { x: 0, y: Math.max(yK0, pos.allerta.y - 10), s: s0 },   // dagli avvisi meteo in giù: tutta la mappa
   };
   await el['img-mappa'].decode().catch(() => {});
   el['img-mappa'].style.width = `${im.larghezza}px`;
@@ -291,15 +291,10 @@ function adatta() {
 
 /** Vista della dashboard al tempo t: rettangolo {x, y, s} in px CSS della pagina. */
 function vistaAl(t) {
-  const { k0, k0b, k1 } = cam;
+  const { k0, k0b } = cam;
   const [a, b] = TEMPI.scorri.map(T);
-  if (t <= a) {
-    const d = morbido((t - T(TEMPI.browser)) / (a - T(TEMPI.browser)));
-    return { x: 0, y: k0.y + (k0b.y - k0.y) * d, s: k0.s };
-  }
   const d = morbido((t - a) / (b - a));
-  const ls = Math.log(k0b.s) + (Math.log(k1.s) - Math.log(k0b.s)) * d;
-  return { x: k0b.x + (k1.x - k0b.x) * d, y: k0b.y + (k1.y - k0b.y) * d, s: Math.exp(ls) };
+  return { x: 0, y: k0.y + (k0b.y - k0.y) * d, s: k0.s };
 }
 
 /** Riquadro su un pannello della pagina (px CSS) nella vista corrente. */
@@ -327,12 +322,9 @@ window.imposta = (t) => {
   el['img-mappa'].style.transform = `translate(${(-v.x * cam.im.scala * z).toFixed(2)}px, ${(-(v.y - cam.im.origine) * cam.im.scala * z).toFixed(2)}px) scale(${z.toFixed(5)})`;
   riquadro(el['r-legenda'], cam.pos.legenda, v, finestra(t, TEMPI.legenda));
   riquadro(el['r-allerta'], cam.pos.allerta, v, finestra(t, TEMPI.allerta));
-  const k0 = fumo((t - T(TEMPI.didK0)) / 0.5) * (1 - fumo((t - T(TEMPI.scorri[0])) / 0.3));
-  const k1 = fumo((t - T(TEMPI.didK1)) / 0.5);
+  const k0 = fumo((t - T(TEMPI.didK0)) / 0.5);
   el['did-k0'].style.opacity = k0;
-  el['did-k0'].style.transform = `translateY(${(1 - Math.min(1, fumo((t - T(TEMPI.didK0)) / 0.5))) * 14}px)`;
-  el['did-k1'].style.opacity = k1;
-  el['did-k1'].style.transform = `translateY(${(1 - k1) * 14}px)`;
+  el['did-k0'].style.transform = `translateY(${(1 - k0) * 14}px)`;
   // la dashboard si abbassa quando entra la proposta e sparisce sotto il terminale
   const giu = fumo((t - T(TEMPI.attenua)) / 0.6);
   const via = fumo((t - T(TEMPI.terminale)) / 0.3);          // sparisce in fretta: due pagine di testo in dissolvenza si confondono

@@ -151,8 +151,10 @@ const TEMPI = {
   testa: 0, quando: 0.3, legenda: 0.55, telefono: 0.45,
   // meteo, allerta, eventi, treni e metro, aria, Campi Flegrei, tangenziale
   pannelli: { meteo: 0.8, allerta: 1.3, eventi: 1.8, treni: 2.3, aria: 2.8, terremoti: 3.3, traffico: 3.8 },
-  evidenza: [4.6, 8.0],                       // l'allerta si accende mentre la voce ne parla (4,55–8,2 s)
-  scrive: [7.0, 7.9], invia: 8.0, pensa: [8.2, 9.0], risposta: 9.1, nota: 9.8,   // la domanda è già lì quando la voce la fa (8,4 s)
+  // la voce «Allerte, treni, aria e Campi Flegrei, con l'ora del dato» (4,4–7,8 s): i pannelli si accendono uno dopo
+  // l'altro mentre li nomina, poi la legenda degli stati («con l'ora del dato»)
+  evidenze: [['allerta', 4.4, 5.6], ['treni', 4.95, 6.15], ['aria', 5.45, 6.6], ['terremoti', 5.95, 7.0], ['legenda', 6.75, 7.95]],
+  scrive: [5.6, 6.5], invia: 6.6, pensa: [6.8, 7.5], risposta: 7.6, nota: 8.3,   // la risposta è già lì quando la voce ne parla (8,0 s)
 };
 const T = (x) => x * K;
 const fumo = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(1 - x, 3));
@@ -185,7 +187,7 @@ const COLORI_ARIA = { buona: '#4ade80', discreta: '#a3e635', moderata: '#facc15'
 const ORDINE_ARIA = ['buona', 'discreta', 'moderata', 'scadente', 'molto scadente', 'pessima'];
 /** Cosa vuol dire lo stato, in breve (la legenda completa è in legenda_stati dell'API) */
 const LEGENDA = {
-  reale: 'letto adesso dalla fonte ufficiale',
+  reale: 'letto adesso dalla fonte',
   riserva: 'letto adesso, da una fonte di riserva',
   salvato: 'ultimo dato salvato: la fonte non risponde',
   snapshot: 'file della fonte, rigenerato di recente',
@@ -284,7 +286,12 @@ function pAllerta(stile, a) {
   } else {
     reg = `<div class="reg"><i class="pallino" style="background:#94a3b8"></i>Allerta regionale: dato non disponibile</div>`;
   }
-  if (r?.domani?.livello >= 2) reg += `<div class="piccola">Domani: ${esc(r.domani.descrizione || `livello ${r.domani.livello}`)}</div>`;
+  // Avviso già emesso per domani: chiave "domani" di /citta/allerta (API dal 14/11 sera; le catture di prima non ce l'hanno)
+  const dm = a.domani;
+  if (dm?.livello >= 2) {
+    reg += `<div class="reg"><i class="pallino" style="background:${COLORI_ALLERTA[dm.colore] || '#facc15'}"></i>Domani: allerta ${esc(dm.colore)}${dm.fenomeni_tipo ? ` per ${esc(dm.fenomeni_tipo)}` : ''}</div>`
+      + `<div class="piccola">Protezione Civile Campania · avviso n. ${esc(dm.avviso_n ?? 'n/d')}${dm.dal ? ` · dalle ${esc(oraDi(dm.dal))} di ${esc(relativo(dm.dal))}` : ''}</div>`;
+  } else if (r?.domani?.livello >= 2) reg += `<div class="piccola">Domani: ${esc(r.domani.descrizione || `livello ${r.domani.livello}`)}</div>`;
   // Meteoalarm: avvisi per tutta la Campania, raggruppati per giorno di inizio (al massimo due giorni)
   const gruppi = new Map();
   for (const w of a.meteoalarm || []) {
@@ -430,7 +437,7 @@ window.pronta = (async () => {
       <div class="testata-tel"><div class="avatar">C</div><div><div class="nome-tel"><span class="twin">Twin</span><span class="ciro">CIRO</span></div><div class="stato-tel" id="stato-tel">online</div></div></div>
       <div class="messaggi">
         <div class="chip-g" data-opz="1"><span>${esc(GIORNI[settimana(OGGI)])} ${g} ${esc(MESI[m - 1])}</span></div>
-        <div class="benvenuto" data-opz="2">TwinCIRO risponde con i dati veri della città: l'API dati città di Napoli</div>
+        <div class="benvenuto" data-opz="2">TwinCIRO risponde con i dati veri della città, dalla sua API dati città</div>
         <div class="m utente" id="m-domanda"><div class="bolla">${esc(domanda?.domanda || '')}<span class="ora">${esc(indice.ora)} ✓</span></div></div>
         <div class="slot">
           <div class="m ciro scrive" id="m-scrive"><div class="bolla"><div class="punti"><i></i><i></i><i></i></div></div></div>
@@ -448,9 +455,9 @@ window.pronta = (async () => {
     nota: document.getElementById('nota-tel'), campo: document.getElementById('campo'), stato: document.getElementById('stato-tel'),
     testo: domanda?.domanda || '', vivo: document.getElementById('punto-vivo'),
   };
-  // mentre la voce ne parla si accende l'allerta regionale (se attiva) o il primo giorno di Meteoalarm (se arancione o rossa)
-  if (allerta?.regionale?.attiva) evid = r.querySelector('[data-pan="allerta"] .reg');
-  else if ((allerta?.meteoalarm || []).some((w) => w.livello >= 3)) evid = r.querySelector('.ma.primo');
+  // mentre la voce li nomina si accendono, uno dopo l'altro, i pannelli e poi la legenda degli stati
+  evid = TEMPI.evidenze.map(([id, a, b]) => ({ el: id === 'legenda' ? r.querySelector('.legenda') : r.querySelector(`[data-pan="${id}"]`), a, b }))
+    .filter((x) => x.el);
   await document.fonts.ready;
   const telefono = r.querySelector('.telefono');
   const sotto = Math.ceil(r.querySelector('.legenda').getBoundingClientRect().bottom) + 18;
@@ -483,11 +490,15 @@ window.imposta = (t) => {
     v.el.style.transform = p < 1 ? `translateY(${(1 - p) * 26}px)` : '';
   }
   if (!tel.campo) return;
-  if (evid) {
-    const [a, b] = TEMPI.evidenza.map(T);
-    const k = clamp(Math.min((t - a) / 0.4, (b - t) / 0.5), 0, 1);
-    evid.style.background = `rgb(251 146 60 / ${0.22 * k})`;
-    evid.style.boxShadow = k ? `0 0 0 2px rgb(251 146 60 / ${0.9 * k}), 0 0 ${26 * k}px rgb(251 146 60 / ${0.45 * k})` : '';
+  for (const e of evid || []) {
+    const k = clamp(Math.min((t - T(e.a)) / 0.35, (T(e.b) - t) / 0.5), 0, 1);
+    if (e.el.classList.contains('legenda')) {   // la legenda non ha un riquadro: un contorno staccato dal testo
+      e.el.style.borderRadius = '16px';
+      e.el.style.outline = k ? `3px solid rgb(255 181 71 / ${(0.9 * k).toFixed(3)})` : '';
+      e.el.style.outlineOffset = '10px';
+    } else {
+      e.el.style.boxShadow = k ? `0 0 0 3px rgb(255 181 71 / ${(0.9 * k).toFixed(3)}), 0 0 ${(30 * k).toFixed(0)}px rgb(255 181 71 / ${(0.4 * k).toFixed(3)})` : '';
+    }
   }
   // il punto "dati veri" pulsa piano
   if (tel.vivo) tel.vivo.style.opacity = 0.55 + 0.45 * (0.5 + 0.5 * Math.cos((t * 2 * Math.PI) / 1.6));

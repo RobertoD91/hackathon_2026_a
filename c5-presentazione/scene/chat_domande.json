@@ -1,5 +1,5 @@
 {
-  "nota": "Lato utente della chat di TwinCIRO per la scena simulata. chat_da_api.py manda questi messaggi all'API /chiedi della città (c5-agentic-city, LLM a regole) e scrive le risposte vere in chat.json. Con le regole l'intento si capisce dalle parole chiave: 'prenot' + 'pizzeria' sceglie la Pizzeria 'O Scoglio, 'andare a' chiede un percorso. Non usare parole di cibo (pranzo, pizza, mangiare) nei messaggi che non riguardano il cibo. Con le regole l'ora va scritta staccata (\"alle 13:00 \"): \"13:00?\" o \"13:00,\" non viene riconosciuta.",
+  "nota": "Lato utente della chat di TwinCIRO per la scena simulata. chat_da_api.py manda questi messaggi all'API /chiedi della città (c5-agentic-city, agenti a regole, senza LLM) e scrive le risposte vere in chat.json. Con le regole l'intento si capisce dalle parole chiave: 'prenot' + 'pizzeria' sceglie la Pizzeria 'O Scoglio, 'andare a' chiede un percorso. Non usare parole di cibo (pranzo, pizza, mangiare) nei messaggi che non riguardano il cibo. Con le regole l'ora va scritta staccata (\"alle 13:00 \"): \"13:00?\" o \"13:00,\" non viene riconosciuta.",
   "contatto": "TwinCIRO",
   "utente": "Marta",
   "presentazione_utente": "Marta, crocerista, gruppo di 4",
@@ -89,7 +89,7 @@
         "mergellina"
       ],
       "etichetta": {
-        "titolo": "Ti avvisa prima del problema",
+        "titolo": "Ti avvisa quando c'è il pienone",
         "sotto": "Folla e Orchestratore vedono il pienone; Turismo propone un'alternativa con l'offerta di un'impresa."
       }
     }

@@ -1,8 +1,8 @@
 TwinCIRO · voce fuori campo · scena 05 di 15: utenti
-Nel video da 0:34,0 a 0:38,0 · clip clip/05-utenti.mp4 di 4,0 s
+Nel video da 0:34,0 a 0:40,0 · clip clip/05-utenti.mp4 di 6,0 s
 
-1 · ROBERTO · da 0,2 a 3,8 s della clip · durata disponibile 3,6 s · nel video 0:34,2 → 0:37,8
+1 · ROBERTO · da 0,4 a 4,4 s della clip · durata disponibile 4,0 s · nel video 0:34,4 → 0:38,4
     Due utenti: chi visita Napoli, e chi la governa.
-    9 parole, ritmo di circa 142 al minuto · registra in girato/voce/05-utenti-1.m4a
+    9 parole, ritmo di circa 128 al minuto · registra in girato/voce/05-utenti-1.m4a
 
-Tutta la scena in un file: girato/voce/05-utenti.m4a (la prima parola va a 0,2 s dall'inizio della clip, il silenzio prima si toglie da solo).
+Tutta la scena in un file: girato/voce/05-utenti.m4a (la prima parola va a 0,4 s dall'inizio della clip, il silenzio prima si toglie da solo).

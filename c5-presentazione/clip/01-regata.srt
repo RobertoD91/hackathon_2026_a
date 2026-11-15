@@ -4,6 +4,6 @@ Napoli, 2027.
 
 2
 00:00:03,200 --> 00:00:07,700
-Un sabato: America's Cup, navi da
-crociera e partita al Maradona.
+Un sabato: America's Cup,
+navi da crociera e partita al Maradona.
 

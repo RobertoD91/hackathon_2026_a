@@ -1,7 +1,7 @@
 1
 00:00:00,300 --> 00:00:04,500
-E la Polizia Locale vede
-folla, allerte e decisioni.
+Quell'avviso passa dalla Polizia Locale,
+in sala operativa.
 
 2
 00:00:04,800 --> 00:00:09,000
@@ -10,6 +10,6 @@ l'operatore approva, o blocca.
 
 3
 00:00:09,300 --> 00:00:13,700
-Nel terminale della sala, la stessa
-decisione: l'avviso è partito.
+Nel terminale della sala,
+la stessa decisione: l'avviso è partito.
 
