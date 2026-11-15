@@ -155,6 +155,14 @@ if [ ! -f .env ]; then
     fai "su OpenClaw imposta CITTA_API_TOKEN con questo valore."
 fi
 [ -n "$(valore_env .env CITTA_API_TOKEN)" ] || avviso "CITTA_API_TOKEN è vuoto: l'API è aperta a tutti."
+# Un .env vecchio non ha le chiavi aggiunte dopo (il 14/11 mancava CITTA_CERTIFICATI_DIR).
+# Certificati e porta li sistema lo script qui sotto; per le altre avvisa soltanto.
+MANCANTI=""
+for K in $(sed -n 's/^\([A-Z_][A-Z0-9_]*\)=..*/\1/p' .env.example); do
+    case "$K" in CITTA_CERTIFICATI_DIR|CITTA_HTTPS_PORTA) continue ;; esac
+    grep -q "^$K=" .env || MANCANTI="$MANCANTI $K"
+done
+[ -z "$MANCANTI" ] || { avviso "nel .env mancano chiavi nuove di .env.example:$MANCANTI (valgono i predefiniti del compose)"; fai "se servono, copiale da cloud/citta-api/.env.example in cloud/citta-api/.env e rilancia lo script"; }
 if [ -z "$(valore_env .env CITTA_HTTPS_PORTA)" ]; then
     if porte_basse_ok; then imposta_env .env CITTA_HTTPS_PORTA 443; else imposta_env .env CITTA_HTTPS_PORTA 8443; fi
     ok "CITTA_HTTPS_PORTA impostata a $(valore_env .env CITTA_HTTPS_PORTA)"
@@ -176,7 +184,16 @@ if [ "${SALTA_PROVE:-0}" != 1 ]; then
     timeout -k 5 60 ./prova.sh > /tmp/twinciro-prova-api.log 2>&1 && ok "prova dell'API: $(grep -o 'Esito:.*' /tmp/twinciro-prova-api.log)" \
         || avviso "prova dell'API con qualche errore: tail -n 20 /tmp/twinciro-prova-api.log"
 fi
-CERT="$(valore_env .env CITTA_CERTIFICATI_DIR)"; CERT="${CERT:-/srv/certificati/$DOMINIO}"
+# compose legge i certificati solo da CITTA_CERTIFICATI_DIR nel .env: se manca, è vuota o punta
+# a una cartella senza certificati, e quelli di $DOMINIO ci sono, la scrive lo script.
+CERT_DEF="/srv/certificati/$DOMINIO"
+CERT="$(valore_env .env CITTA_CERTIFICATI_DIR)"
+if [ "$CERT" != "$CERT_DEF" ] && [ ! -r "$CERT/fullchain.pem" ] && [ -r "$CERT_DEF/fullchain.pem" ] && [ -r "$CERT_DEF/privkey.pem" ]; then
+    [ -n "$CERT" ] && avviso "in $CERT (dal .env) non ci sono i certificati: uso $CERT_DEF"
+    imposta_env .env CITTA_CERTIFICATI_DIR "$CERT_DEF"
+    ok "CITTA_CERTIFICATI_DIR=$CERT_DEF scritta in cloud/citta-api/.env"
+fi
+CERT="$(valore_env .env CITTA_CERTIFICATI_DIR)"; CERT="${CERT:-$CERT_DEF}"
 if [ -r "$CERT/fullchain.pem" ] && [ -r "$CERT/privkey.pem" ]; then
     if ! docker compose --profile https up -d > /tmp/twinciro-https.log 2>&1; then
         if grep -qi "privileged port" /tmp/twinciro-https.log && [ "$(valore_env .env CITTA_HTTPS_PORTA)" != 8443 ]; then
