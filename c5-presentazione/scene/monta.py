@@ -30,6 +30,14 @@ I file di girato/voce/ prendono il posto di girato/voce.m4a nelle loro scene (in
 vincono su quello della clip); il silenzio all'inizio e alla fine si toglie da solo e ogni file va allo stesso volume.
 Il numero davanti al nome del file non conta: vale il nome della scena (o l'id intero).
 
+Audio nel repository (c5-presentazione/audio/), usato solo dove girato/ non ha di meglio:
+- audio/musica.* (libera da diritti; titolo, autore e licenza in audio/musica.json e audio/LEGGIMI.md): la musica di
+  sottofondo quando manca girato/musica.*;
+- audio/voce-sintetica/NN-<scena>-K.m4a: la voce sintetica di prova di ogni battuta, rigenerata da scene/voce_sintetica.py
+  (ElevenLabs). Prende il posto delle battute non registrate, ma non si usa se c'è girato/voce.* (tutto il video), nelle
+  scene con il file della clip intera, né per una battuta il cui testo non è più quello con cui è stata generata
+  (audio/voce-sintetica/indice.json). Se si usano, la chiusura ne riporta i crediti.
+
   python3 scene/monta.py                      # usa le sorgenti già generate (cache) e rifà il montaggio
   python3 scene/monta.py --rigenera           # rigenera tutte le scene HTML (non la mappa)
   python3 scene/monta.py --rigenera-mappa     # registra di nuovo la mappa (dati live)
@@ -37,6 +45,8 @@ Il numero davanti al nome del file non conta: vale il nome della scena (o l'id i
   python3 scene/monta.py --solo-testi         # rifà solo voce/ (battute e copione) e controlla tempi e ritmo, senza video
   python3 scene/monta.py --senza-sottotitoli  # niente sottotitoli impressi
   python3 scene/monta.py --controllo          # alla fine estrae un fotogramma ogni 5 s
+  python3 scene/monta.py --senza-voce-sintetica  # solo la voce registrata: le battute non registrate restano mute
+  python3 scene/monta.py --senza-musica       # niente musica di sottofondo
   python3 scene/monta.py --segnaposto         # dove manca una ripresa vera mostra il cartello "Qui va una ripresa reale"
                                               # (senza: usa la scena di riserva indicata in "sorgente")
 
@@ -46,6 +56,7 @@ Variabili: C5_VIDEO_LAVORO (cartella dei file intermedi, predefinita /tmp/c5-vid
 C5_VIDEO_GIRATO (cartella delle riprese, predefinita c5-presentazione/girato),
 C5_VIDEO_CLIP (cartella delle clip, predefinita c5-presentazione/clip),
 C5_VIDEO_TESTI_VOCE (cartella dei testi della voce, predefinita c5-presentazione/voce),
+C5_VIDEO_AUDIO (musica e voce sintetica nel repository, predefinita c5-presentazione/audio),
 C5_URL_MAPPA (URL della mappa; se manca la serve in locale dalla root della repo).
 """
 
@@ -73,6 +84,7 @@ GIRATO = Path(os.environ.get("C5_VIDEO_GIRATO", VIDEO / "girato"))   # riprese v
 LAVORO = Path(os.environ.get("C5_VIDEO_LAVORO", "/tmp/c5-video-lavoro"))
 CLIP = Path(os.environ.get("C5_VIDEO_CLIP", VIDEO / "clip"))                 # clip per scena e SRT (nel repository)
 TESTI_VOCE = Path(os.environ.get("C5_VIDEO_TESTI_VOCE", VIDEO / "voce"))    # battute da leggere (nel repository)
+AUDIO = Path(os.environ.get("C5_VIDEO_AUDIO", VIDEO / "audio"))   # musica libera e voce sintetica (nel repository)
 ESTENSIONI_VIDEO = (".mp4", ".mov", ".m4v", ".webm", ".mkv")
 ESTENSIONI_AUDIO = (".m4a", ".wav", ".mp3", ".aac", ".ogg", ".flac")
 W, H, FPS = 1920, 1080, 30
@@ -80,7 +92,7 @@ SCHERMO_TEL = (170, 79, 430, 850)               # riquadro dentro lo schermo del
 LIMITE_MB = 40
 OBIETTIVO_MB = 36
 CARTELLI: dict = {}   # testi dei cartelli da scaletta.json (per la chiave della cache)
-OPZIONI = {"segnaposto": False}
+OPZIONI = {"segnaposto": False, "voce_sintetica": True, "musica": True}
 
 # Clip per rimontare: stessa codifica del finale (H.264 High 4:2:0, 1920×1080, 30 fps, AAC 48 kHz stereo) ma a qualità costante
 CLIP_CRF = 20
@@ -132,12 +144,21 @@ def dimensioni(file: Path) -> tuple[int, int]:
     return int(out[0]), int(out[1])
 
 
-def trova(nome: str, estensioni: tuple[str, ...]) -> Path | None:
+def trova(nome: str, estensioni: tuple[str, ...], cartella: Path | None = None) -> Path | None:
+    cart = cartella or GIRATO
     for e in estensioni:
-        for f in (GIRATO / f"{nome}{e}", GIRATO / f"{nome}{e.upper()}"):
+        for f in (cart / f"{nome}{e}", cart / f"{nome}{e.upper()}"):
             if f.exists():
                 return f
     return None
+
+
+def relativo(f: Path) -> str:
+    """Percorso da mostrare nei messaggi: relativo a c5-presentazione/ se ci sta dentro."""
+    try:
+        return str(f.resolve().relative_to(VIDEO))
+    except ValueError:
+        return str(f)
 
 
 def nomi_girato(cfg: dict) -> list[str]:
@@ -661,6 +682,10 @@ def scrivi_testi_voce(piano: list[Scena], totale: float, pron: dict, avvisi: lis
           " registrare quella. In una scena i file per battuta vincono sul file della clip. Il numero davanti al nome non conta"
           " (vale il nome della scena), e `girato/` resta fuori dal repository. Poi `./monta.sh`: la voce entra in `bozza.mp4`,"
           " nelle clip e in `clip/00-finale-senza-sottotitoli.mp4`.", "",
+          "Finché una battuta non è registrata, al suo posto c'è la **voce sintetica di prova** di `audio/voce-sintetica/`"
+          " (la rigenera `scene/voce_sintetica.py`): il vostro file la sostituisce da solo, battuta per battuta. Non si usa"
+          " se c'è `girato/voce.m4a` o il file della clip intera. Per sentire solo le voci vere:"
+          " `./monta.sh --senza-voce-sintetica`.", "",
           "Consigli: stanza silenziosa e con tende o divani, telefono a 20 cm dalla bocca e un po' di lato, sempre lo stesso"
           " telefono per la stessa persona. Tono caldo e sicuro, senza fretta.", ""]
     if usate:
@@ -705,10 +730,15 @@ class Pezzo:
     k: int | None          # numero della battuta; None = tutta la clip
     wav: Path | None = None
     durata: float = 0.0
+    sintetica: bool = False  # da audio/voce-sintetica/ invece che da girato/voce/
 
     @property
     def nome(self) -> str:
         return f"{self.scena.base}" + (f"-{self.k}" if self.k else "")
+
+    @property
+    def etichetta(self) -> str:
+        return relativo(self.file)
 
     @property
     def quando(self) -> float:
@@ -732,13 +762,10 @@ class Pezzo:
         return max(0.0, self.durata - SILENZIO_PRIMA - SILENZIO_DOPO)
 
 
-def pezzi_voce(piano: list[Scena]) -> tuple[list[Pezzo], list[str]]:
-    """I file di girato/voce/: NN-<scena>.* (tutta la clip) o NN-<scena>-K.* (battuta K). Vale anche l'id intero."""
-    cart = GIRATO / "voce"
-    if not cart.is_dir():
-        return [], []
-    # Nomi validi, dal più preciso: NN-<scena> (posizione di adesso), id della scena, <scena> senza numero.
-    # Un nome che varrebbe per due scene diverse non vale (si usa quello con il numero davanti).
+def nomi_voce(piano: list[Scena]) -> dict[str, tuple[Scena, int | None]]:
+    """Nomi validi dei file di voce, dal più preciso: NN-<scena> (posizione di adesso), id della scena, <scena> senza
+    numero; ognuno anche con -K per la battuta K. Un nome che varrebbe per due scene diverse non vale (si usa quello
+    con il numero davanti)."""
     nomi: dict[str, tuple[Scena, int | None]] = {}
     for livello in (lambda sc: sc.base, lambda sc: sc.id.lower(), lambda sc: sc.nome):
         candidati: dict[str, list[tuple[Scena, int | None]]] = {}
@@ -749,35 +776,115 @@ def pezzi_voce(piano: list[Scena]) -> tuple[list[Pezzo], list[str]]:
         for ch, vals in candidati.items():
             if ch not in nomi and len({(s.pos, k) for s, k in vals}) == 1:
                 nomi[ch] = vals[0]
-    avvisi, trovati = [], {}
+    return nomi
+
+
+def file_voce(cart: Path, nomi: dict, sintetica: bool) -> tuple[dict[tuple[int, int | None], Pezzo], list[str]]:
+    """I file audio di una cartella di voce, per (posizione della scena, battuta; None = la clip intera)."""
+    avvisi: list[str] = []
+    trovati: dict[tuple[int, int | None], Pezzo] = {}
+    if not cart.is_dir():
+        return trovati, avvisi
     for f in sorted(cart.iterdir()):
         if not f.is_file() or f.suffix.lower() not in ESTENSIONI_AUDIO or f.name.startswith("."):
             continue
         val = nomi.get(f.stem.lower()) or nomi.get(re.sub(r"^\d+-", "", f.stem.lower()))
         if not val:
-            avvisi.append(f"girato/voce/{f.name}: il nome non corrisponde a nessuna scena o battuta (es. 06-chat.m4a, 06-chat-2.m4a): lo ignoro")
+            avvisi.append(f"{relativo(f)}: il nome non corrisponde a nessuna scena o battuta (es. 06-chat.m4a, 06-chat-2.m4a): lo ignoro")
             continue
         chiave_pezzo = (val[0].pos, val[1])
         if chiave_pezzo in trovati:
-            avvisi.append(f"girato/voce/{f.name}: c'è già {trovati[chiave_pezzo].file.name} per la stessa"
+            avvisi.append(f"{relativo(f)}: c'è già {trovati[chiave_pezzo].file.name} per la stessa"
                           f" {'battuta' if val[1] else 'clip'}: lo ignoro")
             continue
-        trovati[chiave_pezzo] = Pezzo(f, *val)
+        trovati[chiave_pezzo] = Pezzo(f, *val, sintetica=sintetica)
+    return trovati, avvisi
+
+
+def sintetiche_valide(sint: dict[tuple[int, int | None], Pezzo], avvisi: list[str]) -> dict[tuple[int, int | None], Pezzo]:
+    """Delle battute sintetiche tiene solo quelle generate con il testo di adesso (audio/voce-sintetica/indice.json)."""
+    if not sint:
+        return {}
+    indice_f = AUDIO / "voce-sintetica" / "indice.json"
+    try:
+        battute = json.loads(indice_f.read_text(encoding="utf-8")).get("battute", {})
+    except (OSError, ValueError, AttributeError):
+        avvisi.append(f"{relativo(indice_f)} manca o non si legge: non so con che testo è stata generata la voce sintetica,"
+                      " quindi non la uso")
+        return {}
+    uguale = lambda a, b: " ".join(str(a).split()) == " ".join(str(b).split())
+    buone, vecchie = {}, []
+    for chiave, p in sint.items():
+        if not p.k:
+            continue                          # della voce sintetica valgono solo i file per battuta
+        if uguale((battute.get(p.file.stem) or {}).get("testo", ""), p.scena.battute[p.k - 1].testo):
+            buone[chiave] = p
+        else:
+            vecchie.append(p.nome)
+    if vecchie:
+        avvisi.append(f"voce sintetica generata con un testo diverso da quello di adesso per {len(vecchie)} battute"
+                      f" ({', '.join(vecchie[:4])}{'…' if len(vecchie) > 4 else ''}): non la uso, rigenerala con"
+                      " scene/voce_sintetica.py")
+    return buone
+
+
+def pezzi_voce(piano: list[Scena], sintetica: bool = False) -> tuple[list[Pezzo], list[str]]:
+    """I file di girato/voce/: NN-<scena>.* (tutta la clip) o NN-<scena>-K.* (battuta K). Vale anche l'id intero.
+    Con sintetica=True le battute senza registrazione prendono la voce di audio/voce-sintetica/ (solo se generata
+    con il testo di adesso), tranne nelle scene che hanno il file della clip intera."""
+    nomi = nomi_voce(piano)
+    trovati, avvisi = file_voce(GIRATO / "voce", nomi, False)
+    sint: dict[tuple[int, int | None], Pezzo] = {}
+    if sintetica:
+        sint, avvisi_sint = file_voce(AUDIO / "voce-sintetica", nomi, True)
+        avvisi += avvisi_sint
+        sint = sintetiche_valide(sint, avvisi)
     pezzi = []
     for sc in piano:
         per_battuta = [p for (pos, k), p in trovati.items() if pos == sc.pos and k]
         intera = trovati.get((sc.pos, None))
+        sint_sc = {k: p for (pos, k), p in sint.items() if pos == sc.pos and k}
         if per_battuta:
             if intera:
-                avvisi.append(f"girato/voce/{intera.file.name}: ci sono anche i file per battuta di {sc.base}: uso quelli")
+                avvisi.append(f"{relativo(intera.file)}: ci sono anche i file per battuta di {sc.base}: uso quelli")
             mancano = sorted({b.k for b in sc.battute} - {p.k for p in per_battuta})
-            if mancano:
-                avvisi.append(f"{sc.base}: manca la voce della battuta {', '.join(map(str, mancano))}"
-                              f" (girato/voce/{sc.base}-{mancano[0]}.m4a…): resta muta")
-            pezzi += sorted(per_battuta, key=lambda p: p.k)
+            riempite = [sint_sc[k] for k in mancano if k in sint_sc]
+            mute = [k for k in mancano if k not in sint_sc]
+            if riempite:
+                avvisi.append(f"{sc.base}: la battuta {', '.join(str(p.k) for p in riempite)} non è registrata:"
+                              " uso la voce sintetica")
+            if mute:
+                avvisi.append(f"{sc.base}: manca la voce della battuta {', '.join(map(str, mute))}"
+                              f" (girato/voce/{sc.base}-{mute[0]}.m4a…): resta muta")
+            pezzi += sorted(per_battuta + riempite, key=lambda p: p.k)
         elif intera:
             pezzi.append(intera)
+        elif sint_sc:
+            mute = sorted({b.k for b in sc.battute} - set(sint_sc))
+            if mute:
+                avvisi.append(f"{sc.base}: manca la voce sintetica della battuta {', '.join(map(str, mute))}: resta muta")
+            pezzi += [sint_sc[k] for k in sorted(sint_sc)]
     return pezzi, avvisi
+
+
+def crediti_audio(piano: list[Scena]) -> str:
+    """Riga dei crediti per la chiusura: la musica di audio/ (dati in audio/musica.json) e la voce sintetica, se si usano."""
+    parti = []
+    if OPZIONI["musica"] and not trova("musica", ESTENSIONI_AUDIO) and trova("musica", ESTENSIONI_AUDIO, AUDIO):
+        try:
+            m = json.loads((AUDIO / "musica.json").read_text(encoding="utf-8"))
+            parti.append(f"Musica: «{m['titolo']}» di {m['autore']} ({m['licenza']})")
+        except (OSError, ValueError, KeyError, TypeError):
+            pass
+    if OPZIONI["voce_sintetica"] and not trova("voce", ESTENSIONI_AUDIO):
+        pezzi, _ = pezzi_voce(piano, sintetica=True)
+        if any(p.sintetica for p in pezzi):
+            try:
+                motore = json.loads((AUDIO / "voce-sintetica" / "indice.json").read_text(encoding="utf-8")).get("motore", "")
+            except (OSError, ValueError, AttributeError):
+                motore = ""
+            parti.append("Voci sintetiche di prova" + (f" ({motore})" if motore else ""))
+    return " · ".join(parti)
 
 
 def prepara_pezzo(p: Pezzo, cart: Path) -> str | None:
@@ -787,7 +894,7 @@ def prepara_pezzo(p: Pezzo, cart: Path) -> str | None:
                        capture_output=True, text=True)
     misure = re.findall(r"^\s*I:\s+(-?[\d.]+|-inf) LUFS", r.stderr, flags=re.M)
     if r.returncode != 0 or not misure or misure[-1] == "-inf" or float(misure[-1]) < -60:
-        return f"girato/voce/{p.file.name}: non riesco a leggerlo o è muto: lo ignoro"
+        return f"{p.etichetta}: non riesco a leggerlo o è muto: lo ignoro"
     lufs = float(misure[-1])
     soglia = min(-30.0, max(-60.0, lufs - 18))        # silenzio = 18 dB sotto il volume medio della voce
     guadagno = min(GUADAGNO_MAX, max(-15.0, VOLUME_VOCE - lufs))
@@ -801,23 +908,25 @@ def prepara_pezzo(p: Pezzo, cart: Path) -> str | None:
     avvisi = []
     if p.durata < 0.2:
         p.wav = None
-        return f"girato/voce/{p.file.name}: dopo aver tolto il silenzio non resta niente: lo ignoro"
+        return f"{p.etichetta}: dopo aver tolto il silenzio non resta niente: lo ignoro"
     if VOLUME_VOCE - lufs > GUADAGNO_MAX:
         avvisi.append(f"è molto bassa ({lufs:.0f} LUFS): l'ho alzata di {GUADAGNO_MAX:.0f} dB ma resta sotto le altre,"
                       " riregistrala con il telefono più vicino")
     if p.parlato > p.spazio + 0.05:
         cosa = "fino alla battuta dopo" if p.k and p.k < len(p.scena.battute) else "fino alla fine della scena"
         taglio = " (la taglio alla fine della scena)" if not p.k else ""
-        avvisi.append(f"dura {num(p.parlato)} s, ma ha {num(p.spazio)} s {cosa}{taglio}: rileggila più svelta o allunga i tempi")
-    return f"girato/voce/{p.file.name}: " + "; ".join(avvisi) if avvisi else None
+        rimedio = "rigenerala più svelta con scene/voce_sintetica.py" if p.sintetica else "rileggila più svelta"
+        avvisi.append(f"dura {num(p.parlato)} s, ma ha {num(p.spazio)} s {cosa}{taglio}: {rimedio} o allunga i tempi")
+    return f"{p.etichetta}: " + "; ".join(avvisi) if avvisi else None
 
 
 def audio_montaggio(piano: list[Scena], totale: float, voce_da: float) -> tuple[Path, int, str]:
     """Scrive $C5_VIDEO_LAVORO/audio.wav (48 kHz stereo, lungo esattamente quanto il video) con voce e musica.
     Con la sola girato/voce.m4a i filtri sono quelli di sempre (loudnorm a -16 LUFS); la musica si abbassa sotto la voce."""
     voce = trova("voce", ESTENSIONI_AUDIO)
-    musica = trova("musica", ESTENSIONI_AUDIO)
-    pezzi, avvisi = pezzi_voce(piano)
+    musica = (trova("musica", ESTENSIONI_AUDIO) or trova("musica", ESTENSIONI_AUDIO, AUDIO)) if OPZIONI["musica"] else None
+    # La voce sintetica riempie solo le battute non registrate, e mai se c'è la voce vera di tutto il video
+    pezzi, avvisi = pezzi_voce(piano, sintetica=OPZIONI["voce_sintetica"] and not voce)
     cart = LAVORO / "voce"
     shutil.rmtree(cart, ignore_errors=True)
     if pezzi:
@@ -876,12 +985,16 @@ def audio_montaggio(piano: list[Scena], totale: float, voce_da: float) -> tuple[
     parti = []
     if voce:
         parti.append(f"{voce.name} (tutto il video" + (f", tranne {len({p.scena.pos for p in pezzi})} scene)" if pezzi else ")"))
-    n_batt = sum(1 for p in pezzi if p.k)
+    n_batt = sum(1 for p in pezzi if p.k and not p.sintetica)
+    n_sint = sum(1 for p in pezzi if p.sintetica)
+    n_clip = sum(1 for p in pezzi if not p.k)
     if n_batt:
         parti.append(f"{n_batt} battute da girato/voce/")
-    if len(pezzi) - n_batt:
-        parti.append(f"{len(pezzi) - n_batt} clip da girato/voce/")
-    descr = f"voce {' + '.join(parti) if parti else 'assente'}, musica {'= ' + musica.name if musica else 'assente'}"
+    if n_clip:
+        parti.append(f"{n_clip} clip da girato/voce/")
+    if n_sint:
+        parti.append(f"{n_sint} battute sintetiche da audio/voce-sintetica/")
+    descr = f"voce {' + '.join(parti) if parti else 'assente'}, musica {'= ' + relativo(musica) if musica else 'assente'}"
     return uscita, (128 if (ha_voce or musica) else 64), descr
 
 
@@ -1016,12 +1129,17 @@ def main() -> None:
     p.add_argument("--controllo", action="store_true", help="estrae un fotogramma ogni 5 s in $C5_VIDEO_LAVORO/controllo")
     p.add_argument("--segnaposto", action="store_true",
                    help="dove manca la ripresa vera mostra il cartello segnaposto invece della scena di riserva")
+    p.add_argument("--senza-voce-sintetica", action="store_true",
+                   help="non usa audio/voce-sintetica/: le battute non registrate restano mute")
+    p.add_argument("--senza-musica", action="store_true", help="niente musica di sottofondo (né girato/ né audio/)")
     solo = p.add_mutually_exclusive_group()
     solo.add_argument("--solo-clip", action="store_true",
                       help="rifà clip, SRT, testi della voce e 00-finale-senza-sottotitoli, ma non bozza.mp4")
     solo.add_argument("--solo-testi", action="store_true", help="rifà solo i testi della voce (voce/), senza video")
     a = p.parse_args()
     OPZIONI["segnaposto"] = a.segnaposto
+    OPZIONI["voce_sintetica"] = not a.senza_voce_sintetica
+    OPZIONI["musica"] = not a.senza_musica
 
     scaletta = json.loads((QUI / "scaletta.json").read_text(encoding="utf-8"))
     CARTELLI.update(scaletta.get("cartelli", {}))
@@ -1051,6 +1169,12 @@ def main() -> None:
         if not shutil.which(prog):
             sys.exit(f"Manca {prog}")
     LAVORO.mkdir(parents=True, exist_ok=True)
+
+    # Crediti di musica e voce sintetica nella chiusura, solo se si usano (cambiano la chiave della cache del cartello)
+    crediti = crediti_audio(piano)
+    if crediti and "chiusura" in CARTELLI:
+        CARTELLI["chiusura"] = {**CARTELLI["chiusura"], "crediti": crediti}
+        print(f"Crediti nella chiusura: {crediti}")
 
     sorg = Sorgenti(a.rigenera, a.rigenera_mappa)
     clip = []

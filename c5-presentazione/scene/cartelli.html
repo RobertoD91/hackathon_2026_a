@@ -46,6 +46,7 @@
   .squadra { margin-top: 52px; font-size: 36px; font-weight: 600; }
   .evento { margin-top: 12px; font-size: 25px; color: var(--tenue); }
   .link { margin-top: 10px; font-size: 25px; color: var(--twin); }
+  .crediti { margin-top: 26px; font-size: 20px; color: var(--tenue); opacity: .85; }
 
   /* testata trasparente sopra i video */
   body.trasparente { background: transparent; }
@@ -259,7 +260,8 @@ window.pronta = (async () => {
         <div class="invito a" style="--d:1.4s">💬 ${esc(c.invito)}</div>
         <div class="squadra a" style="--d:2.2s">${esc(c.squadra)}</div>
         <div class="evento a" style="--d:2.6s">${esc(c.evento)}</div>
-        <div class="link a" style="--d:2.9s">${esc(c.link)}</div></div>`;
+        <div class="link a" style="--d:2.9s">${esc(c.link)}</div>
+        ${c.crediti ? `<div class="crediti a" style="--d:3.3s">${esc(c.crediti)}</div>` : ''}</div>`;
     }
   }
   await document.fonts.ready;

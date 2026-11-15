@@ -14,6 +14,8 @@ Tre modi, che si possono mescolare. Formati: `.m4a` (Memo Vocali), `.wav`, `.mp3
 
 I file di `girato/voce/` prendono il posto di `girato/voce.m4a` nelle loro scene: per rifare una scena sola basta registrare quella. In una scena i file per battuta vincono sul file della clip. Il numero davanti al nome non conta (vale il nome della scena), e `girato/` resta fuori dal repository. Poi `./monta.sh`: la voce entra in `bozza.mp4`, nelle clip e in `clip/00-finale-senza-sottotitoli.mp4`.
 
+Finché una battuta non è registrata, al suo posto c'è la **voce sintetica di prova** di `audio/voce-sintetica/` (la rigenera `scene/voce_sintetica.py`): il vostro file la sostituisce da solo, battuta per battuta. Non si usa se c'è `girato/voce.m4a` o il file della clip intera. Per sentire solo le voci vere: `./monta.sh --senza-voce-sintetica`.
+
 Consigli: stanza silenziosa e con tende o divani, telefono a 20 cm dalla bocca e un po' di lato, sempre lo stesso telefono per la stessa persona. Tono caldo e sicuro, senza fretta.
 
 ## Pronuncia
