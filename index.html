@@ -1,33 +1,540 @@
 <!DOCTYPE html>
 <html lang="it">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TwinCIRO — The Big Hack 2026</title>
-    <style>
-      body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 48px 16px; }
-      main { max-width: 640px; margin: 0 auto; }
-      a { color: #60a5fa; }
-      li { margin: 12px 0; }
-      h2 { margin: 32px 0 4px; font-size: 1.15rem; }
-      .sub { margin: 0; color: #94a3b8; font-size: 0.9rem; }
-    </style>
-  </head>
-  <body>
-    <main>
-      <h1>The Big Hack 2026 — Roberto e Mario</h1>
-      <h2>TwinCIRO — Napoli che ci pensa</h2>
-      <p class="sub">Challenge 05 Fastweb + Vodafone, "Napoli Agentic City": TwinCIRO su WhatsApp, agenti della città, gemello digitale e dati veri di Napoli.</p>
-      <ul>
-        <li><a href="https://github.com/RobertoD91/hackathon_2026_a/blob/master/c5-agentic-city/README.md">TwinCIRO — README</a>: l'assistente su WhatsApp, agenti della città, assistenti personali, gemello digitale</li>
-        <li><a href="c5-presentazione/bozza.mp4">Video di consegna (bozza)</a>: 2:59, ancora senza le voci e le riprese vere; copione in <a href="https://github.com/RobertoD91/hackathon_2026_a/blob/master/c5-presentazione/copione.md">c5-presentazione/copione.md</a></li>
-        <li><a href="c5-presentazione/mappa/">Napoli in tempo reale</a>: mappa stile Seoul Real-Time City Data con dati veri (meteo, aria, trasporti, eventi, allerta); folla e sensori simulati</li>
-        <li><a href="c5-presentazione/gemello-3d/">TwinCIRO 3D</a>: il gemello digitale di tutta la città in 3D, con presenze stimate adesso e previste per 48 ore (simulate), chat con gli agenti a regole e scenari what-if per la sala operativa; meteo, allerte, trasporti ed eventi veri</li>
-        <li><a href="c5-presentazione/grafo/">Il grafo della città</a>: la giornata della regata come rete di relazioni (luoghi, eventi, stazioni, imprese, agenti, sensori, fonti), da esplorare</li>
-        <li><a href="c5-agentic-city/media/regata_3d.mp4">Video 3D della regata</a>: America's Cup 2027 sul lungomare, vista dal gemello digitale</li>
-        <li><a href="c5-agentic-city/visore3d/">Napoli 3D navigabile</a>: la stessa regata nel browser, da ruotare e zoomare col mouse, con folla per zona e dialogo tra gli agenti</li>
-        <li><a href="https://github.com/RobertoD91/hackathon_2026_a/blob/master/docs/fonti-dati-napoli.md">Oltre 50 fonti pubbliche, verificate una per una</a>: il catalogo dei dati di Napoli, con licenze ed esito delle prove</li>
-      </ul>
-    </main>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TwinCIRO · Napoli che ci pensa</title>
+<meta name="description" content="TwinCIRO: l'assistente della città su WhatsApp, con un sistema multi-agente e un gemello digitale di Napoli. The Big Hack 2026, Challenge 05 Fastweb + Vodafone.">
+<meta name="theme-color" content="#0a1020">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="TwinCIRO · Napoli che ci pensa">
+<meta property="og:description" content="L'assistente della città su WhatsApp, con un sistema multi-agente e un gemello digitale di Napoli.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a1020'/%3E%3Cpath d='M12 20h20M22 20v26' stroke='%2338d9f5' stroke-width='7' stroke-linecap='round' fill='none'/%3E%3Cpath d='M53 24a11 11 0 1 0 0 16' stroke='%23ffb547' stroke-width='7' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap">
+<style>
+  :root {
+    --bg: #0a1020;
+    --card: rgba(19, 30, 60, .74);
+    --card-2: rgba(11, 19, 40, .82);
+    --line: rgba(139, 168, 226, .16);
+    --line-strong: rgba(139, 168, 226, .30);
+    --text: #eef3ff;
+    --muted: #a9b6d2;
+    --dim: #8493b4;
+    --cyan: #38d9f5;
+    --amber: #ffb547;
+    --green: #4fe08e;
+    --wa: #25d366;
+    --shadow: 0 30px 70px -30px rgba(0, 0, 0, .75);
+    --ease: cubic-bezier(.2, .7, .2, 1);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px; line-height: 1.55; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: inherit; }
+  h1, h2, h3, p, figure, ul { margin: 0; }
+  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 8px; }
+  .wrap { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: 16px; }
+  @media (min-width: 760px) { .wrap { padding-inline: 32px; } }
+  .icon { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- Testata ---------- */
+  .hero { position: relative; isolation: isolate; overflow: hidden; text-align: center; padding: clamp(56px, 7vw, 84px) 0 max(118px, 11.8vw); }
+  .hero::before {
+    content: ""; position: absolute; inset: 0; z-index: -3;
+    background:
+      radial-gradient(55% 60% at 16% 10%, rgba(56, 217, 245, .18), transparent 70%),
+      radial-gradient(45% 55% at 86% 20%, rgba(255, 181, 71, .14), transparent 70%),
+      linear-gradient(180deg, #0c1530 0%, var(--bg) 94%);
+  }
+  .hero::after {
+    content: ""; position: absolute; inset: 0; z-index: -2;
+    background-image: radial-gradient(rgba(170, 200, 255, .13) 1px, transparent 1.4px);
+    background-size: 24px 24px;
+    -webkit-mask-image: radial-gradient(62% 70% at 50% 30%, #000 25%, transparent 80%);
+            mask-image: radial-gradient(62% 70% at 50% 30%, #000 25%, transparent 80%);
+  }
+  .skyline { position: absolute; left: 0; bottom: 0; width: 100%; height: max(116px, 15.3vw); z-index: -1; pointer-events: none; }
+  .brand { display: inline-block; font-size: clamp(70px, 13vw, 158px); font-weight: 800; letter-spacing: -.05em; line-height: .92; }
+  .brand .twin { color: var(--cyan); text-shadow: 0 0 48px rgba(56, 217, 245, .35); }
+  .brand .ciro { color: var(--amber); text-shadow: 0 0 48px rgba(255, 181, 71, .30); }
+  .tagline { margin-top: 16px; font-size: clamp(23px, 3.4vw, 36px); font-weight: 600; letter-spacing: -.015em; color: #f4f7ff; }
+  .lead { margin: 16px auto 0; max-width: 640px; font-size: clamp(18px, 2.1vw, 21px); line-height: 1.45; color: var(--muted); text-wrap: balance; }
+  .chips { list-style: none; padding: 0; margin: 28px auto 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 760px; }
+  .chips li { padding: 6px 13px; border-radius: 999px; font-size: 13.5px; font-weight: 500; color: #c6d1ea; background: rgba(13, 22, 46, .72); border: 1px solid var(--line); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .chips li strong { color: #fff; font-weight: 600; }
+
+  /* ---------- Sezioni ---------- */
+  .sec { padding: clamp(44px, 5.5vw, 72px) 0; }
+  .head { max-width: 780px; margin: 0 auto clamp(28px, 4vw, 44px); text-align: center; }
+  .kicker { display: inline-block; font-size: 12.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--cyan); }
+  .title { margin-top: 10px; font-size: clamp(30px, 4.4vw, 48px); line-height: 1.08; letter-spacing: -.03em; font-weight: 800; text-wrap: balance; }
+  .sub { margin-top: 14px; font-size: clamp(16.5px, 1.7vw, 19px); color: var(--muted); text-wrap: pretty; }
+
+  /* ---------- Due ingressi ---------- */
+  #ingressi { padding-top: clamp(8px, 2vw, 24px); }
+  .entries { display: grid; gap: 20px; }
+  @media (min-width: 940px) { .entries { grid-template-columns: 1fr 1fr; gap: 24px; } }
+  .entry {
+    --accent: var(--cyan);
+    position: relative; display: flex; flex-direction: column; min-width: 0;
+    padding: clamp(20px, 2.6vw, 32px); border-radius: 28px; overflow: hidden;
+    background:
+      radial-gradient(120% 60% at 0% 0%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 62%),
+      linear-gradient(180deg, var(--card), var(--card-2));
+    border: 1px solid var(--line); box-shadow: var(--shadow);
+    transition: transform .45s var(--ease), border-color .45s, box-shadow .45s;
+  }
+  .entry.wa { --accent: var(--amber); }
+  .entry::before { content: ""; position: absolute; left: 28px; right: 28px; top: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: .85; }
+  .entry:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 38%, transparent); box-shadow: 0 40px 80px -36px rgba(0, 0, 0, .85), 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent); }
+  .entry .n { position: absolute; top: clamp(22px, 2.8vw, 34px); right: clamp(22px, 2.8vw, 34px); font-size: 13px; font-weight: 700; letter-spacing: .12em; color: var(--dim); }
+  .tag { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; padding: 6px 13px; border-radius: 999px; font-size: 13.5px; font-weight: 600; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent); }
+  .tag .icon { width: 16px; height: 16px; }
+  .entry h3 { margin-top: 16px; font-size: clamp(30px, 3.3vw, 40px); line-height: 1.04; letter-spacing: -.035em; font-weight: 800; }
+  .entry h3 em { font-style: normal; color: var(--accent); }
+  .who { margin-top: 8px; font-weight: 600; color: #dce5f8; }
+  .desc { margin-top: 6px; color: var(--muted); }
+  .ticks { list-style: none; padding: 0; margin-top: 18px; display: grid; gap: 10px; }
+  .ticks li { position: relative; padding-left: 32px; line-height: 1.45; color: #e2e9fa; }
+  .ticks li::before { content: ""; position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 15%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent); }
+  .ticks li::after { content: ""; position: absolute; left: 7px; top: 6.5px; width: 8px; height: 4.5px; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
+  .pill { display: inline-block; margin-left: 4px; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1.6; vertical-align: 1px; white-space: nowrap; }
+  .pill.sim { color: #ffd9a0; background: rgba(255, 181, 71, .12); border: 1px solid rgba(255, 181, 71, .38); }
+  .pill.real { color: #a8f3c8; background: rgba(79, 224, 142, .10); border: 1px solid rgba(79, 224, 142, .38); }
+  .actions { margin-top: 24px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; padding: 13px 20px; border-radius: 14px;
+    font-weight: 700; font-size: 16px; line-height: 1.2; text-decoration: none; color: #061224;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 82%, #fff), var(--accent));
+    box-shadow: 0 14px 34px -14px color-mix(in srgb, var(--accent) 80%, transparent), inset 0 1px 0 rgba(255, 255, 255, .45);
+    transition: transform .25s var(--ease), box-shadow .25s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -12px color-mix(in srgb, var(--accent) 90%, transparent), inset 0 1px 0 rgba(255, 255, 255, .45); }
+  .btn .icon { width: 18px; height: 18px; stroke-width: 2.2; transition: transform .25s var(--ease); }
+  .btn:hover .icon { transform: translateX(3px); }
+  .note { margin-top: 22px; display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: 16px; background: linear-gradient(180deg, rgba(37, 211, 102, .13), rgba(37, 211, 102, .06)); border: 1px solid rgba(37, 211, 102, .38); color: #dcfbe8; font-weight: 600; line-height: 1.4; }
+  .note .icon { color: var(--wa); width: 22px; height: 22px; }
+  .media { margin-top: auto; padding-top: 26px; }
+  .shots { display: grid; gap: 14px; }
+  .shot { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 18px 40px -22px rgba(0, 0, 0, .85); background: #0b1224; }
+  .shot img { width: 100%; aspect-ratio: 1400 / 788; object-fit: cover; transition: transform .9s var(--ease); }
+  .entry:hover .shot img { transform: scale(1.015); }
+  .shot figcaption { position: absolute; left: 10px; bottom: 10px; padding: 5px 11px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: #eaf7ff; background: rgba(8, 14, 30, .78); border: 1px solid rgba(56, 217, 245, .38); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .phones { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: clamp(12px, 2vw, 22px); max-width: 540px; margin-inline: auto; }
+  .phone { padding: 6px; border-radius: 30px; background: linear-gradient(160deg, #22325a, #0a1122); border: 1px solid var(--line-strong); box-shadow: 0 26px 50px -24px rgba(0, 0, 0, .9); }
+  .phone:nth-child(2) { margin-top: 30px; }
+  .phone img { width: 100%; aspect-ratio: 462 / 1000; object-fit: cover; border-radius: 24px; }
+  .cap { margin-top: 16px; font-size: 13.5px; color: var(--dim); text-align: center; }
+  .cap strong { color: #d5def3; font-weight: 600; }
+
+  /* ---------- Fonti ---------- */
+  .fonti-panel {
+    position: relative; overflow: hidden; border-radius: 32px; padding: clamp(24px, 4.4vw, 60px) clamp(16px, 4.4vw, 60px);
+    background:
+      radial-gradient(70% 80% at 0% 0%, rgba(56, 217, 245, .15), transparent 60%),
+      radial-gradient(60% 70% at 100% 100%, rgba(255, 181, 71, .13), transparent 60%),
+      linear-gradient(180deg, #111c3b, #0b1329);
+    border: 1px solid var(--line); box-shadow: var(--shadow);
+  }
+  .fonti-top { display: grid; gap: 4px 48px; align-items: center; text-align: center; }
+  @media (min-width: 880px) { .fonti-top { grid-template-columns: auto 1fr; text-align: left; } }
+  .big {
+    font-size: clamp(112px, 17vw, 216px); line-height: .86; font-weight: 800; letter-spacing: -.06em;
+    background: linear-gradient(135deg, var(--cyan) 8%, #a5ecff 46%, var(--amber) 92%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 12px 40px rgba(56, 217, 245, .22));
+    padding-right: .04em;
+  }
+  .fonti-top .title { font-size: clamp(30px, 4vw, 46px); }
+  .fonti-top .sub { max-width: 560px; margin-inline: auto; }
+  @media (min-width: 880px) { .fonti-top .sub { margin-inline: 0; } }
+  .temi { list-style: none; padding: 0; margin-top: 30px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .temi li { display: inline-flex; align-items: center; gap: 9px; padding: 9px 14px; border-radius: 12px; background: rgba(255, 255, 255, .045); border: 1px solid var(--line); font-size: 15px; font-weight: 600; color: #e3eafb; }
+  .temi .icon { color: var(--cyan); width: 19px; height: 19px; }
+  .temi li:nth-child(even) .icon { color: var(--amber); }
+  @media (max-width: 599px) {
+    .temi { gap: 8px; }
+    .temi li { padding: 7px 11px; font-size: 14px; gap: 7px; border-radius: 10px; }
+    .temi .icon { width: 17px; height: 17px; }
+  }
+  .loghi { list-style: none; padding: 30px 0 0; margin-top: 32px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 6px; }
+  @media (min-width: 900px) { .loghi { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 26px 12px; } }
+  .logo { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; min-width: 0; }
+  .tile { display: grid; place-items: center; width: 58px; height: 58px; border-radius: 16px; background: #fff; box-shadow: 0 10px 22px -12px rgba(0, 0, 0, .85), inset 0 0 0 1px rgba(10, 16, 32, .06); transition: transform .3s var(--ease); }
+  .tile.scuro { background: #16213f; box-shadow: 0 10px 22px -12px rgba(0, 0, 0, .85), inset 0 0 0 1px var(--line-strong); }
+  .tile img { width: 42px; height: 42px; object-fit: contain; border-radius: 9px; }
+  .logo:hover .tile { transform: translateY(-3px) scale(1.05); }
+  .logo span { max-width: 100%; font-size: 11.5px; line-height: 1.25; font-weight: 500; color: var(--muted); overflow-wrap: break-word; }
+  @media (min-width: 900px) {
+    .tile { width: 70px; height: 70px; border-radius: 18px; }
+    .tile img { width: 50px; height: 50px; border-radius: 10px; }
+    .logo span { font-size: 12.5px; }
+  }
+  .fonti-cta { margin-top: 38px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+  .fonti-cta .btn { --accent: var(--amber); padding: 16px 28px; font-size: 17.5px; border-radius: 16px; }
+  .fonti-cta small { color: var(--dim); font-size: 13.5px; }
+
+  /* ---------- È tutto vero ---------- */
+  .vero { display: grid; gap: 24px; align-items: center; }
+  @media (min-width: 940px) { .vero { grid-template-columns: 1.12fr 1fr; gap: 52px; } }
+  .photo { border-radius: 24px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); background: #0b1224; }
+  .photo img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .photo figcaption { padding: 14px 18px; font-size: 14.5px; line-height: 1.5; color: var(--muted); border-top: 1px solid var(--line); background: rgba(12, 20, 42, .95); }
+  .photo figcaption strong { color: #e6edfc; font-weight: 600; }
+  .points { list-style: none; padding: 0; display: grid; gap: 14px; }
+  .points li { display: flex; gap: 14px; align-items: flex-start; padding: 18px; border-radius: 18px; background: linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .025)); border: 1px solid var(--line); }
+  .points .ic { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(79, 224, 142, .12); color: var(--green); border: 1px solid rgba(79, 224, 142, .32); }
+  .points li.sim .ic { background: rgba(255, 181, 71, .12); color: var(--amber); border-color: rgba(255, 181, 71, .38); }
+  .points strong { display: block; font-size: 17.5px; line-height: 1.3; color: #fff; }
+  .points span { display: block; margin-top: 3px; color: var(--muted); font-size: 15.5px; line-height: 1.5; }
+
+  /* ---------- Altre pagine ---------- */
+  .altre { padding: clamp(24px, 4vw, 40px) 0 clamp(40px, 6vw, 72px); }
+  .mini-title { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); font-weight: 700; text-align: center; margin-bottom: 16px; }
+  .links3 { display: grid; gap: 12px; }
+  @media (min-width: 820px) { .links3 { grid-template-columns: repeat(3, 1fr); } }
+  .mini { display: flex; align-items: center; gap: 14px; min-width: 0; padding: 15px 16px; border-radius: 16px; text-decoration: none; background: rgba(255, 255, 255, .03); border: 1px solid var(--line); transition: border-color .3s, transform .3s var(--ease), background .3s; }
+  .mini:hover { border-color: var(--line-strong); transform: translateY(-2px); background: rgba(255, 255, 255, .055); }
+  .mini .ic { flex: none; width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: rgba(56, 217, 245, .1); color: var(--cyan); border: 1px solid rgba(56, 217, 245, .25); }
+  .mini .ic .icon { width: 19px; height: 19px; }
+  .mini strong { display: block; font-size: 15.5px; line-height: 1.3; color: #fff; font-weight: 600; }
+  .mini span span { display: block; margin-top: 2px; font-size: 13.5px; line-height: 1.35; color: var(--dim); }
+  .mini .go { margin-left: auto; color: var(--dim); width: 18px; height: 18px; transition: transform .3s var(--ease), color .3s; }
+  .mini:hover .go { transform: translateX(3px); color: var(--cyan); }
+
+  /* ---------- Team ---------- */
+  .team { text-align: center; }
+  .team-frame { max-width: 980px; margin: 0 auto; padding: 2px; border-radius: 30px; background: linear-gradient(135deg, rgba(56, 217, 245, .7), rgba(255, 181, 71, .7)); box-shadow: 0 40px 90px -46px rgba(56, 217, 245, .45), 0 40px 90px -46px rgba(255, 181, 71, .35); }
+  .team-frame img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 28px; }
+  .names { margin-top: 26px; font-size: clamp(25px, 3.6vw, 38px); line-height: 1.2; font-weight: 800; letter-spacing: -.025em; }
+  .names .dot { color: var(--amber); }
+  .names .nm { white-space: nowrap; }
+  .where { margin-top: 8px; color: var(--dim); font-size: 15px; }
+
+  /* ---------- Piede ---------- */
+  .foot { margin-top: clamp(32px, 5vw, 56px); border-top: 1px solid var(--line); background: linear-gradient(180deg, rgba(14, 23, 48, .65), var(--bg)); }
+  .foot-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 24px; padding-top: 34px; padding-bottom: 42px; }
+  .foot-brand { font-weight: 800; font-size: 22px; letter-spacing: -.03em; }
+  .foot-brand .twin { color: var(--cyan); }
+  .foot-brand .ciro { color: var(--amber); }
+  .foot-brand small { display: block; margin-top: 2px; font-weight: 500; font-size: 13.5px; letter-spacing: 0; color: var(--dim); }
+  .foot-links { display: flex; flex-wrap: wrap; gap: 10px; }
+  .foot-links a { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 12px; border: 1px solid var(--line-strong); text-decoration: none; font-weight: 600; font-size: 15px; transition: background .25s, border-color .25s; }
+  .foot-links a:hover { background: rgba(255, 255, 255, .05); border-color: var(--cyan); }
+  .foot-links .icon { width: 17px; height: 17px; color: var(--cyan); }
+  .foot-note { flex-basis: 100%; font-size: 12.5px; line-height: 1.55; color: var(--dim); }
+
+  /* ---------- Animazioni ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    .rise { animation: rise .9s var(--ease) both; }
+    .rise.d1 { animation-delay: .08s; }
+    .rise.d2 { animation-delay: .18s; }
+    .rise.d3 { animation-delay: .28s; }
+    .skyline { animation: fade 1.6s .2s ease-out both; }
+    .pulse { transform-box: fill-box; transform-origin: center; animation: pulse 3s ease-out infinite; }
+    .pulse.p2 { animation-delay: .75s; }
+    .pulse.p3 { animation-delay: 1.5s; }
+    .pulse.p4 { animation-delay: 2.25s; }
+    .js .reveal { opacity: 0; transform: translateY(22px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+    .js .reveal.in { opacity: 1; transform: none; }
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pulse { 0% { opacity: .8; transform: scale(1); } 100% { opacity: 0; transform: scale(3.4); } }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1 class="brand rise" aria-label="TwinCIRO"><span class="twin">Twin</span><span class="ciro">CIRO</span></h1>
+    <p class="tagline rise d1">Napoli che ci pensa</p>
+    <p class="lead rise d2">L'assistente della città su WhatsApp, con un sistema multi-agente e un gemello digitale di Napoli.</p>
+    <ul class="chips rise d3" aria-label="L'evento">
+      <li><strong>The Big Hack 2026</strong></li>
+      <li>Città della Scienza, Napoli</li>
+      <li>Challenge 05 <strong>Fastweb + Vodafone</strong></li>
+    </ul>
+  </div>
+  <svg class="skyline" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="sk-linea" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#38d9f5" stop-opacity="0"/>
+        <stop offset=".22" stop-color="#38d9f5" stop-opacity=".85"/>
+        <stop offset=".62" stop-color="#ffb547" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#ffb547" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="sk-terra" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stop-color="#18295a" stop-opacity=".55"/>
+        <stop offset=".8" stop-color="#0a1020" stop-opacity="1"/>
+      </linearGradient>
+    </defs>
+    <path d="M0 200 C90 196 150 176 230 172 C300 168 340 186 420 189 C470 191 500 172 545 169 C590 166 610 187 680 190 C730 192 760 168 800 130 C822 109 840 90 858 86 C874 83 886 99 904 103 C922 106 936 82 962 70 L976 67 L1002 69 C1024 77 1052 109 1092 136 C1150 172 1250 190 1440 196 L1440 220 L0 220 Z" fill="url(#sk-terra)"/>
+    <path d="M0 200 C90 196 150 176 230 172 C300 168 340 186 420 189 C470 191 500 172 545 169 C590 166 610 187 680 190 C730 192 760 168 800 130 C822 109 840 90 858 86 C874 83 886 99 904 103 C922 106 936 82 962 70 L976 67 L1002 69 C1024 77 1052 109 1092 136 C1150 172 1250 190 1440 196" fill="none" stroke="url(#sk-linea)" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+    <path d="M0 210 H1440" fill="none" stroke="#38d9f5" stroke-opacity=".18" stroke-width="1" stroke-dasharray="2 9" vector-effect="non-scaling-stroke"/>
+    <g fill="#38d9f5">
+      <circle cx="230" cy="172" r="3.2"/><circle cx="545" cy="169" r="3.2"/>
+    </g>
+    <g fill="#ffb547">
+      <circle cx="858" cy="86" r="3.2"/><circle cx="989" cy="68" r="3.2"/>
+    </g>
+    <g fill="none" stroke-width="1.2">
+      <circle class="pulse" cx="230" cy="172" r="3.2" stroke="#38d9f5"/>
+      <circle class="pulse p2" cx="545" cy="169" r="3.2" stroke="#38d9f5"/>
+      <circle class="pulse p3" cx="858" cy="86" r="3.2" stroke="#ffb547"/>
+      <circle class="pulse p4" cx="989" cy="68" r="3.2" stroke="#ffb547"/>
+    </g>
+  </svg>
+</header>
+
+<main>
+
+  <!-- 1. Due utenti, due ingressi -->
+  <section id="ingressi" class="sec" aria-labelledby="t-ingressi">
+    <div class="wrap">
+      <div class="head reveal">
+        <span class="kicker">Come si usa</span>
+        <h2 class="title" id="t-ingressi">Due utenti, due ingressi</h2>
+        <p class="sub">Gli stessi dati della città, due modi di usarli: dalla sala operativa e dal telefono.</p>
+      </div>
+
+      <div class="entries reveal">
+        <article class="entry op" aria-labelledby="t-3d">
+          <span class="n" aria-hidden="true">01</span>
+          <span class="tag"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Per l'operatore</span>
+          <h3 id="t-3d">TwinCIRO <em>3D</em></h3>
+          <p class="who">La dashboard per chi gestisce la città, per esempio la sala operativa della Polizia Locale.</p>
+          <ul class="ticks">
+            <li>Presenze adesso e previste per 48 ore <span class="pill sim">simulate e dichiarate</span></li>
+            <li>Scenari «e se…» per decidere prima</li>
+            <li>Chat con gli agenti a regole</li>
+            <li>Meteo, allerte, aria, trasporti ed eventi <span class="pill real">veri</span></li>
+          </ul>
+          <p class="actions">
+            <a class="btn" href="c5-presentazione/gemello-3d/">Apri TwinCIRO 3D<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </p>
+          <div class="media shots">
+            <figure class="shot">
+              <img src="docs/foto/gemello-3d.jpg" width="1400" height="788" fetchpriority="high" alt="TwinCIRO 3D: Napoli in 3D con le colonne delle presenze per luogo, l'elenco dei luoghi più affollati e gli eventi del giorno">
+              <figcaption>Vista d'insieme</figcaption>
+            </figure>
+            <figure class="shot">
+              <img src="docs/foto/gemello-sala.jpg" width="1400" height="788" loading="lazy" alt="TwinCIRO 3D, sala operativa: uno scenario «e se…» con gli indicatori e le criticità previste nelle prossime 48 ore">
+              <figcaption>Sala operativa · scenario «e se…»</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <article class="entry wa" aria-labelledby="t-wa">
+          <span class="n" aria-hidden="true">02</span>
+          <span class="tag"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.5L3 21l2-5.4A8.4 8.4 0 1 1 21 11.5Z"/></svg>Per chi visita Napoli</span>
+          <h3 id="t-wa">TwinCIRO su <em>WhatsApp</em></h3>
+          <p class="who">Per turisti e cittadini: gli scrivi come a un amico e risponde con dati veri, con la fonte e l'ora.</p>
+          <ul class="ticks">
+            <li>Meteo, mare, aria e allerte del momento</li>
+            <li>Treni, metro e bus, eventi del giorno</li>
+            <li>Dove andare adesso, in parole semplici</li>
+          </ul>
+          <p class="note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.5L3 21l2-5.4A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 11.5h7"/></svg><span>Il link per entrare nel gruppo WhatsApp è sulla piattaforma dell'hackathon.</span></p>
+          <div class="media">
+            <div class="phones">
+              <figure class="phone">
+                <img src="docs/foto/whatsapp-giuria.jpg" width="462" height="1000" loading="lazy" alt="Chat WhatsApp: TwinCIRO saluta la giuria dell'hackathon e consiglia dove andare oggi dopo le 17">
+              </figure>
+              <figure class="phone">
+                <img src="docs/foto/whatsapp-aria.jpg" width="462" height="1000" loading="lazy" alt="Chat WhatsApp: TwinCIRO dà i dati sulla qualità dell'aria a Fuorigrotta (AQI, PM10, PM2.5, NO2, ozono, pollini) con la fonte e l'ora">
+              </figure>
+            </div>
+            <p class="cap">Schermate vere. Nel gruppo TwinCIRO compare con il nome del suo account WhatsApp: <strong>«Jarvis»</strong>.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Le fonti -->
+  <section id="fonti" class="sec" aria-labelledby="t-fonti">
+    <div class="wrap">
+      <div class="fonti-panel reveal">
+        <div class="fonti-top">
+          <p class="big" aria-hidden="true">50+</p>
+          <div>
+            <span class="kicker">Le fonti</span>
+            <h2 class="title" id="t-fonti">Oltre 50 fonti pubbliche, verificate una per una</h2>
+            <p class="sub">Per ognuna: chi la pubblica, formato, licenza ed esito della prova. TwinCIRO cita sempre la fonte e l'ora del dato.</p>
+          </div>
+        </div>
+
+        <ul class="temi" aria-label="I temi">
+          <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.5"/><path d="M2 15c2 0 2-1.5 4-1.5s2 1.5 4 1.5 2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5M2 19.5c2 0 2-1.5 4-1.5s2 1.5 4 1.5 2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5"/></svg>Meteo e mare</li>
+          <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2M9.6 4.6A2 2 0 1 1 11 8H2M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>Aria</li>
+          <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>Allerte della Protezione Civile</li>
+          <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="13" rx="3"/><path d="M5 10h14M8 20l1.5-4M16 20l-1.5-4M8.5 13h.01M15.5 13h.01"/></svg>Trasporti: treni, metro, bus</li>
+          <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Eventi</li>
+          <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.5"/></svg>Turismo</li>
+          <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Territorio</li>
+        </ul>
+
+        <ul class="loghi" aria-label="Alcune delle fonti">
+          <li class="logo" title="Open-Meteo"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/open-meteo.png" width="128" height="128" loading="lazy" alt="Logo di Open-Meteo"></span><span>Open-Meteo</span></li>
+          <li class="logo" title="meteo@uniparthenope, Università di Napoli Parthenope"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/uniparthenope.png" width="128" height="128" loading="lazy" alt="Logo di meteo@uniparthenope"></span><span>Parthenope</span></li>
+          <li class="logo" title="MET Norway, istituto meteorologico norvegese"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/met-norway.png" width="128" height="128" loading="lazy" alt="Logo di MET Norway"></span><span>MET Norway</span></li>
+          <li class="logo" title="Meteoalarm (EUMETNET)"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/meteoalarm.png" width="128" height="128" loading="lazy" alt="Logo di Meteoalarm"></span><span>Meteoalarm</span></li>
+          <li class="logo" title="Centro Funzionale Decentrato della Protezione Civile, Regione Campania"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/centro-funzionale.png" width="128" height="128" loading="lazy" alt="Logo della Protezione Civile della Regione Campania"></span><span>Protezione Civile Campania</span></li>
+          <li class="logo" title="INGV, Istituto Nazionale di Geofisica e Vulcanologia"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/ingv.png" width="128" height="128" loading="lazy" alt="Logo dell'INGV"></span><span>INGV</span></li>
+          <li class="logo" title="Agenzia europea dell'ambiente (centraline ARPA Campania)"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/eea.png" width="128" height="128" loading="lazy" alt="Logo dell'Agenzia europea dell'ambiente"></span><span>EEA</span></li>
+          <li class="logo" title="World Air Quality Index"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/waqi.png" width="128" height="128" loading="lazy" alt="Logo di WAQI"></span><span>WAQI</span></li>
+          <li class="logo" title="Sensor.Community"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/sensor-community.png" width="128" height="128" loading="lazy" alt="Logo di Sensor.Community"></span><span>Sensor.<wbr>Community</span></li>
+          <li class="logo" title="EAV, Ente Autonomo Volturno"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/eav.png" width="128" height="128" loading="lazy" alt="Logo di EAV"></span><span>EAV</span></li>
+          <li class="logo" title="BusOne: ANM in tempo reale"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/busone.png" width="128" height="128" loading="lazy" alt="Logo di BusOne"></span><span>BusOne</span></li>
+          <li class="logo" title="Regione Campania"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/regione-campania.png" width="128" height="128" loading="lazy" alt="Logo della Regione Campania"></span><span>Regione Campania</span></li>
+          <li class="logo" title="Transitous"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/transitous.png" width="128" height="128" loading="lazy" alt="Logo di Transitous"></span><span>Transitous</span></li>
+          <li class="logo" title="NAP Italia, CCISS (aliscafi)"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/cciss.png" width="128" height="128" loading="lazy" alt="Logo del CCISS"></span><span>CCISS</span></li>
+          <li class="logo" title="Autostrade per l'Italia"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/autostrade.png" width="128" height="128" loading="lazy" alt="Logo di Autostrade per l'Italia"></span><span>Autostrade</span></li>
+          <li class="logo" title="Assaeroporti"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/assaeroporti.png" width="128" height="128" loading="lazy" alt="Logo di Assaeroporti"></span><span>Assaeroporti</span></li>
+          <li class="logo" title="OpenSky Network"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/opensky.png" width="128" height="128" loading="lazy" alt="Logo di OpenSky Network"></span><span>OpenSky</span></li>
+          <li class="logo" title="AIS Stream (navi)"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/aisstream.png" width="128" height="128" loading="lazy" alt="Logo di AIS Stream"></span><span>AIS Stream</span></li>
+          <li class="logo" title="OpenStreetMap"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/openstreetmap.png" width="128" height="128" loading="lazy" alt="Logo di OpenStreetMap"></span><span>Open<wbr>StreetMap</span></li>
+          <li class="logo" title="Comune di Napoli"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/comune-napoli.png" width="128" height="128" loading="lazy" alt="Stemma del Comune di Napoli"></span><span>Comune di Napoli</span></li>
+          <li class="logo" title="Open data del Comune di Napoli"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/opendata-comune.png" width="128" height="128" loading="lazy" alt="Logo degli open data del Comune di Napoli"></span><span>Open data Napoli</span></li>
+          <li class="logo" title="America's Cup"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/americascup.png" width="128" height="128" loading="lazy" alt="Logo dell'America's Cup"></span><span>America's Cup</span></li>
+          <li class="logo" title="Autorità di Sistema Portuale del Mar Tirreno Centrale"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/adsp.png" width="128" height="128" loading="lazy" alt="Logo dell'Autorità di Sistema Portuale del Mar Tirreno Centrale"></span><span>Porto di Napoli</span></li>
+          <li class="logo" title="Cruise Timetables"><span class="tile scuro"><img src="c5-presentazione/scene/fonti/loghi/cruisetimetables.png" width="128" height="128" loading="lazy" alt="Logo di Cruise Timetables"></span><span>Cruise Timetables</span></li>
+          <li class="logo" title="Ministero della Cultura"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/cultura.png" width="128" height="128" loading="lazy" alt="Logo del Ministero della Cultura"></span><span>Ministero Cultura</span></li>
+          <li class="logo" title="ISTAT"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/istat.png" width="128" height="128" loading="lazy" alt="Logo dell'ISTAT"></span><span>ISTAT</span></li>
+          <li class="logo" title="Inside Airbnb"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/insideairbnb.png" width="128" height="128" loading="lazy" alt="Logo di Inside Airbnb"></span><span>Inside Airbnb</span></li>
+          <li class="logo" title="Wikipedia"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/wikipedia.png" width="128" height="128" loading="lazy" alt="Logo di Wikipedia"></span><span>Wikipedia</span></li>
+          <li class="logo" title="Wikidata"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/wikidata.png" width="128" height="128" loading="lazy" alt="Logo di Wikidata"></span><span>Wikidata</span></li>
+          <li class="logo" title="football-data.org"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/football-data.png" width="128" height="128" loading="lazy" alt="Logo di football-data.org"></span><span>football-data</span></li>
+          <li class="logo" title="TheSportsDB"><span class="tile"><img src="c5-presentazione/scene/fonti/loghi/thesportsdb.png" width="128" height="128" loading="lazy" alt="Logo di TheSportsDB"></span><span>TheSportsDB</span></li>
+          <li class="logo" title="IndicePA (AgID)"><span class="tile scuro"><img src="c5-presentazione/scene/fonti/loghi/indicepa.png" width="128" height="128" loading="lazy" alt="Logo di IndicePA"></span><span>IndicePA</span></li>
+        </ul>
+
+        <div class="fonti-cta">
+          <a class="btn" href="https://github.com/RobertoD91/hackathon_2026_a/blob/master/docs/fonti-dati-napoli.md">Vedi tutte le fonti<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <small>Il catalogo completo, con licenze ed esito delle prove, è su GitHub.</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. È tutto vero -->
+  <section id="vero" class="sec" aria-labelledby="t-vero">
+    <div class="wrap">
+      <div class="head reveal">
+        <span class="kicker">Reale e simulato</span>
+        <h2 class="title" id="t-vero">È tutto vero</h2>
+        <p class="sub">Dispositivi veri, dati veri, server acceso. Quello che è simulato lo dichiariamo.</p>
+      </div>
+      <div class="vero reveal">
+        <figure class="photo">
+          <img src="docs/foto/iot-dispositivi.jpg" width="1200" height="900" loading="lazy" alt="Sul tavolo la scheda ESP32 con Tasmota e il sensore DHT11, il badge Cyber Saiyan WHY2025 e un portatile con la pagina di Tasmota che mostra temperatura e umidità">
+          <figcaption><strong>I nostri sensori.</strong> Scheda ESP32 con Tasmota che legge temperatura e umidità (DHT11) e badge Cyber Saiyan WHY2025, per cui abbiamo scritto il firmware.</figcaption>
+        </figure>
+        <ul class="points">
+          <li>
+            <span class="ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.2 2.7 2.7L16 9.6"/></svg></span>
+            <span><strong>Dati veri da fonti pubbliche</strong><span>Meteo, aria, allerte, trasporti ed eventi, sempre con la fonte e l'ora.</span></span>
+          </li>
+          <li>
+            <span class="ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01M11 7.5h6M11 16.5h6"/></svg></span>
+            <span><strong>Server attivo</strong><span>Broker MQTT e API dati della città, in funzione.</span></span>
+          </li>
+          <li class="sim">
+            <span class="ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke-dasharray="2.6 2.6"/><path d="M12 11v5M12 8h.01"/></svg></span>
+            <span><strong>Simulato, e lo diciamo</strong><span>La folla per zona, le offerte delle imprese e lo scenario della regata 2027 sono simulati e dichiarati.</span></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Altre pagine -->
+  <section class="altre" aria-labelledby="t-altre">
+    <div class="wrap reveal">
+      <h2 class="mini-title" id="t-altre">Altre pagine</h2>
+      <div class="links3">
+        <a class="mini" href="c5-presentazione/mappa/">
+          <span class="ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6.5v13.5L9 17.5l6 2.5 6-2.5V4l-6 2.5L9 4Z"/><path d="M9 4v13.5M15 6.5V20"/></svg></span>
+          <span><strong>Napoli in tempo reale</strong><span>La mappa: folla simulata, dati veri</span></span>
+          <svg class="icon go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="mini" href="c5-presentazione/grafo/">
+          <span class="ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><circle cx="12" cy="10" r="2"/><path d="M7.2 7.1 10.3 9M16.8 7.1 13.7 9M12 12v3.5"/></svg></span>
+          <span><strong>Napoli come rete di relazioni</strong><span>Il grafo della città, da esplorare</span></span>
+          <svg class="icon go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="mini" href="c5-agentic-city/visore3d/">
+          <span class="ic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v14M12 4.5 19 15H12M12 7 6.5 15H12"/><path d="M3 18.5c1.5 1 3 1.5 4.5 1.5S10.5 19 12 18.5s3 1.5 4.5 1.5 3-.5 4.5-1.5"/></svg></span>
+          <span><strong>La regata in 3D</strong><span>Navigabile nel browser</span></span>
+          <svg class="icon go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Il team -->
+  <section id="team" class="sec team" aria-labelledby="t-team">
+    <div class="wrap">
+      <div class="head reveal">
+        <span class="kicker">Il team</span>
+        <h2 class="title" id="t-team">Fatto a Napoli, in due</h2>
+      </div>
+      <figure class="reveal">
+        <div class="team-frame">
+          <img src="docs/foto/team.jpg" width="1200" height="900" loading="lazy" alt="Roberto D'Isanto e Mario Varlese a The Big Hack 2026, con il badge, la scheda ESP32 e il cartello «TwinCIRO»">
+        </div>
+        <figcaption>
+          <p class="names"><span class="nm">Roberto D'Isanto</span> <span class="dot">·</span> <span class="nm">Mario Varlese</span></p>
+          <p class="where">The Big Hack 2026 · Città della Scienza, Napoli</p>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <p class="foot-brand"><span class="twin">Twin</span><span class="ciro">CIRO</span><small>Napoli che ci pensa · Challenge 05 Fastweb&nbsp;+&nbsp;Vodafone</small></p>
+    <nav class="foot-links" aria-label="Codice">
+      <a href="https://github.com/RobertoD91/hackathon_2026_a"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6-6 6 6 6M16 6l6 6-6 6"/></svg>Il codice su GitHub</a>
+      <a href="https://github.com/RobertoD91/hackathon_2026_a/blob/master/README.md"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6Z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg>README</a>
+    </nav>
+    <p class="foot-note">I loghi appartengono ai rispettivi enti e qui servono solo a citare le fonti. Le schermate del gemello usano mappe © OpenStreetMap, OpenFreeMap e OpenMapTiles.</p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.04 });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+</body>
 </html>
