@@ -8,6 +8,7 @@ Qui sta la **parte di vetrina** di TwinCIRO (Challenge 05, Fastweb + Vodafone): 
 | Clip per scena, sottotitoli SRT, video senza sottotitoli | [`clip/`](clip/LEGGIMI.md) (le scrive `monta.sh`) | come il video |
 | Testi della voce per Roberto e Mario | [`voce/`](voce/COPIONE-VOCE.md) (li scrive `monta.sh`) | – |
 | Riprese vere, voce, musica | [`girato/`](girato/LEGGIMI.md) (fuori dal repository) | vere |
+| Musica CC0 e voce sintetica di prova (ElevenLabs), usate solo dove `girato/` non ha di meglio | [`audio/`](audio/LEGGIMI.md) | musica vera (CC0), voce sintetica dichiarata nei crediti |
 | Mappa «Napoli in tempo reale»: hub, agenti e simulatore Node | [`mappa/`](mappa/README.md) | **folla e sensori simulati**; meteo, aria, trasporti, eventi e allerte **veri** |
 | Grafo della città il giorno della regata (pagina navigabile) | [`grafo/`](grafo/) | relazioni ricavate dai file della repository; eventi e flussi dello scenario 2027 |
 | Gemello 3D «TwinCIRO 3D»: presenze adesso e previste per 48 ore, chat con agenti a regole, sala operativa con what-if ([online](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/gemello-3d/)) | [`gemello-3d/`](gemello-3d/README.md) | **presenze simulate**; meteo, allerte, aria, trasporti ed eventi **veri**; non legge MQTT |
@@ -129,6 +130,8 @@ Metti i file in [`girato/`](girato/LEGGIMI.md):
 - `chat.mp4` (la chat WhatsApp vera con il contatto TwinCIRO), `badge.mp4`, `tasmota.mp4`: le riprese;
 - le voci di Roberto e Mario: una battuta per file in `girato/voce/NN-<scena>-K.m4a` (nomi in [`voce/COPIONE-VOCE.md`](voce/COPIONE-VOCE.md)), oppure una scena per file, oppure tutto in `voce.m4a`;
 - `musica.mp3`: la musica, facoltativa e solo se libera da diritti.
+
+Finché mancano, `monta.sh` usa quello che c'è in [`audio/`](audio/LEGGIMI.md): la musica CC0 «Funshine» di Kevin MacLeod e la voce sintetica di prova (ElevenLabs: George per Roberto, Eric per Mario), una battuta per file. Ogni battuta registrata prende il posto di quella sintetica; la voce sintetica non si usa con `girato/voce.m4a`, nelle scene registrate intere né per una battuta il cui testo è cambiato (si rigenera con `scene/voce_sintetica.py`, che rifà solo le battute cambiate). Quando si usano, la chiusura ne riporta i crediti. Per farne a meno: `--senza-voce-sintetica`, `--senza-musica`.
 
 Se un file c'è, `monta.sh` lo usa al posto della scena generata. Nella scena 11 le riprese del badge e di Tasmota che ci sono si dividono gli 8 s, con la testata «Sensori fatti da noi»; se mancano tutte e due resta il cartello, senza valori inventati. Con `--segnaposto` si vedono invece i cartelli che dicono cosa girare. Per provare le riprese da un'altra cartella: `C5_VIDEO_GIRATO=/percorso ./monta.sh`. Le indicazioni per girare sono in [`copione.md`](copione.md#riprese-da-girare). I file di `girato/` non vanno nel repository.
 

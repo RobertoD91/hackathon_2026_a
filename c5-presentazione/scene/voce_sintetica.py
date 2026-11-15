@@ -77,6 +77,15 @@ SINTESI = {
 # Eccezioni per contesto: se la battuta contiene la chiave, la parola si scrive così. Nel titolo TwinCIRO è seguito
 # dall'inglese e «Twin Ciro» diventa «Twin Zero»; «Tuìn Cìro» no.
 CONTESTO = [("City Intelligence", "TwinCIRO", "Tuìn Cìro")]
+# Battute che ElevenLabs sbaglia lette tutte intere: il file in cartella è stato composto da più richieste (15/11).
+# Finché il testo resta questo lo script non le rigenera da solo (si perderebbe la correzione); con --solo le rifà
+# intere, e allora vanno riascoltate.
+COMPOSTE = {
+    "TwinCIRO: City Intelligence and Responsive Orchestration.":
+        "«Twin Ciro.» tagliato alla pausa dalla richiesta «Twin Ciro. Napoli che ci pensa.», 0,25 s di silenzio, poi"
+        " «City Intelligence and Responsive Orchestration.» chiesto a parte: letta tutta insieme, con qualsiasi grafia,"
+        " «Ciro» diventava «Zero».",
+}
 
 
 def schema(parola: str) -> re.Pattern:
@@ -183,6 +192,8 @@ def principale() -> None:
                 file = CARTELLA / f"{nome}.m4a"
                 voce_info = {"testo": b.testo, "testo_sintesi": testo_s, "chi": b.chi, "voce": voce["nome"],
                              "file": file.name, "impronta": imp}
+                if b.testo in COMPOSTE:
+                    voce_info["composta"] = COMPOSTE[b.testo]
                 vecchia = vecchie.get(nome)
                 if nome not in solo and vecchia and vecchia.get("impronta") == imp and file.is_file():
                     nuove[nome] = {**vecchia, **voce_info}
@@ -209,6 +220,11 @@ def principale() -> None:
                         nuove[nome] = {**voce_info, "speed": None, "parlato_s": round(parlato, 2), "spazio_s": round(spazio, 2),
                                        "importata": True}
                     fatte.append(f"{nome}: importata da {wav}")
+                    continue
+                if b.testo in COMPOSTE and nome not in solo:
+                    avvisi.append(f"{nome}: va composta a mano ({COMPOSTE[b.testo]}); per rifarla intera: --solo {nome}")
+                    if vecchia and file.is_file():
+                        nuove[nome] = vecchia
                     continue
                 caratteri += len(testo_s)
                 if a.prova:

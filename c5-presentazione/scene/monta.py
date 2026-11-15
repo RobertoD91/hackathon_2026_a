@@ -102,6 +102,7 @@ VOCI = ("Roberto", "Mario")           # chi legge: campo "chi" delle voci della 
 RITMO_MAX = 180                       # parole al minuto (6 sillabe al secondo) oltre le quali una battuta è troppo veloce
 VOLUME_VOCE = -16.0                   # LUFS: lo stesso obiettivo di loudnorm sulla voce intera
 GUADAGNO_MAX = 25.0                   # dB: oltre, una registrazione troppo bassa porterebbe su soprattutto il rumore
+MUSICA_LUFS = -14.0                   # LUFS: volume di riferimento della musica, prima di abbassarla sotto la voce
 SILENZIO_PRIMA, SILENZIO_DOPO = 0.08, 0.25   # secondi di silenzio lasciati prima della prima parola e dopo l'ultima
 # Come si leggono le parole difficili (per il copione e per contare le parole); "pronuncia" nella scaletta le integra
 PRONUNCIA = {
@@ -920,6 +921,16 @@ def prepara_pezzo(p: Pezzo, cart: Path) -> str | None:
     return f"{p.etichetta}: " + "; ".join(avvisi) if avvisi else None
 
 
+def guadagno_musica(f: Path) -> float:
+    """dB per portare la musica a MUSICA_LUFS (loudness integrata misurata con ebur128), tra -12 e +6."""
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(f), "-af", "ebur128=framelog=quiet", "-f", "null", "-"],
+                       capture_output=True, text=True)
+    misure = re.findall(r"^\s*I:\s+(-?[\d.]+|-inf) LUFS", r.stderr, flags=re.M)
+    if r.returncode != 0 or not misure or misure[-1] == "-inf":
+        return 0.0
+    return max(-12.0, min(6.0, MUSICA_LUFS - float(misure[-1])))
+
+
 def audio_montaggio(piano: list[Scena], totale: float, voce_da: float) -> tuple[Path, int, str]:
     """Scrive $C5_VIDEO_LAVORO/audio.wav (48 kHz stereo, lungo esattamente quanto il video) con voce e musica.
     Con la sola girato/voce.m4a i filtri sono quelli di sempre (loudnorm a -16 LUFS); la musica si abbassa sotto la voce."""
@@ -964,10 +975,12 @@ def audio_montaggio(piano: list[Scena], totale: float, voce_da: float) -> tuple[
         unisci = f"amix=inputs={len(voce_bus)}:normalize=0:duration=longest," if len(voce_bus) > 1 else ""
         fa.append("".join(voce_bus) + f"{unisci}alimiter=limit=0.891:level=0:latency=1,atrim=0:{totale:.3f}[voce]")
     ha_voce = bool(voce or pezzi)
+    guadagno_mus = 0.0
     if musica:
         ingressi += ["-stream_loop", "-1", "-i", str(musica)]
-        vol = 0.12 if ha_voce else 0.35
-        fa.append(f"[{k}:a]aresample=48000,volume={vol},atrim=0:{totale:.3f},afade=t=in:d=2,"
+        guadagno_mus = guadagno_musica(musica)          # brani diversi, stesso tappeto: prima la porto a MUSICA_LUFS
+        vol = (0.12 if ha_voce else 0.35) * 10 ** (guadagno_mus / 20)
+        fa.append(f"[{k}:a]aresample=48000,volume={vol:.4f},atrim=0:{totale:.3f},afade=t=in:d=2,"
                   f"afade=t=out:st={totale - 3:.3f}:d=3[mus]")
         k += 1
     if ha_voce and musica:
@@ -994,7 +1007,8 @@ def audio_montaggio(piano: list[Scena], totale: float, voce_da: float) -> tuple[
         parti.append(f"{n_clip} clip da girato/voce/")
     if n_sint:
         parti.append(f"{n_sint} battute sintetiche da audio/voce-sintetica/")
-    descr = f"voce {' + '.join(parti) if parti else 'assente'}, musica {'= ' + relativo(musica) if musica else 'assente'}"
+    musica_descr = f"= {relativo(musica)} ({guadagno_mus:+.1f} dB per arrivare a {MUSICA_LUFS:.0f} LUFS)" if musica else "assente"
+    descr = f"voce {' + '.join(parti) if parti else 'assente'}, musica {musica_descr}"
     return uscita, (128 if (ha_voce or musica) else 64), descr
 
 
