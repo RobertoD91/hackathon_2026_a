@@ -1,0 +1,12 @@
+{
+  "name": "twinciro-gemello-3d",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TwinCIRO 3D: gemello digitale 3D di Napoli con agenti a regole, nella presentazione di TwinCIRO (C5, The Big Hack 2026). Presenze simulate e dichiarate, dati reali dai moduli di ../../citta-api/. Nessuna dipendenza, nessuna build.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test \"test/*.test.js\""
+  }
+}

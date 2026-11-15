@@ -10,6 +10,7 @@ Qui sta la **parte di vetrina** di TwinCIRO (Challenge 05, Fastweb + Vodafone): 
 | Riprese vere, voce, musica | [`girato/`](girato/LEGGIMI.md) (fuori dal repository) | vere |
 | Mappa «Napoli in tempo reale»: hub, agenti e simulatore Node | [`mappa/`](mappa/README.md) | **folla e sensori simulati**; meteo, aria, trasporti, eventi e allerte **veri** |
 | Grafo della città il giorno della regata (pagina navigabile) | [`grafo/`](grafo/) | relazioni ricavate dai file della repository; eventi e flussi dello scenario 2027 |
+| Gemello 3D «TwinCIRO 3D»: presenze adesso e previste per 48 ore, chat con agenti a regole, sala operativa con what-if ([online](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/gemello-3d/)) | [`gemello-3d/`](gemello-3d/README.md) | **presenze simulate**; meteo, allerte, aria, trasporti ed eventi **veri**; non legge MQTT |
 
 ## La mappa «Napoli in tempo reale»
 

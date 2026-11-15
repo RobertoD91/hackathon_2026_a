@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>TwinCIRO 3D</title>
+    <meta name="description" content="TwinCIRO 3D, il gemello digitale 3D di Napoli: presenze stimate adesso e previste per 48 ore (simulazione dichiarata, con meteo, allerte, trasporti ed eventi veri), agenti a regole coordinati da un orchestratore, scenari what-if per la sala operativa. Challenge Fastweb + Vodafone, The Big Hack 2026." />
+    <meta name="theme-color" content="#060c18" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.24.1/maplibre-gl.min.css" />
+    <link rel="stylesheet" href="./stile.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.24.1/maplibre-gl.min.js"></script>
+  </head>
+  <body>
+    <div id="mappa" role="application" aria-label="Mappa 3D di Napoli"></div>
+
+    <header class="barra">
+      <div class="marchio">
+        <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
+          <defs><linearGradient id="g-logo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7dd3fc" /><stop offset="1" stop-color="#2563eb" /></linearGradient></defs>
+          <path d="M20 3 35 11.5v17L20 37 5 28.5v-17z" fill="none" stroke="url(#g-logo)" stroke-width="2.2" stroke-linejoin="round" />
+          <path d="M11 26v-6M16 26v-11M21 26v-8M26 26V12M30 26v-5" stroke="url(#g-logo)" stroke-width="2.6" stroke-linecap="round" />
+        </svg>
+        <div>
+          <h1>TwinCIRO <span>3D</span></h1>
+          <p>Napoli che ci pensa · gemello digitale con agenti</p>
+        </div>
+      </div>
+      <div class="stato" id="stato" aria-live="polite"></div>
+      <div class="azioni-barra">
+        <button type="button" class="bottone-tenue" id="btn-luoghi" aria-controls="sinistra" aria-expanded="false">Luoghi</button>
+        <button type="button" class="bottone-tenue" id="btn-giro" title="Un minuto e mezzo: il gemello si presenta da solo">Giro guidato</button>
+        <button type="button" class="bottone-tenue" id="btn-fonti">Fonti e ipotesi</button>
+      </div>
+    </header>
+
+    <aside class="pannello sinistra" id="sinistra" aria-label="Luoghi di Napoli">
+      <div class="kpi" id="kpi"></div>
+      <div class="filtri">
+        <input id="cerca" type="search" placeholder="Cerca un luogo…" aria-label="Cerca un luogo" autocomplete="off" />
+        <div class="categorie" id="categorie" role="group" aria-label="Categoria"></div>
+      </div>
+      <ol class="elenco" id="elenco"></ol>
+    </aside>
+
+    <div class="strumenti" id="strumenti" role="toolbar" aria-label="Vista della mappa"></div>
+
+    <aside class="pannello destra" id="destra">
+      <nav class="schede" role="tablist" aria-label="Pannello">
+        <button type="button" role="tab" data-scheda="luogo" aria-selected="true">Città e luoghi</button>
+        <button type="button" role="tab" data-scheda="ciro" aria-selected="false" title="Qui rispondono gli agenti a regole della pagina; l'assistente vero è TwinCIRO su WhatsApp">Chat agenti</button>
+        <button type="button" role="tab" data-scheda="operatore" aria-selected="false">Sala operativa</button>
+      </nav>
+      <section class="scheda" id="scheda-luogo" role="tabpanel"></section>
+      <section class="scheda scheda-chat" id="scheda-ciro" role="tabpanel" hidden>
+        <ol class="chat" id="chat" aria-live="polite"></ol>
+        <div class="spunti" id="spunti"></div>
+        <form class="chat-form" id="chat-form" autocomplete="off">
+          <input id="chat-input" type="text" maxlength="300" placeholder="Chiedi agli agenti… es. come arrivo al Maradona?" aria-label="Domanda per gli agenti a regole della pagina" />
+          <button type="submit" aria-label="Invia">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M3 20.5 21.5 12 3 3.5v6.8l11 1.7-11 1.7z" /></svg>
+          </button>
+        </form>
+      </section>
+      <section class="scheda" id="scheda-operatore" role="tabpanel" hidden></section>
+    </aside>
+
+    <footer class="pannello tempo" id="tempo" aria-label="Linea del tempo"></footer>
+
+    <div class="legenda" id="legenda"></div>
+    <p class="didascalia" id="didascalia" role="status" hidden></p>
+
+    <dialog id="fonti" class="finestra" aria-labelledby="fonti-titolo"></dialog>
+
+    <div id="tc-tip" class="tc-tip" role="tooltip" hidden></div>
+    <div id="caricamento" class="caricamento"><div><span class="giro"></span><b>TwinCIRO 3D</b><small id="caricamento-testo">Carico i dati reali di Napoli…</small></div></div>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

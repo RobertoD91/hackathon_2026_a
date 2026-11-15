@@ -30,6 +30,7 @@ Progetto per [The Big Hack 2026](https://go.codemotion.com/big-hack-hackathon-20
 | [`firmware/`](firmware/README.md) | badge WHY2025 e scheda Tasmota, hotspot del team, formato MQTT unico `napoli/...` | reale (hardware ancora da provare sul posto) |
 | [`cloud/`](cloud/README.md) | broker MQTT e API dati città in Docker sul server, senza root | reale, attivi su `twinciro.robertodisanto.it` |
 | [`c5-presentazione/`](c5-presentazione/README.md) | video di consegna, copione, scene e la [mappa "Napoli in tempo reale"](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/mappa/) | vetrina: nella mappa folla e sensori sono simulati, meteo, aria, trasporti, eventi e allerte sono veri |
+| [`c5-presentazione/gemello-3d/`](c5-presentazione/gemello-3d/README.md) | **TwinCIRO 3D** ([online](https://robertodisanto.it/hackathon_2026_a/c5-presentazione/gemello-3d/)), il gemello digitale 3D di tutta la città, idea di Mario: presenze adesso e previste per 48 ore, chat con agenti a regole, sala operativa con what-if, link diretti che TwinCIRO su WhatsApp può mandare | vetrina: presenze simulate e dichiarate, meteo, allerte, aria, trasporti ed eventi veri; non legge MQTT |
 | [`docs/`](docs/) | [challenge e regole](docs/hackathon.md), [diario e richieste tra le sessioni](docs/stato-e-strumenti.md), [le fonti, oltre 50 pubbliche e verificate](docs/fonti-dati-napoli.md), [brainstorming](docs/brainstorming.md) (storico) | documentazione |
 | [`tools/`](tools/) | `flux-gen.sh`: immagini con FLUX | strumento |
 
