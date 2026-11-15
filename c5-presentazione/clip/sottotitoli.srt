@@ -116,12 +116,12 @@ Questa è Napoli adesso: dati veri,
 ognuno con la sua fonte.
 
 25
-00:01:56,400 --> 00:01:59,800
+00:01:56,400 --> 00:02:00,000
 Allerte, treni, aria e Campi Flegrei,
 con l'ora del dato.
 
 26
-00:02:00,000 --> 00:02:05,600
+00:02:00,350 --> 00:02:05,600
 Chiedi come arrivare a Città della Scienza:
 TwinCIRO ti dà stazioni e orari.
 
@@ -155,7 +155,7 @@ Con le loro SIM IoT,
 i sensori si mettono dove servono.
 
 33
-00:02:32,700 --> 00:02:38,600
+00:02:32,700 --> 00:02:38,900
 E TwinCIRO può integrare MIIA,
 l'AI italiana di Fastweb: sovranità digitale.
 

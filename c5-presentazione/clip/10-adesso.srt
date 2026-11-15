@@ -4,12 +4,12 @@ Questa è Napoli adesso: dati veri,
 ognuno con la sua fonte.
 
 2
-00:00:04,400 --> 00:00:07,800
+00:00:04,400 --> 00:00:08,000
 Allerte, treni, aria e Campi Flegrei,
 con l'ora del dato.
 
 3
-00:00:08,000 --> 00:00:13,600
+00:00:08,350 --> 00:00:13,600
 Chiedi come arrivare a Città della Scienza:
 TwinCIRO ti dà stazioni e orari.
 

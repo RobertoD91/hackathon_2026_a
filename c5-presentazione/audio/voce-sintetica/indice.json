@@ -1,5 +1,5 @@
 {
-  "nota": "Scritto da scene/voce_sintetica.py: non modificarlo a mano. monta.py usa un file solo se \"testo\" è ancora il testo della battuta nella scaletta.",
+  "nota": "Scritto da scene/voce_sintetica.py: non modificarlo a mano. monta.py usa un file solo se è elencato qui e se \"testo\" e \"chi\" sono ancora quelli della battuta nella scaletta.",
   "motore": "ElevenLabs",
   "modello": "eleven_multilingual_v2",
   "voci": {
@@ -19,7 +19,7 @@
     "use_speaker_boost": true
   },
   "seed": 2026,
-  "aggiornato": "2026-11-15T03:52:15+00:00",
+  "aggiornato": "2026-11-15T07:01:34+00:00",
   "battute": {
     "01-regata-1": {
       "testo": "Napoli, 2027.",
@@ -336,15 +336,14 @@
     },
     "11-sensori-1": {
       "testo": "Sensori fatti da noi: badge WHY2025 e Tasmota.",
-      "testo_sintesi": "Sensori fatti da noi: badge uài duemilaventicinque e Tasmòta.",
+      "testo_sintesi": "Sensori fatti da noi: bèdge uài duemilaventicinque e Tasmòta.",
       "chi": "Mario",
       "voce": "Eric",
       "file": "11-sensori-1.m4a",
-      "impronta": "6ed2c35d97cb63fe",
-      "speed": null,
-      "parlato_s": 3.47,
-      "spazio_s": 4.4,
-      "importata": true
+      "impronta": "88b8b1004cf55951",
+      "speed": 1.0,
+      "parlato_s": 3.34,
+      "spazio_s": 4.4
     },
     "11-sensori-2": {
       "testo": "Oggi in Wi-Fi, domani con una SIM IoT.",

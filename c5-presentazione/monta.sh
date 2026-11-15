@@ -10,10 +10,13 @@
 #   ./monta.sh --solo-testi       # rifà solo voce/ e controlla tempi e ritmo delle battute (un secondo, niente video)
 #   ./monta.sh --controllo        # alla fine estrae un fotogramma ogni 5 s per controllare impaginazione e refusi
 #   ./monta.sh --segnaposto       # dove manca una ripresa vera mostra il cartello "Qui va una ripresa reale"
+#   ./monta.sh --senza-voce-sintetica   # solo la voce registrata: le battute non registrate restano mute
+#   ./monta.sh --senza-musica     # niente musica di sottofondo
 #
 # Le riprese vere vanno in girato/ (vedi girato/LEGGIMI.md): se un file c'è, prende il posto della scena generata.
 # La voce: girato/voce.m4a (tutto il video), oppure girato/voce/NN-<scena>.m4a (una clip) o girato/voce/NN-<scena>-K.m4a
 # (la battuta K), con i nomi scritti in voce/COPIONE-VOCE.md. La musica, solo se libera da diritti, in girato/musica.mp3.
+# Dove girato/ non ha di meglio si usano la musica CC0 e la voce sintetica di prova di audio/ (vedi audio/LEGGIMI.md).
 # Serve: ffmpeg, Node con Playwright e Chromium, python3 (solo libreria standard).
 set -euo pipefail
 QUI="$(cd "$(dirname "$0")" && pwd)"

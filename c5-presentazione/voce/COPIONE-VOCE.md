@@ -156,11 +156,11 @@ Consigli: stanza silenziosa e con tende o divani, telefono a 20 cm dalla bocca e
 
 > Questa è Napoli adesso: dati veri, ognuno con la sua fonte.
 
-**ROBERTO** · 1:56,4 → 1:59,8 · 3,4 s · `girato/voce/10-adesso-2.m4a`
+**ROBERTO** · 1:56,4 → 2:00,0 · 3,6 s · `girato/voce/10-adesso-2.m4a`
 
 > Allerte, treni, aria e Campi Flegrei, con l'ora del dato.
 
-**MARIO** · 2:00,0 → 2:05,6 · 5,6 s · `girato/voce/10-adesso-3.m4a`
+**MARIO** · 2:00,3 → 2:05,6 · 5,2 s · `girato/voce/10-adesso-3.m4a`
 
 > Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà stazioni e orari.
 
@@ -194,7 +194,7 @@ Consigli: stanza silenziosa e con tende o divani, telefono a 20 cm dalla bocca e
 
 > Con le loro SIM IoT, i sensori si mettono dove servono.
 
-**MARIO** · 2:32,7 → 2:38,6 · 5,9 s · `girato/voce/13-fastweb-3.m4a`
+**MARIO** · 2:32,7 → 2:38,9 · 6,2 s · `girato/voce/13-fastweb-3.m4a`
 
 > E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: sovranità digitale.
 
@@ -233,7 +233,7 @@ Consigli: stanza silenziosa e con tende o divani, telefono a 20 cm dalla bocca e
 11. **07-operatore-3** · 1:27,3 · 4,4 s — Nel terminale della sala, la stessa decisione: l'avviso è partito.
 12. **08-architettura-2** · 1:37,9 · 4,9 s — Si parlano su MQTT; le fonti pubbliche arrivano dall'API dati città.
 13. **09-grafo-2** · 1:47,7 · 4,0 s — Poi agenti, sensori e fonti, e come sono collegati.
-14. **10-adesso-2** · 1:56,4 · 3,4 s — Allerte, treni, aria e Campi Flegrei, con l'ora del dato.
+14. **10-adesso-2** · 1:56,4 · 3,6 s — Allerte, treni, aria e Campi Flegrei, con l'ora del dato.
 15. **11-sensori-2** · 2:10,7 · 3,1 s — Oggi in Wi-Fi, domani con una SIM IoT.
 16. **12-gemello-2** · 2:18,6 · 4,0 s — E l'avviso di TwinCIRO arriva quando la Rotonda Diaz si riempie.
 17. **13-fastweb-2** · 2:28,3 · 4,1 s — Con le loro SIM IoT, i sensori si mettono dove servono.
@@ -253,11 +253,11 @@ Consigli: stanza silenziosa e con tende o divani, telefono a 20 cm dalla bocca e
 9. **08-architettura-1** · 1:32,3 · 5,4 s — Dietro TwinCIRO c'è un sistema multi-agente: agenti specializzati e un orchestratore.
 10. **09-grafo-1** · 1:43,3 · 4,1 s — Ecco la città come rete: luoghi, eventi, flussi, stazioni.
 11. **10-adesso-1** · 1:52,3 · 3,9 s — Questa è Napoli adesso: dati veri, ognuno con la sua fonte.
-12. **10-adesso-3** · 2:00,0 · 5,6 s — Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà stazioni e orari.
+12. **10-adesso-3** · 2:00,3 · 5,2 s — Chiedi come arrivare a Città della Scienza: TwinCIRO ti dà stazioni e orari.
 13. **11-sensori-1** · 2:06,3 · 4,1 s — Sensori fatti da noi: badge WHY2025 e Tasmota.
 14. **12-gemello-1** · 2:14,3 · 4,0 s — Il gemello digitale prova la giornata sulle strade vere.
 15. **13-fastweb-1** · 2:23,3 · 4,7 s — Con Fastweb e Vodafone la folla non si simula più: si può misurare.
-16. **13-fastweb-3** · 2:32,7 · 5,9 s — E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: sovranità digitale.
+16. **13-fastweb-3** · 2:32,7 · 6,2 s — E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: sovranità digitale.
 17. **14-benefici-2** · 2:44,7 · 5,9 s — Perché Napoli? Nessuna app nuova, i dati ci sono già, e si parte da un quartiere.
 18. **15-chiusura-2** · 2:54,3 · 3,0 s — Provalo nel gruppo WhatsApp della demo.
 

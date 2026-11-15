@@ -9,8 +9,8 @@ Nel video da 2:23,0 a 2:39,0 · clip clip/13-fastweb.mp4 di 16,0 s
     Con le loro SIM IoT, i sensori si mettono dove servono.
     11 parole, ritmo di circa 154 al minuto · registra in girato/voce/13-fastweb-2.m4a
 
-3 · MARIO · da 9,7 a 15,6 s della clip · durata disponibile 5,9 s · nel video 2:32,7 → 2:38,6
+3 · MARIO · da 9,7 a 15,9 s della clip · durata disponibile 6,2 s · nel video 2:32,7 → 2:38,9
     E TwinCIRO può integrare MIIA, l'AI italiana di Fastweb: sovranità digitale.
-    11 parole, ritmo di circa 158 al minuto · registra in girato/voce/13-fastweb-3.m4a
+    11 parole, ritmo di circa 150 al minuto · registra in girato/voce/13-fastweb-3.m4a
 
 Tutta la scena in un file: girato/voce/13-fastweb.m4a (la prima parola va a 0,3 s dall'inizio della clip, il silenzio prima si toglie da solo).

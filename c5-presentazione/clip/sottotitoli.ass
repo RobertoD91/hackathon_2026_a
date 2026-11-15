@@ -35,15 +35,15 @@ Dialogue: 0,0:01:37.90,0:01:42.80,Voce,,0,0,0,,Si parlano su MQTT;\Nle fonti pub
 Dialogue: 0,0:01:43.30,0:01:47.40,Voce,,0,0,0,,Ecco la città come rete: luoghi,\Neventi, flussi, stazioni.
 Dialogue: 0,0:01:47.70,0:01:51.70,Voce,,0,0,0,,Poi agenti, sensori e fonti,\Ne come sono collegati.
 Dialogue: 0,0:01:52.30,0:01:56.20,Voce,,0,0,0,,Questa è Napoli adesso: dati veri,\Nognuno con la sua fonte.
-Dialogue: 0,0:01:56.40,0:01:59.80,Voce,,0,0,0,,Allerte, treni, aria e Campi Flegrei,\Ncon l'ora del dato.
-Dialogue: 0,0:02:00.00,0:02:05.60,Voce,,0,0,0,,Chiedi come arrivare a Città della Scienza:\NTwinCIRO ti dà stazioni e orari.
+Dialogue: 0,0:01:56.40,0:02:00.00,Voce,,0,0,0,,Allerte, treni, aria e Campi Flegrei,\Ncon l'ora del dato.
+Dialogue: 0,0:02:00.35,0:02:05.60,Voce,,0,0,0,,Chiedi come arrivare a Città della Scienza:\NTwinCIRO ti dà stazioni e orari.
 Dialogue: 0,0:02:06.30,0:02:10.40,Voce,,0,0,0,,Sensori fatti da noi:\Nbadge WHY2025 e Tasmota.
 Dialogue: 0,0:02:10.70,0:02:13.80,Voce,,0,0,0,,Oggi in Wi-Fi, domani con una SIM IoT.
 Dialogue: 0,0:02:14.30,0:02:18.30,Voce,,0,0,0,,Il gemello digitale prova\Nla giornata sulle strade vere.
 Dialogue: 0,0:02:18.60,0:02:22.60,Voce,,0,0,0,,E l'avviso di TwinCIRO arriva\Nquando la Rotonda Diaz si riempie.
 Dialogue: 0,0:02:23.30,0:02:28.00,Voce,,0,0,0,,Con Fastweb e Vodafone la folla\Nnon si simula più: si può misurare.
 Dialogue: 0,0:02:28.30,0:02:32.40,Voce,,0,0,0,,Con le loro SIM IoT,\Ni sensori si mettono dove servono.
-Dialogue: 0,0:02:32.70,0:02:38.60,Voce,,0,0,0,,E TwinCIRO può integrare MIIA,\Nl'AI italiana di Fastweb: sovranità digitale.
+Dialogue: 0,0:02:32.70,0:02:38.90,Voce,,0,0,0,,E TwinCIRO può integrare MIIA,\Nl'AI italiana di Fastweb: sovranità digitale.
 Dialogue: 0,0:02:39.30,0:02:44.40,Voce,,0,0,0,,Con un'adesione ipotizzata,\Nun avviso sposta circa 1.900 persone.
 Dialogue: 0,0:02:44.70,0:02:50.60,Voce,,0,0,0,,Perché Napoli? Nessuna app nuova,\Ni dati ci sono già, e si parte da un quartiere.
 Dialogue: 0,0:02:51.40,0:02:54.00,Voce,,0,0,0,,TwinCIRO. Napoli che ci pensa.

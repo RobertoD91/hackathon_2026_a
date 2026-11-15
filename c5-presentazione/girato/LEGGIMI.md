@@ -15,7 +15,7 @@ Metti qui le riprese girate in sede. Se un file esiste, `../monta.sh` lo usa al 
 - Si usano i **primi** secondi di ogni file. Per partire più avanti cambia `"da"` della scena in `../scene/scaletta.json` (per la chat si possono indicare i `"pezzi"` da tenere).
 - Una ripresa più corta della sua parte resta ferma sull'ultimo fotogramma.
 - Indicazioni precise per ogni ripresa (inquadratura, cosa scrivere a TwinCIRO): [`../copione.md`](../copione.md), sezione «Riprese da girare».
-- **Musica solo se libera da diritti** (CC0 o fatta da noi), con la licenza annotata in questo file. Nel dubbio, niente musica.
+- **Musica solo se libera da diritti** (CC0 o fatta da noi), con la licenza annotata in questo file. Nel dubbio, niente musica. Il montaggio porta qualsiasi musica a -14 LUFS e poi la abbassa sotto la voce.
 - Per sentire solo le voci vere: `../monta.sh --senza-voce-sintetica`; senza musica: `--senza-musica`.
 
 I file audio e video di questa cartella non vanno nel repository (vedi `../.gitignore`): restano sul portatile che monta il video. La voce registrata entra nel repository solo già mescolata nelle clip di `../clip/`. La musica CC0 e la voce sintetica di prova stanno invece in [`../audio/`](../audio/LEGGIMI.md), nel repository, con le loro licenze.

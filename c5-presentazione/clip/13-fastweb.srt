@@ -9,7 +9,7 @@ Con le loro SIM IoT,
 i sensori si mettono dove servono.
 
 3
-00:00:09,700 --> 00:00:15,600
+00:00:09,700 --> 00:00:15,900
 E TwinCIRO può integrare MIIA,
 l'AI italiana di Fastweb: sovranità digitale.
 

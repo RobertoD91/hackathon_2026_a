@@ -805,30 +805,48 @@ def file_voce(cart: Path, nomi: dict, sintetica: bool) -> tuple[dict[tuple[int, 
     return trovati, avvisi
 
 
-def sintetiche_valide(sint: dict[tuple[int, int | None], Pezzo], avvisi: list[str]) -> dict[tuple[int, int | None], Pezzo]:
-    """Delle battute sintetiche tiene solo quelle generate con il testo di adesso (audio/voce-sintetica/indice.json)."""
-    if not sint:
+def sintetiche_valide(piano: list[Scena], nomi: dict, avvisi: list[str]) -> dict[tuple[int, int | None], Pezzo]:
+    """Le battute sintetiche da usare: quelle elencate in audio/voce-sintetica/indice.json, con il file presente, generate
+    con il testo e per la persona (chi legge) di adesso. I file che l'indice non elenca non si usano."""
+    cart = AUDIO / "voce-sintetica"
+    if not cart.is_dir():
         return {}
-    indice_f = AUDIO / "voce-sintetica" / "indice.json"
+    indice_f = cart / "indice.json"
     try:
         battute = json.loads(indice_f.read_text(encoding="utf-8")).get("battute", {})
+        if not isinstance(battute, dict):
+            raise ValueError("«battute» non è un oggetto")
     except (OSError, ValueError, AttributeError):
-        avvisi.append(f"{relativo(indice_f)} manca o non si legge: non so con che testo è stata generata la voce sintetica,"
-                      " quindi non la uso")
+        if any(f.suffix.lower() in ESTENSIONI_AUDIO for f in cart.iterdir()):
+            avvisi.append(f"{relativo(indice_f)} manca o non si legge: non so con che testo è stata generata la voce"
+                          " sintetica, quindi non la uso")
         return {}
     uguale = lambda a, b: " ".join(str(a).split()) == " ".join(str(b).split())
-    buone, vecchie = {}, []
-    for chiave, p in sint.items():
-        if not p.k:
-            continue                          # della voce sintetica valgono solo i file per battuta
-        if uguale((battute.get(p.file.stem) or {}).get("testo", ""), p.scena.battute[p.k - 1].testo):
-            buone[chiave] = p
+    esatti = {f"{sc.base}-{b.k}" for sc in piano for b in sc.battute}
+    buone: dict[tuple[int, int | None], Pezzo] = {}
+    vecchie, mancanti = [], []
+    for stem, v in sorted(battute.items(), key=lambda kv: (str(kv[0]).lower() not in esatti, str(kv[0]))):
+        if not isinstance(v, dict):
+            continue
+        val = nomi.get(str(stem).lower()) or nomi.get(re.sub(r"^\d+-", "", str(stem).lower()))
+        if not val or not val[1] or (val[0].pos, val[1]) in buone:
+            continue                       # battuta che non c'è più, o già presa con il nome esatto
+        sc, k = val
+        f = cart / str(v.get("file") or f"{stem}.m4a")
+        if not f.is_file() or f.suffix.lower() not in ESTENSIONI_AUDIO:
+            mancanti.append(f"{sc.base}-{k}")
+            continue
+        b = sc.battute[k - 1]
+        if uguale(v.get("testo", ""), b.testo) and str(v.get("chi") or b.chi) == b.chi:
+            buone[(sc.pos, k)] = Pezzo(f, sc, k, sintetica=True)
         else:
-            vecchie.append(p.nome)
+            vecchie.append(f"{sc.base}-{k}")
+    elenca = lambda xs: f"{', '.join(xs[:4])}{'…' if len(xs) > 4 else ''}"
     if vecchie:
-        avvisi.append(f"voce sintetica generata con un testo diverso da quello di adesso per {len(vecchie)} battute"
-                      f" ({', '.join(vecchie[:4])}{'…' if len(vecchie) > 4 else ''}): non la uso, rigenerala con"
-                      " scene/voce_sintetica.py")
+        avvisi.append(f"voce sintetica generata con un testo o per una persona diversi da quelli di adesso per {len(vecchie)}"
+                      f" battute ({elenca(vecchie)}): non la uso, rigenerala con scene/voce_sintetica.py")
+    if mancanti:
+        avvisi.append(f"{relativo(cart)}: mancano i file di {len(mancanti)} battute dell'indice ({elenca(mancanti)})")
     return buone
 
 
@@ -840,9 +858,7 @@ def pezzi_voce(piano: list[Scena], sintetica: bool = False) -> tuple[list[Pezzo]
     trovati, avvisi = file_voce(GIRATO / "voce", nomi, False)
     sint: dict[tuple[int, int | None], Pezzo] = {}
     if sintetica:
-        sint, avvisi_sint = file_voce(AUDIO / "voce-sintetica", nomi, True)
-        avvisi += avvisi_sint
-        sint = sintetiche_valide(sint, avvisi)
+        sint = sintetiche_valide(piano, nomi, avvisi)
     pezzi = []
     for sc in piano:
         per_battuta = [p for (pos, k), p in trovati.items() if pos == sc.pos and k]
@@ -852,8 +868,9 @@ def pezzi_voce(piano: list[Scena], sintetica: bool = False) -> tuple[list[Pezzo]
             if intera:
                 avvisi.append(f"{relativo(intera.file)}: ci sono anche i file per battuta di {sc.base}: uso quelli")
             mancano = sorted({b.k for b in sc.battute} - {p.k for p in per_battuta})
-            riempite = [sint_sc[k] for k in mancano if k in sint_sc]
-            mute = [k for k in mancano if k not in sint_sc]
+            # Con la clip intera registrata la scena resta alla voce vera: niente voce sintetica nemmeno qui
+            riempite = [] if intera else [sint_sc[k] for k in mancano if k in sint_sc]
+            mute = [k for k in mancano if k not in {p.k for p in riempite}]
             if riempite:
                 avvisi.append(f"{sc.base}: la battuta {', '.join(str(p.k) for p in riempite)} non è registrata:"
                               " uso la voce sintetica")
@@ -879,7 +896,7 @@ def crediti_audio(piano: list[Scena]) -> str:
             m = json.loads((AUDIO / "musica.json").read_text(encoding="utf-8"))
             parti.append(f"Musica: «{m['titolo']}» di {m['autore']} ({m['licenza']})")
         except (OSError, ValueError, KeyError, TypeError):
-            pass
+            print(f"  ! {relativo(AUDIO / 'musica.json')} manca o non si legge: la musica di audio/ si usa, ma senza crediti")
     if OPZIONI["voce_sintetica"] and not trova("voce", ESTENSIONI_AUDIO):
         pezzi, _ = pezzi_voce(piano, sintetica=True)
         if any(p.sintetica for p in pezzi):
@@ -919,7 +936,8 @@ def prepara_pezzo(p: Pezzo, cart: Path) -> str | None:
     if p.parlato > p.spazio + 0.05:
         cosa = "fino alla battuta dopo" if p.k and p.k < len(p.scena.battute) else "fino alla fine della scena"
         taglio = " (la taglio alla fine della scena)" if not p.k else ""
-        rimedio = "rigenerala più svelta con scene/voce_sintetica.py" if p.sintetica else "rileggila più svelta"
+        rimedio = (f"rigenerala più svelta (scene/voce_sintetica.py --solo {p.nome})" if p.sintetica
+                   else "rileggila più svelta")
         avvisi.append(f"dura {num(p.parlato)} s, ma ha {num(p.spazio)} s {cosa}{taglio}: {rimedio} o allunga i tempi")
     return f"{p.etichetta}: " + "; ".join(avvisi) if avvisi else None
 
@@ -982,19 +1000,24 @@ def audio_montaggio(piano: list[Scena], totale: float, voce_da: float) -> tuple[
     if musica:
         ingressi += ["-stream_loop", "-1", "-i", str(musica)]
         guadagno_mus = guadagno_musica(musica)          # brani diversi, stesso tappeto: prima la porto a MUSICA_LUFS
-        vol = (0.12 if ha_voce else 0.35) * 10 ** (guadagno_mus / 20)
-        fa.append(f"[{k}:a]aresample=48000,volume={vol:.4f},atrim=0:{totale:.3f},afade=t=in:d=2,"
+        # 0,20 sotto la voce: tra una battuta e l'altra resta circa 12 LU sotto la voce, e il sidechain la abbassa ancora
+        # mentre si parla (con 0,12 nelle pause quasi non si sentiva); entra in mezzo secondo, prima della prima parola
+        vol = (0.20 if ha_voce else 0.35) * 10 ** (guadagno_mus / 20)
+        fa.append(f"[{k}:a]aresample=48000,volume={vol:.4f},atrim=0:{totale:.3f},afade=t=in:d=0.5,"
                   f"afade=t=out:st={totale - 3:.3f}:d=3[mus]")
         k += 1
     if ha_voce and musica:
         fa.append("[voce]asplit[v1][v2];[mus][v2]sidechaincompress=threshold=0.02:ratio=6:attack=30:release=500[md];"
-                  "[v1][md]amix=inputs=2:duration=first:normalize=0[a]")
+                  "[v1][md]amix=inputs=2:duration=first:normalize=0[mix]")
     elif ha_voce:
-        fa.append("[voce]anull[a]")
+        fa.append("[voce]anull[mix]")
     elif musica:
-        fa.append("[mus]anull[a]")
+        fa.append("[mus]anull[mix]")
     else:
-        fa.append(f"anullsrc=r=48000:cl=stereo,atrim=0:{totale:.3f}[a]")
+        fa.append(f"anullsrc=r=48000:cl=stereo,atrim=0:{totale:.3f}[mix]")
+    # Limitatore finale: la musica si somma dopo il limitatore della voce e nei primi 30 ms di una battuta non è ancora
+    # abbassata; a -1,5 dBFS il true peak resta sotto -1 dBTP anche dopo la codifica AAC
+    fa.append("[mix]alimiter=limit=0.84:level=0:latency=1[a]")
     uscita = LAVORO / "audio.wav"
     esegui(["ffmpeg", "-y", "-loglevel", "error", *ingressi, "-filter_complex", ";".join(fa), "-map", "[a]",
             "-c:a", "pcm_f32le", "-ar", "48000", "-ac", "2", "-t", f"{totale:.3f}", str(uscita)])
@@ -1010,7 +1033,9 @@ def audio_montaggio(piano: list[Scena], totale: float, voce_da: float) -> tuple[
         parti.append(f"{n_clip} clip da girato/voce/")
     if n_sint:
         parti.append(f"{n_sint} battute sintetiche da audio/voce-sintetica/")
-    musica_descr = f"= {relativo(musica)} ({guadagno_mus:+.1f} dB per arrivare a {MUSICA_LUFS:.0f} LUFS)" if musica else "assente"
+    limite = ", al limite: la musica resta lontana dal riferimento" if guadagno_mus in (-12.0, 6.0) else ""
+    musica_descr = (f"= {relativo(musica)} ({guadagno_mus:+.1f} dB per arrivare a {MUSICA_LUFS:.0f} LUFS{limite})"
+                    if musica else "assente")
     descr = f"voce {' + '.join(parti) if parti else 'assente'}, musica {musica_descr}"
     return uscita, (128 if (ha_voce or musica) else 64), descr
 
@@ -1189,9 +1214,12 @@ def main() -> None:
 
     # Crediti di musica e voce sintetica nella chiusura, solo se si usano (cambiano la chiave della cache del cartello)
     crediti = crediti_audio(piano)
-    if crediti and "chiusura" in CARTELLI:
-        CARTELLI["chiusura"] = {**CARTELLI["chiusura"], "crediti": crediti}
-        print(f"Crediti nella chiusura: {crediti}")
+    if crediti:
+        if "chiusura" in CARTELLI and any((s.get("sorgente") or {}).get("id") == "chiusura" for s in scaletta["scene"]):
+            CARTELLI["chiusura"] = {**CARTELLI["chiusura"], "crediti": crediti}
+            print(f"Crediti nella chiusura: {crediti}")
+        else:
+            print(f"  ! nessuna scena mostra il cartello «chiusura»: i crediti non compaiono nel video ({crediti})")
 
     sorg = Sorgenti(a.rigenera, a.rigenera_mappa)
     clip = []

@@ -34,15 +34,18 @@ Scelta tra sei candidate di FreePD, Free Music Archive e incompetech, con un sec
 
 ## Voce sintetica di prova
 
-Una voce di riserva, finché non ci sono le registrazioni vere. È fatta con **ElevenLabs**, modello `eleven_multilingual_v2`, in italiano: le voci predefinite **George** per Roberto ed **Eric** per Mario, con stability 0.5, similarity 0.75, style 0, speaker boost e seme 2026. Velocità 1.0, tranne `10-adesso-2` a 1.1 per entrare nel suo spazio.
+Una voce di riserva, finché non ci sono le registrazioni vere. È fatta con **ElevenLabs**, modello `eleven_multilingual_v2`, in italiano: le voci predefinite **George** per Roberto ed **Eric** per Mario, con stability 0.5, similarity 0.75, style 0, speaker boost e seme 2026. Velocità 1.0, tranne `10-adesso-2` a 1.1 per entrare nel suo spazio (le battute importate dalle prove hanno `"speed": null` nell'indice; le rigenerate la riportano).
 
 - **Scelta delle voci:** 13 voci maschili confrontate il 15/11, con la trascrizione automatica di faster-whisper, la durata e l'altezza della voce. George ed Eric sono l'unica coppia senza errori sulle parole difficili, ed entrano tutte nel loro spazio. **Riserva:** Brian per Roberto e Daniel per Mario.
-- **Parole difficili:** sono scritte per la sintesi come si dicono, per esempio «Twin Ciro», «emme cu ti ti», «a pi i», «millenovecento». L'elenco è `SINTESI` in [`../scene/voce_sintetica.py`](../scene/voce_sintetica.py).
+- **Parole difficili:** sono scritte per la sintesi come si dicono, per esempio «Twin Ciro», «emme cu ti ti», «a pi i», «millenovecento» e «bèdge»: scritto «badge», la b usciva sorda e si sentiva «page». L'elenco è `SINTESI` in [`../scene/voce_sintetica.py`](../scene/voce_sintetica.py).
 - **Titolo `03-titolo-1`:** letto tutto intero, ElevenLabs dice «Twin Zero». Il file è composto da «Twin Ciro.», tagliato da un'altra richiesta, poi 0,25 s di silenzio e «City Intelligence and Responsive Orchestration.» chiesto a parte. Lo script non lo rigenera da solo.
-- **Testo cambiato:** se una battuta cambia nella scaletta, il suo file non si usa più (lo controlla `indice.json`) e resta muta finché non la rigeneri.
-- **Rigenerare:** con la chiave di ElevenLabs nella variabile d'ambiente, mai nei file. Rifà solo le battute nuove o cambiate. `--prova` dice cosa farebbe, senza chiamare ElevenLabs.
+- **Testo cambiato:** se una battuta cambia nella scaletta, o passa da Roberto a Mario, il suo file non si usa più (lo controlla `indice.json`) e resta muta finché non la rigeneri. `monta.py` usa solo i file elencati in `indice.json`.
+- **Rigenerare:** con la chiave di ElevenLabs nella variabile d'ambiente, mai nei file e meglio non sulla riga di comando, dove resterebbe nella cronologia della shell. Rifà solo le battute nuove o cambiate. `--prova` dice cosa farebbe, senza chiamare ElevenLabs.
   ```bash
-  ELEVENLABS_API_KEY=... python3 scene/voce_sintetica.py
+  read -rs ELEVENLABS_API_KEY && export ELEVENLABS_API_KEY
   ```
-  Poi `./monta.sh`.
+  ```bash
+  python3 scene/voce_sintetica.py
+  ```
+  Poi `./monta.sh`. I file che non corrispondono più a nessuna battuta restano finché non lanci lo script con `--pulisci`: così una scena saltata e poi rimessa non perde la sua voce.
 - **Condizioni:** la voce è sintetica e lo dichiariamo nei crediti della chiusura («Voci sintetiche di prova (ElevenLabs)»). Con il piano gratuito ElevenLabs chiede di essere citata e non concede l'uso commerciale; per un video di hackathon va bene.

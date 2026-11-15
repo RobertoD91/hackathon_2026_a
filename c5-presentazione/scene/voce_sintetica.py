@@ -12,12 +12,15 @@ caratteri delle battute cambiate. Se una battuta non entra nel suo spazio (lo st
 riprova un po' più svelta, fino a speed 1.1; se ancora non entra, lo dice.
 
 La chiave di ElevenLabs si legge dalla variabile ELEVENLABS_API_KEY, oppure dal file indicato in
-ELEVENLABS_API_KEY_FILE: mai nei file della repo. Basta il permesso di sintesi (text to speech).
+ELEVENLABS_API_KEY_FILE (fuori dalla repo, chmod 600): mai nei file della repo, e meglio non scriverla sulla riga di
+comando (finirebbe nella cronologia della shell). Basta il permesso di sintesi (text to speech).
 
-  ELEVENLABS_API_KEY=... python3 scene/voce_sintetica.py         # genera le battute nuove o cambiate
+  read -rs ELEVENLABS_API_KEY && export ELEVENLABS_API_KEY       # incolla la chiave: non si vede e non resta salvata
+  python3 scene/voce_sintetica.py                                # genera le battute nuove o cambiate
   python3 scene/voce_sintetica.py --prova                        # dice cosa farebbe, senza chiamare ElevenLabs
-  ELEVENLABS_API_KEY=... python3 scene/voce_sintetica.py --solo 06-chat-2,13-fastweb-3   # rifà queste anche se uguali
+  python3 scene/voce_sintetica.py --solo 06-chat-2,13-fastweb-3  # rifà queste anche se uguali
   python3 scene/voce_sintetica.py --importa CARTELLA --testi testi-tts.json   # prende file già generati (stesse voci)
+  python3 scene/voce_sintetica.py --pulisci                      # toglie i file che nessuna battuta usa più
 
 Le parole difficili si scrivono per la sintesi come in SINTESI, provate con le voci scelte il 15/11: per esempio
 «TwinCIRO» → «Twin Ciro», «MQTT» → «emme cu ti ti», «1.900» → «millenovecento». Dopo ./monta.sh rifà il video.
@@ -73,6 +76,7 @@ SINTESI = {
     "1.900": "millenovecento",         # col punto delle migliaia si rischia «uno punto novecento»
     "Diaz": "Dìaz",
     "Tasmota": "Tasmòta",
+    "badge": "bèdge",                  # scritto «badge» la b esce sorda, all'inglese, e si sente «page»
 }
 # Eccezioni per contesto: se la battuta contiene la chiave, la parola si scrive così. Nel titolo TwinCIRO è seguito
 # dall'inglese e «Twin Ciro» diventa «Twin Zero»; «Tuìn Cìro» no.
@@ -113,7 +117,8 @@ def chiave_api() -> str:
     if not chiave and os.environ.get("ELEVENLABS_API_KEY_FILE"):
         chiave = Path(os.environ["ELEVENLABS_API_KEY_FILE"]).read_text(encoding="utf-8").strip()
     if not chiave:
-        sys.exit("Manca la chiave: ELEVENLABS_API_KEY=... python3 scene/voce_sintetica.py (oppure ELEVENLABS_API_KEY_FILE)")
+        sys.exit("Manca la chiave di ElevenLabs: read -rs ELEVENLABS_API_KEY && export ELEVENLABS_API_KEY, poi rilancia"
+                 " (oppure ELEVENLABS_API_KEY_FILE con un file fuori dalla repo)")
     return chiave
 
 
@@ -159,18 +164,29 @@ def principale() -> None:
     ap.add_argument("--solo", default="", help="battute da rifare comunque, per esempio 06-chat-2,13-fastweb-3")
     ap.add_argument("--importa", type=Path, help="cartella con NN-<scena>-K.wav già generati con le stesse voci")
     ap.add_argument("--testi", type=Path, help="con --importa: il testi-tts.json usato per generarli (controlla i testi)")
+    ap.add_argument("--pulisci", action="store_true",
+                    help="toglie i file che non corrispondono più a nessuna battuta (senza, li elenca e basta)")
     a = ap.parse_args()
+    if a.importa and not a.testi:
+        ap.error("--importa vuole anche --testi: il testi-tts.json con cui sono stati generati i file, per controllare i testi")
     for chi, v in VOCI.items():
         if not v["voice_id"]:
             sys.exit(f"Manca la voce di {chi} in VOCI")
 
     scaletta = json.loads((QUI / "scaletta.json").read_text(encoding="utf-8"))
     piano = M.piano_video([s for s in scaletta["scene"] if not s.get("salta")])
-    try:
-        vecchie = json.loads(INDICE.read_text(encoding="utf-8")).get("battute", {})
-    except (OSError, ValueError):
-        vecchie = {}
-    per_impronta = {v.get("impronta"): n for n, v in vecchie.items() if (CARTELLA / v.get("file", "")).is_file()}
+    vecchie: dict = {}
+    if INDICE.exists():
+        try:
+            vecchie = json.loads(INDICE.read_text(encoding="utf-8")).get("battute", {})
+            if not isinstance(vecchie, dict):
+                raise ValueError("«battute» non è un oggetto")
+        except (OSError, ValueError, AttributeError) as e:
+            sys.exit(f"{M.relativo(INDICE)} non si legge ({e}): ripristinalo prima di rigenerare, se no si perdono i file"
+                     " già fatti (git checkout -- c5-presentazione/audio/voce-sintetica/indice.json)")
+        vecchie = {n: v for n, v in vecchie.items() if isinstance(v, dict)}
+    per_impronta = {v.get("impronta"): n for n, v in vecchie.items() if (CARTELLA / str(v.get("file", ""))).is_file()}
+    nomi_attuali = {f"{sc.base}-{b.k}" for sc in piano for b in sc.battute}
     solo = {s.strip() for s in a.solo.split(",") if s.strip()}
     testi_importati = {}
     if a.importa and a.testi:
@@ -181,6 +197,11 @@ def principale() -> None:
     nuove, fatte, caratteri, avvisi = {}, [], 0, []
     with tempfile.TemporaryDirectory(prefix="voce-sintetica-") as tmp:
         lavoro = Path(tmp)
+        # Le rinomine copiano da qui: nello stesso giro un file può essere già stato riscritto da un'altra battuta
+        originali = lavoro / "originali"
+        originali.mkdir()
+        for f in CARTELLA.glob("*.m4a"):
+            shutil.copy2(f, originali / f.name)
         for sc in piano:
             for b in sc.battute:
                 nome = f"{sc.base}-{b.k}"
@@ -200,7 +221,7 @@ def principale() -> None:
                     continue
                 if nome not in solo and imp in per_impronta:             # stessa battuta, scena spostata: rinomina
                     if not a.prova:
-                        shutil.copy2(CARTELLA / vecchie[per_impronta[imp]]["file"], file)
+                        shutil.copy2(originali / vecchie[per_impronta[imp]]["file"], file)
                     nuove[nome] = {**vecchie[per_impronta[imp]], **voce_info}
                     fatte.append(f"{nome}: ripresa da {per_impronta[imp]}")
                     continue
@@ -245,26 +266,32 @@ def principale() -> None:
                 nuove[nome] = {**voce_info, "speed": speed, "parlato_s": round(parlato, 2), "spazio_s": round(spazio, 2)}
                 fatte.append(f"{nome}: generata (speed {speed}, {parlato:.2f} s su {spazio:.2f} s)")
 
-    tolte = []
+    # File che non corrispondono più a nessuna battuta (scene tolte o saltate): si tolgono solo con --pulisci,
+    # così una scena saltata e poi rimessa non perde la sua voce; monta.py usa solo i file elencati in indice.json
+    orfani = [f.name for f in sorted(CARTELLA.glob("*.m4a")) if f.stem not in nomi_attuali]
     if not a.prova:
-        for f in CARTELLA.glob("*.m4a"):
-            if f.stem not in nuove and re.fullmatch(r"\d{2,}-[a-z0-9-]+-\d+", f.stem):
-                f.unlink()
-                tolte.append(f.name)
-        INDICE.write_text(json.dumps({
-            "nota": "Scritto da scene/voce_sintetica.py: non modificarlo a mano. monta.py usa un file solo se \"testo\" è"
-                    " ancora il testo della battuta nella scaletta.",
-            "motore": MOTORE, "modello": MODELLO, "voci": VOCI, "impostazioni": IMPOSTAZIONI, "seed": SEED,
-            "aggiornato": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
-            "battute": dict(sorted(nuove.items())),
-        }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        if a.pulisci:
+            for nome_file in orfani:
+                (CARTELLA / nome_file).unlink()
+        if json.dumps(nuove, sort_keys=True) != json.dumps(vecchie, sort_keys=True) or not INDICE.exists():
+            INDICE.write_text(json.dumps({
+                "nota": "Scritto da scene/voce_sintetica.py: non modificarlo a mano. monta.py usa un file solo se è"
+                        " elencato qui e se \"testo\" e \"chi\" sono ancora quelli della battuta nella scaletta.",
+                "motore": MOTORE, "modello": MODELLO, "voci": VOCI, "impostazioni": IMPOSTAZIONI, "seed": SEED,
+                "aggiornato": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
+                "battute": dict(sorted(nuove.items())),
+            }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     for riga in fatte:
         print(f"  {riga}")
     for riga in avvisi:
         print(f"  ! {riga}")
-    if tolte:
-        print(f"  tolte {len(tolte)} battute che non ci sono più: {', '.join(tolte)}")
+    if orfani:
+        if a.pulisci and not a.prova:
+            print(f"  tolti {len(orfani)} file che nessuna battuta usa più: {', '.join(orfani)}")
+        else:
+            print(f"  {len(orfani)} file non corrispondono più a nessuna battuta: {', '.join(orfani)}"
+                  " (restano, monta.py non li usa; per toglierli --pulisci)")
     tot = sum(len(sc.battute) for sc in piano)
     print(f"{'Prova: ' if a.prova else ''}{len(fatte)} battute {'da fare' if a.prova else 'fatte'} su {tot},"
           f" {caratteri} caratteri {'da mandare' if a.prova else 'mandati'} a ElevenLabs. Cartella: {M.relativo(CARTELLA)}")
